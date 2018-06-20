@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Member List{% endblock %}
+{% block page_title %}Member List{% endblock %}
+
+{% block fullwidth-content %}
+    <div class="memberlist-container row small-row hide-on-small-and-down">
+        <h3 class="header center text">Member List</h3>
+
+        <table id="memberList" class="center striped">
+            <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Member Type</th>
+                <th>Causes</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for member in members %}
+                <tr>
+                    <td>{{ member.username }}</td>
+                    <td>{{ member.email }}</td>
+                    <td>{{ member.first_name }}</td>
+                    <td>{{ member.last_name }}</td>
+                    <td>{{ member.profile__member_type__name }}</td>
+                    <td>{{ member.profile__cause1__name }}, {{ member.profile__cause2__name }},
+                        {{ member.profile__cause3__name }}</td>
+                    <td>{{ member.profile__state__name }}</td>
+                    <td>
+                        <a data-url="/admin/member/edit/{{ member.id }}" onclick="openMemberActionsModal(this)"
+                           name="{{ member.first_name }} {{ member.last_name }}" class="waves-effect waves-light btn"
+                           href="#">Actions</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <br>
+    </div>
+
+    <div class="memberlist-container row small-row hide-on-med-and-up">
+        <h3 class="header center text">Member List</h3>
+        <h5>Sorry, this page is not supported on small screens yet.</h5>
+    </div>
+
+    <div id="member-actions-modal" class="modal">
+        <div class="modal-content">
+            <div class="row">
+                <div class="col s12">
+                    <h4 id="admin-member-modal-name">{MEMBER NAME}</h4>
+                    <a class="waves-effect waves-light btn green">Activate</a>
+                    <a class="waves-effect waves-light btn red">Deactivate</a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <ul class="tabs tabs-fixed-width">
+                        <li class="tab col s3"><a href="#edit-profile" class="active">Edit Profile</a></li>
+                        <li class="tab col s3"><a href="#manage-access">Manage Access</a></li>
+                        <li class="tab col s3"><a href="#access-history">Access History</a></li>
+                    </ul>
+                </div>
+                <div id="edit-profile" class="col s12">
+                    <div id="admin-edit-member-profile">
+
+                    </div>
+                </div>
+                <div id="manage-access" class="col s12">
+                    manage access
+                </div>
+                <div id="access-history" class="col s12">
+                    <ul class="collection">
+                        <li class="collection-item">16/05/18 at 9:30pm - swiped at Woodshop</li>
+                        <li class="collection-item">16/05/18 at 9:35pm - swiped at Member Storage</li>
+                        <li class="collection-item">18/05/18 at 5:30pm - swiped at Quad Door</li>
+                        <li class="collection-item">18/05/18 at 5:42pm - swiped at Member Storage</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
+    <script>
+        (function ($) {
+            $(function () {
+                $('#memberList').DataTable({
+                    paging: false
+                });
+            }); // end of document ready
+        })(jQuery); // end of jQuery name space
+    </script>
+{% endblock %}

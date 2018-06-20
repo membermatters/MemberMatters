@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile{% endblock %}
+{% block page_title %}Profile{% endblock %}
+
+{% block content %}
+    <div class="admin-container row small-row">
+        <h3 class="header center text">Your Member Profile</h3>
+
+        <table id="profileTable" class="center striped">
+            <tbody>
+            <tr>
+                <td>Username:</td>
+                <td>{{ user.username }}</td>
+            </tr>
+            <tr>
+                <td>Email:</td>
+                <td>{{ user.email }}</td>
+            </tr>
+            <tr>
+                <td>Name:</td>
+                <td>{{ user.first_name }} {{ user.last_name }}</td>
+            </tr>
+            <tr>
+                <td>Member Type:</td>
+                <td>{{ user.profile.member_type }}</td>
+            </tr>
+            <tr>
+                <td>Member Status:</td>
+                <td>{{ user.profile.get_state }}</td>
+            </tr>
+            <tr>
+                <td>Causes:</td>
+                <td>{{ user.profile.cause1 }}, {{ user.profile.cause2 }}, {{ user.profile.cause3 }}</td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <div id='account-info' style="width: 100%;" class="left">
+            <p id='account-created'>Your account was made on {{ user.date_joined }}</p>
+            <p id='last-login'>You last logged in on {{ user.last_login }}</p>
+
+            <a class="blue btn waves-effect waves-light right"
+               href="{% url 'edit_profile' %}">
+                Edit<i class="material-icons right">edit</i></a>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile{% endblock %}
+{% block page_title %}Edit Profile{% endblock %}
+
+{% block content %}
+    <div class="admin-container center row small-row">
+        <h3 class="header center text">Edit Your Profile</h3>
+            <form method="POST" action="{% url 'edit_profile' %}"/>
+            {% csrf_token %}
+            {{ user_form.as_p }}
+            {{ profile_form.as_p }}
+
+            <button class="blue btn waves-effect waves-light right" type="submit" name="action">Save
+                <i class="material-icons right">check</i>
+            </button>
+            </form>
+    </div>
+{% endblock %}

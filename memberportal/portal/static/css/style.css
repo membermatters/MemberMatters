@@ -1,0 +1,116 @@
+/*
+Members portal custom CSS, use this file to override any default Materialize CSS styles or to add new ones.
+ */
+
+/* make the page fill the window on smaller pages */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+/* custom footer css */
+footer {
+    background-color: orange;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 60px;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* the code network green as a text colour */
+.cn-green-text {
+    color: #8DC641 !important;
+    font-family: 'Montserrat', 'Roboto', sans-serif;
+}
+
+.cn-grey-text {
+    color: #666766 !important;
+    font-family: 'Montserrat', 'Roboto', sans-serif;
+}
+
+.cn-light-text {
+    color: #666766 !important;
+    font-family: 'Montserrat', 'Roboto', sans-serif;
+}
+
+.cn-dark-text {
+    color: #333333 !important;
+    font-family: 'Montserrat', 'Roboto', sans-serif;
+}
+
+/* the code network green as a background colour */
+.cn-green-background {
+    background-color: #8DC641 !important;
+}
+
+/* the code network dark as a background colour */
+.cn-dark-background {
+    background-color: #333333;
+}
+
+/* make all the font icons twice as big by default */
+.material-icons {
+    font-size: 200%;
+}
+
+.main-container {
+    padding-bottom: 50px;
+}
+
+.padding-top-small {
+    padding-top: 10px;
+}
+
+.padding-top {
+    padding-top: 30px;
+}
+
+.helptext, body > div.main-container > div > div > form > div.row > div:nth-child(1) > ul {
+    font-size: 12px;
+    color: grey;
+}
+
+.memberlist-container {
+    width: 85%;
+}
+
+.container {
+    margin-bottom: 80px;
+}
+
+/* materialize small screens (phones) */
+@media only screen and (max-width: 600px) {
+    /* make the logo same height as navbar but with padding around it */
+    #logo {
+        height: 70px;
+        padding: 8px;
+    }
+}
+
+/* materialize medium screens (tablets) */
+@media only screen and (min-width: 601px) {
+    /* make the logo same height as navbar but with padding around it */
+    #logo {
+        height: 90px;
+        padding: 10px;
+    }
+
+    .home-text-columns {
+        min-height: 220px;
+    }
+
+    .admin-container {
+        max-width: 40%;
+        padding-bottom: 70px;
+    }
+}
+
+/* materialize large screens (desktops) */
+@media only screen and (min-width: 993px) {
+    /* Make all the columns on the home page equal height when they're next to each other on desktop */
+    .home-text-columns {
+        min-height: 150px;
+    }
+}
