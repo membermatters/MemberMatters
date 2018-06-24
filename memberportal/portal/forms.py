@@ -25,7 +25,7 @@ class AddProfileForm(forms.ModelForm):
         fields = ('member_type', 'cause1', 'cause2', 'cause3')
 
 
-class EditProfileForm(forms.ModelForm):
+class EditCauseForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('cause1', 'cause2', 'cause3')

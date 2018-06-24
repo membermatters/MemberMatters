@@ -9,15 +9,21 @@ class MemberState(models.Model):
         return self.name
 
 
+class AdminLog(models.Model):
+    log_user = models.ForeignKey(User, "Name of admin", related_name="log_user")
+    action = models.CharField("Action taken", max_length=50)
+    log_member = models.ForeignKey(User, "Name of member", related_name="log_member")
+    description = models.CharField("Description of why", max_length=500)
+    date = models.DateTimeField(auto_now_add=True)
+
+
 class MemberTypes(models.Model):
     name = models.CharField("Member Type Name", max_length=20)
     conditions = models.CharField("Membership Conditions", max_length=100)
     cost = models.IntegerField("Monthly Cost")
 
     def __str__(self):
-        if self.name == "Woofing Hacker":
-            return self.name + " - email exec to apply".format(self.cost)
-        return self.name + " - ${} per mth".format(self.cost)
+        return self.name + " - ${} per mth. {}".format(self.cost, self.conditions)
 
 
 class Causes(models.Model):
@@ -46,7 +52,7 @@ class DoorPermissions(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    state = models.ForeignKey(MemberState, on_delete=models.CASCADE, related_name='state')
+    state = models.ForeignKey(MemberState, on_delete=models.CASCADE, related_name='state', default="1")
     member_type = models.ForeignKey(MemberTypes, on_delete=models.CASCADE, related_name='member_type')
     cause1 = models.ForeignKey(Causes, on_delete=models.CASCADE, verbose_name="Cause 1", related_name='Cause1')
     cause2 = models.ForeignKey(Causes, on_delete=models.CASCADE, verbose_name="Cause 2", related_name='Cause2')

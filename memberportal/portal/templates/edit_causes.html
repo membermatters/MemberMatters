@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Edit Profile{% endblock %}
-{% block page_title %}Edit Profile{% endblock %}
+{% block title %}Edit Causes{% endblock %}
+{% block page_title %}Edit Causes{% endblock %}
 
 {% block content %}
     <div class="admin-container center row small-row">
-        <h3 class="header center text">Edit Your Profile</h3>
-            <form method="POST" action="{% url 'edit_profile' %}"/>
+        <h3 class="header center text">Edit Causes</h3>
+            <form method="POST" action="{% url 'edit_causes' %}"/>
             {% csrf_token %}
-            {{ user_form.as_p }}
+            {{ form.as_p }}
 
             <button class="blue btn waves-effect waves-light right" type="submit" name="action">Save
                 <i class="material-icons right">check</i>

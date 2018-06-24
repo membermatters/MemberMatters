@@ -31,13 +31,19 @@
             </tr>
             <tr>
                 <td>Causes:</td>
-                <td>{{ user.profile.cause1 }}, {{ user.profile.cause2 }}, {{ user.profile.cause3 }}</td>
+                {% if user.profile.cause1 and user.profile.cause2 and user.profile.cause3 %}
+                    <td>{{ user.profile.cause1 }}, {{ user.profile.cause2 }}, {{ user.profile.cause3 }}</td>
+                {% elif user.profile.cause1 and user.profile.cause2 %}
+                    <td>{{ user.profile.cause1 }} & {{ user.profile.cause2 }}</td>
+                {% elif user.profile.cause1 %}
+                    <td>{{ user.profile.cause1 }}</td>
+                {% endif %}
             </tr>
             </tbody>
         </table>
-        <br>
         <div id='account-info' style="width: 100%;" class="left">
-            <p id='account-created'>Your account was made on {{ user.date_joined }}</p>
+            <p>To change your membership type, please contact the executive. To change your causes click the link in the
+                "Member Tools" menu.</p>
             <p id='last-login'>You last logged in on {{ user.last_login }}</p>
 
             <a class="blue btn waves-effect waves-light right"

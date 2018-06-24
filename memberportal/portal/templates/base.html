@@ -31,10 +31,13 @@
             {% endif %}
 
             {% if user.is_staff %}
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a></li>
+                <li><a class="dropdown-trigger-hover" href="#" data-target="admin-dropdown">Admin Tools
+                    <i class="material-icons right">arrow_drop_down</i></a></li>
             {% endif %}
 
             {% if user.is_authenticated %}
+                <li><a class="dropdown-trigger-hover" href="#" data-target="member-dropdown">Member Tools
+                    <i class="material-icons right">arrow_drop_down</i></a></li>
                 <li><a class="dropdown-trigger-hover" href="#" data-target="profile-dropdown">Hi, {{ user.first_name }}
                     <i class="material-icons right">arrow_drop_down</i></a></li>
             {% endif %}
@@ -48,7 +51,7 @@
             {% endif %}
 
             {% if user.is_staff %}
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Admin Tools</a></li>
             {% endif %}
 
             {% if user.is_authenticated %}
@@ -65,6 +68,18 @@
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">My Profile</a></li>
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'signout' %}">Log Out</a></li>
     </ul>
+
+    <ul id="member-dropdown" class="dropdown-content">
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'home' %}">Access Permissions</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'home' %}">Change Theme Song</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_causes' %}">Edit Causes</a></li>
+    </ul>
+
+    {% if user.is_staff %}
+        <ul id="admin-dropdown" class="dropdown-content">
+            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a></li>
+        </ul>
+    {%  endif %}
 </nav>
 
 <div class="fullwidth-container">

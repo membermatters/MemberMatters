@@ -36,12 +36,8 @@ function setState(state) {
 
     if (state) {
         state_url = active_url;
-        document.getElementById("activate-member-button").classList.add("disabled");
-        document.getElementById("deactivate-member-button").classList.remove("disabled");
     } else {
         state_url = deactive_url;
-        document.getElementById("activate-member-button").classList.remove("disabled");
-        document.getElementById("deactivate-member-button").classList.add("disabled");
     }
 
     $.ajax({
@@ -58,6 +54,9 @@ function setState(state) {
                 document.getElementById("activate-member-button").classList.remove("disabled");
                 document.getElementById("deactivate-member-button").classList.add("disabled");
             }
+        },
+        error: function (data) {
+            alert("There was an error processing the request. :( ")
         }
     });
 }
@@ -92,7 +91,7 @@ function openMemberActionsModal(e) {
         }
     });
 
-    document.getElementById("activate-member-button").innerText = "Activate";
+    document.getElementById("activate-member-button").innerText = "Enable Access";
     if (member_state == 3) {
         document.getElementById("activate-member-button").classList.remove("disabled");
         document.getElementById("deactivate-member-button").classList.add("disabled");
