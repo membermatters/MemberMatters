@@ -5,7 +5,6 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import *
-from django.forms.models import model_to_dict
 
 
 def signup(request):
@@ -56,7 +55,7 @@ def member_list(request):
     if request.user.is_staff:
         members = User.objects.values('id', 'username', 'email', 'first_name', 'last_name', 'profile__member_type__name',
                                       'profile__state__name', 'profile__cause1__name', 'profile__cause2__name',
-                                      'profile__cause3__name')
+                                      'profile__cause3__name', 'profile__state')
 
         return render(request, 'memberlist.html', {'members': members})
 
@@ -104,5 +103,16 @@ def edit_profile(request):
         return render(request, 'edit_profile.html', {'user_form': user_form, 'profile_form': profile_form})
 
 
+def set_state(request, member_id, state):
+    user = User.objects.get(id=member_id)
+    user.profile.state = MemberState.objects.get(pk=state)
+    user.profile.save()
+    return JsonResponse({"success": True})
+
+
 def loggedout(request):
     return render(request, 'loggedout.html')
+
+
+def manage_doors(request):
+    pass

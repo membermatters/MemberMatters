@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Modal init
     var modalElem = document.getElementById('member-actions-modal');
-    memberActionsModal = M.Modal.init(modalElem);
+    memberActionsModal = M.Modal.init(modalElem, {'endingBottom': '5%'});
 
     // Tabs init
     M.Tabs.init(document.querySelectorAll('.tabs'));
@@ -28,27 +28,84 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 function initSelects() {
-   M.FormSelect.init(document.querySelectorAll('select'), {});
+    M.FormSelect.init(document.querySelectorAll('select'), {});
 };
 
+function setState(state) {
+    var state_url;
+
+    if (state) {
+        state_url = active_url;
+        document.getElementById("activate-member-button").classList.add("disabled");
+        document.getElementById("deactivate-member-button").classList.remove("disabled");
+    } else {
+        state_url = deactive_url;
+        document.getElementById("activate-member-button").classList.remove("disabled");
+        document.getElementById("deactivate-member-button").classList.add("disabled");
+    }
+
+    $.ajax({
+        url: state_url,  // <-- AND HERE
+        type: 'get',
+        dataType: 'json',
+        success: function (data) {
+            if (state) {
+                state_url = active_url;
+                document.getElementById("activate-member-button").classList.add("disabled");
+                document.getElementById("deactivate-member-button").classList.remove("disabled");
+            } else {
+                state_url = deactive_url;
+                document.getElementById("activate-member-button").classList.remove("disabled");
+                document.getElementById("deactivate-member-button").classList.add("disabled");
+            }
+        }
+    });
+}
+
+var name;
+var url;
+var member_id;
+var deactive_url;
+var active_url;
+var member_state;
 
 function openMemberActionsModal(e) {
-    memberActionsModal.open();
-    var name = e.getAttribute("name");
-    var url = e.getAttribute("data-url");
+    name = e.getAttribute("name");
+    member_state = e.getAttribute("data-state");
+    member_id = e.getAttribute("id");
+    url = e.getAttribute("data-url");
+    active_url = e.getAttribute("data-active_url");
+    deactive_url = e.getAttribute("data-deactive_url");
     document.getElementById('admin-member-modal-name').innerText = name;
 
     $.ajax({
-    url: url,  // <-- AND HERE
-    type: 'get',
-    dataType: 'json',
-    success: function (data) {
-      var elem = document.getElementById("admin-edit-member-profile");
-      elem.innerHTML = data.html_form;
+        url: url,  // <-- AND HERE
+        type: 'get',
+        dataType: 'json',
+        success: function (data) {
+            var elem = document.getElementById("admin-edit-member-profile");
+            elem.innerHTML = data.html_form;
 
-      setTimeout(function(){ initSelects(); }, 0);
+            setTimeout(function () {
+                initSelects();
+            }, 0);
+        }
+    });
+
+    document.getElementById("activate-member-button").innerText = "Activate";
+    if (member_state == 3) {
+        document.getElementById("activate-member-button").classList.remove("disabled");
+        document.getElementById("deactivate-member-button").classList.add("disabled");
+    } else if (member_state == 2) {
+        document.getElementById("activate-member-button").classList.add("disabled");
+        document.getElementById("deactivate-member-button").classList.remove("disabled");
+    } else if (member_state == 1) {
+        document.getElementById("activate-member-button").innerText = "Make Member";
+        document.getElementById("activate-member-button").classList.remove("disabled");
+        document.getElementById("deactivate-member-button").classList.add("disabled");
     }
-  });
+
+    memberActionsModal.open();
 }
 
 $("#member-actions-modal").on("submit", ".member-edit-form", function () {
@@ -56,18 +113,19 @@ $("#member-actions-modal").on("submit", ".member-edit-form", function () {
     console.log(form);
 
     $.ajax({
-      url: form.attr("action"),
-      data: form.serialize(),
-      type: form.attr("method"),
-      dataType: 'json',
-      success: function (data) {
-        if (data.form_is_valid) {
-          alert("yay");
+        url: form.attr("action"),
+        data: form.serialize(),
+        type: form.attr("method"),
+        dataType: 'json',
+        success: function (data) {
+            if (data.form_is_valid) {
+                alert("Saved :D");
+                location.reload();
+            }
+            else {
+                alert("Sorry there was an error with the form data :(");
+            }
         }
-        else {
-          alert("nay");
-        }
-      }
     });
     return false;
-  });
+});
