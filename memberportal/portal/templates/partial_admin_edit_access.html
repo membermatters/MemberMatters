@@ -1,0 +1,25 @@
+<table id="access-list" class="center striped">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for door in doors%}
+                <tr>
+                    <td>{{ door.name }}</td>
+                    <td>{{ door.description }}</td>
+                    <td>
+                        <a data-url="{% url 'admin_edit_access' member_id=member.id %}"
+                           onclick=""
+                           class="waves-effect waves-light btn" href="#">Give Access</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+{% for door in doors %}
+    <a class="btn-flat right" data-url="{% url 'admin_edit_access' member_id=member_id %}">Cancel</a>
+{% endfor %}

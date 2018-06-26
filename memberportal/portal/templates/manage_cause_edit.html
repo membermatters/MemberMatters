@@ -1,15 +1,16 @@
 {% extends 'base.html' %}
 
-{% block title %}Edit Profile{% endblock %}
-{% block page_title %}Edit Profile{% endblock %}
+{% block title %}Edit Cause{% endblock %}
+{% block page_title %}Edit Cause{% endblock %}
 
 {% block content %}
     <div class="admin-container center row small-row">
-        <h3 class="header center text">Edit Your Profile</h3>
-            <form method="POST" action="{% url 'edit_profile' %}"/>
+        <h3 class="header center text">Edit Cause Info</h3>
+            <form method="POST" action="{% url 'manage_causes' %}"/>
             {% csrf_token %}
-            {{ user_form.as_p }}
+            {{ form.as_p }}
 
+        <a class="btn-flat right" onclick="window.history.back();">Cancel</a>
             <button class="btn waves-effect waves-light right" type="submit" name="action">Save
                 <i class="material-icons right">check</i>
             </button>

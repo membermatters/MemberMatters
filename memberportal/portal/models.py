@@ -52,11 +52,11 @@ class DoorPermissions(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    state = models.ForeignKey(MemberState, on_delete=models.CASCADE, related_name='state', default="1")
-    member_type = models.ForeignKey(MemberTypes, on_delete=models.CASCADE, related_name='member_type')
-    cause1 = models.ForeignKey(Causes, on_delete=models.CASCADE, verbose_name="Cause 1", related_name='Cause1')
-    cause2 = models.ForeignKey(Causes, on_delete=models.CASCADE, verbose_name="Cause 2", related_name='Cause2')
-    cause3 = models.ForeignKey(Causes, on_delete=models.CASCADE, verbose_name="Cause 3", related_name='Cause3')
+    state = models.ForeignKey(MemberState, on_delete=models.PROTECT, related_name='state', default="1")
+    member_type = models.ForeignKey(MemberTypes, on_delete=models.PROTECT, related_name='member_type')
+    cause1 = models.ForeignKey(Causes, on_delete=models.SET_NULL, verbose_name="Cause 1", related_name='Cause1', null=True)
+    cause2 = models.ForeignKey(Causes, on_delete=models.SET_NULL, verbose_name="Cause 2", related_name='Cause2', null=True)
+    cause3 = models.ForeignKey(Causes, on_delete=models.SET_NULL, verbose_name="Cause 3", related_name='Cause3', null=True)
 
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name

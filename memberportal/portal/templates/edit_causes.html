@@ -1,18 +1,20 @@
 {% extends 'base.html' %}
 
-{% block title %}Edit Causes{% endblock %}
-{% block page_title %}Edit Causes{% endblock %}
+{% block title %}Change Causes{% endblock %}
+{% block page_title %}Change Causes{% endblock %}
 
 {% block content %}
     <div class="admin-container center row small-row">
-        <h3 class="header center text">Edit Causes</h3>
-            <form method="POST" action="{% url 'edit_causes' %}"/>
-            {% csrf_token %}
-            {{ form.as_p }}
+        <h3 class="header center text">Change Causes</h3>
+        <p>Use the form below to update your cause membership. Please note you may only do this once per month.</p>
+        <form method="POST" action="{% url 'edit_causes' %}"/>
+        {% csrf_token %}
+        {{ form.as_p }}
 
-            <button class="blue btn waves-effect waves-light right" type="submit" name="action">Save
-                <i class="material-icons right">check</i>
-            </button>
-            </form>
+        <a class="btn-flat right" onclick="window.history.back();">Cancel</a>
+        <button class="btn waves-effect waves-light right" type="submit" name="action">Save
+            <i class="material-icons right">check</i>
+        </button>
+        </form>
     </div>
 {% endblock %}

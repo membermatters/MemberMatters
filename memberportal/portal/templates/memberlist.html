@@ -32,8 +32,11 @@
                         {{ member.profile__cause3__name }}</td>
                     <td>{{ member.profile__state__name }}</td>
                     <td>
-                        <a data-url="{% url 'admin_edit_member' member_id=member.id %}" onclick="openMemberActionsModal(this)"
-                           name="{{ member.first_name }} {{ member.last_name }}" data-state="{{ member.profile__state }}"
+                        <a data-url="{% url 'admin_edit_member' member_id=member.id %}"
+                           data-access_url="{% url 'admin_edit_access' member_id=member.id %}"
+                           onclick="openMemberActionsModal(this)"
+                           name="{{ member.first_name }} {{ member.last_name }}"
+                           data-state="{{ member.profile__state }}"
                            data-id="{{ member.id }}" data-active_url="{% url 'set_state' member_id=member.id state=2 %}"
                            data-deactive_url="{% url 'set_state' member_id=member.id state=3 %}"
                            class="waves-effect waves-light btn" href="#">Actions</a>
@@ -55,8 +58,10 @@
             <div class="row">
                 <div class="col s12">
                     <h4 id="admin-member-modal-name">{MEMBER NAME}</h4>
-                    <a onclick="setState(true);" id="activate-member-button" class="waves-effect waves-light btn green disabled">Enable Access</a>
-                    <a onclick="setState(false);" id="deactivate-member-button" class="waves-effect waves-light btn red disabled">Disable Access</a>
+                    <a onclick="setState(true);" id="activate-member-button"
+                       class="waves-effect waves-light btn green disabled">Enable Access</a>
+                    <a onclick="setState(false);" id="deactivate-member-button"
+                       class="waves-effect waves-light btn red disabled">Disable Access</a>
                 </div>
             </div>
 
@@ -68,14 +73,15 @@
                         <li class="tab col s3"><a href="#access-history">Log</a></li>
                     </ul>
                 </div>
-                <div id="edit-profile" class="col s12">
-                    <div id="admin-edit-member-profile">
 
-                    </div>
+                <div id="edit-profile" class="col s12">
+                    <div id="admin-edit-member-profile"></div>
                 </div>
+
                 <div id="manage-access" class="col s12">
-                    manage access
+                    <div id="admin-edit-member-access"></div>
                 </div>
+
                 <div id="access-history" class="col s12">
                     <ul class="collection">
                         <li class="collection-item">16/05/18 at 9:30pm - swiped at Woodshop</li>

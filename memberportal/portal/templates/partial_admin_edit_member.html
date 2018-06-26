@@ -2,6 +2,7 @@
 {% csrf_token %}
 {{ form.as_p }}
 
+<a class="btn-flat right" onclick="memberActionsModal.close(); document.getElementById('admin-edit-member-profile').innerHTML = '';">Cancel</a>
 <button class="blue btn waves-effect waves-light right">Save
     <i class="material-icons right">check</i>
 </button>

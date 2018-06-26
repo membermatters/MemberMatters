@@ -1,4 +1,4 @@
-var memberActionsModal;
+let memberActionsModal;
 
 (function ($) {
     $(function () {
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
     M.Dropdown.init(document.querySelectorAll('.dropdown-trigger-hover'), {"coverTrigger": false, "hover": true});
 
     // Modal init
-    var modalElem = document.getElementById('member-actions-modal');
+    let modalElem = document.getElementById('member-actions-modal');
     memberActionsModal = M.Modal.init(modalElem, {'endingBottom': '5%'});
 
     // Tabs init
@@ -32,7 +32,7 @@ function initSelects() {
 };
 
 function setState(state) {
-    var state_url;
+    let state_url;
 
     if (state) {
         state_url = active_url;
@@ -49,40 +49,60 @@ function setState(state) {
                 state_url = active_url;
                 document.getElementById("activate-member-button").classList.add("disabled");
                 document.getElementById("deactivate-member-button").classList.remove("disabled");
+                M.toast({html: "Successfully enabled access."});
             } else {
                 state_url = deactive_url;
                 document.getElementById("activate-member-button").classList.remove("disabled");
                 document.getElementById("deactivate-member-button").classList.add("disabled");
+                M.toast({html: "Successfully disabled access."});
             }
         },
         error: function (data) {
-            alert("There was an error processing the request. :( ")
+              M.toast({html: "There was an error processing the request. :("});
         }
     });
 }
 
-var name;
-var url;
-var member_id;
-var deactive_url;
-var active_url;
-var member_state;
+let name;
+let profile_url;
+let access_url;
+let member_id;
+let deactive_url;
+let active_url;
+let member_state;
 
 function openMemberActionsModal(e) {
     name = e.getAttribute("name");
     member_state = e.getAttribute("data-state");
     member_id = e.getAttribute("id");
-    url = e.getAttribute("data-url");
+    profile_url = e.getAttribute("data-url");
+    access_url = e.getAttribute("data-access_url");
     active_url = e.getAttribute("data-active_url");
     deactive_url = e.getAttribute("data-deactive_url");
     document.getElementById('admin-member-modal-name').innerText = name;
 
+    // get the edit profile form
     $.ajax({
-        url: url,  // <-- AND HERE
+        url: profile_url,  // <-- AND HERE
         type: 'get',
         dataType: 'json',
         success: function (data) {
-            var elem = document.getElementById("admin-edit-member-profile");
+            let elem = document.getElementById("admin-edit-member-profile");
+            elem.innerHTML = data.html_form;
+
+            setTimeout(function () {
+                initSelects();
+            }, 0);
+        }
+    });
+
+    // get the access form
+    $.ajax({
+        url: access_url,  // <-- AND HERE
+        type: 'get',
+        dataType: 'json',
+        success: function (data) {
+            let elem = document.getElementById("admin-edit-member-access");
             elem.innerHTML = data.html_form;
 
             setTimeout(function () {
@@ -108,8 +128,7 @@ function openMemberActionsModal(e) {
 }
 
 $("#member-actions-modal").on("submit", ".member-edit-form", function () {
-    var form = $(this);
-    console.log(form);
+    let form = $(this);
 
     $.ajax({
         url: form.attr("action"),
@@ -118,13 +137,18 @@ $("#member-actions-modal").on("submit", ".member-edit-form", function () {
         dataType: 'json',
         success: function (data) {
             if (data.form_is_valid) {
-                alert("Saved :D");
-                location.reload();
+                M.toast({html: "Saved successfully :D"});
             }
             else {
-                alert("Sorry there was an error with the form data :(");
-            }
+                M.toast({html: "There was an error saving the data. :("});            }
         }
     });
     return false;
 });
+
+function deleteCause(btn) {
+    $.get(btn.getAttribute("data-url"), function(data){
+        alert(data);
+        location.reload();
+    });
+}

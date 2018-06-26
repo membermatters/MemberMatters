@@ -22,7 +22,7 @@
     <div class="nav-wrapper container">
         <a id="logo-container" href="/" class="brand-logo">
             <img id="logo" class="left" src="{% static '/img/logo.png' %}" class="brand-logo">
-            Member Portal
+            <div class="hide-on-small-only">Member Portal</div>
         </a>
         <ul class="right hide-on-med-and-down">
             {% if not user.is_authenticated %}
@@ -50,14 +50,27 @@
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'signin' %}">Log In</a></li>
             {% endif %}
 
+            {% if user.is_authenticated %}
+                <a class="cn-dark-text">Hi, {{ user.first_name }}!</a>
+                <li><div class="divider"></div></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'home' %}">Home</a></li>
+                <li><div class="divider"></div></li>
+                <li><a class="subheader">Member Tools</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">My Profile</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">Access Permissions</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'home' %}">Change Theme Song</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_causes' %}">Change Causes</a></li>
+            {% endif %}
+
             {% if user.is_staff %}
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Admin Tools</a></li>
+                <li><div class="divider"></div></li>
+                <li><a class="subheader">Admin Tools</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage Causes</a></li>
             {% endif %}
 
             {% if user.is_authenticated %}
-                <a class="cn-dark-text">Hi, {{ user.first_name }}!</a>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'home' %}">Home</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">My Profile</a></li>
+                <li><div class="divider"></div></li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'signout' %}">Log Out</a></li>
             {% endif %}
         </ul>
@@ -65,19 +78,21 @@
     </div>
 
     <ul id="profile-dropdown" class="dropdown-content">
-        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">My Profile</a></li>
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'signout' %}">Log Out</a></li>
     </ul>
 
     <ul id="member-dropdown" class="dropdown-content">
-        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'home' %}">Access Permissions</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">My Profile</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">Access Permissions</a></li>
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'home' %}">Change Theme Song</a></li>
-        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_causes' %}">Edit Causes</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_causes' %}">Change Causes</a></li>
     </ul>
 
     {% if user.is_staff %}
         <ul id="admin-dropdown" class="dropdown-content">
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a></li>
+            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage Causes</a></li>
+            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_doors' %}">Manage Doors</a></li>
         </ul>
     {%  endif %}
 </nav>

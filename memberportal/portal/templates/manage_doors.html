@@ -4,8 +4,47 @@
 {% block page_title %}Manage Doors{% endblock %}
 
 {% block content %}
-    <div class="admin-container center row small-row">
-        <h3 class="header center text">Manage Doors</h3>
+    <div class="row">
+        <div class="col s12 m8">
+            <h4>Current Doors</h4>
+            <table class="striped responsive-table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th style="min-width: 120px;">Edit</th>
+                </tr>
+                </thead>
 
+                <tbody>
+                {% for door in doors %}
+                    <tr>
+                        <td>{{ door.name }}</td>
+                        <td>{{ door.description }}</td>
+                        <td>
+                            <a href="{% url "edit_door" door_id=door.id %}" class="waves-effect waves-light btn-small edit-button">
+                                <i class="material-icons">edit</i>
+                            </a>
+                            <a href="{% url "delete_door" door_id=door.id %}" class="waves-effect waves-light btn-small delete-button">
+                                <i class="material-icons">delete</i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col s12 m4">
+            <h4>Add Door </h4>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn waves-effect waves-light" type="submit" name="login">
+                    Add
+                </button>
+            </form>
+        </div>
     </div>
 {% endblock %}
