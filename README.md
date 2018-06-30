@@ -31,7 +31,7 @@ The HSBNE member portal is how HSBNE members manage their membership.
  ![screenshot2](https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot2.png)
  ![screenshot3](https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot3.png)
  ![screenshot4](https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot4.png)
-<img src="https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot5.png" width="300">
-<img src="https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot6.png" width="300">
+<img src="https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot5.png" width="400">
+<img src="https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot6.png" width="400">
 <img src="https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot7.png" width="300">
 <img src="https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot8.png" width="300">
