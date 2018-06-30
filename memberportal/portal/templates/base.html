@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
-    <title>{% block title %}HSBNE Member Portal{% endblock %} | Member Portal</title>
+    <title>{% block title %}HSBNE Member Portal{% endblock %} - HSBNE Member Portal</title>
     {% load staticfiles %}
 
     <!-- Fonts -->
@@ -58,7 +58,7 @@
                 <li><a class="subheader">Member Tools</a></li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">My Profile</a></li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">Access Permissions</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'home' %}">Change Theme Song</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change Theme Song</a></li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_causes' %}">Change Causes</a></li>
             {% endif %}
 
@@ -67,6 +67,7 @@
                 <li><a class="subheader">Admin Tools</a></li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a></li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage Causes</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_doors' %}">Manage Doors</a></li>
             {% endif %}
 
             {% if user.is_authenticated %}
@@ -84,7 +85,7 @@
     <ul id="member-dropdown" class="dropdown-content">
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">My Profile</a></li>
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">Access Permissions</a></li>
-        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'home' %}">Change Theme Song</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change Theme Song</a></li>
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_causes' %}">Change Causes</a></li>
     </ul>
 
