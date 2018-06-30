@@ -27,7 +27,13 @@ ul.errorlist > * {
     margin-bottom: 5px;
 }
 
-.modal { width: 100% !important; max-width: 700px !important ; min-height: 80vh !important ; }
+.modal-grant-button, .modal-revoke-button {
+    width: 100%;
+}
+
+.modal-grant-button {
+    margin-bottom: 5px;
+}
 
 /* the code network green as a text colour */
 .cn-green-text {
@@ -97,6 +103,12 @@ ul.errorlist > * {
         height: 70px;
         padding: 8px;
     }
+
+    #memberList > thead > tr > th, #memberList {
+        border: none;
+        padding: 8px 0;
+        text-align: left;
+    }
 }
 
 /* materialize medium screens (tablets) */
@@ -122,5 +134,31 @@ ul.errorlist > * {
     /* Make all the columns on the home page equal height when they're next to each other on desktop */
     .home-text-columns {
         min-height: 150px;
+    }
+
+    .modal {
+        width: 100% !important;
+        max-width: 800px !important;
+        min-height: 80vh !important;
+    }
+}
+
+/* materialize large screens (desktops) */
+@media only screen and (min-width: 601px) {
+    /* Make all the columns on the home page equal height when they're next to each other on desktop */
+    #logo-container {
+        width: 330px;
+    }
+}
+
+@media only screen and (min-width: 1100px) and (max-width: 1400px) {
+    .container {
+        width: 80%;
+    }
+}
+
+@media only screen and (min-width: 993px) and (max-width: 1100px) {
+    .container {
+        width: 90%;
     }
 }

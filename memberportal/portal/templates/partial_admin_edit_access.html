@@ -1,25 +1,48 @@
+<p class="right">Note: The green tick will grant access and the red cross will revoke access.</p>
+
 <table id="access-list" class="center striped">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for door in doors%}
-                <tr>
-                    <td>{{ door.name }}</td>
-                    <td>{{ door.description }}</td>
-                    <td>
-                        <a data-url="{% url 'admin_edit_access' member_id=member.id %}"
-                           onclick=""
-                           class="waves-effect waves-light btn" href="#">Give Access</a>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-{% for door in doors %}
-    <a class="btn-flat right" data-url="{% url 'admin_edit_access' member_id=member_id %}">Cancel</a>
-{% endfor %}
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th style="width:100px;">Access</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {% for door in doors %}
+        <tr>
+            <td>{{ door.name }}</td>
+            <td>{{ door.description }}</td>
+            <td>
+                {% if door.has_access %}
+                    <a data-url="{% url 'admin_edit_access' member_id=1 %}"
+                       onclick=""
+                       class="disabled green waves-effect waves-light btn modal-grant-button" href="#">
+                        Grant
+                    </a>
+
+                    <a data-url="{% url 'admin_edit_access' member_id=1 %}"
+                       onclick=""
+                       class="waves-effect waves-light btn modal-revoke-button" href="#">
+                        Revoke
+                    </a>
+
+                {% else %}
+                    <a data-url="{% url 'admin_edit_access' member_id=1 %}"
+                       onclick=""
+                       class="green waves-effect waves-light btn modal-grant-button" href="#">
+                        Grant
+                    </a>
+
+                    <a data-url="{% url 'admin_edit_access' member_id=1 %}"
+                       onclick=""
+                       class="disabled waves-effect waves-light btn modal-revoke-button" href="#">
+                        Revoke
+                    </a>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

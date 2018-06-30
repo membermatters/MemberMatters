@@ -158,28 +158,20 @@ def admin_edit_member(request, member_id):
     :return:
     """
     user = get_object_or_404(Profile, user=member_id)
+    data = dict()
+
+    form = AdminEditProfileForm(instance=user)
+    # if it's not valid don't save or log it
+    data['form_is_valid'] = False
+
     if request.method == 'POST':
         # if it's a form submission pass it to the form
         form = AdminEditProfileForm(request.POST, instance=user)
-
-    else:
-        # otherwise make generate one
-        form = AdminEditProfileForm(instance=user)
-
-    # call the function above to process/render the form
-    #return save_admin_edit_member_form(request, form, 'partial_admin_edit_member.html', member_id)
-
-    data = dict()
-    if request.method == 'POST':
         if form.is_valid():
             # if it's a valid form submission then save and log it
             form.save()
             data['form_is_valid'] = True
             log_admin_action(request.user, member_id, "edited member profile", str(request.body))
-
-        else:
-            # if it's not valid don't save or log it
-            data['form_is_valid'] = False
 
     # render the form and return it
     data['html_form'] = render_to_string('partial_admin_edit_member.html', {'form': form, 'member_id': member_id},
@@ -309,6 +301,7 @@ def access_permissions(request):
     return render(request, 'access_permissions.html', {"form": "form"})
 
 
+@login_required()
 def manage_doors(request):
     if request.method == 'POST':
         form = DoorForm(request.POST)
@@ -357,3 +350,17 @@ def admin_edit_access(request, member_id):
     data['html_form'] = render_to_string('partial_admin_edit_access.html', {'member_id': member_id, 'doors': doors},
                                          request=request)
     return JsonResponse(data)
+
+
+@login_required()
+def edit_theme_song(request):
+    if request.method == 'POST':
+        form = DoorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("manage_doors"))
+
+    else:
+        form = DoorForm()
+
+    return render(request, 'edit_theme_song.html', {"form": form})

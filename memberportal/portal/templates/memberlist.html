@@ -1,15 +1,13 @@
 {% extends 'base.html' %}
 
 {% block title %}Member List{% endblock %}
-{% block page_title %}Member List{% endblock %}
 
 {% block fullwidth-content %}
-    <div class="memberlist-container row small-row hide-on-small-and-down">
+    <div class="memberlist-container row small-row">
         <h3 class="header center text">Member List</h3>
-
-        <table id="memberList" class="center striped">
+        <table id="memberList" class="striped responsive-table">
             <thead>
-            <tr>
+            <tr style="max-width: 120px;">
                 <th>Username</th>
                 <th>Email</th>
                 <th>First Name</th>
@@ -46,11 +44,6 @@
             </tbody>
         </table>
         <br>
-    </div>
-
-    <div class="memberlist-container row small-row hide-on-med-and-up">
-        <h3 class="header center text">Member List</h3>
-        <h5>Sorry, this page is not supported on small screens yet.</h5>
     </div>
 
     <div id="member-actions-modal" class="modal">
@@ -103,9 +96,7 @@
     <script>
         (function ($) {
             $(function () {
-                $('#memberList').DataTable({
-                    paging: false
-                });
+                $('#memberList').DataTable({});
             }); // end of document ready
         })(jQuery); // end of jQuery name space
     </script>
