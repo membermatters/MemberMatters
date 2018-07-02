@@ -25,14 +25,14 @@
             {% for door in doors %}
                 <tr>
                     <td>{{ door.name }}</td>
-                    {% if door.access %}
+                    {% if door.has_access %}
                         <td>Access Allowed</td>
                     {% else %}
                         <td>Access Not Allowed</td>
                     {% endif %}
                     <td>
                         <a onclick="openMemberActionsModal(this)"
-                           data-request_url="{% url 'set_state' member_id=member.id state=3 %}"
+                           data-request_url="{% url 'set_state' member_id=member_id state=3 %}"
                            class="waves-effect waves-light btn" href="#">Request Access</a>
                     </td>
                 </tr>

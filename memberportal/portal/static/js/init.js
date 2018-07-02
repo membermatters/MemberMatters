@@ -140,7 +140,8 @@ $("#member-actions-modal").on("submit", ".member-edit-form", function () {
                 M.toast({html: "Saved successfully :D"});
             }
             else {
-                M.toast({html: "There was an error saving the data. :("});            }
+                M.toast({html: "There was an error saving the data. :("});
+            }
         }
     });
     return false;
@@ -150,5 +151,41 @@ function deleteCause(btn) {
     $.get(btn.getAttribute("data-url"), function(data){
         alert(data);
         location.reload();
+    });
+}
+
+function grantAccess(url, id) {
+    $.ajax({
+        url: url,  // <-- AND HERE
+        type: 'get',
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                document.getElementById(id + "-grant-button").classList.add("disabled");
+                document.getElementById(id + "-revoke-button").classList.remove("disabled");
+                M.toast({html: "Access Granted :D"});
+            }
+            else {
+                M.toast({html: "Error :( " + response.reason});
+            }
+        }
+    });
+}
+
+function revokeAccess(url, id) {
+    $.ajax({
+        url: url,  // <-- AND HERE
+        type: 'get',
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                document.getElementById(id + "-grant-button").classList.remove("disabled");
+                document.getElementById(id + "-revoke-button").classList.add("disabled");
+                M.toast({html: "Access Revoked :O"});
+            }
+            else {
+                M.toast({html: "Error :( " + response.reason});
+            }
+        }
     });
 }

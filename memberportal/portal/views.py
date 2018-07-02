@@ -2,6 +2,8 @@ from django.contrib.auth import login, authenticate
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, JsonResponse, HttpResponseServerError
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
+from django.db import IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import *
@@ -298,7 +300,16 @@ def delete_cause(request, cause_id):
 
 @login_required()
 def access_permissions(request):
-    return render(request, 'access_permissions.html', {"form": "form"})
+    doors = Doors.objects.all().values()
+    doors_allowed = DoorPermissions.objects.filter(user=request.user)
+
+    for door in doors:
+        for door_allowed in doors_allowed:
+            if door_allowed.door_id == door['id']:
+                door['has_access'] = True
+    print(doors)
+
+    return render(request, 'access_permissions.html', {"doors": doors, "member_id": request.user.id})
 
 
 @login_required()
@@ -342,9 +353,17 @@ def delete_door(request, door_id):
 
 @login_required()
 def admin_edit_access(request, member_id):
-    user = get_object_or_404(Profile, user=member_id)
-    doors = Doors.objects.all()
+    user = get_object_or_404(User, pk=member_id)
+    doors = Doors.objects.all().values()
     data = dict()
+
+    for door in doors:
+        try:
+            DoorPermissions.objects.get(door_id=door['id'], user=user)
+            door['has_access'] = True
+
+        except ObjectDoesNotExist:
+            door['has_access'] = False
 
     # render the form and return it
     data['html_form'] = render_to_string('partial_admin_edit_access.html', {'member_id': member_id, 'doors': doors},
@@ -364,3 +383,25 @@ def edit_theme_song(request):
         form = DoorForm()
 
     return render(request, 'edit_theme_song.html', {"form": form})
+
+
+@login_required()
+def admin_grant_door(request, door_id, member_id):
+    try:
+        door_permission = DoorPermissions(door=Doors.objects.get(pk=door_id), user=User.objects.get(pk=member_id))
+        door_permission.save()
+        return JsonResponse({"success": True})
+
+    except IntegrityError:
+        return JsonResponse({"success": False, "reason": "The user already has this permission."})
+
+
+@login_required()
+def admin_revoke_door(request, door_id, member_id):
+    try:
+        door_permission = DoorPermissions.objects.get(door_id=door_id, user_id=member_id)
+        door_permission.delete()
+        return JsonResponse({"success": True})
+
+    except ObjectDoesNotExist:
+        return JsonResponse({"success": False, "reason": "No access permission was found."})
