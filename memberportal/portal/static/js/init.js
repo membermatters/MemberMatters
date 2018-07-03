@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function initSelects() {
     M.FormSelect.init(document.querySelectorAll('select'), {});
-};
+}
 
 function setState(state) {
     let state_url;
@@ -58,7 +58,7 @@ function setState(state) {
             }
         },
         error: function (data) {
-              M.toast({html: "There was an error processing the request. :("});
+            M.toast({html: "There was an error processing the request. :("});
         }
     });
 }
@@ -93,6 +93,9 @@ function openMemberActionsModal(e) {
             setTimeout(function () {
                 initSelects();
             }, 0);
+        },
+        error: function() {
+            M.toast({html: "Unkown error 1 :( "});
         }
     });
 
@@ -108,6 +111,9 @@ function openMemberActionsModal(e) {
             setTimeout(function () {
                 initSelects();
             }, 0);
+        },
+        error: function() {
+            M.toast({html: "Unkown error 2 :( "});
         }
     });
 
@@ -142,13 +148,16 @@ $("#member-actions-modal").on("submit", ".member-edit-form", function () {
             else {
                 M.toast({html: "There was an error saving the data. :("});
             }
+        },
+        error: function() {
+            M.toast({html: "Unkown error 3 :( "});
         }
     });
     return false;
 });
 
 function deleteCause(btn) {
-    $.get(btn.getAttribute("data-url"), function(data){
+    $.get(btn.getAttribute("data-url"), function (data) {
         alert(data);
         location.reload();
     });
@@ -168,6 +177,9 @@ function grantAccess(url, id) {
             else {
                 M.toast({html: "Error :( " + response.reason});
             }
+        },
+        error: function() {
+            M.toast({html: "Unkown error 4 :( "});
         }
     });
 }
@@ -186,6 +198,28 @@ function revokeAccess(url, id) {
             else {
                 M.toast({html: "Error :( " + response.reason});
             }
+        },
+        error: function() {
+            M.toast({html: "Unkown error 5 :( "});
+        }
+    });
+}
+
+function requestAccess(url) {
+    $.ajax({
+        url: url,  // <-- AND HERE
+        type: 'get',
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                M.toast({html: "Access request submitted."});
+            }
+            else {
+                M.toast({html: "Error :( " + response.reason});
+            }
+        },
+        error: function() {
+            M.toast({html: "Unkown error 6 :( "});
         }
     });
 }

@@ -1,5 +1,5 @@
 from django.contrib.auth import login, authenticate
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, JsonResponse, HttpResponseServerError
+from django.http import HttpResponseRedirect, HttpResponseForbidden, JsonResponse, HttpResponseServerError, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.db import IntegrityError
@@ -7,6 +7,28 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import *
+
+
+def admin_required(view):
+    def wrap(request, *args, **kwargs):
+        # do some logic here
+        if request.user.is_staff:
+            return view(request, *args, **kwargs)
+        else:
+            # if the user isn't authorised let them know
+            return HttpResponseForbidden("403 Access Forbidden")
+    return wrap
+
+
+def reader_auth(view):
+    def wrap(request, *args, **kwargs):
+        # do some logic here
+        if request.method == "GET" and request.GET.get('secret', "wrong") == "cookiemonster":
+            return view(request, *args, **kwargs)
+        else:
+            # if the user isn't authorised let them know
+            return HttpResponseForbidden("403 Access Forbidden")
+    return wrap
 
 
 def log_admin_action(admin_user, member_id, action="unknown", description="none"):
@@ -104,54 +126,24 @@ def profile(request):
 
 
 @login_required()
+@admin_required
 def member_list(request):
     """
     The list all members view. Used to manage all members.
     :param request:
     :return:
     """
-    # make sure the user is a staff member
-    if request.user.is_staff:
-        # extract the values we need for each member
-        members = User.objects.values('id', 'username', 'email', 'first_name', 'last_name',
-                                      'profile__member_type__name',
-                                      'profile__state__name', 'profile__cause1__name', 'profile__cause2__name',
-                                      'profile__cause3__name', 'profile__state')
+    # extract the values we need for each member
+    members = User.objects.values('id', 'username', 'email', 'first_name', 'last_name',
+                                  'profile__member_type__name',
+                                  'profile__state__name', 'profile__cause1__name', 'profile__cause2__name',
+                                  'profile__cause3__name', 'profile__state')
 
-        return render(request, 'memberlist.html', {'members': members})
-
-    else:
-        # if the user isn't authorised let them know
-        return HttpResponseForbidden("403 Access Forbidden")
-
-
-# def save_admin_edit_member_form(request, form, template_name, member_id):
-#     """
-#     Part of the process for our ajax requests for the member list.
-#     :param request:
-#     :param form:
-#     :param template_name:
-#     :param member_id:
-#     :return:
-#     """
-#     data = dict()
-#     if request.method == 'POST':
-#         if form.is_valid():
-#             # if it's a valid form submission then save and log it
-#             form.save()
-#             data['form_is_valid'] = True
-#             log_admin_action(request.user, member_id, "edited member profile", str(request.body))
-#
-#         else:
-#             # if it's not valid don't save or log it
-#             data['form_is_valid'] = False
-#
-#     # render the form and return it
-#     data['html_form'] = render_to_string(template_name, {'form': form, 'member_id': member_id}, request=request)
-#     return JsonResponse(data)
+    return render(request, 'memberlist.html', {'members': members})
 
 
 @login_required()
+@admin_required
 def admin_edit_member(request, member_id):
     """
     Part of the process for our ajax requests for the member list.
@@ -230,6 +222,7 @@ def edit_causes(request):
 
 
 @login_required()
+@admin_required
 def set_state(request, member_id, state):
     """
     Sets the active/inactive (access disabled/enabled) state for members.
@@ -253,6 +246,7 @@ def set_state(request, member_id, state):
 
 
 @login_required()
+@admin_required
 def manage_causes(request):
     if request.method == 'POST':
         form = CauseForm(request.POST)
@@ -269,6 +263,7 @@ def manage_causes(request):
 
 
 @login_required()
+@admin_required
 def edit_cause(request, cause_id):
     """
     The edit cause (admin) view.
@@ -293,6 +288,7 @@ def edit_cause(request, cause_id):
 
 
 @login_required()
+@admin_required
 def delete_cause(request, cause_id):
     Causes.objects.get(pk=cause_id).delete()
     return HttpResponseRedirect('%s' % (reverse('manage_causes')))
@@ -313,6 +309,7 @@ def access_permissions(request):
 
 
 @login_required()
+@admin_required
 def manage_doors(request):
     if request.method == 'POST':
         form = DoorForm(request.POST)
@@ -328,6 +325,7 @@ def manage_doors(request):
 
 
 @login_required()
+@admin_required
 def edit_door(request, door_id):
     if request.method == 'POST':
         form = DoorForm(request.POST, instance=Doors.objects.get(pk=door_id))
@@ -346,12 +344,14 @@ def edit_door(request, door_id):
 
 
 @login_required()
+@admin_required
 def delete_door(request, door_id):
     Doors.objects.get(pk=door_id).delete()
     return HttpResponseRedirect('%s' % (reverse('manage_doors')))
 
 
 @login_required()
+@admin_required
 def admin_edit_access(request, member_id):
     user = get_object_or_404(User, pk=member_id)
     doors = Doors.objects.all().values()
@@ -386,6 +386,7 @@ def edit_theme_song(request):
 
 
 @login_required()
+@admin_required
 def admin_grant_door(request, door_id, member_id):
     try:
         door_permission = DoorPermissions(door=Doors.objects.get(pk=door_id), user=User.objects.get(pk=member_id))
@@ -397,6 +398,7 @@ def admin_grant_door(request, door_id, member_id):
 
 
 @login_required()
+@admin_required
 def admin_revoke_door(request, door_id, member_id):
     try:
         door_permission = DoorPermissions.objects.get(door_id=door_id, user_id=member_id)
@@ -405,3 +407,65 @@ def admin_revoke_door(request, door_id, member_id):
 
     except ObjectDoesNotExist:
         return JsonResponse({"success": False, "reason": "No access permission was found."})
+
+
+@login_required()
+def request_access(request, door_id):
+    return JsonResponse({"success": False, "reason": "Not implemented yet."})
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
+@reader_auth
+def check_access(request, rfid_code, door_id=None):
+    if request.user.profile.state.name == "Active Member":
+        try:
+            user = Profile.objects.get(rfid=rfid_code).user
+        except ObjectDoesNotExist:
+            # send back some random error code you can search for here - this means the RFID tag doesn't exist.
+            return HttpResponseBadRequest("Bad Request. Error AhDA")
+
+        if door_id is not None:
+            try:
+                door = Doors.objects.get(pk=door_id)
+
+            except ObjectDoesNotExist:
+                # send back some random error code you can search for here - this means the door ID doesn't exist.
+                return HttpResponseBadRequest("Bad Request. Error AJld")
+
+            try:
+                DoorPermissions.objects.get(door=door, user=user)
+            except ObjectDoesNotExist:
+                # user doesn't have access
+                return JsonResponse({"access": False, "name": door.name})
+
+            return JsonResponse({"access": True, "name": door.name})
+
+        else:
+            try:
+                door_ip = get_client_ip(request)
+                print(door_ip)
+                door = Doors.objects.get(ip_address=door_ip)
+
+            except ObjectDoesNotExist:
+                # send back some random error code you can search for here - this means the door doesn't exist.
+                return HttpResponseBadRequest("Bad Request. Error AJlc")
+
+            try:
+                DoorPermissions.objects.get(door=door, user=user)
+
+            except ObjectDoesNotExist:
+                # user doesn't have access
+                return JsonResponse({"access": False, "name": door.name})
+
+            return JsonResponse({"access": True, "name": door.name})
+
+    else:
+        return JsonResponse({"access": False})

@@ -34,7 +34,7 @@ class EditCausesForm(forms.ModelForm):
 class AdminEditProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('member_type', 'cause1', 'cause2', 'cause3')
+        fields = ('member_type', 'rfid', 'cause1', 'cause2', 'cause3')
 
 
 class EditUserForm(forms.ModelForm):

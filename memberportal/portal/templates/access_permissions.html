@@ -5,39 +5,40 @@
 
 {% block content %}
     <div class="row">
-        <h3 class="header center text">Access Permissions</h3>
-        <div id='info' class="center">
-            <p>
-                Most tools require inductions before access can be granted. Please talk to the cause leader for more
-                information. If you don't have access to a door and you think you should, please contact the executive.
-            </p>
-        </div>
-        <h4 class="header center text">Doors</h4>
-        <table id="memberList" class="center striped">
-            <thead>
-            <tr>
-                <th>Door Name</th>
-                <th>Access</th>
-                <th>Request Access</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for door in doors %}
+        <div class="col s12 m8 offset-m2">
+            <h3 class="header center text">Access Permissions</h3>
+            <div id='info' class="center">
+                <p>
+                    Most tools require inductions before access can be granted. Please talk to the cause leader for more
+                    information. If you don't have access to a door and you think you should, please request access.
+                </p>
+            </div>
+            <h4 class="header center text">Doors</h4>
+            <table id="memberList" class="center striped">
+                <thead>
                 <tr>
-                    <td>{{ door.name }}</td>
-                    {% if door.has_access %}
-                        <td>Access Allowed</td>
-                    {% else %}
-                        <td>Access Not Allowed</td>
-                    {% endif %}
-                    <td>
-                        <a onclick="openMemberActionsModal(this)"
-                           data-request_url="{% url 'set_state' member_id=member_id state=3 %}"
-                           class="waves-effect waves-light btn" href="#">Request Access</a>
-                    </td>
+                    <th>Door Name</th>
+                    <th>Access</th>
+                    <th>Request Access</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for door in doors %}
+                    <tr>
+                        <td>{{ door.name }}</td>
+                        {% if door.has_access %}
+                            <td>Access Allowed</td>
+                        {% else %}
+                            <td>Access Not Allowed</td>
+                        {% endif %}
+                        <td>
+                        <a onclick="requestAccess('{% url 'request_access' door_id=door.id %}');"
+                            class="waves-effect waves-light btn" href="#">Request Access</a>
+                    </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}
