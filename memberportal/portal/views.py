@@ -221,6 +221,17 @@ def edit_causes(request):
         return render(request, 'edit_causes.html', {'form': form})
 
 
+def give_default_access(user_id):
+    user = User.objects.get(pk=user_id)
+    doors = (2, 4, 5, 6, 8)  # default doors everyone should have access to
+    # TODO: Move this ^ config to the DB
+
+    for door in doors:
+        print("giving {} access to {}".format(user.get_full_name(), str(door)))
+        door_obj = Doors.objects.get(pk=door)
+        DoorPermissions(user=user, door=door_obj).save()
+
+
 @login_required()
 @admin_required
 def set_state(request, member_id, state):
@@ -236,6 +247,8 @@ def set_state(request, member_id, state):
     user = User.objects.get(id=member_id)
     user.profile.state = MemberState.objects.get(pk=state)
     user.profile.save()
+
+    give_default_access(member_id)
 
     # verify if the state was actually saved correctly
     if User.objects.get(id=member_id).profile.state == MemberState.objects.get(pk=state):
