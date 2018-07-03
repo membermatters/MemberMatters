@@ -414,15 +414,6 @@ def request_access(request, door_id):
     return JsonResponse({"success": False, "reason": "Not implemented yet."})
 
 
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
-
-
 @reader_auth
 def check_access(request, rfid_code, door_id=None):
     if request.user.profile.state.name == "Active Member":
@@ -450,7 +441,7 @@ def check_access(request, rfid_code, door_id=None):
 
         else:
             try:
-                door_ip = get_client_ip(request)
+                door_ip = request.META.get('REMOTE_ADDR')
                 print(door_ip)
                 door = Doors.objects.get(ip_address=door_ip)
 
