@@ -422,7 +422,9 @@ def check_access(request, rfid_code, door_id=None):
         # send back some random error code you can search for here - this means the RFID tag doesn't exist.
         return HttpResponseBadRequest("Bad Request. Error AhDA")
 
-    if Profile.objects.get(rfid=rfid_code).state == "Active Member":
+    print(Profile.objects.get(rfid=rfid_code).state)
+
+    if str(Profile.objects.get(rfid=rfid_code).state) == "Active Member":
         if door_id is not None:
             try:
                 door = Doors.objects.get(pk=door_id)
