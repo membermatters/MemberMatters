@@ -416,13 +416,13 @@ def request_access(request, door_id):
 
 @reader_auth
 def check_access(request, rfid_code, door_id=None):
-    if request.user.profile.state.name == "Active Member":
-        try:
-            user = Profile.objects.get(rfid=rfid_code).user
-        except ObjectDoesNotExist:
-            # send back some random error code you can search for here - this means the RFID tag doesn't exist.
-            return HttpResponseBadRequest("Bad Request. Error AhDA")
+    try:
+        user = Profile.objects.get(rfid=rfid_code).user
+    except ObjectDoesNotExist:
+        # send back some random error code you can search for here - this means the RFID tag doesn't exist.
+        return HttpResponseBadRequest("Bad Request. Error AhDA")
 
+    if Profile.objects.get(rfid=rfid_code).state == "Active Member":
         if door_id is not None:
             try:
                 door = Doors.objects.get(pk=door_id)
