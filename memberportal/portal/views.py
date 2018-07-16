@@ -134,10 +134,8 @@ def member_list(request):
     :return:
     """
     # extract the values we need for each member
-    members = User.objects.values('id', 'username', 'email', 'first_name', 'last_name',
-                                  'profile__member_type__name',
-                                  'profile__state__name', 'profile__cause1__name', 'profile__cause2__name',
-                                  'profile__cause3__name', 'profile__state')
+    # probably will need to add some server side pagination...
+    members = User.objects.all()
 
     return render(request, 'memberlist.html', {'members': members})
 
@@ -221,17 +219,6 @@ def edit_causes(request):
         return render(request, 'edit_causes.html', {'form': form})
 
 
-def give_default_access(user_id):
-    user = User.objects.get(pk=user_id)
-    doors = (2, 4, 5, 6, 8)  # default doors everyone should have access to
-    # TODO: Move this ^ config to the DB
-
-    for door in doors:
-        print("giving {} access to {}".format(user.get_full_name(), str(door)))
-        door_obj = Doors.objects.get(pk=door)
-        DoorPermissions(user=user, door=door_obj).save()
-
-
 @login_required()
 @admin_required
 def set_state(request, member_id, state):
@@ -243,19 +230,23 @@ def set_state(request, member_id, state):
     :return:
     """
 
+    #try:
     # grab the user object and save the state
     user = User.objects.get(id=member_id)
-    user.profile.state = MemberState.objects.get(pk=state)
+    user.profile.state = state
+
+    # if user state changes to active - give default access
+    if state == 'active':
+        for door in Doors.objects.filter(all_members=True):
+            user.profile.doors.add(door)
+
     user.profile.save()
 
-    give_default_access(member_id)
+    return JsonResponse({"success": True})
 
-    # verify if the state was actually saved correctly
-    if User.objects.get(id=member_id).profile.state == MemberState.objects.get(pk=state):
-        return JsonResponse({"success": True})
-    else:
-        # if the response is not 200 the frontend will show an error
-        return HttpResponseServerError("error processing request")
+    # catch any errors (e.g. incorrect state or user passed)
+    #except Exception:
+    return HttpResponseServerError("error processing request")
 
 
 @login_required()
@@ -309,14 +300,7 @@ def delete_cause(request, cause_id):
 
 @login_required()
 def access_permissions(request):
-    doors = Doors.objects.all().values()
-    doors_allowed = DoorPermissions.objects.filter(user=request.user)
-
-    for door in doors:
-        for door_allowed in doors_allowed:
-            if door_allowed.door_id == door['id']:
-                door['has_access'] = True
-    print(doors)
+    doors = Doors.objects.all()
 
     return render(request, 'access_permissions.html', {"doors": doors, "member_id": request.user.id})
 
@@ -367,16 +351,8 @@ def delete_door(request, door_id):
 @admin_required
 def admin_edit_access(request, member_id):
     user = get_object_or_404(User, pk=member_id)
-    doors = Doors.objects.all().values()
+    doors = Doors.objects.all()
     data = dict()
-
-    for door in doors:
-        try:
-            DoorPermissions.objects.get(door_id=door['id'], user=user)
-            door['has_access'] = True
-
-        except ObjectDoesNotExist:
-            door['has_access'] = False
 
     # render the form and return it
     data['html_form'] = render_to_string('partial_admin_edit_access.html', {'member_id': member_id, 'doors': doors},
@@ -402,20 +378,22 @@ def edit_theme_song(request):
 @admin_required
 def admin_grant_door(request, door_id, member_id):
     try:
-        door_permission = DoorPermissions(door=Doors.objects.get(pk=door_id), user=User.objects.get(pk=member_id))
-        door_permission.save()
+        user = User.objects.get(pk=member_id)
+        user.profile.doors.add(Doors.objects.get(pk=door_id))
+        user.profile.save()
         return JsonResponse({"success": True})
 
-    except IntegrityError:
-        return JsonResponse({"success": False, "reason": "The user already has this permission."})
+    except Exception:
+        return JsonResponse({"success": False, "reason": "Bad Request. Error AhSv"})
 
 
 @login_required()
 @admin_required
 def admin_revoke_door(request, door_id, member_id):
     try:
-        door_permission = DoorPermissions.objects.get(door_id=door_id, user_id=member_id)
-        door_permission.delete()
+        user = User.objects.get(pk=member_id)
+        user.profile.doors.remove(Doors.objects.get(pk=door_id))
+        user.profile.save()
         return JsonResponse({"success": True})
 
     except ObjectDoesNotExist:
@@ -435,9 +413,7 @@ def check_access(request, rfid_code, door_id=None):
         # send back some random error code you can search for here - this means the RFID tag doesn't exist.
         return HttpResponseBadRequest("Bad Request. Error AhDA")
 
-    print(Profile.objects.get(rfid=rfid_code).state)
-
-    if str(Profile.objects.get(rfid=rfid_code).state) == "Active Member":
+    if user.profile.state == "active":
         if door_id is not None:
             try:
                 door = Doors.objects.get(pk=door_id)
@@ -445,14 +421,6 @@ def check_access(request, rfid_code, door_id=None):
             except ObjectDoesNotExist:
                 # send back some random error code you can search for here - this means the door ID doesn't exist.
                 return HttpResponseBadRequest("Bad Request. Error AJld")
-
-            try:
-                DoorPermissions.objects.get(door=door, user=user)
-            except ObjectDoesNotExist:
-                # user doesn't have access
-                return JsonResponse({"access": False, "name": door.name})
-
-            return JsonResponse({"access": True, "name": door.name})
 
         else:
             try:
@@ -464,14 +432,10 @@ def check_access(request, rfid_code, door_id=None):
                 # send back some random error code you can search for here - this means the door doesn't exist.
                 return HttpResponseBadRequest("Bad Request. Error AJlc")
 
-            try:
-                DoorPermissions.objects.get(door=door, user=user)
+        if door not in user.profile.doors:
+            return JsonResponse({"access": False, "name": door.name})
 
-            except ObjectDoesNotExist:
-                # user doesn't have access
-                return JsonResponse({"access": False, "name": door.name})
-
-            return JsonResponse({"access": True, "name": door.name})
+        return JsonResponse({"access": True, "name": door.name})
 
     else:
         return JsonResponse({"access": False})

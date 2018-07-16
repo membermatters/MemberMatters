@@ -52,4 +52,4 @@ class CauseForm(forms.ModelForm):
 class DoorForm(forms.ModelForm):
     class Meta:
         model = Doors
-        fields = ['name', 'description']
+        fields = ['name', 'description', 'all_members']
