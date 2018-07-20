@@ -230,23 +230,19 @@ def set_state(request, member_id, state):
     :return:
     """
 
-    #try:
     # grab the user object and save the state
     user = User.objects.get(id=member_id)
     user.profile.state = state
 
     # if user state changes to active - give default access
     if state == 'active':
+        print(user.profile.doors)
         for door in Doors.objects.filter(all_members=True):
             user.profile.doors.add(door)
 
     user.profile.save()
 
     return JsonResponse({"success": True})
-
-    # catch any errors (e.g. incorrect state or user passed)
-    #except Exception:
-    return HttpResponseServerError("error processing request")
 
 
 @login_required()
@@ -350,13 +346,12 @@ def delete_door(request, door_id):
 @login_required()
 @admin_required
 def admin_edit_access(request, member_id):
-    user = get_object_or_404(User, pk=member_id)
+    member = get_object_or_404(User, pk=member_id)
     doors = Doors.objects.all()
     data = dict()
 
     # render the form and return it
-    data['html_form'] = render_to_string('partial_admin_edit_access.html', {'member_id': member_id, 'doors': doors},
-                                         request=request)
+    data['html_form'] = render_to_string('partial_admin_edit_access.html', {'member': member, 'member_id': member_id, 'doors': doors}, request=request)
     return JsonResponse(data)
 
 
