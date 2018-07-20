@@ -60,6 +60,14 @@ class Doors(models.Model):
 
         return False
 
+    def unlock(self):
+        import requests
+        r = requests.get('http://{}/open?key=key'.format(self.ip_address))
+        if r.status_code == 200:
+            return True
+        else:
+            return False
+
     def __str__(self):
         return self.name
 
@@ -67,7 +75,7 @@ class Doors(models.Model):
 class DoorLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     door = models.ForeignKey(Doors, on_delete=models.CASCADE)
-    date = models.DateTimeField(default=datetime.now, blank=True)
+    date = models.DateTimeField(default=datetime.now)
 
 
 class Profile(models.Model):
