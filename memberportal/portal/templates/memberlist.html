@@ -96,7 +96,11 @@
     <script>
         (function ($) {
             $(function () {
-                $('#memberList').DataTable({});
+                $('#memberList').DataTable({
+                    "initComplete": function() {
+                        M.FormSelect.init(document.querySelectorAll('select'), {});
+                    }
+                });
             }); // end of document ready
         })(jQuery); // end of jQuery name space
     </script>

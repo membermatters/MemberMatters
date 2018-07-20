@@ -9,45 +9,40 @@
         <table id="profileTable" class="center striped">
             <tbody>
             <tr>
-                <td>Username:</td>
+                <td><b>Username:</b></td>
                 <td>{{ user.username }}</td>
             </tr>
             <tr>
-                <td>Email:</td>
+                <td><b>Email:</b></td>
                 <td>{{ user.email }}</td>
             </tr>
             <tr>
-                <td>Name:</td>
+                <td><b>Name:</b></td>
                 <td>{{ user.first_name }} {{ user.last_name }}</td>
             </tr>
             <tr>
-                <td>Member Type:</td>
+                <td><b>Membership Type:</b></td>
                 <td>{{ user.profile.member_type }}</td>
             </tr>
             <tr>
-                <td>Member Status:</td>
+                <td><b>Membership Status:</b></td>
                 <td>{{ user.profile.get_state_display }}</td>
             </tr>
             <tr>
-                <td>Causes:</td>
-                {% if user.profile.cause1 and user.profile.cause2 and user.profile.cause3 %}
-                    <td>{{ user.profile.cause1 }}, {{ user.profile.cause2 }}, {{ user.profile.cause3 }}</td>
-                {% elif user.profile.cause1 and user.profile.cause2 %}
-                    <td>{{ user.profile.cause1 }} & {{ user.profile.cause2 }}</td>
-                {% elif user.profile.cause1 %}
-                    <td>{{ user.profile.cause1 }}</td>
-                {% endif %}
+                <td><b>Causes:</b></td>
+                <td>{% for cause in user.profile.causes.all %}
+                    {{ cause }}{% if not forloop.last %},{% endif %}
+                {% endfor %}</td>
             </tr>
             </tbody>
         </table>
         <div id='account-info' style="width: 100%;" class="left">
-            <p>To change your membership type, please contact the executive. To change your causes click the link in the
-                "Member Tools" menu.</p>
+            <p>To change your membership type, please <a href="mailto:executive@hsbne.org">email the executive</a>.</p>
             <p id='last-login'>You last logged in on {{ user.last_login }}</p>
 
-            <a class="btn waves-effect waves-light right"
-               href="{% url 'edit_profile' %}">
-                Edit<i class="material-icons right">edit</i></a>
+            <a class="btn waves-effect waves-light right" href="{% url 'edit_profile' %}">Edit Profile</a>
+            <a id="edit-causes-btn" class="btn waves-effect waves-light right" href="{% url 'edit_causes' %}">Edit
+                Causes</a>
         </div>
     </div>
 {% endblock %}

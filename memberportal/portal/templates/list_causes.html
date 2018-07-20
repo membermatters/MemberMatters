@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Cause Members{% endblock %}
+
+{% block content %}
+    <div class="medium-width center row small-row">
+        <h3 class="header center text">Cause Members</h3>
+        <p>If you think you are in the wrong cause please update your cause membership by <a
+                href="{% url 'edit_causes' %}">clicking here</a>.</p>
+        <ul class="collapsible">
+            {% for cause in causes %}
+                <li>
+                    <div class="collapsible-header"><b>{{ cause.name }}</b>&nbsp;- {{ cause.description }}</div>
+                    <div class="collapsible-body left-align">
+                        <span class="larger-text">List of members:</span>
+                        {% with cause.user_set.all as user %}
+                            <span>{{ user.name }}</span>
+                        {% endwith %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

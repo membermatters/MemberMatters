@@ -19,6 +19,22 @@ footer {
     overflow: hidden;
 }
 
+.larger-text {
+    font-size: 130%;
+}
+
+h3 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 3rem;
+}
+
 ul.errorlist > * {
     color: red;
 }
@@ -88,12 +104,16 @@ ul.errorlist > * {
     color: grey;
 }
 
-.memberlist-container {
-    width: 85%;
-}
-
 .container {
     margin-bottom: 80px;
+}
+
+body > div.fullwidth-container > div.modal-overlay {
+    width: 100vw;
+}
+
+#edit-causes-btn {
+    margin-right: 10px;
 }
 
 /* materialize small screens (phones) */
@@ -108,6 +128,28 @@ ul.errorlist > * {
         border: none;
         padding: 8px 0;
         text-align: left;
+    }
+
+    #activate-member-button {
+        margin-bottom: 5px;
+    }
+
+    #activate-member-button, #deactivate-member-button {
+        width: 100%;
+    }
+
+    .modal {
+        width: 90%;
+        max-height: 90%;
+        top: 5% !important;
+    }
+
+    #memberList_filter > label > input[type="search"] {
+        margin: 0;
+    }
+
+    #memberList_wrapper {
+        margin: 10px;
     }
 }
 
@@ -127,6 +169,14 @@ ul.errorlist > * {
         max-width: 40%;
         padding-bottom: 70px;
     }
+
+    .medium-width {
+        width: 70%;
+    }
+
+    .memberlist-container {
+        width: 85%;
+    }
 }
 
 /* materialize large screens (desktops) */
@@ -140,6 +190,11 @@ ul.errorlist > * {
         width: 100% !important;
         max-width: 800px !important;
         min-height: 80vh !important;
+    }
+
+    #access-list {
+        width: 50%;
+        margin: 0 auto;
     }
 }
 

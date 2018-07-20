@@ -29,5 +29,6 @@ urlpatterns = [
     path('api/door/check/<int:rfid_code>', views.check_access, name='check_access'),
     path('cause/<int:cause_id>/delete', views.delete_cause, name='delete_cause'),
     path('cause/<int:cause_id>/edit', views.edit_cause, name='edit_cause'),
+    path('cause/list', views.list_causes, name='list_causes'),
     path('', views.home, name='home'),
 ]

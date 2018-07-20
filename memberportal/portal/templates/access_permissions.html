@@ -10,16 +10,17 @@
             <div id='info' class="center">
                 <p>
                     Most tools require inductions before access can be granted. Please talk to the cause leader for more
-                    information. If you don't have access to a door and you think you should, please request access.
+                    information. If you don't have access to a door and you think you should, please
+                    <a href="mailto:executive@hsbne.org">email the executive</a>.
                 </p>
             </div>
             <h4 class="header center text">Doors</h4>
-            <table id="memberList" class="center striped">
+            <table id="access-list" class="striped">
                 <thead>
                 <tr>
                     <th>Door Name</th>
                     <th>Access</th>
-                    <th>Request Access</th>
+                    {#                    <th>Request Access</th>#}
                 </tr>
                 </thead>
                 <tbody>
@@ -27,14 +28,14 @@
                     <tr>
                         <td>{{ door.name }}</td>
                         {% if door in request.user.profile.doors.all %}
-                            <td>Access Allowed</td>
+                            <td class="light-green-text">Access Allowed</td>
                         {% else %}
-                            <td>Access Not Allowed</td>
+                            <td class="red-text">Access Not Allowed</td>
                         {% endif %}
-                        <td>
-                        <a onclick="requestAccess('{% url 'request_access' door_id=door.id %}');"
-                            class="waves-effect waves-light btn" href="#">Request Access</a>
-                    </td>
+{#                        <td>#}
+{#                            <a onclick="requestAccess('{% url 'request_access' door_id=door.id %}');"#}
+{#                               class="waves-effect waves-light btn" href="#">Request Access</a>#}
+{#                        </td>#}
                     </tr>
                 {% endfor %}
                 </tbody>

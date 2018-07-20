@@ -11,8 +11,8 @@ class SignUpForm(UserCreationForm):
                              help_text='We will never share your email with anyone without asking you first.')
     password1 = forms.CharField(label="Password",
                                 widget=forms.PasswordInput,
-                                help_text='You can\'t use something similar to your other info, or something too '
-                                          'simple/common. The minimum length is 8 characters.')
+                                help_text='The minimum length is 8 characters and you must include at least one'
+                                          'capital letter, number and special character.')
 
     class Meta:
         model = User
@@ -22,19 +22,19 @@ class SignUpForm(UserCreationForm):
 class AddProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('member_type', 'cause1', 'cause2', 'cause3')
+        fields = ('member_type', 'causes')
 
 
 class EditCausesForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('cause1', 'cause2', 'cause3')
+        fields = ('causes',)
 
 
 class AdminEditProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('member_type', 'rfid', 'cause1', 'cause2', 'cause3')
+        fields = ('member_type', 'rfid', 'causes')
 
 
 class EditUserForm(forms.ModelForm):

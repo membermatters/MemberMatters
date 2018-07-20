@@ -4,49 +4,69 @@
 {% block page_title %}Home{% endblock %}
 
 {% block content %}
-    <div class="row center padding-top">
-        <h5 class="header col s12 light">
-            Welcome to the HSBNE member portal!
-        </h5>
-        <p>
-            You can manage your membership details, causes, etc.
-        </p>
-        <p>
-            Here's some links to other parts of our community:
-        </p>
-    </div>
+    {% if user.is_authenticated %}
+        <div class="row center padding-top">
+            <h5 class="header col s12 light">
+                Welcome to the HSBNE member portal!
+            </h5>
+            <p>
+                You can manage your membership details, causes, etc.
+            </p>
+            <p>
+                Here are some links to other parts of our community:
+            </p>
+        </div>
+        <!--   Icon Section   -->
+        <div class="row">
+            <div class="col s12 m6">
+                <div class="icon-block">
+                    <h2 class="center"><i class="material-icons">chat</i></h2>
+                    <h5 class="center">Discord</h5>
 
-    <!--   Icon Section   -->
-    <div class="row">
-        <div class="col s12 m6">
-            <div class="icon-block">
-                <h2 class="center"><i class="material-icons">chat</i></h2>
-                <h5 class="center">Discord</h5>
+                    <p class="center light home-text-columns">If you want to chat with like minded people, need any
+                        help or just want a friendly place to hang, check out our discord server.</p>
 
-                <p class="center light home-text-columns">If you want to chat with like minded people, need any
-                    help or just want a friendly place to hang, check out our discord server.</p>
+                    <div class="row center">
+                        <a href="https://hsbne.org" target="_blank" id="go-to-discord"
+                           class="btn-large cn-green">Go to Discord</a>
+                    </div>
+                </div>
+            </div>
 
-                <div class="row center">
-                    <a href="https://hsbne.org" target="_blank" id="go-to-discord"
-                       class="btn-large cn-green">Go There</a>
+            <div class="col s12 m6">
+                <div class="icon-block">
+                    <h2 class="center"><i class="material-icons">link</i></h2>
+                    <h5 class="center">Website</h5>
+
+                    <p class="center light home-text-columns">Our website has more information about how we run, and how
+                        to
+                        get in contact
+                        with the executive. All sponsorship, media and other general enquiries should be directed
+                        here.</p>
+
+                    <div class="row center">
+                        <a href="https://hsbne.org" target="_blank" id="go-to-website"
+                           class="btn-large cn-green">Go to Website</a>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="col s12 m6">
-            <div class="icon-block">
-                <h2 class="center"><i class="material-icons">link</i></h2>
-                <h5 class="center">Website</h5>
-
-                <p class="center light home-text-columns">Our website has more information about how we run, and how to
-                    get in contact
-                    with the executive. All sponsorship, media and other general enquiries should be directed here.</p>
-
-                <div class="row center">
-                    <a href="https://hsbne.org" target="_blank" id="go-to-website"
-                       class="btn-large cn-green">Go There</a>
-                </div>
-            </div>
+    {% else %}
+        <div class="row center padding-top">
+            <h5 class="header col s12 light">
+                Welcome to the HSBNE member portal!
+            </h5>
+            <span>
+                Please note this is not our main website. This is the membership portal for HSBNE members or those who
+                wish to join.
+            </span>
+            <span class="center light home-text-columns">Our main website has more information about how we run and what
+                we do here at HSBNE. All sponsorship, media and other general enquiries should be directed
+                there.</span>
+            <br><br>
+            <a href="https://hsbne.org" target="_blank" id="go-to-website" class="btn-large cn-green center">Go to
+                Website</a>
         </div>
-    </div>
+
+    {% endif %}
 {% endblock %}

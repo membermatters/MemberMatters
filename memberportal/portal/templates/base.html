@@ -52,26 +52,40 @@
 
             {% if user.is_authenticated %}
                 <a class="cn-dark-text">Hi, {{ user.first_name }}!</a>
-                <li><div class="divider"></div></li>
+                <li>
+                    <div class="divider"></div>
+                </li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'home' %}">Home</a></li>
-                <li><div class="divider"></div></li>
+                <li>
+                    <div class="divider"></div>
+                </li>
                 <li><a class="subheader">Member Tools</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">My Profile</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">Access Permissions</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change Theme Song</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_causes' %}">Change Causes</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Manage My Profile</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">My Access
+                    Permissions</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change My
+                    Theme</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'list_causes' %}">See Cause
+                    Members</a></li>
             {% endif %}
 
             {% if user.is_staff %}
-                <li><div class="divider"></div></li>
+                <li>
+                    <div class="divider"></div>
+                </li>
                 <li><a class="subheader">Admin Tools</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage Causes</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_doors' %}">Manage Doors</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a>
+                </li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage Causes</a>
+                </li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_doors' %}">Manage Doors</a>
+                </li>
             {% endif %}
 
             {% if user.is_authenticated %}
-                <li><div class="divider"></div></li>
+                <li>
+                    <div class="divider"></div>
+                </li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'signout' %}">Log Out</a></li>
             {% endif %}
         </ul>
@@ -83,19 +97,22 @@
     </ul>
 
     <ul id="member-dropdown" class="dropdown-content">
-        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">My Profile</a></li>
-        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">Access Permissions</a></li>
-        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change Theme Song</a></li>
-        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_causes' %}">Change Causes</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Manage My Profile</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">My Access
+            Permissions</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change My Theme</a>
+        </li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'list_causes' %}">See Cause Members</a></li>
     </ul>
 
     {% if user.is_staff %}
         <ul id="admin-dropdown" class="dropdown-content">
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a></li>
-            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage Causes</a></li>
+            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage Causes</a>
+            </li>
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_doors' %}">Manage Doors</a></li>
         </ul>
-    {%  endif %}
+    {% endif %}
 </nav>
 
 <div class="fullwidth-container">

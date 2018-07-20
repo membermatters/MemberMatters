@@ -115,7 +115,7 @@ def home(request):
     return render(request, 'home.html')
 
 
-@login_required()
+@login_required
 def profile(request):
     """
     The profile view.
@@ -125,7 +125,7 @@ def profile(request):
     return render(request, 'profile.html')
 
 
-@login_required()
+@login_required
 @admin_required
 def member_list(request):
     """
@@ -140,7 +140,7 @@ def member_list(request):
     return render(request, 'memberlist.html', {'members': members})
 
 
-@login_required()
+@login_required
 @admin_required
 def admin_edit_member(request, member_id):
     """
@@ -171,7 +171,7 @@ def admin_edit_member(request, member_id):
     return JsonResponse(data)
 
 
-@login_required()
+@login_required
 def edit_profile(request):
     """
     The edit user profile view.
@@ -194,7 +194,7 @@ def edit_profile(request):
         return render(request, 'edit_profile.html', {'user_form': user_form})
 
 
-@login_required()
+@login_required
 def edit_causes(request):
     """
     The edit causes view.
@@ -207,7 +207,7 @@ def edit_causes(request):
         if form.is_valid():
             # if it was a form submission save it
             form.save()
-            return HttpResponseRedirect('%s' % (reverse('edit_causes')))
+            return HttpResponseRedirect('%s' % (reverse('profile')))
         else:
             # otherwise return form with errors
             return render(request, 'edit_causes.html', {'form': form})
@@ -219,7 +219,7 @@ def edit_causes(request):
         return render(request, 'edit_causes.html', {'form': form})
 
 
-@login_required()
+@login_required
 @admin_required
 def set_state(request, member_id, state):
     """
@@ -245,7 +245,7 @@ def set_state(request, member_id, state):
     return JsonResponse({"success": True})
 
 
-@login_required()
+@login_required
 @admin_required
 def manage_causes(request):
     if request.method == 'POST':
@@ -262,7 +262,7 @@ def manage_causes(request):
     return render(request, 'manage_causes.html', {"form": form, "causes": causes})
 
 
-@login_required()
+@login_required
 @admin_required
 def edit_cause(request, cause_id):
     """
@@ -287,21 +287,21 @@ def edit_cause(request, cause_id):
         return render(request, 'edit_cause.html', {'form': form})
 
 
-@login_required()
+@login_required
 @admin_required
 def delete_cause(request, cause_id):
     Causes.objects.get(pk=cause_id).delete()
     return HttpResponseRedirect('%s' % (reverse('manage_causes')))
 
 
-@login_required()
+@login_required
 def access_permissions(request):
     doors = Doors.objects.all()
 
     return render(request, 'access_permissions.html', {"doors": doors, "member_id": request.user.id})
 
 
-@login_required()
+@login_required
 @admin_required
 def manage_doors(request):
     if request.method == 'POST':
@@ -317,7 +317,7 @@ def manage_doors(request):
     return render(request, 'manage_doors.html', {"form": form, "doors": doors})
 
 
-@login_required()
+@login_required
 @admin_required
 def edit_door(request, door_id):
     if request.method == 'POST':
@@ -336,14 +336,14 @@ def edit_door(request, door_id):
         return render(request, 'edit_door.html', {'form': form})
 
 
-@login_required()
+@login_required
 @admin_required
 def delete_door(request, door_id):
     Doors.objects.get(pk=door_id).delete()
     return HttpResponseRedirect('%s' % (reverse('manage_doors')))
 
 
-@login_required()
+@login_required
 @admin_required
 def admin_edit_access(request, member_id):
     member = get_object_or_404(User, pk=member_id)
@@ -355,7 +355,7 @@ def admin_edit_access(request, member_id):
     return JsonResponse(data)
 
 
-@login_required()
+@login_required
 def edit_theme_song(request):
     if request.method == 'POST':
         form = DoorForm(request.POST)
@@ -369,7 +369,7 @@ def edit_theme_song(request):
     return render(request, 'edit_theme_song.html', {"form": form})
 
 
-@login_required()
+@login_required
 @admin_required
 def admin_grant_door(request, door_id, member_id):
     try:
@@ -382,7 +382,7 @@ def admin_grant_door(request, door_id, member_id):
         return JsonResponse({"success": False, "reason": "Bad Request. Error AhSv"})
 
 
-@login_required()
+@login_required
 @admin_required
 def admin_revoke_door(request, door_id, member_id):
     try:
@@ -395,7 +395,7 @@ def admin_revoke_door(request, door_id, member_id):
         return JsonResponse({"success": False, "reason": "No access permission was found."})
 
 
-@login_required()
+@login_required
 def request_access(request, door_id):
     return JsonResponse({"success": False, "reason": "Not implemented yet."})
 
@@ -434,3 +434,9 @@ def check_access(request, rfid_code, door_id=None):
 
     else:
         return JsonResponse({"access": False})
+
+@login_required
+def list_causes(request):
+    causes = Causes.objects.all()
+
+    return render(request, 'list_causes.html', {"causes": causes})

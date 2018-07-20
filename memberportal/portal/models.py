@@ -48,9 +48,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     state = models.CharField(max_length=8, default='noob', choices=STATES)
     member_type = models.ForeignKey(MemberTypes, on_delete=models.PROTECT, related_name='member_type')
-    cause1 = models.ForeignKey(Causes, on_delete=models.SET_NULL, verbose_name="Cause 1", related_name='Cause1', null=True, blank=True)
-    cause2 = models.ForeignKey(Causes, on_delete=models.SET_NULL, verbose_name="Cause 2", related_name='Cause2', null=True, blank=True)
-    cause3 = models.ForeignKey(Causes, on_delete=models.SET_NULL, verbose_name="Cause 3", related_name='Cause3', null=True, blank=True)
+    causes = models.ManyToManyField(Causes)
     rfid = models.CharField("RFID Tag", max_length=20, unique=True, null=True, blank=True)
     doors = models.ManyToManyField(Doors, blank=True)
 

@@ -24,6 +24,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Tabs init
     M.Tabs.init(document.querySelectorAll('.tabs'));
+
+    // Collapsible init
+    M.Collapsible.init(document.querySelectorAll('.collapsible'), {});
 });
 
 
