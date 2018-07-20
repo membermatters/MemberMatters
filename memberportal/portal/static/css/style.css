@@ -124,7 +124,7 @@ body > div.fullwidth-container > div.modal-overlay {
         padding: 8px;
     }
 
-    #memberList > thead > tr > th, #memberList {
+    .data-table > thead > tr > th, .data-table {
         border: none;
         padding: 8px 0;
         text-align: left;
@@ -144,11 +144,11 @@ body > div.fullwidth-container > div.modal-overlay {
         top: 5% !important;
     }
 
-    #memberList_filter > label > input[type="search"] {
+    .data-table_filter > label > input[type="search"] {
         margin: 0;
     }
 
-    #memberList_wrapper {
+    .data-table_wrapper {
         margin: 10px;
     }
 }

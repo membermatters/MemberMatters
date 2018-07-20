@@ -417,7 +417,7 @@ def log_door_access(user, door):
     return DoorLog(user=user, door=door).save()
 
 
-#@reader_auth
+@reader_auth
 def check_access(request, rfid_code, door_id=None):
     door = None
 
@@ -472,6 +472,25 @@ def webcams(request):
 
 @login_required
 def recent_swipes(request):
-    swipes = DoorLog.objects.all().order_by('date')[::-1][:15]
+    swipes = DoorLog.objects.all().order_by('date')[::-1][:50]
 
     return render(request, 'recent_swipes.html', {"swipes": swipes})
+
+
+@login_required
+def last_seen(request):
+    last_seens = list()
+    members = User.objects.all()
+
+    for member in members:
+        date = DoorLog.objects.filter(user=member).order_by("date")[::-1][0].date
+        last_seens.append({"user": member, "date": date})
+
+    return render(request, 'last_seen.html', {"last_seens": last_seens})
+
+
+# @login_required
+def open_door(request, door_id):
+    door = Doors.objects.get(pk=door_id)
+
+    return JsonResponse({"success": door.unlock()})

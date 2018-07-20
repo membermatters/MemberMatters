@@ -68,7 +68,9 @@
                     Theme</a></li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'list_causes' %}">See Cause
                     Members</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'webcams' %}">Webcams</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'webcams' %}">Public Webcams</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'recent_swipes' %}">Recent Swipes</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'last_seen' %}">Last Seen</a></li>
             {% endif %}
 
             {% if user.is_staff %}
@@ -105,7 +107,9 @@
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change My Theme</a>
         </li>
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'list_causes' %}">See Cause Members</a></li>
-        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'webcams' %}">Webcams</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'webcams' %}">Public Webcams</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'recent_swipes' %}">Recent Swipes</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'last_seen' %}">Last Seen</a></li>
     </ul>
 
     {% if user.is_staff %}

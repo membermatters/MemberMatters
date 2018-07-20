@@ -13,11 +13,10 @@
                 <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Description</th>
                     <th>IP</th>
                     <th>Last Seen</th>
                     <th>Default Access</th>
-                    <th style="min-width: 120px;">Edit</th>
+                    <th>Actions</th>
                 </tr>
                 </thead>
 
@@ -25,7 +24,6 @@
                 {% for door in doors %}
                     <tr>
                         <td>{{ door.name }}</td>
-                        <td>{{ door.description }}</td>
                         <td>{{ door.ip_address }}</td>
                         {% if door.get_unavailable %}
                             <td class="red-text">{{ door.last_seen|timesince }} ago</td>
@@ -41,6 +39,10 @@
                             <a href="{% url "delete_door" door_id=door.id %}"
                                class="waves-effect waves-light btn-small delete-button">
                                 <i class="material-icons">delete</i>
+                            </a>
+                            <a data-url="{% url "open_door" door_id=door.id %}" onclick="unlockDoor(this);"
+                               class="waves-effect waves-light btn-small delete-button">
+                                <i class="material-icons">lock_open</i>
                             </a>
                         </td>
                     </tr>

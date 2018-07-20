@@ -258,3 +258,22 @@ function requestAccess(url) {
         }
     });
 }
+
+function unlockDoor(thing) {
+    $.ajax({
+        url: thing.getAttribute("data-url"),  // <-- AND HERE
+        type: 'get',
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                M.toast({html: "Door unlock success."});
+            }
+            else {
+                M.toast({html: "Error while trying to unlock door :("});
+            }
+        },
+        error: function () {
+            M.toast({html: "Unkown error while trying to unlock door :( "});
+        }
+    });
+}

@@ -5,13 +5,14 @@
 {% block content %}
     <div class="medium-width center row small-row">
         <h3 class="header center text">Recent Swipes</h3>
-        <p>Here is a list of the last 15 swipes around HSBNE.</p>
-        <table class="striped responsive-table">
+        <p>Here is a list of the last 50 swipes around HSBNE.</p>
+        <table id="recent-swipes-table" class="data-table striped responsive-table">
             <thead>
             <tr>
                 <th>User</th>
                 <th>Door</th>
                 <th>Date</th>
+                <th>Last Seen</th>
             </tr>
             </thead>
 
@@ -20,7 +21,8 @@
                 <tr>
                     <td>{{ swipe.user.get_full_name }} ({{ swipe.user.username }})</td>
                     <td>{{ swipe.door }}</td>
-                    <td>{{ swipe.date }}</td>
+                    <td>{{ swipe.date|date:"y-m-d" }}-{{ swipe.date|time:"H:i" }}</td>
+                    <td>{{ swipe.date|timesince }}</td>
                 </tr>
             {% endfor %}
 
@@ -28,4 +30,22 @@
         </table>
 
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
+    <script>
+        (function ($) {
+            $(function () {
+                let table = $('#recent-swipes-table').DataTable({
+                    "initComplete": function () {
+                        M.FormSelect.init(document.querySelectorAll('select'), {});
+                    }
+                });
+                table.order([2, 'desc']).draw();
+            }); // end of document ready
+        })(jQuery); // end of jQuery name space
+    </script>
 {% endblock %}
