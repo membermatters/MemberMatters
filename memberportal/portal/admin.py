@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import AdminLog, MemberTypes, Causes, Doors, Profile, SpaceBucks
+from .models import *
 
 
 @admin.register(AdminLog)
@@ -28,5 +28,10 @@ class ProfileAdmin(admin.ModelAdmin):
 
 
 @admin.register(SpaceBucks)
+class ProfileAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(DoorLog)
 class ProfileAdmin(admin.ModelAdmin):
     pass

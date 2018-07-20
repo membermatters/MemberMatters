@@ -13,6 +13,7 @@ urlpatterns = [
     path('profile/access/view/', views.access_permissions, name='access_permissions'),
     path('profile/theme/edit/', views.edit_theme_song, name='edit_theme_song'),
     path('members/list/', views.member_list, name='member_list'),
+    path('members/swipes/recent', views.recent_swipes, name='recent_swipes'),
     path('member/<int:member_id>/edit', views.admin_edit_member, name='admin_edit_member'),
     path('doors/', views.manage_doors, name='manage_doors'),
     path('door/add', views.add_door, name='add_door'),

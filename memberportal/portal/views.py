@@ -468,3 +468,10 @@ def list_causes(request):
 
 def webcams(request):
     return render(request, 'webcams.html')
+
+
+@login_required
+def recent_swipes(request):
+    swipes = DoorLog.objects.all().order_by('date')[::-1][:15]
+
+    return render(request, 'recent_swipes.html', {"swipes": swipes})

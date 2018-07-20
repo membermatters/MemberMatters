@@ -67,7 +67,7 @@ class Doors(models.Model):
 class DoorLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     door = models.ForeignKey(Doors, on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now_add=True, blank=True)
+    date = models.DateTimeField(default=datetime.now, blank=True)
 
 
 class Profile(models.Model):
