@@ -307,6 +307,11 @@ def access_permissions(request):
 @login_required
 @admin_required
 def manage_doors(request):
+    doors = Doors.objects.all()
+    return render(request, 'manage_doors.html', {"doors": doors})
+
+
+def add_door(request):
     if request.method == 'POST':
         form = DoorForm(request.POST)
         if form.is_valid():
@@ -316,8 +321,7 @@ def manage_doors(request):
     else:
         form = DoorForm()
 
-    doors = Doors.objects.all()
-    return render(request, 'manage_doors.html', {"form": form, "doors": doors})
+    return render(request, 'add_door.html', {"form": form})
 
 
 @login_required
@@ -403,8 +407,20 @@ def request_access(request, door_id):
     return JsonResponse({"success": False, "reason": "Not implemented yet."})
 
 
-@reader_auth
+def log_door_access(user, door):
+    """
+    Logs a door as being accessed.
+    :param user:
+    :param door_id:
+    :return:
+    """
+    return DoorLog(user=user, door=door).save()
+
+
+#@reader_auth
 def check_access(request, rfid_code, door_id=None):
+    door = None
+
     try:
         user = Profile.objects.get(rfid=rfid_code).user
     except ObjectDoesNotExist:
@@ -415,6 +431,7 @@ def check_access(request, rfid_code, door_id=None):
         if door_id is not None:
             try:
                 door = Doors.objects.get(pk=door_id)
+                door.checkin()
 
             except ObjectDoesNotExist:
                 # send back some random error code you can search for here - this means the door ID doesn't exist.
@@ -423,20 +440,23 @@ def check_access(request, rfid_code, door_id=None):
         else:
             try:
                 door_ip = request.META.get('REMOTE_ADDR')
-                print(door_ip)
                 door = Doors.objects.get(ip_address=door_ip)
+                door.checkin()
 
             except ObjectDoesNotExist:
                 # send back some random error code you can search for here - this means the door doesn't exist.
                 return HttpResponseBadRequest("Bad Request. Error AJlc")
 
-        if door not in user.profile.doors:
-            return JsonResponse({"access": False, "name": door.name})
+        allowed_doors = user.profile.doors.all()
 
-        return JsonResponse({"access": True, "name": door.name})
+        if allowed_doors:
+            if door in allowed_doors:
+                # user has access
+                log_door_access(user, door)
+                return JsonResponse({"access": True, "name": user.first_name, "door": door.name})
 
-    else:
-        return JsonResponse({"access": False})
+    # if the are inactive or don't have access
+    return JsonResponse({"access": False, "name": user.first_name, "door": door.name})
 
 @login_required
 def list_causes(request):
@@ -444,3 +464,7 @@ def list_causes(request):
     members = Profile.objects.all()
 
     return render(request, 'list_causes.html', {"causes": causes, "members": members})
+
+
+def webcams(request):
+    return render(request, 'webcams.html')

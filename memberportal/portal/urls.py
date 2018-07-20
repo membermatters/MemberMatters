@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from django.contrib import admin
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -15,10 +14,10 @@ urlpatterns = [
     path('profile/theme/edit/', views.edit_theme_song, name='edit_theme_song'),
     path('members/list/', views.member_list, name='member_list'),
     path('member/<int:member_id>/edit', views.admin_edit_member, name='admin_edit_member'),
-    path('manage/doors/', views.manage_doors, name='manage_doors'),
-    path('manage/door/<int:door_id>/edit', views.edit_door, name='edit_door'),
-    path('manage/door/<int:door_id>/delete', views.delete_door, name='delete_door'),
-    path('manage/causes/', views.manage_causes, name='manage_causes'),
+    path('doors/', views.manage_doors, name='manage_doors'),
+    path('door/add', views.add_door, name='add_door'),
+    path('door/<int:door_id>/edit', views.edit_door, name='edit_door'),
+    path('door/<int:door_id>/delete', views.delete_door, name='delete_door'),
     path('api/member/<int:member_id>/state/<str:state>', views.set_state, name='set_state'),
     path('api/member/<int:member_id>/edit', views.admin_edit_member, name='admin_edit_member'),
     path('api/member/<int:member_id>/access', views.admin_edit_access, name='admin_edit_access'),
@@ -27,8 +26,10 @@ urlpatterns = [
     path('api/door/<int:door_id>/request', views.request_access, name='request_access'),
     path('api/door/<int:door_id>/check/<int:rfid_code>', views.check_access, name='check_access'),
     path('api/door/check/<int:rfid_code>', views.check_access, name='check_access'),
+    path('causes/', views.manage_causes, name='manage_causes'),
     path('cause/<int:cause_id>/delete', views.delete_cause, name='delete_cause'),
     path('cause/<int:cause_id>/edit', views.edit_cause, name='edit_cause'),
     path('cause/list', views.list_causes, name='list_causes'),
+    path('webcams', views.webcams, name='webcams'),
     path('', views.home, name='home'),
 ]

@@ -6,18 +6,18 @@
     <div class="medium-width center row small-row">
         <h3 class="header center text">Cause Members</h3>
         <p>If you think you are in the wrong cause please update your cause membership by <a
-                href="{% url 'edit_causes' %}">clicking here</a>.</p>
+                href="{% url 'edit_causes' %}">clicking here</a>. If your access has been disabled you will not show up on this list.</p>
         <ul class="collapsible">
             {% for cause in causes %}
                 <li>
-                    <div class="collapsible-header"><b>{{ cause.name }} ({{ cause.profile_set.count }} members)</b>&nbsp;- {{ cause.description }}
+                    <div class="collapsible-header"><b>{{ cause.name }} ({{ cause.get_active_count }} members, {{ cause.get_quorum }} quorum)</b>&nbsp;- {{ cause.description }}
                     </div>
                     <div class="collapsible-body left-align">
                         <span class="larger-text">List of members:</span>
+                    <br>
                         <span>
-                            {% for member in cause.profile_set.all %}
-                                {{ member }}{% if not forloop.last %},{% endif %}
-
+                            {% for member in cause.get_active_set %}
+                                {{ member }} ({{ member.user.username }}){% if not forloop.last %},{% endif %}
                             {% endfor %}
                         </span>
                     </div>

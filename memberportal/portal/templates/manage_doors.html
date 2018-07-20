@@ -1,17 +1,21 @@
 {% extends 'base.html' %}
 
 {% block title %}Manage Doors{% endblock %}
-{% block page_title %}Manage Doors{% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col s12 m8">
+    <div class="row center">
+        <div class="col s12">
             <h4>Current Doors</h4>
+            <a href="{% url "add_door" %}" class="waves-effect waves-light btn edit-button">
+                Add Door
+            </a>
             <table class="striped responsive-table">
                 <thead>
                 <tr>
                     <th>Name</th>
                     <th>Description</th>
+                    <th>IP</th>
+                    <th>Last Seen</th>
                     <th>Default Access</th>
                     <th style="min-width: 120px;">Edit</th>
                 </tr>
@@ -22,6 +26,12 @@
                     <tr>
                         <td>{{ door.name }}</td>
                         <td>{{ door.description }}</td>
+                        <td>{{ door.ip_address }}</td>
+                        {% if door.get_unavailable %}
+                            <td class="red-text">{{ door.last_seen|timesince }} ago</td>
+                        {% else %}
+                            <td class="light-green-text">{{ door.last_seen|timesince }} ago</td>
+                        {% endif %}
                         <td>{{ door.all_members }}</td>
                         <td>
                             <a href="{% url "edit_door" door_id=door.id %}"
@@ -38,29 +48,6 @@
 
                 </tbody>
             </table>
-        </div>
-
-        <div class="col s12 m4">
-            <h4>Add Door </h4>
-            <form method="post">
-                {% csrf_token %}
-                {% for field in form %}
-                    {% if field.name == "all_members" %}
-                        <label>
-                            <input type="checkbox" name="all_members" id="id_all_members">
-                            <span>{{ field.label }}</span>
-                        </label>
-                    {% else %}
-                        <p>{{ field.errors }}<label style="display:table-cell;">{{ field.name }}: </label>{{ field }}
-                        </p>
-                    {% endif %}
-                {% endfor %}
-                <br>
-                <br>
-                <button class="btn waves-effect waves-light" type="submit" name="login">
-                    Add
-                </button>
-            </form>
         </div>
     </div>
 {% endblock %}

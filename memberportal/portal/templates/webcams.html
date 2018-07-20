@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Webcams{% endblock %}
+
+{% block fullwidth-content %}
+    <div class="center row small-row">
+        <h3 class="header center text">Webcams</h3>
+        <p>This page shows images of the two public webcams at HSBNE, updated every 5 minutes for your convenience.</p>
+
+        <div class="col s12 l6">
+            <h5>Green Room</h5>
+            <img style="max-width:100%;" src="https://porthack.hsbne.org/webcams/greenroom.jpg">
+        </div>
+        <div class="col s12 l6">
+            <h5>The Quad</h5>
+            <img style="max-width:100%;" src="https://porthack.hsbne.org/webcams/quad.jpg">
+        </div>
+
+        <script type='text/javascript'>
+            setTimeout("location.reload();", 300000);
+        </script>
+    </div>
+{% endblock %}

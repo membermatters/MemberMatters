@@ -60,13 +60,15 @@
                     <div class="divider"></div>
                 </li>
                 <li><a class="subheader">Member Tools</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Manage My Profile</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Manage My Profile</a>
+                </li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">My Access
                     Permissions</a></li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change My
                     Theme</a></li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'list_causes' %}">See Cause
                     Members</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'webcams' %}">Webcams</a></li>
             {% endif %}
 
             {% if user.is_staff %}
@@ -103,6 +105,7 @@
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change My Theme</a>
         </li>
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'list_causes' %}">See Cause Members</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'webcams' %}">Webcams</a></li>
     </ul>
 
     {% if user.is_staff %}

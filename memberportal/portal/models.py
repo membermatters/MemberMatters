@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django import utils
+from datetime import datetime, timedelta
+import pytz
 
 
 class AdminLog(models.Model):
@@ -23,6 +26,18 @@ class Causes(models.Model):
     name = models.CharField("Cause Name", max_length=20, unique=True)
     description = models.CharField("Cause Description", max_length=100)
 
+    def get_active_count(self):
+        return str(self.profile_set.filter(state="active").count())
+
+    def get_quorum(self):
+        quorum = self.profile_set.filter(state="active").count() * 0.4
+        if quorum < 3:
+            quorum = 3
+        return str(quorum)
+
+    def get_active_set(self):
+        return self.profile_set.filter(state="active")
+
     def __str__(self):
         return self.name
 
@@ -31,20 +46,37 @@ class Doors(models.Model):
     name = models.CharField("Door Name", max_length=20, unique=True)
     description = models.CharField("Door Description/Location", max_length=100)
     ip_address = models.GenericIPAddressField("IP Address of Door", unique=True, null=True, blank=True)
+    last_seen = models.DateTimeField(default=datetime.now, blank=True)
     all_members = models.BooleanField("Members have access by default", default=False)
+
+    def checkin(self):
+        self.last_seen = datetime.now()
+        self.save()
+
+    def get_unavailable(self):
+        utc = pytz.UTC
+        if utc.localize(datetime.now()) - timedelta(minutes=5) > self.last_seen:
+            return True
+
+        return False
 
     def __str__(self):
         return self.name
 
 
-STATES = (
-    ('noob', 'New Member'),
-    ('active', 'Active Member'),
-    ('inactive', 'Inactive Member'),
-)
+class DoorLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    door = models.ForeignKey(Doors, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True, blank=True)
 
 
 class Profile(models.Model):
+    STATES = (
+        ('noob', 'New Member'),
+        ('active', 'Active Member'),
+        ('inactive', 'Inactive Member'),
+    )
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     state = models.CharField(max_length=8, default='noob', choices=STATES)
     member_type = models.ForeignKey(MemberTypes, on_delete=models.PROTECT, related_name='member_type')
@@ -61,6 +93,7 @@ class SpaceBucks(models.Model):
         ('credit', 'Credit'),
         ('debit', 'Debit')
     )
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.FloatField("Amount")
     type = models.CharField("Transaction Type", max_length=10, choices=TRANSACTION_TYPES)
