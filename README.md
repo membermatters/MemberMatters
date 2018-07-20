@@ -84,7 +84,7 @@ Django version 2.0.7, using settings 'memberportal.settings'
 Starting development server at http://127.0.0.1:8000/
 ```
 Take note of the IP and port. In this case, open your favourite browser and go to `http://127.0.0.1:8000/`. You should
-be presented with the  
+be presented with the home page of the web app. If you want to contribute any changes to the portal please see below.
  
  ### Contributing
  If you're able to write python (django) or JavaScript please contribute. It's a lot of work to write something like 
