@@ -30,14 +30,19 @@ The HSBNE member portal is how HSBNE members manage their membership.
  3.6 or newer as that's the only version it has been tested on. Make sure you also install pip so that you can install
  all of the dependencies.
  
+ To install python 3/pip and the requirements run these commands from within this folder:
  ##### Linux (Ubuntu)
- Run these command from within this folder.
- Install python 3/pip and the requirements:
  
  ```bash
  sudo apt install python3 python3-pip
  sudo -H pip3 install -r requirements.txt
  ```
+ 
+ ##### Linux (Fedora)
+ ```
+sudo dnf install python3 python3-pip
+sudo -H pip3 install -r requirements.txt
+```
  
  ##### Mac (warning untested)
  ```bash
