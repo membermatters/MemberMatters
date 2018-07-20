@@ -12,6 +12,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Description</th>
+                    <th>Default Access</th>
                     <th style="min-width: 120px;">Edit</th>
                 </tr>
                 </thead>
@@ -21,6 +22,7 @@
                     <tr>
                         <td>{{ door.name }}</td>
                         <td>{{ door.description }}</td>
+                        <td>{{ door.all_members }}</td>
                         <td>
                             <a href="{% url "edit_door" door_id=door.id %}" class="waves-effect waves-light btn-small edit-button">
                                 <i class="material-icons">edit</i>

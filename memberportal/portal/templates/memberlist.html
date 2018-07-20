@@ -25,18 +25,18 @@
                     <td>{{ member.email }}</td>
                     <td>{{ member.first_name }}</td>
                     <td>{{ member.last_name }}</td>
-                    <td>{{ member.profile__member_type__name }}</td>
-                    <td>{{ member.profile__cause1__name }}, {{ member.profile__cause2__name }},
-                        {{ member.profile__cause3__name }}</td>
-                    <td>{{ member.profile__state__name }}</td>
+                    <td>{{ member.profile.member_type.name }}</td>
+                    <td>{{ member.profile.cause1.name }}, {{ member.profile.cause2.name }},
+                        {{ member.profile.cause3.name }}</td>
+                    <td>{{ member.profile.get_state_display }}</td>
                     <td>
                         <a data-url="{% url 'admin_edit_member' member_id=member.id %}"
                            data-access_url="{% url 'admin_edit_access' member_id=member.id %}"
                            onclick="openMemberActionsModal(this)"
                            name="{{ member.first_name }} {{ member.last_name }}"
-                           data-state="{{ member.profile__state }}"
-                           data-id="{{ member.id }}" data-active_url="{% url 'set_state' member_id=member.id state=2 %}"
-                           data-deactive_url="{% url 'set_state' member_id=member.id state=3 %}"
+                           data-state="{{ member.profile.state }}"
+                           data-id="{{ member.id }}" data-active_url="{% url 'set_state' member_id=member.id state='active' %}"
+                           data-deactive_url="{% url 'set_state' member_id=member.id state='inactive' %}"
                            class="waves-effect waves-light btn" href="#">Actions</a>
                     </td>
                 </tr>

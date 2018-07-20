@@ -56,12 +56,30 @@ function setState(state) {
                 document.getElementById("deactivate-member-button").classList.add("disabled");
                 M.toast({html: "Successfully disabled access."});
             }
+            // not very DRY... ideally should be modularised a bit more...
+            $.ajax({
+                url: access_url,  // <-- AND HERE
+                type: 'get',
+                dataType: 'json',
+                success: function (data) {
+                    let elem = document.getElementById("admin-edit-member-access");
+                    elem.innerHTML = data.html_form;
+
+                    setTimeout(function () {
+                        initSelects();
+                    }, 0);
+                },
+                error: function() {
+                    M.toast({html: "Unkown error 2 :( "});
+                }
+            });
         },
         error: function (data) {
             M.toast({html: "There was an error processing the request. :("});
         }
     });
 }
+
 
 let name;
 let profile_url;
@@ -118,13 +136,13 @@ function openMemberActionsModal(e) {
     });
 
     document.getElementById("activate-member-button").innerText = "Enable Access";
-    if (member_state == 3) {
+    if (member_state == "inactive") {
         document.getElementById("activate-member-button").classList.remove("disabled");
         document.getElementById("deactivate-member-button").classList.add("disabled");
-    } else if (member_state == 2) {
+    } else if (member_state == "active") {
         document.getElementById("activate-member-button").classList.add("disabled");
         document.getElementById("deactivate-member-button").classList.remove("disabled");
-    } else if (member_state == 1) {
+    } else if (member_state == "noob") {
         document.getElementById("activate-member-button").innerText = "Make Member";
         document.getElementById("activate-member-button").classList.remove("disabled");
         document.getElementById("deactivate-member-button").classList.add("disabled");
