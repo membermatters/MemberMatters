@@ -25,6 +25,62 @@ The HSBNE member portal is how HSBNE members manage their membership.
  * Space webcam integration
  * More features
  
+ ### Getting Started
+ First step is to grab a copy of this repository. You will need to make sure you have python installed, preferably
+ 3.6 or newer as that's the only version it has been tested on. Make sure you also install pip so that you can install
+ all of the dependencies.
+ 
+ ##### Linux (Ubuntu)
+ Run these command from within this folder.
+ Install python 3/pip and the requirements:
+ 
+ ```bash
+ sudo apt install python3 python3-pip
+ sudo -H pip3 install -r requirements.txt
+ ```
+ 
+ ##### Mac (warning untested)
+ ```bash
+brew install python3
+pip3 install -r requirements.txt
+```
+ 
+ ##### Windows
+ Please add instructions if you use windows.
+ 
+ #### Running the dev server
+ In production, we have an nginx reverse proxy setup. For development however, it's useful to use the built in development
+ server. Navigate to the memberportal folder. (`cd memberportal` on bash) First we need
+ to make sure we have a local sqlite database with the correct migrations applied so run this:
+ 
+ 
+ `python3 manage.py migrate`
+ 
+ After running that you should see something like this:
+ ```angular2html
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, portal, sessions
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  ...
+```
+
+If that completes with no errors run the command below to start the development server.
+
+```
+python3 manage.py runserver
+```
+
+You should see something like this:
+
+```
+Django version 2.0.7, using settings 'memberportal.settings'
+Starting development server at http://127.0.0.1:8000/
+```
+Take note of the IP and port. In this case, open your favourite browser and go to `http://127.0.0.1:8000/`. You should
+be presented with the  
+ 
  ### Contributing
  If you're able to write python (django) or JavaScript please contribute. It's a lot of work to write something like 
  this properly from scratch. Check with Jaimyn before working on something, then make a pull request when you are happy 
