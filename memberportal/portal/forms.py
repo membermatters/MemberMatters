@@ -2,6 +2,7 @@ from .models import *
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 
 class SignUpForm(UserCreationForm):
@@ -16,7 +17,7 @@ class SignUpForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2',)
 
 
 class AddProfileForm(forms.ModelForm):
@@ -30,11 +31,25 @@ class EditCausesForm(forms.ModelForm):
         model = Profile
         fields = ('causes',)
 
+    def clean(self):
+        causes = self.cleaned_data.get('causes')
+        if causes and causes.count() > 3:
+            raise ValidationError('Error, only three causes are allowed.')
+
+        return self.cleaned_data
+
 
 class AdminEditProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('member_type', 'rfid', 'causes')
+
+    def clean(self):
+        causes = self.cleaned_data.get('causes')
+        if causes and causes.count() > 3:
+            raise ValidationError('Error, only three causes are allowed.')
+
+        return self.cleaned_data
 
 
 class EditUserForm(forms.ModelForm):

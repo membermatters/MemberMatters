@@ -8,6 +8,9 @@
         <form method="POST" action="{% url 'edit_profile' %}"/>
             {% csrf_token %}
             {{ user_form.as_p }}
+            {{ cause_form.as_p }}
+            <label>You can be a member of up to 3 causes.</label>
+            <br><br>
 
             <a class="btn-flat right" onclick="window.history.back();">Cancel</a>
             <button class="btn waves-effect waves-light right" type="submit" name="action">Save</button>

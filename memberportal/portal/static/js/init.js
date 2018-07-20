@@ -15,7 +15,11 @@ document.addEventListener('DOMContentLoaded', function () {
     M.FormSelect.init(document.querySelectorAll('select'), {});
 
     // Dropdown init
-    M.Dropdown.init(document.querySelectorAll('.dropdown-trigger'), {"coverTrigger": false, "hover": false});
+    M.Dropdown.init(document.querySelectorAll('.dropdown-trigger'), {
+        "closeOnClick": false,
+        "coverTrigger": false,
+        "hover": false
+    });
     M.Dropdown.init(document.querySelectorAll('.dropdown-trigger-hover'), {"coverTrigger": false, "hover": true});
 
     // Modal init
@@ -72,7 +76,7 @@ function setState(state) {
                         initSelects();
                     }, 0);
                 },
-                error: function() {
+                error: function () {
                     M.toast({html: "Unkown error 2 :( "});
                 }
             });
@@ -115,7 +119,7 @@ function openMemberActionsModal(e) {
                 initSelects();
             }, 0);
         },
-        error: function() {
+        error: function () {
             M.toast({html: "Unkown error 1 :( "});
         }
     });
@@ -133,7 +137,7 @@ function openMemberActionsModal(e) {
                 initSelects();
             }, 0);
         },
-        error: function() {
+        error: function () {
             M.toast({html: "Unkown error 2 :( "});
         }
     });
@@ -165,12 +169,22 @@ $("#member-actions-modal").on("submit", ".member-edit-form", function () {
         success: function (data) {
             if (data.form_is_valid) {
                 M.toast({html: "Saved successfully :D"});
+                let elem = document.getElementById("admin-edit-member-profile");
+                elem.innerHTML = data.html_form;
+                setTimeout(function () {
+                    initSelects();
+                }, 0);
             }
             else {
                 M.toast({html: "There was an error saving the data. :("});
+                let elem = document.getElementById("admin-edit-member-profile");
+                elem.innerHTML = data.html_form;
+                setTimeout(function () {
+                    initSelects();
+                }, 0);
             }
         },
-        error: function() {
+        error: function () {
             M.toast({html: "Unkown error 3 :( "});
         }
     });
@@ -199,7 +213,7 @@ function grantAccess(url, id) {
                 M.toast({html: "Error :( " + response.reason});
             }
         },
-        error: function() {
+        error: function () {
             M.toast({html: "Unkown error 4 :( "});
         }
     });
@@ -220,7 +234,7 @@ function revokeAccess(url, id) {
                 M.toast({html: "Error :( " + response.reason});
             }
         },
-        error: function() {
+        error: function () {
             M.toast({html: "Unkown error 5 :( "});
         }
     });
@@ -239,7 +253,7 @@ function requestAccess(url) {
                 M.toast({html: "Error :( " + response.reason});
             }
         },
-        error: function() {
+        error: function () {
             M.toast({html: "Unkown error 6 :( "});
         }
     });

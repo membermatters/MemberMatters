@@ -26,8 +26,11 @@
                     <td>{{ member.first_name }}</td>
                     <td>{{ member.last_name }}</td>
                     <td>{{ member.profile.member_type.name }}</td>
-                    <td>{{ member.profile.cause1.name }}, {{ member.profile.cause2.name }},
-                        {{ member.profile.cause3.name }}</td>
+                    <td>
+                        {% for cause in member.profile.causes.all %}
+                            {{ cause }}{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    </td>
                     <td>{{ member.profile.get_state_display }}</td>
                     <td>
                         <a data-url="{% url 'admin_edit_member' member_id=member.id %}"
@@ -35,7 +38,8 @@
                            onclick="openMemberActionsModal(this)"
                            name="{{ member.first_name }} {{ member.last_name }}"
                            data-state="{{ member.profile.state }}"
-                           data-id="{{ member.id }}" data-active_url="{% url 'set_state' member_id=member.id state='active' %}"
+                           data-id="{{ member.id }}"
+                           data-active_url="{% url 'set_state' member_id=member.id state='active' %}"
                            data-deactive_url="{% url 'set_state' member_id=member.id state='inactive' %}"
                            class="waves-effect waves-light btn" href="#">Actions</a>
                     </td>
@@ -60,7 +64,7 @@
 
             <div class="row">
                 <div class="col s12">
-                    <ul class="tabs tabs-fixed-width">
+                    <ul class="tabs">
                         <li class="tab col s3"><a href="#edit-profile" class="active">Profile</a></li>
                         <li class="tab col s3"><a href="#manage-access">Access</a></li>
                         <li class="tab col s3"><a href="#access-history">Log</a></li>
@@ -97,7 +101,7 @@
         (function ($) {
             $(function () {
                 $('#memberList').DataTable({
-                    "initComplete": function() {
+                    "initComplete": function () {
                         M.FormSelect.init(document.querySelectorAll('select'), {});
                     }
                 });

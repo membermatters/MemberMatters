@@ -10,12 +10,16 @@
         <ul class="collapsible">
             {% for cause in causes %}
                 <li>
-                    <div class="collapsible-header"><b>{{ cause.name }}</b>&nbsp;- {{ cause.description }}</div>
+                    <div class="collapsible-header"><b>{{ cause.name }} ({{ cause.profile_set.count }} members)</b>&nbsp;- {{ cause.description }}
+                    </div>
                     <div class="collapsible-body left-align">
                         <span class="larger-text">List of members:</span>
-                        {% with cause.user_set.all as user %}
-                            <span>{{ user.name }}</span>
-                        {% endwith %}
+                        <span>
+                            {% for member in cause.profile_set.all %}
+                                {{ member }}{% if not forloop.last %},{% endif %}
+
+                            {% endfor %}
+                        </span>
                     </div>
                 </li>
             {% endfor %}

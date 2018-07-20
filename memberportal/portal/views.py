@@ -1,8 +1,7 @@
 from django.contrib.auth import login, authenticate
-from django.http import HttpResponseRedirect, HttpResponseForbidden, JsonResponse, HttpResponseServerError, HttpResponseBadRequest
+from django.http import HttpResponseRedirect, HttpResponseForbidden, JsonResponse, HttpResponseServerError, HttpResponseBadRequest, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
-from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -159,6 +158,7 @@ def admin_edit_member(request, member_id):
     if request.method == 'POST':
         # if it's a form submission pass it to the form
         form = AdminEditProfileForm(request.POST, instance=user)
+
         if form.is_valid():
             # if it's a valid form submission then save and log it
             form.save()
@@ -178,20 +178,23 @@ def edit_profile(request):
     :param request:
     :return:
     """
+
     if request.method == 'POST':
         user_form = EditUserForm(request.POST, instance=request.user)
-        if user_form.is_valid():
+        cause_form = EditCausesForm(request.POST, instance=request.user.profile)
+
+        if user_form.is_valid() and cause_form.is_valid():
             # if it was a form submission save it
             user_form.save()
+            cause_form.save()
             return HttpResponseRedirect('%s' % (reverse('profile')))
-        else:
-            # otherwise return form with errors
-            return render(request, 'edit_profile.html', {'user_form': user_form})
 
     else:
         # if it's not a form submission, return an empty form
         user_form = EditUserForm(instance=request.user)
-        return render(request, 'edit_profile.html', {'user_form': user_form})
+        cause_form = EditCausesForm(instance=request.user.profile)
+
+    return render(request, 'edit_profile.html', {'user_form': user_form, "cause_form": cause_form})
 
 
 @login_required
@@ -291,7 +294,7 @@ def edit_cause(request, cause_id):
 @admin_required
 def delete_cause(request, cause_id):
     Causes.objects.get(pk=cause_id).delete()
-    return HttpResponseRedirect('%s' % (reverse('manage_causes')))
+    return HttpResponse("Success")
 
 
 @login_required
@@ -438,5 +441,6 @@ def check_access(request, rfid_code, door_id=None):
 @login_required
 def list_causes(request):
     causes = Causes.objects.all()
+    members = Profile.objects.all()
 
-    return render(request, 'list_causes.html', {"causes": causes})
+    return render(request, 'list_causes.html', {"causes": causes, "members": members})
