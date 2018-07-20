@@ -15,15 +15,18 @@ The HSBNE member portal is how HSBNE members manage their membership.
     * Search for members
     * Sort members by status, etc
     * Change a member's details/membership type
+* Space webcam integration
+* Swipe Statistics
+    * Last seen (last time a member swipes)
+    * Recent swipes (last x swipes at any door)
  
  ### Coming Soon
+ * Spacebucks
  * Integration with xero or direct debit service for billing management
     * Manage membership costs and recurring invoices
     * Spacebucks payment processing
     * Let Xero or direct debit service handle payment details
  * Edit member swipe in theme
- * Space webcam integration
- * More features
  
  ### Getting Started
  First step is to grab a copy of this repository. You will need to make sure you have python installed, preferably
