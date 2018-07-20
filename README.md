@@ -17,13 +17,19 @@ The HSBNE member portal is how HSBNE members manage their membership.
     * Change a member's details/membership type
  
  ### Coming Soon
- * Integration with xero for billing management
+ * Integration with xero or direct debit service for billing management
     * Manage membership costs and recurring invoices
     * Spacebucks payment processing
-    * Let Xero handle payment details
+    * Let Xero or direct debit service handle payment details
  * Edit member swipe in theme
- * Webcam integration
+ * Space webcam integration
  * More features
+ 
+ ### Contributing
+ If you're able to write python (django) or JavaScript please contribute. It's a lot of work to write something like 
+ this properly from scratch. Check with Jaimyn before working on something, then make a pull request when you are happy 
+ with your changes. 
+ ##### note: no iframes of existing php member pages allowed. All features must be implemented properly in python.
  
  ## Screenshots
 

@@ -24,10 +24,12 @@
                         <td>{{ door.description }}</td>
                         <td>{{ door.all_members }}</td>
                         <td>
-                            <a href="{% url "edit_door" door_id=door.id %}" class="waves-effect waves-light btn-small edit-button">
+                            <a href="{% url "edit_door" door_id=door.id %}"
+                               class="waves-effect waves-light btn-small edit-button">
                                 <i class="material-icons">edit</i>
                             </a>
-                            <a href="{% url "delete_door" door_id=door.id %}" class="waves-effect waves-light btn-small delete-button">
+                            <a href="{% url "delete_door" door_id=door.id %}"
+                               class="waves-effect waves-light btn-small delete-button">
                                 <i class="material-icons">delete</i>
                             </a>
                         </td>
@@ -42,7 +44,19 @@
             <h4>Add Door </h4>
             <form method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
+                {% for field in form %}
+                    {% if field.name == "all_members" %}
+                        <label>
+                            <input type="checkbox" name="all_members" id="id_all_members">
+                            <span>{{ field.label }}</span>
+                        </label>
+                    {% else %}
+                        <p>{{ field.errors }}<label style="display:table-cell;">{{ field.name }}: </label>{{ field }}
+                        </p>
+                    {% endif %}
+                {% endfor %}
+                <br>
+                <br>
                 <button class="btn waves-effect waves-light" type="submit" name="login">
                     Add
                 </button>

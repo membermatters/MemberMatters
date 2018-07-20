@@ -9,7 +9,19 @@
         <p>Use the form below to update the door details.</p>
         <form method="POST" action=""/>
         {% csrf_token %}
-        {{ form.as_p }}
+        {% for field in form %}
+            {% if field.name == "all_members" %}
+                <label>
+                    <input type="checkbox" name="all_members" id="id_all_members">
+                    <span>{{ field.label }}</span>
+                </label>
+            {% else %}
+                <p>{{ field.errors }}<label style="display:table-cell;">{{ field.name }}: </label>{{ field }}
+                </p>
+            {% endif %}
+        {% endfor %}
+        <br>
+        <br>
 
         <a class="btn-flat right" onclick="window.history.back()">Cancel</a>
         <button class="btn waves-effect waves-light right" type="submit" name="action">Save
