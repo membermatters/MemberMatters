@@ -52,7 +52,18 @@ class Profile(models.Model):
     cause2 = models.ForeignKey(Causes, on_delete=models.SET_NULL, verbose_name="Cause 2", related_name='Cause2', null=True, blank=True)
     cause3 = models.ForeignKey(Causes, on_delete=models.SET_NULL, verbose_name="Cause 3", related_name='Cause3', null=True, blank=True)
     rfid = models.CharField("RFID Tag", max_length=20, unique=True, null=True, blank=True)
-    doors = models.ManyToManyField(Doors, null=True, blank=True)
+    doors = models.ManyToManyField(Doors, blank=True)
 
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
+
+
+class SpaceBucks(models.Model):
+    TRANSACTION_TYPES = (
+        ('credit', 'Credit'),
+        ('debit', 'Debit')
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.FloatField("Amount")
+    type = models.CharField("Transaction Type", max_length=10, choices=TRANSACTION_TYPES)
+    description = models.CharField("Description of Transaction", max_length=100)
