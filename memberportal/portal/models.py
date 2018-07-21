@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django import utils
 from datetime import datetime, timedelta
 import pytz
 
@@ -92,6 +91,18 @@ class Profile(models.Model):
     rfid = models.CharField("RFID Tag", max_length=20, unique=True, null=True, blank=True)
     doors = models.ManyToManyField(Doors, blank=True)
 
+    def get_spacebucks_transactions(self):
+        return SpaceBucks.objects.filter(user=self.user)
+
+    def get_spacebucks_balance(self):
+        from django.db.models import Sum
+
+        transactions = self.get_spacebucks_transactions()
+        credits = transactions.filter(type="credit").aggregate(Sum('amount'))['amount__sum']
+        debits = transactions.filter(type="debit").aggregate(Sum('amount'))['amount__sum']
+
+        return credits - debits
+
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
 
@@ -106,3 +117,4 @@ class SpaceBucks(models.Model):
     amount = models.FloatField("Amount")
     type = models.CharField("Transaction Type", max_length=10, choices=TRANSACTION_TYPES)
     description = models.CharField("Description of Transaction", max_length=100)
+    date = models.DateTimeField(auto_now_add=True, blank=True)

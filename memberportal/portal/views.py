@@ -492,7 +492,7 @@ def last_seen(request):
 @login_required
 def open_door(request, door_id):
     door = Doors.objects.get(pk=door_id)
-    if door in reuqest.user.doors.all():
+    if door in request.user.doors.all():
         return JsonResponse({"success": door.unlock()})
 
     return HttpResponseForbidden("You are not authorised to access that door.")
@@ -529,3 +529,10 @@ def authorised_tags(request, door_id=None):
 
     # if the are inactive or don't have access
     return JsonResponse({"authorised_tags": authorised_tags, "door": door.name})
+
+
+@login_required
+def manage_spacebucks(request):
+    spacebucks_transactions = SpaceBucks.objects.filter(user=request.user)
+
+    return render(request, 'manage_spacebucks.html', {"spacebucks_transactions": spacebucks_transactions})

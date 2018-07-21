@@ -52,6 +52,12 @@
 
             {% if user.is_authenticated %}
                 <a class="cn-dark-text">Hi, {{ user.first_name }}!</a>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Manage My Profile</a>
+                </li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_spacebucks' %}">Manage
+                    Spacebucks</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">My Access
+                    Permissions</a></li>
                 <li>
                     <div class="divider"></div>
                 </li>
@@ -60,16 +66,13 @@
                     <div class="divider"></div>
                 </li>
                 <li><a class="subheader">Member Tools</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Manage My Profile</a>
-                </li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">My Access
-                    Permissions</a></li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change My
                     Theme</a></li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'list_causes' %}">See Cause
                     Members</a></li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'webcams' %}">Public Webcams</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'recent_swipes' %}">Recent Swipes</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'recent_swipes' %}">Recent Swipes</a>
+                </li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'last_seen' %}">Last Seen</a></li>
             {% endif %}
 
@@ -97,19 +100,21 @@
     </div>
 
     <ul id="profile-dropdown" class="dropdown-content">
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Manage Profile</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_spacebucks' %}">Manage Spacebucks</a>
+        </li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">Access
+            Permissions</a></li>
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'signout' %}">Log Out</a></li>
     </ul>
 
     <ul id="member-dropdown" class="dropdown-content">
-        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Manage My Profile</a></li>
-        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">My Access
-            Permissions</a></li>
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change My Theme</a>
         </li>
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'list_causes' %}">See Cause Members</a></li>
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'webcams' %}">Public Webcams</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'recent_swipes' %}">Recent Swipes</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'last_seen' %}">Last Seen</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'recent_swipes' %}">Recent Swipes</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'last_seen' %}">Last Seen</a></li>
     </ul>
 
     {% if user.is_staff %}

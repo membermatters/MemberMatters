@@ -34,6 +34,11 @@
                     {{ cause }}{% if not forloop.last %},{% endif %}
                 {% endfor %}</td>
             </tr>
+
+            <tr>
+                <td><b>Spacebucks:</b></td>
+                <td>Current balance is: ${{ user.profile.get_spacebucks_balance }} (<a href="{% url 'manage_spacebucks' %}">manage</a>)</td>
+            </tr>
             </tbody>
         </table>
         <div id='account-info' style="width: 100%;" class="left">

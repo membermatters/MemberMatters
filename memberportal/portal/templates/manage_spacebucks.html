@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Spacebucks{% endblock %}
+
+{% block content %}
+    <div class="medium-width center row small-row">
+        <h3 class="header center text">Manage Spacebucks</h3>
+        <p class="larger-text">Your current spacebucks balance is ${{ user.profile.get_spacebucks_balance }}.</p>
+        <a href="{% url "add_door" %}" class="waves-effect waves-light btn edit-button">
+            Add Spacebucks
+        </a>
+        <table id="memberList" class="data-table striped responsive-table">
+            <thead>
+            <tr>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>When</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for transaction in spacebucks_transactions %}
+                <tr>
+                    <td>{{ transaction.description }}</td>
+                    {% if transaction.type == "credit" %}
+                        <td class="light-green-text">+ ${{ transaction.amount }}</td>
+                    {% else %}
+                        <td class="red-text">- ${{ transaction.amount }}</td>
+                    {% endif %}
+                    <td>{{ transaction.date }} ({{ transaction.date|timesince }} ago)</td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
+    <script>
+        (function ($) {
+            $(function () {
+                let table = $('#memberList').DataTable({
+                    "initComplete": function () {
+                        M.FormSelect.init(document.querySelectorAll('select'), {});
+                    }
+                });
+                table.order([1, 'desc']).draw();
+            }); // end of document ready
+        })(jQuery); // end of jQuery name space
+    </script>
+{% endblock %}
