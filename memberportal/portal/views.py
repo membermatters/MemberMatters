@@ -489,8 +489,43 @@ def last_seen(request):
     return render(request, 'last_seen.html', {"last_seens": last_seens})
 
 
-# @login_required
+@login_required
 def open_door(request, door_id):
     door = Doors.objects.get(pk=door_id)
+    if door in reuqest.user.doors.all():
+        return JsonResponse({"success": door.unlock()})
 
-    return JsonResponse({"success": door.unlock()})
+    return HttpResponseForbidden("You are not authorised to access that door.")
+
+
+@reader_auth
+def authorised_tags(request, door_id=None):
+    door = None
+
+    if door_id is not None:
+        try:
+            door = Doors.objects.get(pk=door_id)
+            door.checkin()
+
+        except ObjectDoesNotExist:
+            # send back some random error code you can search for here - this means the door ID doesn't exist.
+            return HttpResponseBadRequest("Bad Request. Error AJld")
+
+    else:
+        try:
+            door_ip = request.META.get('REMOTE_ADDR')
+            door = Doors.objects.get(ip_address=door_ip)
+            door.checkin()
+
+        except ObjectDoesNotExist:
+            # send back some random error code you can search for here - this means the door doesn't exist.
+            return HttpResponseBadRequest("Bad Request. Error AJlc")
+
+    authorised_tags = list()
+
+    for profile in Profile.objects.all():
+        if door in profile.doors.all():
+            authorised_tags.append(profile.rfid)
+
+    # if the are inactive or don't have access
+    return JsonResponse({"authorised_tags": authorised_tags, "door": door.name})
