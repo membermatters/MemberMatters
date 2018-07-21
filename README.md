@@ -19,9 +19,12 @@ The HSBNE member portal is how HSBNE members manage their membership.
 * Swipe Statistics
     * Last seen (last time a member swipes)
     * Recent swipes (last x swipes at any door)
+* Basic Spacebucks Support
+    * Members can see a transaction list
+    * Can see current balance
+    * Can't add funds, must be manually done right now - stripe integration planned shortly.
  
  ### Coming Soon
- * Spacebucks
  * Integration with xero or direct debit service for billing management
     * Manage membership costs and recurring invoices
     * Spacebucks payment processing
