@@ -101,6 +101,13 @@ class Profile(models.Model):
         credits = transactions.filter(type="credit").aggregate(Sum('amount'))['amount__sum']
         debits = transactions.filter(type="debit").aggregate(Sum('amount'))['amount__sum']
 
+        # Fix for if member has no transactions on their accoutn
+        if credits is None:
+            credits = 0
+
+        if debits is None:
+            debits = 0
+
         return credits - debits
 
     def __str__(self):
