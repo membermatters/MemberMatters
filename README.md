@@ -50,10 +50,19 @@ sudo dnf install python3 python3-pip
 sudo -H pip3 install -r requirements.txt
 ```
  
- ##### Mac (warning untested)
+ ##### Mac (Tested by nog3 w/python 3.7)
+ You will need to install and use virtualenv on Mac in order to get your environment correct as there are conflicts with built in python on OSX.
+ 
  ```bash
 brew install python3
+pip3 install virtualenv
+virtualenv hsbneportal
+source hsbneportal\bin\activate
 pip3 install -r requirements.txt
+
+You should see (<environment_name>) $ at your command prompt, letting you know that you’re running the proper virtualenv install. To deactivate, you can just run the following to come out of the environment.
+
+```deactivate
 ```
  
  ##### Windows
@@ -93,9 +102,7 @@ Take note of the IP and port. In this case, open your favourite browser and go t
 be presented with the home page of the web app. If you want to contribute any changes to the portal please see below.
  
  ### Contributing
- If you're able to write python (django) or JavaScript please contribute. It's a lot of work to write something like 
- this properly from scratch. Check with Jaimyn before working on something, then make a pull request when you are happy 
- with your changes. 
+ If you're able to write python (django) or JavaScript please contribute. It's a lot of work to write something like  this properly from scratch. Check with Jaimyn before working on something, then make a pull request when you are happy with your changes. 
  ##### note: no iframes of existing php member pages allowed. All features must be implemented properly in python.
  
  ## Screenshots
