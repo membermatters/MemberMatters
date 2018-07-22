@@ -5,7 +5,7 @@
 {% block content %}
     <div class="medium-width center row small-row">
         <h3 class="header center text">Add Spacebucks</h3>
-        <p class="larger-text">Your current spacebucks balance is ${{ user.profile.get_spacebucks_balance }}.</p>
+        <p class="larger-text">Your current spacebucks balance is ${{ user.profile.spacebucks_balance|floatformat:2 }}</p>
         <p>Unfortunately our add spacebucks feature still isn't finished yet. It will be available shortly.</p>
 
     </div>
