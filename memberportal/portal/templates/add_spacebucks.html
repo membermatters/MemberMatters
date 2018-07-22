@@ -5,26 +5,68 @@
 {% block content %}
     <div class="medium-width center row small-row">
         <h3 class="header center text">Add Spacebucks</h3>
-        <p class="larger-text">Your current spacebucks balance is ${{ user.profile.spacebucks_balance|floatformat:2 }}</p>
-        <p>Unfortunately our add spacebucks feature still isn't finished yet. It will be available shortly.</p>
+        <p class="larger-text">Your current spacebucks balance is
+            ${{ user.profile.spacebucks_balance|floatformat:2 }}</p>
+        {% if success %}
+            <p class="light-green-text">{{ message }}</p>
+        {% elif success is False %}
+            <p class="light-green-text">There was an error saving your payment details. {{ message }}</p>
+        {% endif %}
 
+        {% if user.profile.stripe_card_last_digits is not None %}
+            <p>Your current card details we have on record:</p>
+            <p><b>Card Number:</b> **** **** **** {{ user.profile.stripe_card_last_digits }} </p>
+            <p><b>Expiry Date:</b> {{ user.profile.stripe_card_expiry }}</p>
+
+            <p><b>NOTE:</b> Clicking any of the buttons below will immediately charge your card with the specified amount.</p>
+
+            <div class="row">
+                <div class="col s12 m3">
+                    <form method="POST" action="{% url 'add_spacebucks' amount=5 %}">
+                        {% csrf_token %}
+                        <button class="btn waves-effect waves-light" type="submit" name="action">Add $5</button>
+                    </form>
+                </div>
+                <div class="col s12 m3">
+                    <form method="POST" action="{% url 'add_spacebucks' amount=10 %}">
+                        {% csrf_token %}
+                        <button class="btn waves-effect waves-light" type="submit" name="action">Add $10</button>
+                    </form>
+                </div>
+                <div class="col s12 m3">
+                    <form method="POST" action="{% url 'add_spacebucks' amount=20 %}">
+                        {% csrf_token %}
+                        <button class="btn waves-effect waves-light" type="submit" name="action">Add $20</button>
+                    </form>
+                </div>
+                <div class="col s12 m3">
+                    <form method="POST" action="{% url 'add_spacebucks' amount=50 %}">
+                        {% csrf_token %}
+                        <button class="btn waves-effect waves-light" type="submit" name="action">Add $50</button>
+                    </form>
+                </div>
+            </div>
+
+        {% else %}
+            <p>We currently have no card details on record. Please add one below.</p>
+            <p><b>NOTE: The process of adding a card will not charge any money to it. You must do so separately.</b></p>
+            <form action="{% url 'save_spacebucks_payment_info' %}" method="POST">
+                <script
+                        src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                        data-key="pk_test_RMZy6yDuPpdxa0pCQsBkwbJC"
+                        data-amount="0"
+                        data-name="hsbne.org"
+                        data-description="Add funds to your spacebucks account."
+                        data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+                        data-locale="auto"
+                        data-zip-code="true"
+                        data-currency="aud">
+                </script>
+            </form>
+        {% endif %}
     </div>
 {% endblock %}
 
 {% block scripts %}
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
-    <script type="text/javascript" charset="utf8"
-            src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
-    <script>
-        (function ($) {
-            $(function () {
-                let table = $('#memberList').DataTable({
-                    "initComplete": function () {
-                        M.FormSelect.init(document.querySelectorAll('select'), {});
-                    }
-                });
-                table.order([1, 'desc']).draw();
-            }); // end of document ready
-        })(jQuery); // end of jQuery name space
-    </script>
+    <script src="https://js.stripe.com/v3/"></script>
 {% endblock %}

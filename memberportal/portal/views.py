@@ -1,12 +1,16 @@
 from django.contrib.auth import login, authenticate, update_session_auth_hash
-from django.http import HttpResponseRedirect, HttpResponseForbidden, JsonResponse, HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponseForbidden, JsonResponse, HttpResponseBadRequest, HttpResponse, \
+    HttpResponseServerError
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.core.exceptions import ObjectDoesNotExist
-from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from django.urls import reverse
+import os
 from .forms import *
+import stripe
 
 
 def admin_required(view):
@@ -17,6 +21,7 @@ def admin_required(view):
         else:
             # if the user isn't authorised let them know
             return HttpResponseForbidden("403 Access Forbidden")
+
     return wrap
 
 
@@ -28,6 +33,7 @@ def reader_auth(view):
         else:
             # if the user isn't authorised let them know
             return HttpResponseForbidden("403 Access Forbidden")
+
     return wrap
 
 
@@ -375,7 +381,8 @@ def admin_edit_access(request, member_id):
     data = dict()
 
     # render the form and return it
-    data['html_form'] = render_to_string('partial_admin_edit_access.html', {'member': member, 'member_id': member_id, 'doors': doors}, request=request)
+    data['html_form'] = render_to_string('partial_admin_edit_access.html',
+                                         {'member': member, 'member_id': member_id, 'doors': doors}, request=request)
     return JsonResponse(data)
 
 
@@ -475,6 +482,7 @@ def check_access(request, rfid_code, door_id=None):
     # if the are inactive or don't have access
     return JsonResponse({"access": False, "name": user.first_name, "door": door.name})
 
+
 @login_required
 def list_causes(request):
     causes = Causes.objects.all()
@@ -560,6 +568,112 @@ def manage_spacebucks(request):
 
 
 @login_required
-def add_spacebucks(request):
+def add_spacebucks(request, amount=None):
+    if request.method == "POST":
+        if "STRIPE_SECRET_KEY" in os.environ:
+            stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
+            stripe.default_http_client = stripe.http_client.RequestsClient()
+        else:
+            return HttpResponseServerError("Unkown error.")
 
-    return render(request, 'add_spacebucks.html')
+        if amount is not None:
+            # lets restrict this to something reasonable
+            if amount <= 50:
+                charge = stripe.Charge.create(
+                    amount=amount * 100,  # convert to cents,
+                    currency='aud',
+                    description='HSBNE Spacebucks ({})'.format(request.user.get_full_name()),
+                    customer=request.user.profile.stripe_customer_id,
+                    metadata={'Payment By': request.user.get_full_name(), "For": "Spacebucks Top Up"},
+                )
+                print(charge.paid)
+                print(charge)
+                if charge.paid:
+                    transaction = SpaceBucks()
+                    transaction.amount = amount
+                    transaction.user = request.user
+                    transaction.description = "Added spacebucks via Stripe"
+                    transaction.transaction_type = "stripe"
+                    transaction.logging_info = charge
+                    transaction.save()
+
+                    return render(request, 'add_spacebucks.html', {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": True,
+                                   "message": "Successfully charged ${} to your card ending in {}. Please check your spacebucks balance.".format(amount, request.user.profile.stripe_card_last_digits)})
+                else:
+                    return render(request, 'add_spacebucks.html',
+                                  {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                                   "message": "There was a problem collecting the funds off your card."})
+
+        return render(request, 'add_spacebucks.html', {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                           "message": "Invalid amount."})
+
+    else:
+        if "STRIPE_PUBLIC_KEY" in os.environ:
+            return render(request, 'add_spacebucks.html', {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"]})
+
+        else:
+            return HttpResponseServerError("Error unable to find stripe details in environment variables.")
+
+
+@csrf_exempt
+def save_spacebucks_payment_info(request):
+    if request.method == 'POST':
+        if "STRIPE_SECRET_KEY" in os.environ:
+            stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
+            stripe.default_http_client = stripe.http_client.RequestsClient()
+        else:
+            return HttpResponseServerError("Unkown error.")
+
+        try:
+            customer = stripe.Customer.create(
+                source=request.POST.get("stripeToken"),
+                email=request.POST.get("stripeEmail"),
+            )
+            print(customer.id)
+            profile = request.user.profile
+            profile.stripe_customer_id = customer.id
+            profile.stripe_card_expiry = str(customer.sources.data[0]['exp_month']) + '/' + str(customer.sources.data[0]['exp_year'])
+            profile.stripe_card_last_digits = customer.sources.data[0]['last4']
+            profile.save()
+
+        except stripe.error.CardError as e:
+            # Since it's a decline, stripe.error.CardError will be caught
+            body = e.json_body
+            err = body.get('error', {})
+
+            return render(request, 'add_spacebucks.html',
+                          {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                           "message": err})
+
+        except stripe.error.RateLimitError as e:
+            return render(request, 'add_spacebucks.html',
+                          {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                           "message": "Our server is talking to stripe too quickly, try again later."})
+
+        except stripe.error.InvalidRequestError as e:
+            return render(request, 'add_spacebucks.html',
+                          {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                           "message": "There was an error with the request details."})
+
+        except stripe.error.AuthenticationError as e:
+            return render(request, 'add_spacebucks.html',
+                          {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                           "message": "Our server was unable to authenticate with the Stripe server."})
+
+        except stripe.error.APIConnectionError as e:
+            return render(request, 'add_spacebucks.html',
+                          {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                           "message": "Our server was unable to communicate with the Stripe server."})
+
+        except stripe.error.StripeError as e:
+            return render(request, 'add_spacebucks.html',
+                          {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                           "message": e})
+
+        except Exception as e:
+            return render(request, 'add_spacebucks.html', {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False, "message": "Unkown error (unrelated to stripe)."})
+
+        return render(request, 'add_spacebucks.html', {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": True, "message": "Your payment details were successfully saved."})
+
+    else:
+        return redirect(reverse('add_spacebucks'))

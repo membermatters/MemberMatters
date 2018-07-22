@@ -22,10 +22,10 @@
             {% for transaction in spacebucks_transactions %}
                 <tr>
                     <td>{{ transaction.description }}</td>
-                    {% if transaction.type == "credit" %}
-                        <td class="light-green-text">+ ${{ transaction.amount }}</td>
+                    {% if transaction.amount > 0 %}
+                        <td class="light-green-text">${{ transaction.amount }}</td>
                     {% else %}
-                        <td class="red-text">- ${{ transaction.amount }}</td>
+                        <td class="red-text">${{ transaction.amount }}</td>
                     {% endif %}
                     <td>{{ transaction.date }} ({{ transaction.date|timesince }} ago)</td>
                 </tr>
@@ -49,7 +49,7 @@
                         M.FormSelect.init(document.querySelectorAll('select'), {});
                     }
                 });
-                table.order([1, 'desc']).draw();
+                table.order([2, 'desc']).draw();
             }); // end of document ready
         })(jQuery); // end of jQuery name space
     </script>

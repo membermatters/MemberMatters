@@ -5,7 +5,7 @@
 {% block content %}
     <div class="admin-container center row small-row">
         <h3 class="header center text">Edit Your Profile</h3>
-        <form method="POST" action="{% url 'edit_profile' %}"/>
+        <form method="POST" action="{% url 'edit_profile' %}">
             {% csrf_token %}
             {{ user_form.as_p }}
             {{ cause_form.as_p }}

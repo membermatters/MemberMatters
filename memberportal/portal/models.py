@@ -101,6 +101,9 @@ class Profile(models.Model):
         "RFID Tag", max_length=20, unique=True, null=True, blank=True)
     doors = models.ManyToManyField(Doors, blank=True)
     spacebucks_balance = models.FloatField(default=0.0)
+    stripe_customer_id = models.CharField(max_length=100, null=True, default=None)
+    stripe_card_expiry = models.CharField(max_length=10, null=True, default=None)
+    stripe_card_last_digits = models.CharField(max_length=4, null=True, default=None)
 
     def __str__(self):
         return str(self.user)
@@ -109,6 +112,7 @@ class Profile(models.Model):
 class SpaceBucks(models.Model):
     TRANSACTION_TYPES = (
         ('stripe', 'Stripe Payment'),
+        ('bank', 'Bank Transfer'),
         ('card', 'Membership Card')
     )
 
@@ -119,9 +123,11 @@ class SpaceBucks(models.Model):
     description = models.CharField(
         "Description of Transaction", max_length=100)
     date = models.DateTimeField(auto_now_add=True, blank=True)
+    logging_info = models.TextField("Detailed logging info from stripe.", blank=True)
 
     def save(self, *args, **kwargs):
         super(SpaceBucks, self).save(*args, **kwargs)
-        self.user.spacebucks_balance = SpaceBucks.objects.filter(
-            user=self.user).aggregate(Sum('amount'))['amount__sum']
-        self.user.save()
+        balance = SpaceBucks.objects.filter(user=self.user).aggregate(Sum('amount'))['amount__sum']
+        print(balance)
+        self.user.profile.spacebucks_balance = balance
+        self.user.profile.save()
