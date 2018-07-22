@@ -483,8 +483,12 @@ def last_seen(request):
     members = User.objects.all()
 
     for member in members:
-        date = DoorLog.objects.filter(user=member).order_by("date")[::-1][0].date
-        last_seens.append({"user": member, "date": date})
+        door_logs = DoorLog.objects.filter(user=member).order_by("date")
+        if len(door_logs):
+            date = door_logs[::-1][0].date
+            last_seens.append({"user": member, "never": False, "date": date})
+        else:
+            last_seens.append({"user": member, "never": True})
 
     return render(request, 'last_seen.html', {"last_seens": last_seens})
 

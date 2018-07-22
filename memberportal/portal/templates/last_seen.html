@@ -19,8 +19,13 @@
             {% for lastseen in last_seens %}
                 <tr>
                     <td>{{ lastseen.user.get_full_name }} ({{ lastseen.user.username }})</td>
-                    <td>{{ lastseen.date|date:"y-m-d" }}-{{ lastseen.date|time:"H:i" }}</td>
-                    <td>{{ lastseen.date|timesince }}</td>
+                    {% if lastseen.never %}
+                        <td>- never seen :O</td>
+                        <td></td>
+                    {% else %}
+                        <td>{{ lastseen.date|date:"y-m-d" }}-{{ lastseen.date|time:"H:i" }}</td>
+                        <td>{{ lastseen.date|timesince }}</td>
+                    {% endif %}
                 </tr>
             {% endfor %}
 
