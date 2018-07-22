@@ -27,7 +27,9 @@
                 {% for door in doors %}
                     <tr>
                         <td>{{ door.name }}</td>
-                        {% if door in request.user.profile.doors.all %}
+                        {% if user.profile.state == "inactive" or user.profile.state == "noob" %}
+                            <td class="red-text">Access Not Allowed (Inactive Member)</td>
+                        {% elif door in user.profile.doors.all %}
                             <td class="light-green-text">Access Allowed</td>
                         {% else %}
                             <td class="red-text">Access Not Allowed</td>
