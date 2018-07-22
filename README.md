@@ -101,6 +101,11 @@ Starting development server at http://127.0.0.1:8000/
 Take note of the IP and port. In this case, open your favourite browser and go to `http://127.0.0.1:8000/`. You should
 be presented with the home page of the web app. If you want to contribute any changes to the portal please see below.
  
+ #####NOTE
+ You will need to re-run the database migration every time the db models change. You may see random database related
+ errors such as column does not exist if you forget to do this. You can do that by running:
+ ```python3 manage.py migrate```
+ 
  ### Contributing
  If you're able to write python (django) or JavaScript please contribute. It's a lot of work to write something like  this properly from scratch. Check with Jaimyn before working on something, then make a pull request when you are happy with your changes. 
  ##### note: no iframes of existing php member pages allowed. All features must be implemented properly in python.
