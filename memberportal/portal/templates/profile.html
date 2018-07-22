@@ -37,7 +37,7 @@
 
             <tr>
                 <td><b>Spacebucks:</b></td>
-                <td>Current balance is: ${{ user.profile.get_spacebucks_balance }} (<a href="{% url 'manage_spacebucks' %}">manage</a>)</td>
+                <td>Current balance is: ${{ user.profile.spacebucks_balance|floatformat:2 }} (<a href="{% url 'manage_spacebucks' %}">manage</a>)</td>
             </tr>
             </tbody>
         </table>
