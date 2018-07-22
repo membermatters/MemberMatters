@@ -45,7 +45,8 @@
             <p>To change your membership type, please <a href="mailto:executive@hsbne.org">email the executive</a>.</p>
             <p id='last-login'>You last logged in on {{ user.last_login }}</p>
 
-            <a class="btn waves-effect waves-light right" href="{% url 'edit_profile' %}">Edit Profile</a>
+            <a class="btn waves-effect waves-light right" href="{% url 'edit_profile' %}">Edit Profile</a><br><br>
+            <a class="btn waves-effect waves-light right" href="{% url 'change_password' %}">Change Password</a>
         </div>
     </div>
 {% endblock %}

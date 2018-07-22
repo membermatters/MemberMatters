@@ -1,5 +1,6 @@
-from django.contrib.auth import login, authenticate
-from django.http import HttpResponseRedirect, HttpResponseForbidden, JsonResponse, HttpResponseServerError, HttpResponseBadRequest, HttpResponse
+from django.contrib.auth import login, authenticate, update_session_auth_hash
+from django.http import HttpResponseRedirect, HttpResponseForbidden, JsonResponse, HttpResponseBadRequest, HttpResponse
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.core.exceptions import ObjectDoesNotExist
@@ -94,6 +95,22 @@ def signin(request):
     :return:
     """
     return render(request, 'registration/login.html')
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            return render(request, 'change_password.html', {'form': form, "message": "Password changed successfully."})
+        else:
+            return render(request, 'change_password.html', {'form': form})
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, 'change_password.html', {'form': form})
 
 
 def loggedout(request):
@@ -540,3 +557,9 @@ def manage_spacebucks(request):
     spacebucks_transactions = SpaceBucks.objects.filter(user=request.user)
 
     return render(request, 'manage_spacebucks.html', {"spacebucks_transactions": spacebucks_transactions})
+
+
+@login_required
+def add_spacebucks(request):
+
+    return render(request, 'add_spacebucks.html')
