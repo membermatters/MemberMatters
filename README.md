@@ -22,7 +22,11 @@ The HSBNE member portal is how HSBNE members manage their membership.
 * Basic Spacebucks Support
     * Members can see a transaction list
     * Can see current balance
-    * Can't add funds, must be manually done right now - stripe integration planned shortly.
+    * Basic stripe integration working
+        * Members can add a card to their profile
+        * Can see existing card info
+        * Can charge card and get spacebucks
+        * Update/remove their card details (coming soon)
  
  ### Coming Soon
  * Integration with xero or direct debit service for billing management
