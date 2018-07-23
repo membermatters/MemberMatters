@@ -73,10 +73,11 @@ def signup(request):
             new_user = user_form.save()
             profile = profile_form.save(commit=False)
 
-            # this check is needed sometimes, don't ask why
+            # this check is needed to make sure the profile has the user id
             if profile.user_id is None:
                 profile.user_id = new_user.id
             profile.save()
+            profile_form.save_m2m()
 
             # for convenience, we should now log the user in
             username = user_form.cleaned_data.get('username')
