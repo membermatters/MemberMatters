@@ -145,10 +145,10 @@ class Profile(models.Model):
 
         return False
 
-    def email_new_member(self):
+    def email_welcome(self):
         name = self.user.first_name
         email_vars = {"name": name}
-        email_string = render_to_string('email_new_member.html', {'email': email_vars})
+        email_string = render_to_string('email_welcome.html', {'email': email_vars})
 
         if self.__send_email("Welcome to HSBNE " + name, email_string):
             return True

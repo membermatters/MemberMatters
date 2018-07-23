@@ -39,6 +39,20 @@ function initSelects() {
     M.FormSelect.init(document.querySelectorAll('select'), {});
 }
 
+function resendWelcome() {
+    $.ajax({
+        url: resend_welcome_url,  // <-- AND HERE
+        type: 'get',
+        dataType: 'json',
+        success: function (data) {
+                M.toast({html: "Successfully resent welcome email."});
+        },
+        error: function (data) {
+            M.toast({html: "There was an error processing the request. :("});
+        }
+    });
+}
+
 function setState(state) {
     let state_url;
 
@@ -96,6 +110,7 @@ let member_id;
 let deactive_url;
 let active_url;
 let member_state;
+let resend_welcome_url;
 
 function openMemberActionsModal(e) {
     name = e.getAttribute("name");
@@ -105,6 +120,7 @@ function openMemberActionsModal(e) {
     access_url = e.getAttribute("data-access_url");
     active_url = e.getAttribute("data-active_url");
     deactive_url = e.getAttribute("data-deactive_url");
+    resend_welcome_url = e.getAttribute("data-resend_welcome_url");
     document.getElementById('admin-member-modal-name').innerText = name;
 
     // get the edit profile form

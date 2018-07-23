@@ -687,3 +687,15 @@ def save_spacebucks_payment_info(request):
 
     else:
         return redirect(reverse('add_spacebucks'))
+
+
+@login_required
+@admin_required
+def resend_welcome_email(request, member_id):
+    success = User.objects.get(pk=member_id).profile.email_welcome()
+
+    if success:
+        return JsonResponse({"success": True})
+
+    else:
+        return JsonResponse({"success": False, "reason": "Unknown erro. Error AlfSo"})
