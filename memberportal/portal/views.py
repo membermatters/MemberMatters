@@ -259,14 +259,22 @@ def set_state(request, member_id, state):
 
     # grab the user object and save the state
     user = User.objects.get(id=member_id)
-    user.profile.state = state
 
     # if user state changes to active - give default access
     if state == 'active':
-        print(user.profile.doors)
-        for door in Doors.objects.filter(all_members=True):
-            user.profile.doors.add(door)
+        if user.profile.state == "noob":
+            for door in Doors.objects.filter(all_members=True):
+                user.profile.doors.add(door)
+            user.profile.email_new_member()
 
+        else:
+            user.profile.email_enable_member()
+
+    else:
+        user.profile.email_disable_member()
+
+
+    user.profile.state = state
     user.profile.save()
 
     return JsonResponse({"success": True})
@@ -498,6 +506,7 @@ def webcams(request):
 
 @login_required
 def recent_swipes(request):
+    print(request.user.profile.send_email_new_member())
     swipes = DoorLog.objects.all().order_by('date')[::-1][:50]
 
     return render(request, 'recent_swipes.html', {"swipes": swipes})
