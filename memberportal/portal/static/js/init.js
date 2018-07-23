@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
         "hover": false
     });
     M.Dropdown.init(document.querySelectorAll('.dropdown-trigger-hover'), {"coverTrigger": false, "hover": true});
+    M.Dropdown.init(document.querySelectorAll('body > div.container > div > form > div > div > p:nth-child(9) > div > input'), {"coverTrigger": false, "closeOnClick": true,});
 
     // Modal init
     let modalElem = document.getElementById('member-actions-modal');
