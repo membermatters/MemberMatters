@@ -25,6 +25,13 @@ class AddProfileForm(forms.ModelForm):
         model = Profile
         fields = ('member_type', 'causes')
 
+    def clean(self):
+        causes = self.cleaned_data.get('causes')
+        if causes and causes.count() > 3:
+            raise ValidationError('Error, only three causes are allowed.')
+
+        return self.cleaned_data
+
 
 class EditCausesForm(forms.ModelForm):
     class Meta:

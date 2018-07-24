@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
         "hover": false
     });
     M.Dropdown.init(document.querySelectorAll('.dropdown-trigger-hover'), {"coverTrigger": false, "hover": true});
+    M.Dropdown.init(document.querySelectorAll('body > div.container > div > form > div > div > p:nth-child(9) > div > input'), {"coverTrigger": false, "closeOnClick": true,});
 
     // Modal init
     let modalElem = document.getElementById('member-actions-modal');
@@ -36,6 +37,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function initSelects() {
     M.FormSelect.init(document.querySelectorAll('select'), {});
+}
+
+function resendWelcome() {
+    $.ajax({
+        url: resend_welcome_url,  // <-- AND HERE
+        type: 'get',
+        dataType: 'json',
+        success: function (data) {
+                M.toast({html: "Successfully resent welcome email."});
+        },
+        error: function (data) {
+            M.toast({html: "There was an error processing the request. :("});
+        }
+    });
 }
 
 function setState(state) {
@@ -95,6 +110,7 @@ let member_id;
 let deactive_url;
 let active_url;
 let member_state;
+let resend_welcome_url;
 
 function openMemberActionsModal(e) {
     name = e.getAttribute("name");
@@ -104,6 +120,7 @@ function openMemberActionsModal(e) {
     access_url = e.getAttribute("data-access_url");
     active_url = e.getAttribute("data-active_url");
     deactive_url = e.getAttribute("data-deactive_url");
+    resend_welcome_url = e.getAttribute("data-resend_welcome_url");
     document.getElementById('admin-member-modal-name').innerText = name;
 
     // get the edit profile form

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<style type="text/css">
+    /* FONTS */
+    @media screen {
+        @font-face {
+          font-family: 'Lato';
+          font-style: normal;
+          font-weight: 400;
+          src: local('Lato Regular'), local('Lato-Regular'), url(https://fonts.gstatic.com/s/lato/v11/qIIYRU-oROkIk8vfvxw6QvesZW2xOQ-xsNqO47m55DA.woff) format('woff');
+        }
+
+        @font-face {
+          font-family: 'Lato';
+          font-style: normal;
+          font-weight: 700;
+          src: local('Lato Bold'), local('Lato-Bold'), url(https://fonts.gstatic.com/s/lato/v11/qdgUG4U09HnJwhYI-uK18wLUuEpTyoUstqEm5AMlJo4.woff) format('woff');
+        }
+
+        @font-face {
+          font-family: 'Lato';
+          font-style: italic;
+          font-weight: 400;
+          src: local('Lato Italic'), local('Lato-Italic'), url(https://fonts.gstatic.com/s/lato/v11/RYyZNoeFgb0l7W3Vu1aSWOvvDin1pK8aKteLpeZ5c0A.woff) format('woff');
+        }
+
+        @font-face {
+          font-family: 'Lato';
+          font-style: italic;
+          font-weight: 700;
+          src: local('Lato Bold Italic'), local('Lato-BoldItalic'), url(https://fonts.gstatic.com/s/lato/v11/HkF_qI1x_noxlxhrhMQYELO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
+        }
+    }
+
+    /* CLIENT-SPECIFIC STYLES */
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; }
+
+    /* RESET STYLES */
+    img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    table { border-collapse: collapse !important; }
+    body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
+
+    /* iOS BLUE LINKS */
+    a[x-apple-data-detectors] {
+        color: inherit !important;
+        text-decoration: none !important;
+        font-size: inherit !important;
+        font-family: inherit !important;
+        font-weight: inherit !important;
+        line-height: inherit !important;
+    }
+
+    /* MOBILE STYLES */
+    @media screen and (max-width:600px){
+        h1 {
+            font-size: 32px !important;
+            line-height: 32px !important;
+        }
+    }
+
+    /* ANDROID CENTER FIX */
+    div[style*="margin: 16px 0;"] { margin: 0 !important; }
+</style>
+</head>
+<body style="background-color: #f4f4f4; margin: 0 !important; padding: 0 !important;">
+
+<!-- HIDDEN PREHEADER TEXT -->
+<div style="display: none; font-size: 1px; color: #fefefe; line-height: 1px; font-family: 'Lato', Helvetica, Arial, sans-serif; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
+    Welcome to HSBNE. Please read this email as it contains some important information about how to get started at HSBNE.
+</div>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <!-- LOGO -->
+    <tr>
+        <td bgcolor="#333333" align="center">
+            <!--[if (gte mso 9)|(IE)]>
+            <table align="center" border="0" cellspacing="0" cellpadding="0" width="600">
+            <tr>
+            <td align="center" valign="top" width="600">
+            <![endif]-->
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;" >
+                <tr>
+                    <td align="center" valign="top" style="padding: 40px 10px 40px 10px;">
+                        <a href="http://litmus.com" target="_blank">
+                            <img alt="Logo" src="http://porthack.hsbne.org:5180/static/img/logo.png" width="60" height="60" style="display: block; width: 60px; max-width: 60px; min-width: 60px; font-family: 'Lato', Helvetica, Arial, sans-serif; color: #ffffff; font-size: 18px;" border="0">
+                        </a>
+                    </td>
+                </tr>
+            </table>
+            <!--[if (gte mso 9)|(IE)]>
+            </td>
+            </tr>
+            </table>
+            <![endif]-->
+        </td>
+    </tr>
+    <!-- HERO -->
+    <tr>
+        <td bgcolor="#333333" align="center" style="padding: 0px 10px 0px 10px;">
+            <!--[if (gte mso 9)|(IE)]>
+            <table align="center" border="0" cellspacing="0" cellpadding="0" width="600">
+            <tr>
+            <td align="center" valign="top" width="600">
+            <![endif]-->
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;" >
+                <tr>
+                    <td bgcolor="#ffffff" align="center" valign="top" style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
+                      <h1 style="font-size: 48px; font-weight: 400; margin: 0;">Welcome, {{ email.name }}</h1>
+                    </td>
+                </tr>
+            </table>
+            <!--[if (gte mso 9)|(IE)]>
+            </td>
+            </tr>
+            </table>
+            <![endif]-->
+        </td>
+    </tr>
+    <!-- COPY BLOCK -->
+    <tr>
+        <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
+            <!--[if (gte mso 9)|(IE)]>
+            <table align="center" border="0" cellspacing="0" cellpadding="0" width="600">
+            <tr>
+            <td align="center" valign="top" width="600">
+            <![endif]-->
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;" >
+              <!-- COPY -->
+              <tr>
+                <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 10px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" >
+                  <p style="margin: 0;">
+                      Thanks for finishing your HSBNE member induction. Now that you're part of our community here are a few things to get you started.<br><br> Quick tip: we recommend using your real name when registering online accounts as it's easier to recognise people.
+                    </p>
+                    <h2 style="font-size: 28px; font-weight: 400; text-align: center">Discord</h2>
+                    <p style="margin: 0; text-align: center">
+                    Our Discord guild is the easiest way to communicate with other members and get answers to any questions you have. Click the button below for an invite link.
+                    </p>
+                    <!-- BULLETPROOF BUTTON -->
+              <tr>
+                <td bgcolor="#ffffff" align="left">
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td bgcolor="#ffffff" align="center" style="padding: 0px 30px 20px 30px;">
+                        <table border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                              <td align="center" style="border-radius: 3px;" bgcolor="#f55a4e"><a href="https://discord.gg/WKnrfby" target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 3px; border: 0px solid #333333; display: inline-block;">Join Discord</a></td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+                </td>
+              </tr>
+
+
+
+                <!-- COPY -->
+              <tr>
+                <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 10px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" >
+                    <h2 style="font-size: 28px; font-weight: 400; text-align: center">Forums</h2>
+                    <p style="margin: 0; text-align: center">
+                    Our forum is the preferred communication method for official discussions like general meetings, purchase proposals, etc. Please make an account so you can contribute to discussions.
+                    </p>
+                    <!-- BULLETPROOF BUTTON -->
+              <tr>
+                <td bgcolor="#ffffff" align="left">
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td bgcolor="#ffffff" align="center" style="padding: 0px 30px 20px 30px;">
+                        <table border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                              <td align="center" style="border-radius: 3px;" bgcolor="#f55a4e"><a href="https://forum.hsbne.org/signup" target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 3px; border: 0px solid #333333; display: inline-block;">Join Forums</a></td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+                </td>
+              </tr>
+
+
+                  <!-- COPY -->
+              <tr>
+                <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 10px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" >
+                    <h2 style="font-size: 28px; font-weight: 400; text-align: center">Trello</h2>
+                    <p style="margin: 0; text-align: center">
+                    Trello is our way of tracking projects and other tasks around HSBNE. If you want to get involved and help make our facilities even better we recommend regularly checking out Trello.
+                    </p>
+                    <!-- BULLETPROOF BUTTON -->
+              <tr>
+                <td bgcolor="#ffffff" align="left">
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td bgcolor="#ffffff" align="center" style="padding: 0px 30px 40px 30px;">
+                        <table border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                              <td align="center" style="border-radius: 3px;" bgcolor="#f55a4e"><a href="https://trello.com/b/ebCvJ4Th/inbox" target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 3px; border: 0px solid #333333; display: inline-block;">Join Trello</a></td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+                </td>
+              </tr>
+
+
+
+                  <!-- COPY -->
+              <tr>
+                <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 10px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" >
+                    <h2 style="font-size: 28px; font-weight: 400; text-align: center">Facebook</h2>
+                    <p style="margin: 0; text-align: center">
+                    While you're here we'd appreciate a like on our Facebook page. This also ensures you stay up to date with any events and other things going on around HSBNE.
+                    </p>
+                    <!-- BULLETPROOF BUTTON -->
+              <tr>
+                <td bgcolor="#ffffff" align="left">
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td bgcolor="#ffffff" align="center" style="padding: 0px 30px 40px 30px;">
+                        <table border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                              <td align="center" style="border-radius: 3px;" bgcolor="#f55a4e"><a href="https://www.facebook.com/HSBNE/" target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 3px; border: 0px solid #333333; display: inline-block;">Visit Facebook</a></td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+                </td>
+              </tr>
+
+
+                <tr>
+                <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 10px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" >
+                    <h2 style="font-size: 28px; font-weight: 400; text-align: center">Next Steps</h2>
+                    <p style="margin: 0; text-align: center">
+                    Shortly you will get an invoice delivered via email. Once you pay this you can come along to HSBNE's next open night to collect your membership card. If you have any questions, just reply to this email — we're always happy to help out.
+                    </p>
+              <br>
+                </td>
+              </tr>
+
+              <!-- COPY -->
+              <tr>
+                <td bgcolor="#ffffff" align="left" style="padding: 0px 30px 40px 30px; border-radius: 0px 0px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;" >
+                  <p style="margin: 0;">Cheers,<br>The HSBNE Member Portal</p>
+                </td>
+              </tr>
+            </table>
+            <!--[if (gte mso 9)|(IE)]>
+            </td>
+            </tr>
+            </table>
+            <![endif]-->
+        </td>
+    </tr>
+    <!-- FOOTER -->
+    <tr>
+        <td bgcolor="#f4f4f4" align="center" style="padding: 0px 10px 0px 10px;">
+            <!--[if (gte mso 9)|(IE)]>
+            <table align="center" border="0" cellspacing="0" cellpadding="0" width="600">
+            <tr>
+            <td align="center" valign="top" width="600">
+            <![endif]-->
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;" >
+
+              <!-- UNSUBSCRIBE -->
+              <tr>
+                <td style="padding: 0px 30px 30px 30px;;" >
+                </td>
+              </tr>
+              <!-- ADDRESS -->
+              <tr>
+                <td bgcolor="#f4f4f4" align="left" style="padding: 0px 30px 30px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;" >
+                  <p style="margin: 0;">Sent by the HSBNE member portal on behalf of HSBNE Inc at 221c MacArthur Ave, Eagle Farm QLD 4009.</p>
+                </td>
+              </tr>
+            </table>
+            <!--[if (gte mso 9)|(IE)]>
+            </td>
+            </tr>
+            </table>
+            <![endif]-->
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

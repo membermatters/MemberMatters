@@ -2,3 +2,4 @@ django
 requests
 mysqlclient
 stripe
+sendgrid

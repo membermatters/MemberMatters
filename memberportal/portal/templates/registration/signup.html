@@ -28,6 +28,24 @@
                                 </div>
                             {% endfor %}
                         {% endif %}
+
+                    {% if profile_form.errors %}
+                            {% for field in profile_form %}
+                                {% for error in field.errors %}
+                                    <div class="chip error-chip">
+                                        {{ error|escape }}
+                                        <i class="close material-icons">close</i>
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+
+                            {% for error in profile_form.non_field_errors %}
+                                <div class="chip">
+                                    {{ error|escape }}
+                                    <i class="close material-icons">close</i>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
 
                     <p class="text">You are required to fill out all fields to sign up. We will never share your
@@ -35,7 +53,7 @@
                     {{ user_form.as_p }}
                     {{ profile_form.as_p }}
 
-                    <label>Note: if you're unsure what causes to join just select ones that interest you.</label>
+                    <label>You can select up to 3 causes that interest you.</label>
 
                     <br><br>
 

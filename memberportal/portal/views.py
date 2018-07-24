@@ -73,10 +73,11 @@ def signup(request):
             new_user = user_form.save()
             profile = profile_form.save(commit=False)
 
-            # this check is needed sometimes, don't ask why
+            # this check is needed to make sure the profile has the user id
             if profile.user_id is None:
                 profile.user_id = new_user.id
             profile.save()
+            profile_form.save_m2m()
 
             # for convenience, we should now log the user in
             username = user_form.cleaned_data.get('username')
@@ -258,14 +259,22 @@ def set_state(request, member_id, state):
 
     # grab the user object and save the state
     user = User.objects.get(id=member_id)
-    user.profile.state = state
 
     # if user state changes to active - give default access
     if state == 'active':
-        print(user.profile.doors)
-        for door in Doors.objects.filter(all_members=True):
-            user.profile.doors.add(door)
+        if user.profile.state == "noob":
+            for door in Doors.objects.filter(all_members=True):
+                user.profile.doors.add(door)
+            user.profile.email_new_member()
 
+        else:
+            user.profile.email_enable_member()
+
+    else:
+        user.profile.email_disable_member()
+
+
+    user.profile.state = state
     user.profile.save()
 
     return JsonResponse({"success": True})
@@ -677,3 +686,15 @@ def save_spacebucks_payment_info(request):
 
     else:
         return redirect(reverse('add_spacebucks'))
+
+
+@login_required
+@admin_required
+def resend_welcome_email(request, member_id):
+    success = User.objects.get(pk=member_id).profile.email_welcome()
+
+    if success:
+        return JsonResponse({"success": True})
+
+    else:
+        return JsonResponse({"success": False, "reason": "Unknown erro. Error AlfSo"})

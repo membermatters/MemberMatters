@@ -3,6 +3,12 @@ from django.contrib.auth.models import User
 from django.db.models import Sum
 from datetime import datetime, timedelta
 import pytz
+import os
+import sendgrid
+from sendgrid.helpers.mail import *
+from django.template.loader import render_to_string
+
+FROM_EMAIL = '"HSBNE Member Portal" <contact@hsbne.org>'
 
 
 class AdminLog(models.Model):
@@ -107,6 +113,68 @@ class Profile(models.Model):
 
     def __str__(self):
         return str(self.user)
+
+    def __send_email(self, subject, body):
+        if "SENDGRID_API_KEY" in os.environ:
+            sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+            from_email = Email(FROM_EMAIL)
+            to_email = Email(self.user.email)
+            subject = subject
+            content = Content("text/html", body)
+            mail = Mail(from_email, subject, to_email, content)
+            response = sg.client.mail.send.post(request_body=mail.get())
+
+            if response.status_code == 202:
+                return True
+
+        return False
+
+    def email_notification(self, subject, title, preheader, message):
+        email_vars = {"preheader": preheader, "title": title, "message": message}
+        email_string = render_to_string('email_without_button.html', {'email': email_vars})
+
+        if self.__send_email(subject, email_string):
+            return True
+
+    def email_link(self, subject, title, preheader, message, link, btn_text):
+        email_vars = {"preheader": preheader, "title": title, "message": message, "link": link, "btn_text": btn_text}
+        email_string = render_to_string('email_with_button.html', {'email': email_vars})
+
+        if self.__send_email(subject, email_string):
+            return True
+
+        return False
+
+    def email_welcome(self):
+        name = self.user.first_name
+        email_vars = {"name": name}
+        email_string = render_to_string('email_welcome.html', {'email': email_vars})
+
+        if self.__send_email("Welcome to HSBNE " + name, email_string):
+            return True
+
+        return False
+
+    def email_disable_member(self):
+        if self.email_notification("Your HSBNE site access has been disabled.",
+                                "Your access has been disabled.",
+                                "Your HSBNE site access has been disabled.",
+                                "Unfortunately, your access to HSBNE has been disabled. This could be due to overdue "
+                                "membership fees, a ban being issued or your membership ending. If you believe this is "
+                                "an error please reply to this email and we'll sort it out as soon as possible."):
+            return True
+
+        return False
+
+    def email_enable_member(self):
+        if self.email_notification("Your HSBNE site access has been enabled.",
+                                "Your access has been enabled.",
+                                "Your HSBNE site access has been eabled.",
+                                "Great news! Your access to HSBNE has been enabled. If you believe this is "
+                                "an error please reply to this email and we'll sort it out as soon as possible."):
+            return True
+
+        return False
 
 
 class SpaceBucks(models.Model):
