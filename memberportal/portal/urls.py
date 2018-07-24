@@ -43,4 +43,5 @@ urlpatterns = [
     path('cause/list/', views.list_causes, name='list_causes'),
     path('webcams/', views.webcams, name='webcams'),
     path('', views.home, name='home'),
+    path('spacebug/report/', views.spacebug, name='report_spacebug')
 ]

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Report Issue{% endblock %}
+
+{% block content %}
+    <div class="admin-container center row small-row">
+        <h3 class="header center text">Report Issue</h3>
+        <p>Report an issue around HSBNE.</p>
+        <form method="POST" action="{% url 'report_spacebug' %}"/>
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <a class="btn-flat right" onclick="window.history.back();">Cancel</a>
+        <button class="btn waves-effect waves-light right" type="submit" name="action">Submit Issue</button>
+        </form>
+    </div>
+{% endblock %}
