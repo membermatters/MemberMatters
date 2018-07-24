@@ -8,7 +8,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
-import os
 from .forms import *
 import stripe
 
@@ -78,6 +77,14 @@ def signup(request):
                 profile.user_id = new_user.id
             profile.save()
             profile_form.save_m2m()
+            profile.email_link("HSBNE New Member Signup - Action Required",
+                               "Next Step: Register for an Induction",
+                               "Important. Please read this email for details on how to register for an induction.",
+                               "{}, thanks for signing up! The next step to becoming a fully fledged member is to book "
+                               "in for an induction. During this induction we will go over the basic safety and "
+                               "operational aspects of HSBNE. To book in, click the link below.".format(new_user.first_name),
+                               "https://www.eventbrite.com.au/e/hsbne-open-night-tickets-27140078706",
+                               "Register for Induction")
 
             # for convenience, we should now log the user in
             username = user_form.cleaned_data.get('username')
@@ -697,4 +704,4 @@ def resend_welcome_email(request, member_id):
         return JsonResponse({"success": True})
 
     else:
-        return JsonResponse({"success": False, "reason": "Unknown erro. Error AlfSo"})
+        return JsonResponse({"success": False, "reason": "Unknown error. Error AlfSo"})
