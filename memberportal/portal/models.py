@@ -160,8 +160,7 @@ class Profile(models.Model):
                                 "Your access has been disabled.",
                                 "Your HSBNE site access has been disabled.",
                                 "Unfortunately, your access to HSBNE has been disabled. This could be due to overdue "
-                                "membership fees, a ban being issued or your membership ending. If you believe this is "
-                                "an error please reply to this email and we'll sort it out as soon as possible."):
+                                "membership fees, a ban being issued or your membership ending."):
             return True
 
         return False
@@ -170,8 +169,7 @@ class Profile(models.Model):
         if self.email_notification("Your HSBNE site access has been enabled.",
                                 "Your access has been enabled.",
                                 "Your HSBNE site access has been eabled.",
-                                "Great news! Your access to HSBNE has been enabled. If you believe this is "
-                                "an error please reply to this email and we'll sort it out as soon as possible."):
+                                "Great news! Your access to HSBNE has been enabled."):
             return True
 
         return False
