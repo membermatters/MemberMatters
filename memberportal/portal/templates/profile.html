@@ -34,11 +34,16 @@
                     {{ cause }}{% if not forloop.last %},{% endif %}
                 {% endfor %}</td>
             </tr>
+            {% if user.profile.state == "noob" %}
+            {% else %}
+                <tr>
+                    <td><b>Spacebucks:</b></td>
+                    <td>Current balance is: ${{ user.profile.spacebucks_balance|floatformat:2 }} (<a
+                            href="{% url 'manage_spacebucks' %}">manage</a>)
+                    </td>
+                </tr>
+            {% endif %}
 
-            <tr>
-                <td><b>Spacebucks:</b></td>
-                <td>Current balance is: ${{ user.profile.spacebucks_balance|floatformat:2 }} (<a href="{% url 'manage_spacebucks' %}">manage</a>)</td>
-            </tr>
             </tbody>
         </table>
         <div id='account-info' style="width: 100%;" class="left">
