@@ -57,17 +57,17 @@ sudo -H pip3 install -r requirements.txt
  ##### Mac (Tested by nog3 w/python 3.7)
  You will need to install and use virtualenv on Mac in order to get your environment correct as there are conflicts with built in python on OSX.
  
- ```bash
+```` bash
 brew install python3
 pip3 install virtualenv
-virtualenv hsbneportal
-source hsbneportal\bin\activate
-pip3 install -r requirements.txt
+virtualenv venv
+source venv\bin\activate
+pip3 install -r requirements.txt`
 
-You should see (<environment_name>) $ at your command prompt, letting you know that you’re running the proper virtualenv install. To deactivate, you can just run the following to come out of the environment.
+
+You should see (venv) $ at your command prompt, letting you know that you’re running the proper virtualenv install. To deactivate, you can just run the following to come out of the environment.
 
 ```deactivate
-```
  
  ##### Windows
  Please add instructions if you use windows.
