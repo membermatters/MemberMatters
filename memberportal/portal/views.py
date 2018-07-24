@@ -506,7 +506,6 @@ def webcams(request):
 
 @login_required
 def recent_swipes(request):
-    print(request.user.profile.send_email_new_member())
     swipes = DoorLog.objects.all().order_by('date')[::-1][:50]
 
     return render(request, 'recent_swipes.html', {"swipes": swipes})
