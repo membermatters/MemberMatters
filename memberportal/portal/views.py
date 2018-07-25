@@ -139,7 +139,6 @@ def loggedout(request):
     :param request:
     :return:
     """
-    log_user_event(request.user, "User signed out.", "usage")
     return render(request, 'loggedout.html')
 
 
