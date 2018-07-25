@@ -83,3 +83,19 @@ class SpacebugForm(forms.Form):
             required=True,
             widget=forms.Textarea
         )
+
+
+class ResetPasswordRequestForm(forms.Form):
+    email = forms.CharField(required=True)
+
+
+class ResetPasswordForm(forms.Form):
+    password1 = forms.CharField(label="Password",
+                                widget=forms.PasswordInput,
+                                help_text='The minimum length is 8 characters and you must include at least one'
+                                          'capital letter, number and special character.')
+    password2 = forms.CharField(label="Confirm Password",
+                                widget=forms.PasswordInput)
+
+    class Meta:
+        fields = ['password1', 'password2']

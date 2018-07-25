@@ -1,12 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.urls import reverse
 from datetime import datetime, timedelta
 import pytz
 import os
 import sendgrid
+import uuid
 from sendgrid.helpers.mail import *
 from django.template.loader import render_to_string
+
+utc = pytz.UTC
 
 FROM_EMAIL = '"HSBNE Member Portal" <contact@hsbne.org>'
 
@@ -91,7 +95,6 @@ class Doors(models.Model):
         self.save()
 
     def get_unavailable(self):
-        utc = pytz.UTC
         if self.last_seen:
             if utc.localize(datetime.now()) - timedelta(minutes=5) > self.last_seen:
                 return True
@@ -130,6 +133,8 @@ class Profile(models.Model):
 
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='profile')
+    password_reset_key = models.UUIDField(default=None, null=True)
+    password_reset_expire = models.DateTimeField(default=None, null=True)
     state = models.CharField(max_length=8, default='noob', choices=STATES)
     member_type = models.ForeignKey(
         MemberTypes, on_delete=models.PROTECT, related_name='member_type')
@@ -230,6 +235,21 @@ class Profile(models.Model):
             return True
 
         return False
+
+    def reset_password(self):
+        log_user_event(self.user, "Password reset requested", "profile")
+        self.password_reset_key = uuid.uuid4()
+        self.password_reset_expire = datetime.now() + timedelta(hours=24)
+        self.save()
+        self.email_link("Password reset request for you HSBNE account",
+                        "HSBNE Password Reset",
+                        "Password reset request for you HSBNE account",
+                        "Someone has issued a password reset for your HSBNE account. The link below will expire in "
+                        "24 hours. If this wasn't you, just ignore this email and nothing will happen.",
+                        "https://portal.hsbne.org" + reverse('reset_password', kwargs={'reset_token': self.password_reset_key}),
+                        "Reset Password")
+
+        return True
 
 
 class SpaceBucks(models.Model):

@@ -1,16 +1,19 @@
 from django.contrib.auth import login, authenticate, update_session_auth_hash
 from django.http import HttpResponseRedirect, HttpResponseForbidden, JsonResponse, HttpResponseBadRequest, HttpResponse, \
     HttpResponseServerError
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from django.urls import reverse
 from .forms import *
 from .models import log_event, log_user_event
 import stripe
 import json
+import pytz
+
+utc = pytz.UTC
 
 
 def admin_required(view):
@@ -131,6 +134,62 @@ def change_password(request):
         form = PasswordChangeForm(request.user)
 
     return render(request, 'change_password.html', {'form': form})
+
+
+def reset_password(request, reset_token=None):
+    if reset_token:
+        try:
+            profile = Profile.objects.get(password_reset_key=reset_token)
+
+        except ObjectDoesNotExist:
+            return render(request, 'reset_password_form.html', {"error": "Invalid link."})
+
+        if request.method == "POST":
+            form = ResetPasswordForm(request.POST)
+
+            if form.is_valid():
+                if form.cleaned_data['password1'] == form.cleaned_data['password2']:
+                    profile.user.password = make_password(form.cleaned_data['password1'])
+                    profile.user.save()
+
+                    profile.password_reset_expire = None
+                    profile.password_reset_key = None
+                    profile.save()
+
+                    profile.email_notification("Your HSBNE password has changed.", "Your password has changed.", "", "Your HSBNE password has been successfully changed.")
+
+                    return render(request, 'reset_password_form.html', {'form': ResetPasswordForm(), "message": "Password changed successfully."})
+
+                else:
+                    return render(request, 'reset_password_form.html',
+                                  {'form': ResetPasswordForm(), "error": "Passwords don't match."})
+
+        else:
+            if utc.localize(datetime.now()) < profile.password_reset_expire:
+                return render(request, 'reset_password_form.html', {'form': ResetPasswordForm()})
+
+            else:
+                return render(request, 'reset_password_form.html',
+                              {'form': ResetPasswordForm(), "error": "Error. Link expired."})
+
+    elif request.method == "POST":
+        form = ResetPasswordRequestForm(request.POST)
+
+        if form.is_valid():
+            try:
+                user = User.objects.get(email=form.cleaned_data['email'])
+                user.profile.reset_password()
+                return render(request, 'reset_password.html', {'form': ResetPasswordRequestForm(), "message": "Check your email for a link."})
+
+            except ObjectDoesNotExist:
+                return render(request, 'reset_password.html', {'form': ResetPasswordRequestForm(), "error": "No user with that email."})
+
+        else:
+            return render(request, 'reset_password.html', {'form': ResetPasswordRequestForm(), "error": "invalid email"})
+
+    else:
+
+        return render(request, 'reset_password.html', {'form': ResetPasswordRequestForm()})
 
 
 def loggedout(request):
