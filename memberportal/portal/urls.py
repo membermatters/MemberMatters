@@ -36,6 +36,7 @@ urlpatterns = [
     path('api/member/<int:member_id>/edit/', views.admin_edit_member, name='admin_edit_member'),
     path('api/member/<int:member_id>/access/', views.admin_edit_access, name='admin_edit_access'),
     path('api/member/<int:member_id>/logs/', views.admin_member_logs, name='admin_member_logs'),
+    path('api/spacebucks/debit/', views.spacebucks_debit, name="spacebucks_debit"),
     path('api/member/<int:member_id>/email/welcome', views.resend_welcome_email, name='resend_welcome_email'),
     path('causes/', views.manage_causes, name='manage_causes'),
     path('cause/<int:cause_id>/delete/', views.delete_cause, name='delete_cause'),

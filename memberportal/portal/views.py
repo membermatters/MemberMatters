@@ -10,6 +10,7 @@ from django.urls import reverse
 from .forms import *
 from .models import log_event, log_user_event
 import stripe
+import json
 
 
 def admin_required(view):
@@ -36,14 +37,21 @@ def no_noobs(view):
     return wrap
 
 
-def reader_auth(view):
+def api_auth(view):
     def wrap(request, *args, **kwargs):
-        # do some logic here
-        if request.method == "GET" and request.GET.get('secret', "wrong") == "cookiemonster":
+        secret_key = "cookiemonster"
+
+        if request.method == "GET" and request.GET.get('secret', "wrong") == secret_key:
             return view(request, *args, **kwargs)
-        else:
-            # if the user isn't authorised let them know
-            return HttpResponseForbidden("403 Access Forbidden")
+
+        elif request.method == "POST":
+            details = json.loads(request.body)
+            if details.get("secret", "wrong") == secret_key:
+                print(True)
+                return view(request, *args, **kwargs)
+
+        # if the user isn't authorised let them know
+        return HttpResponseForbidden("403 Access Forbidden")
 
     return wrap
 
@@ -379,7 +387,7 @@ def edit_door(request, door_id):
             return HttpResponseRedirect('%s' % (reverse('manage_doors')))
         else:
             # otherwise return form with errors
-            return render(request, 'edit_cause.html', {'form': form})
+            return render(request, 'edit_door.html', {'form': form})
 
     else:
         # if it's not a form submission, return an empty form
@@ -455,7 +463,7 @@ def request_access(request, door_id):
     return JsonResponse({"success": False, "reason": "Not implemented yet."})
 
 
-@reader_auth
+@api_auth
 def check_access(request, rfid_code, door_id=None):
     door = None
 
@@ -549,7 +557,7 @@ def open_door(request, door_id):
     return HttpResponseForbidden("You are not authorised to access that door.")
 
 
-@reader_auth
+@api_auth
 def authorised_tags(request, door_id=None):
     door = None
 
@@ -746,3 +754,34 @@ def resend_welcome_email(request, member_id):
 
     else:
         return JsonResponse({"success": False, "reason": "Unknown error. Error AlfSo"})
+
+
+@csrf_exempt
+@api_auth
+def spacebucks_debit(request):
+    if request.method == "POST":
+        details = json.loads(request.body)
+        profile = Profile.objects.get(rfid=details['rfid_code'])
+
+        if profile.spacebucks_balance >= details['amount']:
+            transaction = SpaceBucks()
+            transaction.amount = details['amount']*-1.0
+            transaction.user = profile.user
+            transaction.description = details['description']
+            transaction.transaction_type = "card"
+            transaction.save()
+
+            log_user_event(profile.user,
+                           "Successfully debited ${} from spacebucks account.".format(details['amount']),
+                           "spacebucks")
+
+            return JsonResponse({"success": True, "balance": round(profile.spacebucks_balance, 2)})
+
+        # not enough $$
+        log_user_event(profile.user,
+                       "Not enough funds to debit ${} from spacebucks account.".format(details['amount']),
+                       "spacebucks")
+        return JsonResponse({"success": False, "balance": round(profile.spacebucks_balance, 2)})
+
+    else:
+        return HttpResponseBadRequest("Invalid request method.")
