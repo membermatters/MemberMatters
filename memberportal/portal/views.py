@@ -247,6 +247,15 @@ def edit_profile(request):
 
 
 @login_required
+def spacebug(request):
+    form_class = SpacebugForm
+
+    return render(request, 'spacebug.html', {
+        'form': form_class,
+    })
+
+
+@login_required
 @admin_required
 def set_state(request, member_id, state):
     """

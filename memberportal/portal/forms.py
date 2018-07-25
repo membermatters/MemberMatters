@@ -75,3 +75,11 @@ class DoorForm(forms.ModelForm):
     class Meta:
         model = Doors
         fields = ['name', 'description', 'ip_address', 'all_members']
+
+
+class SpacebugForm(forms.Form):
+        issue = forms.CharField(required=True)
+        details = forms.CharField(
+            required=True,
+            widget=forms.Textarea
+        )
