@@ -3,12 +3,12 @@ from django.http import HttpResponseRedirect, HttpResponseForbidden, JsonRespons
     HttpResponseServerError
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
-from django.template.loader import render_to_string
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
 from .forms import *
+from .models import log_event, log_user_event
 import stripe
 
 
@@ -48,24 +48,6 @@ def reader_auth(view):
     return wrap
 
 
-def log_admin_action(admin_user, member_id, action="unknown", description="none"):
-    """
-    Called to log admin action to the DB.
-    :param admin_user: user object of logged in admin performing the request.
-    :param member_id: id number of member action is being performed on.
-    :param action: brief description of the action being taken.
-    :param description: either a brief description of why or the raw request params.
-    :return:
-    """
-
-    if "csrfmiddlewaretoken" in description:
-        import re
-        description = re.sub(r"csrfmiddlewaretoken=[a-zA-Z0-9]*&", '', description)
-
-    member = User.objects.get(pk=member_id)
-    AdminLog(log_user=admin_user, action=action, log_member=member, description=description).save()
-
-
 def signup(request):
     """
     The signup view.
@@ -94,7 +76,8 @@ def signup(request):
                                "Important. Please read this email for details on how to register for an induction.",
                                "{}, thanks for signing up! The next step to becoming a fully fledged member is to book "
                                "in for an induction. During this induction we will go over the basic safety and "
-                               "operational aspects of HSBNE. To book in, click the link below.".format(new_user.first_name),
+                               "operational aspects of HSBNE. To book in, click the link below.".format(
+                                   new_user.first_name),
                                "https://www.eventbrite.com.au/e/hsbne-open-night-tickets-27140078706",
                                "Register for Induction")
 
@@ -120,6 +103,7 @@ def signin(request):
     :param request:
     :return:
     """
+    log_user_event(request.user, "User logged in.", "usage")
     return render(request, 'registration/login.html')
 
 
@@ -129,8 +113,10 @@ def change_password(request):
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
-            update_session_auth_hash(request, user)  # Important!
+            update_session_auth_hash(request, user)
+            log_user_event(request.user, "User password changed.", "profile")
             return render(request, 'change_password.html', {'form': form, "message": "Password changed successfully."})
+
         else:
             return render(request, 'change_password.html', {'form': form})
     else:
@@ -145,6 +131,7 @@ def loggedout(request):
     :param request:
     :return:
     """
+    log_user_event(request.user, "User signed out.", "usage")
     return render(request, 'loggedout.html')
 
 
@@ -206,10 +193,28 @@ def admin_edit_member(request, member_id):
             # if it's a valid form submission then save and log it
             form.save()
             data['form_is_valid'] = True
-            log_admin_action(request.user, member_id, "edited member profile", str(request.body))
+            log_user_event(user, request.user.get_full_name() + " edited user profile.", "profile")
 
     # render the form and return it
     data['html_form'] = render_to_string('partial_admin_edit_member.html', {'form': form, 'member_id': member_id},
+                                         request=request)
+    return JsonResponse(data)
+
+
+@login_required
+@admin_required
+def admin_member_logs(request, member_id):
+    """
+    Part of the process for our ajax requests for the member list.
+    :param request:
+    :param member_id:
+    :return:
+    """
+    data = dict()
+    member = User.objects.get(pk=member_id)
+
+    # render the form and return it
+    data['html_form'] = render_to_string('partial_admin_member_logs.html', {'logs': member.profile.get_logs()},
                                          request=request)
     return JsonResponse(data)
 
@@ -230,6 +235,7 @@ def edit_profile(request):
             # if it was a form submission save it
             user_form.save()
             cause_form.save()
+            log_user_event(request.user, "User profile edited.", "profile")
             return HttpResponseRedirect('%s' % (reverse('profile')))
 
     else:
@@ -241,37 +247,13 @@ def edit_profile(request):
 
 
 @login_required
-def edit_causes(request):
-    """
-    The edit causes view.
-    :param request:
-    :return:
-    """
-    if request.method == 'POST':
-        user = Profile.objects.get(user=request.user)
-        form = EditCausesForm(request.POST, instance=user)
-        if form.is_valid():
-            # if it was a form submission save it
-            form.save()
-            return HttpResponseRedirect('%s' % (reverse('profile')))
-        else:
-            # otherwise return form with errors
-            return render(request, 'edit_causes.html', {'form': form})
-
-    else:
-        # if it's not a form submission, return an empty form
-        user = Profile.objects.get(user=request.user)
-        form = EditCausesForm(instance=user)
-        return render(request, 'edit_causes.html', {'form': form})
-
-
-@login_required
 def spacebug(request):
     form_class = SpacebugForm
 
     return render(request, 'spacebug.html', {
         'form': form_class,
     })
+
 
 @login_required
 @admin_required
@@ -283,26 +265,18 @@ def set_state(request, member_id, state):
     :param state:
     :return:
     """
-
-    # grab the user object and save the state
     user = User.objects.get(id=member_id)
 
-    # if user state changes to active - give default access
     if state == 'active':
         if user.profile.state == "noob":
+            # give default access
             for door in Doors.objects.filter(all_members=True):
                 user.profile.doors.add(door)
-            user.profile.email_new_member()
 
-        else:
-            user.profile.email_enable_member()
+        user.profile.activate()
 
     else:
-        user.profile.email_disable_member()
-
-
-    user.profile.state = state
-    user.profile.save()
+        user.profile.deactivate()
 
     return JsonResponse({"success": True})
 
@@ -310,10 +284,12 @@ def set_state(request, member_id, state):
 @login_required
 @admin_required
 def manage_causes(request):
+    # if we want to add a cause
     if request.method == 'POST':
         form = CauseForm(request.POST)
         if form.is_valid():
             form.save()
+            log_user_event(request.user, "Created {} cause.".format(form.cleaned_data.get('name')), "admin", form)
             return HttpResponseRedirect(reverse("manage_causes"))
 
     else:
@@ -338,6 +314,7 @@ def edit_cause(request, cause_id):
         if form.is_valid():
             # if it was a form submission save it
             form.save()
+            log_user_event(request.user, "Edited {} cause.".format(Causes.objects.get(pk=cause_id).name), "admin", form)
             return HttpResponseRedirect('%s' % (reverse('manage_causes')))
         else:
             # otherwise return form with errors
@@ -352,7 +329,10 @@ def edit_cause(request, cause_id):
 @login_required
 @admin_required
 def delete_cause(request, cause_id):
-    Causes.objects.get(pk=cause_id).delete()
+    cause = Causes.objects.get(pk=cause_id)
+    cause.delete()
+    log_user_event(request.user, "Deleted {} cause.".format(cause.name), "admin")
+
     return HttpResponse("Success")
 
 
@@ -378,6 +358,7 @@ def add_door(request):
         form = DoorForm(request.POST)
         if form.is_valid():
             form.save()
+            log_user_event(request.user, "Created {} door.".format(form.cleaned_data['name']), "admin", form)
             return HttpResponseRedirect(reverse("manage_doors"))
 
     else:
@@ -394,6 +375,7 @@ def edit_door(request, door_id):
         if form.is_valid():
             # if it was a form submission save it
             form.save()
+            log_user_event(request.user, "Edited {} door.".format(Doors.objects.get(pk=door_id).name), "admin", form)
             return HttpResponseRedirect('%s' % (reverse('manage_doors')))
         else:
             # otherwise return form with errors
@@ -408,7 +390,9 @@ def edit_door(request, door_id):
 @login_required
 @admin_required
 def delete_door(request, door_id):
-    Doors.objects.get(pk=door_id).delete()
+    door = Doors.objects.get(pk=door_id)
+    log_user_event(request.user, "Deleted {} door.".format(door.name), "admin")
+    door.delete()
     return HttpResponseRedirect('%s' % (reverse('manage_doors')))
 
 
@@ -428,16 +412,7 @@ def admin_edit_access(request, member_id):
 @login_required
 @no_noobs
 def edit_theme_song(request):
-    if request.method == 'POST':
-        form = DoorForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("manage_doors"))
-
-    else:
-        form = DoorForm()
-
-    return render(request, 'edit_theme_song.html', {"form": form})
+    return render(request, 'edit_theme_song.html')
 
 
 @login_required
@@ -445,8 +420,12 @@ def edit_theme_song(request):
 def admin_grant_door(request, door_id, member_id):
     try:
         user = User.objects.get(pk=member_id)
-        user.profile.doors.add(Doors.objects.get(pk=door_id))
+        door = Doors.objects.get(pk=door_id)
+        user.profile.doors.add(door)
         user.profile.save()
+        log_user_event(user, "Access to {} granted.".format(door.name), "profile")
+        log_user_event(request.user, "Access to {} granted for {}.".format(door.name, user.get_full_name()), "admin")
+
         return JsonResponse({"success": True})
 
     except Exception:
@@ -458,8 +437,12 @@ def admin_grant_door(request, door_id, member_id):
 def admin_revoke_door(request, door_id, member_id):
     try:
         user = User.objects.get(pk=member_id)
-        user.profile.doors.remove(Doors.objects.get(pk=door_id))
+        door = Doors.objects.get(pk=door_id)
+        user.profile.doors.remove(door)
         user.profile.save()
+        log_user_event(user, "Access to {} revoked.".format(door.name), "profile")
+        log_user_event(request.user, "Access to {} revoked for {}.".format(door.name, user.get_full_name()), "admin")
+
         return JsonResponse({"success": True})
 
     except ObjectDoesNotExist:
@@ -472,24 +455,16 @@ def request_access(request, door_id):
     return JsonResponse({"success": False, "reason": "Not implemented yet."})
 
 
-def log_door_access(user, door):
-    """
-    Logs a door as being accessed.
-    :param user:
-    :param door_id:
-    :return:
-    """
-    return DoorLog(user=user, door=door).save()
-
-
 @reader_auth
 def check_access(request, rfid_code, door_id=None):
     door = None
 
     try:
         user = Profile.objects.get(rfid=rfid_code).user
+
     except ObjectDoesNotExist:
         # send back some random error code you can search for here - this means the RFID tag doesn't exist.
+        log_event("Tried to check access for non existant user (or rfid not set).", "error", request)
         return HttpResponseBadRequest("Bad Request. Error AhDA")
 
     if user.profile.state == "active":
@@ -500,6 +475,7 @@ def check_access(request, rfid_code, door_id=None):
 
             except ObjectDoesNotExist:
                 # send back some random error code you can search for here - this means the door ID doesn't exist.
+                log_event("Tried to check access for non existant door.", "error", request)
                 return HttpResponseBadRequest("Bad Request. Error AJld")
 
         else:
@@ -510,6 +486,7 @@ def check_access(request, rfid_code, door_id=None):
 
             except ObjectDoesNotExist:
                 # send back some random error code you can search for here - this means the door doesn't exist.
+                log_event("Tried to check access for door {} but none found.".format(door_ip), "error", request)
                 return HttpResponseBadRequest("Bad Request. Error AJlc")
 
         allowed_doors = user.profile.doors.all()
@@ -517,7 +494,7 @@ def check_access(request, rfid_code, door_id=None):
         if allowed_doors:
             if door in allowed_doors:
                 # user has access
-                log_door_access(user, door)
+                door.log_access(user.id)
                 return JsonResponse({"access": True, "name": user.first_name, "door": door.name})
 
     # if the are inactive or don't have access
@@ -565,7 +542,8 @@ def last_seen(request):
 @login_required
 def open_door(request, door_id):
     door = Doors.objects.get(pk=door_id)
-    if door in request.user.doors.all():
+    if door in request.user.profile.doors.all():
+        log_user_event(request.user, "Opened {} door via API.".format(door.name), "door")
         return JsonResponse({"success": door.unlock()})
 
     return HttpResponseForbidden("You are not authorised to access that door.")
@@ -582,6 +560,7 @@ def authorised_tags(request, door_id=None):
 
         except ObjectDoesNotExist:
             # send back some random error code you can search for here - this means the door ID doesn't exist.
+            log_event("Tried to get authorised tags for non existant door.", "error", request)
             return HttpResponseBadRequest("Bad Request. Error AJld")
 
     else:
@@ -592,6 +571,7 @@ def authorised_tags(request, door_id=None):
 
         except ObjectDoesNotExist:
             # send back some random error code you can search for here - this means the door doesn't exist.
+            log_event("Tried to get authorised tags for non existant door (or IP set incorrectly).", "error", request)
             return HttpResponseBadRequest("Bad Request. Error AJlc")
 
     authorised_tags = list()
@@ -600,7 +580,7 @@ def authorised_tags(request, door_id=None):
         if door in profile.doors.all():
             authorised_tags.append(profile.rfid)
 
-    # if the are inactive or don't have access
+    log_event("Got authorised tags for {} door.".format(door.name), "door")
     return JsonResponse({"authorised_tags": authorised_tags, "door": door.name})
 
 
@@ -620,11 +600,14 @@ def add_spacebucks(request, amount=None):
             stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
             stripe.default_http_client = stripe.http_client.RequestsClient()
         else:
-            return HttpResponseServerError("Unkown error.")
+            return HttpResponseServerError("No stripe API details found.")
 
         if amount is not None:
             # lets restrict this to something reasonable
             if amount <= 50:
+                log_user_event(request.user,
+                               "Attempting to charge {} for ${}.".format(request.user.get_full_name(), amount),
+                               "stripe")
                 charge = stripe.Charge.create(
                     amount=amount * 100,  # convert to cents,
                     currency='aud',
@@ -632,8 +615,7 @@ def add_spacebucks(request, amount=None):
                     customer=request.user.profile.stripe_customer_id,
                     metadata={'Payment By': request.user.get_full_name(), "For": "Spacebucks Top Up"},
                 )
-                print(charge.paid)
-                print(charge)
+
                 if charge.paid:
                     transaction = SpaceBucks()
                     transaction.amount = amount
@@ -642,16 +624,27 @@ def add_spacebucks(request, amount=None):
                     transaction.transaction_type = "stripe"
                     transaction.logging_info = charge
                     transaction.save()
+                    log_user_event(request.user,
+                                   "Successfully charged {} for ${}.".format(request.user.get_full_name(), amount),
+                                   "stripe")
 
-                    return render(request, 'add_spacebucks.html', {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": True,
-                                   "message": "Successfully charged ${} to your card ending in {}. Please check your spacebucks balance.".format(amount, request.user.profile.stripe_card_last_digits)})
+                    return render(request, 'add_spacebucks.html',
+                                  {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": True,
+                                   "message": "Successfully charged ${} to your card ending in {}. Please check your spacebucks balance.".format(
+                                       amount, request.user.profile.stripe_card_last_digits)})
                 else:
+                    log_user_event(request.user,
+                                   "Problem charging {}.".format(request.user.get_full_name()),
+                                   "stripe")
                     return render(request, 'add_spacebucks.html',
                                   {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
                                    "message": "There was a problem collecting the funds off your card."})
+            else:
+                log_user_event(request.user, "Tried to add more than $50 to spacebucks via stripe.", "stripe")
 
-        return render(request, 'add_spacebucks.html', {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
-                           "message": "Invalid amount."})
+        return render(request, 'add_spacebucks.html',
+                      {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                       "message": "Invalid amount."})
 
     else:
         if "STRIPE_PUBLIC_KEY" in os.environ:
@@ -668,58 +661,75 @@ def save_spacebucks_payment_info(request):
             stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
             stripe.default_http_client = stripe.http_client.RequestsClient()
         else:
-            return HttpResponseServerError("Unkown error.")
+            return HttpResponseServerError("Can't find stripe API details.")
 
         try:
+            log_user_event(request.user,
+                           "Attempting to create stripe customer.", "stripe")
             customer = stripe.Customer.create(
                 source=request.POST.get("stripeToken"),
                 email=request.POST.get("stripeEmail"),
             )
-            print(customer.id)
+
             profile = request.user.profile
             profile.stripe_customer_id = customer.id
-            profile.stripe_card_expiry = str(customer.sources.data[0]['exp_month']) + '/' + str(customer.sources.data[0]['exp_year'])
+            profile.stripe_card_expiry = str(customer.sources.data[0]['exp_month']) + '/' + str(
+                customer.sources.data[0]['exp_year'])
             profile.stripe_card_last_digits = customer.sources.data[0]['last4']
             profile.save()
+            log_user_event(request.user, "Created stripe customer.".format(request.user.get_full_name()), "stripe")
 
         except stripe.error.CardError as e:
             # Since it's a decline, stripe.error.CardError will be caught
             body = e.json_body
             err = body.get('error', {})
 
+            log_user_event(request.user, "Card declined while saving payment details.", "stripe")
+
             return render(request, 'add_spacebucks.html',
                           {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
                            "message": err})
 
         except stripe.error.RateLimitError as e:
+            log_user_event(request.user, "Rate limtied while saving payment details.", "stripe")
             return render(request, 'add_spacebucks.html',
                           {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
                            "message": "Our server is talking to stripe too quickly, try again later."})
 
         except stripe.error.InvalidRequestError as e:
+            log_user_event(request.user, "Invalid request while saving payment details.", "stripe", request)
             return render(request, 'add_spacebucks.html',
                           {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
                            "message": "There was an error with the request details."})
 
         except stripe.error.AuthenticationError as e:
+            log_user_event(request.user, "Can't authenticate with stripe while saving payment details.", "stripe")
             return render(request, 'add_spacebucks.html',
                           {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
                            "message": "Our server was unable to authenticate with the Stripe server."})
 
         except stripe.error.APIConnectionError as e:
+            log_user_event(request.user, "Stripe API connection error while saving payment details.", "stripe")
             return render(request, 'add_spacebucks.html',
                           {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
                            "message": "Our server was unable to communicate with the Stripe server."})
 
         except stripe.error.StripeError as e:
+            log_user_event(request.user, "Unkown stripe while saving payment details.", "stripe", request)
             return render(request, 'add_spacebucks.html',
                           {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
                            "message": e})
 
         except Exception as e:
-            return render(request, 'add_spacebucks.html', {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False, "message": "Unkown error (unrelated to stripe)."})
+            log_user_event(request.user, "Unkown other error while saving payment details.", "stripe", request)
+            return render(request, 'add_spacebucks.html',
+                          {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                           "message": "Unkown error (unrelated to stripe)."})
 
-        return render(request, 'add_spacebucks.html', {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": True, "message": "Your payment details were successfully saved."})
+        log_user_event(request.user, "Successfully save payment details.", "stripe")
+        return render(request, 'add_spacebucks.html',
+                      {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": True,
+                       "message": "Your payment details were successfully saved."})
 
     else:
         return redirect(reverse('add_spacebucks'))
@@ -729,6 +739,7 @@ def save_spacebucks_payment_info(request):
 @admin_required
 def resend_welcome_email(request, member_id):
     success = User.objects.get(pk=member_id).profile.email_welcome()
+    log_user_event(request.user, "Resent welcome email.", "profile")
 
     if success:
         return JsonResponse({"success": True})

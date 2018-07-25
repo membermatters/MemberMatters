@@ -52,9 +52,13 @@
 
             {% if user.is_authenticated %}
                 <a class="cn-dark-text">Hi, {{ user.first_name }}!</a>
+                <div class="divider"></div>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'home' %}">Home</a></li>
+                <div class="divider"></div>
+                <li><a class="subheader">Profile Tools</a></li>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Manage My Profile</a>
                 </li>
-                {% if user.profile.state is "active" or user.profile.state is "inactive" %}
+                {% if not user.profile.state|stringformat:"s" == "noob" %}
                     <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_spacebucks' %}">Manage
                         Spacebucks</a></li>
                     <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">My
@@ -62,14 +66,25 @@
                         Permissions</a></li>
                     <li>
                 {% endif %}
-            <div class="divider"></div>
             </li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'home' %}">Home</a></li>
+                {% if user.is_staff %}
+                    <li><div class="divider"></div></li>
+                    <li><a class="subheader">Admin Tools</a></li>
+                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a>
+                    </li>
+                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage
+                        Causes</a>
+                    </li>
+                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_doors' %}">Manage
+                        Doors</a>
+                    </li>
+                {% endif %}
+
                 <li>
                     <div class="divider"></div>
                 </li>
                 <li><a class="subheader">Member Tools</a></li>
-                {% if user.profile.state is "active" or user.profile.state is "inactive" %}
+                {% if not user.profile.state|stringformat:"s" == "noob" %}
                     <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change My
                         Theme</a></li>
                     <li><a class="waves-effect waves-light modal-trigger" href="{% url 'list_causes' %}">See Cause
@@ -82,19 +97,6 @@
                     <li><a class="waves-effect waves-light modal-trigger" href="{% url 'last_seen' %}">Last Seen</a>
                 {% endif %}
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'webcams' %}">Public Webcams</a>
-                </li>
-            {% endif %}
-
-            {% if user.is_staff %}
-                <li>
-                    <div class="divider"></div>
-                </li>
-                <li><a class="subheader">Admin Tools</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a>
-                </li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage Causes</a>
-                </li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_doors' %}">Manage Doors</a>
                 </li>
             {% endif %}
 
@@ -111,7 +113,7 @@
     <ul id="profile-dropdown" class="dropdown-content">
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Manage Profile</a></li>
 
-        {% if user.profile.state is "active" or user.profile.state is "inactive" %}
+        {% if not user.profile.state|stringformat:"s" == "noob" %}
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_spacebucks' %}">Manage
                 Spacebucks</a>
             </li>
@@ -122,7 +124,7 @@
     </ul>
 
     <ul id="member-dropdown" class="dropdown-content">
-        {% if user.profile.state is "active" or user.profile.state is "inactive" %}
+        {% if not user.profile.state|stringformat:"s" == "noob" %}
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change My Theme</a>
             </li>
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'list_causes' %}">See Cause Members</a>

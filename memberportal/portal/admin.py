@@ -2,10 +2,13 @@ from django.contrib import admin
 from .models import *
 
 
-@admin.register(AdminLog)
+@admin.register(UserEventLog)
 class AdminLogAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(EventLog)
+class AdminLogAdmin(admin.ModelAdmin):
+    pass
 
 @admin.register(MemberTypes)
 class MemberTypesAdmin(admin.ModelAdmin):

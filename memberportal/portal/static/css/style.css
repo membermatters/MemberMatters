@@ -130,11 +130,11 @@ body > div.fullwidth-container > div.modal-overlay {
         text-align: left;
     }
 
-    #activate-member-button {
+    #activate-member-button, #deactivate-member-button {
         margin-bottom: 5px;
     }
 
-    #activate-member-button, #deactivate-member-button {
+    #activate-member-button, #deactivate-member-button, #resend-welcome-button {
         width: 100%;
     }
 
@@ -151,6 +151,10 @@ body > div.fullwidth-container > div.modal-overlay {
     .data-table_wrapper {
         margin: 10px;
     }
+
+    .modal .modal-content {
+        padding: 0;
+    }
 }
 
 /* materialize medium screens (tablets) */
@@ -159,6 +163,11 @@ body > div.fullwidth-container > div.modal-overlay {
     #logo {
         height: 90px;
         padding: 10px;
+    }
+
+    /* Make all the columns on the home page equal height when they're next to each other on desktop */
+    #logo-container {
+        width: 330px;
     }
 
     .home-text-columns {
@@ -195,14 +204,6 @@ body > div.fullwidth-container > div.modal-overlay {
     #access-list {
         width: 50%;
         margin: 0 auto;
-    }
-}
-
-/* materialize large screens (desktops) */
-@media only screen and (min-width: 601px) {
-    /* Make all the columns on the home page equal height when they're next to each other on desktop */
-    #logo-container {
-        width: 330px;
     }
 }
 

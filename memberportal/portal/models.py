@@ -10,15 +10,40 @@ from django.template.loader import render_to_string
 
 FROM_EMAIL = '"HSBNE Member Portal" <contact@hsbne.org>'
 
+LOG_TYPES = (
+        ('generic', 'Generic log entry'),
+        ('usage', 'Generic usage access'),
+        ('stripe', 'Stripe related event'),
+        ('spacebucks', 'Spacebucks related event'),
+        ('profile', 'Member profile edited'),
+        ('interlock', 'Interlock related event'),
+        ('door', 'Door related event'),
+        ('email', 'Email send event'),
+        ('admin', 'Generic admin event'),
+        ('error', 'Some event that causes an error'),
+    )
 
-class AdminLog(models.Model):
-    log_user = models.ForeignKey(
-        User, "Name of admin", related_name="log_user")
-    action = models.CharField("Action taken", max_length=50)
-    log_member = models.ForeignKey(
-        User, "Name of member", related_name="log_member")
-    description = models.CharField("Description of why", max_length=500)
+class UserEventLog(models.Model):
+    user = models.ForeignKey(User, "User affected by action")
+    type = models.CharField("Type of action/event", choices=LOG_TYPES, max_length=30)
+    description = models.CharField("Description of action/event", max_length=500)
+    data = models.TextField("Extra data for debugging action/event")
     date = models.DateTimeField(auto_now_add=True)
+
+
+def log_user_event(user, description, event_type, data=""):
+    UserEventLog(description=description, type=event_type, user=user, data=data).save()
+
+
+class EventLog(models.Model):
+    type = models.CharField("Type of action/event", choices=LOG_TYPES, max_length=30)
+    description = models.CharField("Description of action/event", max_length=500)
+    data = models.TextField("Extra data for debugging action/event")
+    date = models.DateTimeField(auto_now_add=True)
+
+
+def log_event(description, event_type, data=""):
+    EventLog(description=description, type=event_type, data=data).save()
 
 
 class MemberTypes(models.Model):
@@ -56,19 +81,20 @@ class Doors(models.Model):
     description = models.CharField("Door Description/Location", max_length=100)
     ip_address = models.GenericIPAddressField(
         "IP Address of Door", unique=True, null=True, blank=True)
-    last_seen = models.DateTimeField(default=datetime.now, blank=True)
+    last_seen = models.DateTimeField(null=True)
     all_members = models.BooleanField(
         "Members have access by default", default=False)
 
     def checkin(self):
+        log_event(self.name + " checked in with server.", "door")
         self.last_seen = datetime.now()
         self.save()
 
     def get_unavailable(self):
         utc = pytz.UTC
-        if utc.localize(
-                datetime.now()) - timedelta(minutes=5) > self.last_seen:
-            return True
+        if self.last_seen:
+            if utc.localize(datetime.now()) - timedelta(minutes=5) > self.last_seen:
+                return True
 
         return False
 
@@ -76,9 +102,14 @@ class Doors(models.Model):
         import requests
         r = requests.get('http://{}/open?key=key'.format(self.ip_address))
         if r.status_code == 200:
+            log_event(self.name + " unlocked from admin interface.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
             return True
         else:
+            log_event(self.name + " unlock from admin interface failed.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
             return False
+
+    def log_access(self, member_id):
+        DoorLog(user=User.objects.get(pk=member_id), door=self).save()
 
     def __str__(self):
         return self.name
@@ -111,6 +142,30 @@ class Profile(models.Model):
     stripe_card_expiry = models.CharField(max_length=10, null=True, default=None)
     stripe_card_last_digits = models.CharField(max_length=4, null=True, default=None)
 
+
+    def deactivate(self):
+        log_user_event(self.user, "Deactivated member", "profile")
+        self.email_disable_member()
+        self.state = "inactive"
+        self.save()
+
+
+    def activate(self):
+        log_user_event(self.user, "Activated member", "profile")
+        if self.state == "noob":
+            self.email_welcome()
+
+        else:
+            self.email_enable_member()
+
+        self.state = "active"
+        self.save()
+
+
+    def get_logs(self):
+        return UserEventLog.objects.filter(user=self.user)
+
+
     def __str__(self):
         return str(self.user)
 
@@ -125,8 +180,10 @@ class Profile(models.Model):
             response = sg.client.mail.send.post(request_body=mail.get())
 
             if response.status_code == 202:
+                log_user_event(self.user, "Sent email with subject: " + subject, "email", "Email content: " + body)
                 return True
 
+        log_user_event(self.user, "Failed to send email with subject: " + subject, "email", "Email content: " + body)
         return False
 
     def email_notification(self, subject, title, preheader, message):

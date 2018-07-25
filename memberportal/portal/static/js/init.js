@@ -111,6 +111,7 @@ let deactive_url;
 let active_url;
 let member_state;
 let resend_welcome_url;
+let get_logs_url;
 
 function openMemberActionsModal(e) {
     name = e.getAttribute("name");
@@ -121,6 +122,7 @@ function openMemberActionsModal(e) {
     active_url = e.getAttribute("data-active_url");
     deactive_url = e.getAttribute("data-deactive_url");
     resend_welcome_url = e.getAttribute("data-resend_welcome_url");
+    get_logs_url = e.getAttribute("data-get_logs_url");
     document.getElementById('admin-member-modal-name').innerText = name;
 
     // get the edit profile form
@@ -137,7 +139,7 @@ function openMemberActionsModal(e) {
             }, 0);
         },
         error: function () {
-            M.toast({html: "Unkown error 1 :( "});
+            M.toast({html: "Unkown error while getting profile form :( "});
         }
     });
 
@@ -155,7 +157,30 @@ function openMemberActionsModal(e) {
             }, 0);
         },
         error: function () {
-            M.toast({html: "Unkown error 2 :( "});
+            M.toast({html: "Unkown error while getting access form :( "});
+        }
+    });
+
+    // get the member logs
+    $.ajax({
+        url: get_logs_url,  // <-- AND HERE
+        type: 'get',
+        dataType: 'json',
+        success: function (data) {
+            let elem = document.getElementById("admin-edit-member-logs");
+            elem.innerHTML = data.html_form;
+
+            // init the table
+            let table = $('#logTable').DataTable({
+                "initComplete": function () {
+                    M.FormSelect.init(document.querySelectorAll('select'), {});
+                }
+            });
+
+            table.order([0, 'desc']).draw();
+        },
+        error: function () {
+            M.toast({html: "Unkown error while getting logs :( "});
         }
     });
 
@@ -210,7 +235,6 @@ $("#member-actions-modal").on("submit", ".member-edit-form", function () {
 
 function deleteCause(btn) {
     $.get(btn.getAttribute("data-url"), function (data) {
-        alert(data);
         location.reload();
     });
 }
