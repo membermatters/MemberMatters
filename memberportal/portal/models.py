@@ -138,9 +138,9 @@ class Profile(models.Model):
         "RFID Tag", max_length=20, unique=True, null=True, blank=True)
     doors = models.ManyToManyField(Doors, blank=True)
     spacebucks_balance = models.FloatField(default=0.0)
-    stripe_customer_id = models.CharField(max_length=100, null=True, default=None)
-    stripe_card_expiry = models.CharField(max_length=10, null=True, default=None)
-    stripe_card_last_digits = models.CharField(max_length=4, null=True, default=None)
+    stripe_customer_id = models.CharField(max_length=100, null=True, default="")
+    stripe_card_expiry = models.CharField(max_length=10, null=True, default="")
+    stripe_card_last_digits = models.CharField(max_length=4, null=True, default="")
 
 
     def deactivate(self):

@@ -648,7 +648,7 @@ def add_spacebucks(request, amount=None):
                                   {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
                                    "message": "There was a problem collecting the funds off your card."})
             else:
-                log_user_event(request.user, "Tried to add more than $50 to spacebucks via stripe.", "stripe")
+                log_user_event(request.user, "Tried to add invalid amount {} to spacebucks via stripe.".format(amount), "stripe")
 
         return render(request, 'add_spacebucks.html',
                       {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
@@ -663,11 +663,12 @@ def add_spacebucks(request, amount=None):
 
 
 @csrf_exempt
-def save_spacebucks_payment_info(request):
+def add_spacebucks_payment_info(request):
     if request.method == 'POST':
         if "STRIPE_SECRET_KEY" in os.environ:
             stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
             stripe.default_http_client = stripe.http_client.RequestsClient()
+
         else:
             return HttpResponseServerError("Can't find stripe API details.")
 
@@ -741,6 +742,29 @@ def save_spacebucks_payment_info(request):
 
     else:
         return redirect(reverse('add_spacebucks'))
+
+
+@login_required
+@csrf_exempt
+def delete_spacebucks_payment_info(request):
+    if "STRIPE_SECRET_KEY" in os.environ:
+        stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
+        stripe.default_http_client = stripe.http_client.RequestsClient()
+
+    else:
+        return HttpResponseServerError("Can't find stripe API details.")
+
+    profile = request.user.profile
+    customer = stripe.Customer.retrieve(profile.stripe_customer_id)
+    customer.sources.retrieve(customer['default_source']).delete()
+
+    profile.stripe_card_last_digits = ""
+    profile.stripe_card_expiry = ""
+    profile.save()
+
+    return render(request, 'add_spacebucks.html',
+                  {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": True,
+                   "message": "Successfully removed saved card details."})
 
 
 @login_required

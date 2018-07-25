@@ -11,10 +11,6 @@ import sys
 from django.core.wsgi import get_wsgi_application 
 import logging, sys
 logging.basicConfig(stream=sys.stderr)
-  
-sys.path.append('/var/www/members.codenetwork.co/memberportal') 
-# adjust the Python version in the line below as needed 
-sys.path.append('/var/www/members.codenetwork.co/venv/lib/python3.6/site-packages') 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "memberportal.settings") 
 
