@@ -35,25 +35,25 @@
                 <p>Click a button below to add spacebucks. This will immediately charge your card with the specified
                     amount.</p>
 
-                <div class="col s12 m3">
+                <div class="col s3">
                     <form method="POST" action="{% url 'add_spacebucks' amount=5 %}">
                         {% csrf_token %}
                         <button class="btn waves-effect waves-light" type="submit" name="action">$5</button>
                     </form>
                 </div>
-                <div class="col s12 m3">
+                <div class="col s3">
                     <form method="POST" action="{% url 'add_spacebucks' amount=10 %}">
                         {% csrf_token %}
                         <button class="btn waves-effect waves-light" type="submit" name="action">$10</button>
                     </form>
                 </div>
-                <div class="col s12 m3">
+                <div class="col s3">
                     <form method="POST" action="{% url 'add_spacebucks' amount=20 %}">
                         {% csrf_token %}
                         <button class="btn waves-effect waves-light" type="submit" name="action">$20</button>
                     </form>
                 </div>
-                <div class="col s12 m3">
+                <div class="col s3">
                     <form method="POST" action="{% url 'add_spacebucks' amount=50 %}">
                         {% csrf_token %}
                         <button class="btn waves-effect waves-light" type="submit" name="action">$30</button>
