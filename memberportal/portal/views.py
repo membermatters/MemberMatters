@@ -24,6 +24,18 @@ def admin_required(view):
     return wrap
 
 
+def no_noobs(view):
+    def wrap(request, *args, **kwargs):
+        # do some logic here
+        if request.user.profile.state == "noob":
+            # if the user isn't authorised let them know
+            return HttpResponseForbidden("403 Access Forbidden")
+        else:
+            return view(request, *args, **kwargs)
+
+    return wrap
+
+
 def reader_auth(view):
     def wrap(request, *args, **kwargs):
         # do some logic here
@@ -345,6 +357,7 @@ def delete_cause(request, cause_id):
 
 
 @login_required
+@no_noobs
 def access_permissions(request):
     doors = Doors.objects.all()
 
@@ -358,6 +371,8 @@ def manage_doors(request):
     return render(request, 'manage_doors.html', {"doors": doors})
 
 
+@login_required
+@admin_required
 def add_door(request):
     if request.method == 'POST':
         form = DoorForm(request.POST)
@@ -411,6 +426,7 @@ def admin_edit_access(request, member_id):
 
 
 @login_required
+@no_noobs
 def edit_theme_song(request):
     if request.method == 'POST':
         form = DoorForm(request.POST)
@@ -451,6 +467,7 @@ def admin_revoke_door(request, door_id, member_id):
 
 
 @login_required
+@no_noobs
 def request_access(request, door_id):
     return JsonResponse({"success": False, "reason": "Not implemented yet."})
 
@@ -508,6 +525,7 @@ def check_access(request, rfid_code, door_id=None):
 
 
 @login_required
+@no_noobs
 def list_causes(request):
     causes = Causes.objects.all()
     members = Profile.objects.all()
@@ -520,6 +538,7 @@ def webcams(request):
 
 
 @login_required
+@no_noobs
 def recent_swipes(request):
     swipes = DoorLog.objects.all().order_by('date')[::-1][:50]
 
@@ -527,6 +546,7 @@ def recent_swipes(request):
 
 
 @login_required
+@no_noobs
 def last_seen(request):
     last_seens = list()
     members = User.objects.all()
@@ -585,6 +605,7 @@ def authorised_tags(request, door_id=None):
 
 
 @login_required
+@no_noobs
 def manage_spacebucks(request):
     spacebucks_transactions = SpaceBucks.objects.filter(user=request.user)
 
@@ -592,6 +613,7 @@ def manage_spacebucks(request):
 
 
 @login_required
+@no_noobs
 def add_spacebucks(request, amount=None):
     if request.method == "POST":
         if "STRIPE_SECRET_KEY" in os.environ:
