@@ -1,0 +1,18 @@
+<table id="logTable" class="data-table striped responsive-table">
+    <thead>
+    <tr style="max-width: 120px;">
+        <th>Date</th>
+        <th>Type</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for log in logs %}
+        <tr>
+            <td>{{ log.date }}</td>
+            <td>{{ log.type }}</td>
+            <td>{{ log.description }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

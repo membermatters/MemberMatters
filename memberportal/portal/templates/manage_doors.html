@@ -25,7 +25,9 @@
                     <tr>
                         <td>{{ door.name }}</td>
                         <td>{{ door.ip_address }}</td>
-                        {% if door.get_unavailable %}
+                        {% if not door.last_seen %}
+                            <td class="orange-text">never</td>
+                        {% elif door.get_unavailable %}
                             <td class="red-text">{{ door.last_seen|timesince }} ago</td>
                         {% else %}
                             <td class="light-green-text">{{ door.last_seen|timesince }} ago</td>
