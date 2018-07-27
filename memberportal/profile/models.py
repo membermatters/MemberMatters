@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import pytz
 import os
 import sendgrid
+from sendgrid.helpers.mail import *
 import uuid
 from django.template.loader import render_to_string
 
@@ -115,8 +116,8 @@ class Profile(models.Model):
             from_email = sendgrid.Email(FROM_EMAIL)
             to_email = sendgrid.Email(self.user.email)
             subject = subject
-            content = sendgrid.Content("text/html", body)
-            mail = sendgrid.Mail(from_email, subject, to_email, content)
+            content = Content("text/html", body)
+            mail = Mail(from_email, subject, to_email, content)
             response = sg.client.mail.send.post(request_body=mail.get())
 
             if response.status_code == 202:

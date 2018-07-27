@@ -50,7 +50,7 @@ def signup(request):
                 "Important. Please read this email for details on how to "
                 "register for an induction.",
                 "{}, thanks for signing up! The next step to becoming a fully "
-                "fledged member is to bookn in for an induction. During this "
+                "fledged member is to book in for an induction. During this "
                 "induction we will go over the basic safety and operational "
                 "aspects of HSBNE. To book in, click the link below.".format(
                     new_user.first_name),
@@ -217,23 +217,23 @@ def admin_edit_member(request, member_id):
     :param member_id:
     :return:
     """
-    user = get_object_or_404(Profile, user=member_id)
+    profile = get_object_or_404(Profile, user=member_id)
     data = dict()
 
-    form = AdminEditProfileForm(instance=user)
+    form = AdminEditProfileForm(instance=profile)
     # if it's not valid don't save or log it
     data['form_is_valid'] = False
 
     if request.method == 'POST':
         # if it's a form submission pass it to the form
-        form = AdminEditProfileForm(request.POST, instance=user)
+        form = AdminEditProfileForm(request.POST, instance=profile)
 
         if form.is_valid():
             # if it's a valid form submission then save and log it
             form.save()
             data['form_is_valid'] = True
             log_user_event(
-                user, request.user.get_full_name() + " edited user profile.",
+                profile.user, request.user.get_full_name() + " edited user profile.",
                 "profile")
 
     # render the form and return it
