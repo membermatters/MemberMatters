@@ -25,10 +25,7 @@
                     Welcome to the HSBNE member portal!
                 </h5>
                 <p>
-                    You can manage your membership details, causes, etc.
-                </p>
-                <p>
-                    Here are some links to other parts of our community:
+                    You can manage your membership details, causes, etc. Here are some handy links:
                 </p>
             </div>
             <!--   Icon Section   -->
@@ -50,21 +47,15 @@
 
                 <div class="col s12 m6">
                     <div class="icon-block">
-                        <h2 class="center"><i class="material-icons">link</i></h2>
-                        <h5 class="center">Website</h5>
-
-                        <p class="center light home-text-columns">Our website has more information about how we run, and
-                            how
-                            to
-                            get in contact
-                            with the executive. All sponsorship, media and other general enquiries should be directed
-                            here.</p>
-
-                        <div class="row center">
-                            <a href="https://hsbne.org" target="_blank" id="go-to-website"
-                               class="btn-large cn-green">Go to Website</a>
-                        </div>
+                    <h2 class="center"><i class="material-icons">sentiment_very_dissatisfied
+</i></h2>
+                    <h5 class="center">Report Spacebug</h5>
+                     <p class="center light home-text-columns">Found something broken at HSBNE that you don't have the time or skills to fix? Report it here.</p>
+                     <div class="row center">
+                        <a href="{% url 'report_spacebug' %}" target="_blank" id="go-to-discord"
+                           class="btn-large cn-green">Report Spacebug</a>
                     </div>
+                </div>
                 </div>
             </div>
         {% endif %}

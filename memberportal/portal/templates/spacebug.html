@@ -10,6 +10,14 @@
         {% csrf_token %}
         {{ form.as_p }}
 
+        {% if messages %}
+            <div class="materialert">
+                {% for message in messages %}
+                    <div{% if message.tags %} class="card-panel {{ message.tags }}"{% endif %}>{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <a class="btn-flat right" onclick="window.history.back();">Cancel</a>
         <button class="btn waves-effect waves-light right" type="submit" name="action">Submit Issue</button>
         </form>

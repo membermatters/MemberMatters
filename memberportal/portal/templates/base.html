@@ -38,7 +38,8 @@
             {% if user.is_authenticated %}
                 <li><a class="dropdown-trigger-hover" href="#" data-target="member-dropdown">Member Tools
                     <i class="material-icons right">arrow_drop_down</i></a></li>
-                <li><a class="dropdown-trigger-hover" href="#" data-target="profile-dropdown">Hi, {{ user.profile.first_name }}
+                <li><a class="dropdown-trigger-hover" href="#"
+                       data-target="profile-dropdown">Hi, {{ user.profile.first_name }}
                     <i class="material-icons right">arrow_drop_down</i></a></li>
             {% endif %}
         </ul>
@@ -68,7 +69,9 @@
                 {% endif %}
             </li>
                 {% if user.is_staff %}
-                    <li><div class="divider"></div></li>
+                    <li>
+                        <div class="divider"></div>
+                    </li>
                     <li><a class="subheader">Admin Tools</a></li>
                     <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a>
                     </li>
@@ -84,6 +87,8 @@
                     <div class="divider"></div>
                 </li>
                 <li><a class="subheader">Member Tools</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'report_spacebug' %}">Report
+                    Issue</a></li>
                 {% if not user.profile.state|stringformat:"s" == "noob" %}
                     <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change My
                         Theme</a></li>
@@ -122,6 +127,7 @@
     </ul>
 
     <ul id="member-dropdown" class="dropdown-content">
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'report_spacebug' %}">Report Issue</a></li>
         {% if not user.profile.state|stringformat:"s" == "noob" %}
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change My Theme</a>
             </li>
