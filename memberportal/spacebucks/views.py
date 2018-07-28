@@ -42,15 +42,15 @@ def add_spacebucks(request, amount=None):
                 log_user_event(
                     request.user,
                     "Attempting to charge {} for ${}.".format(
-                        request.user.get_full_name(), amount),
+                        request.user.profile.get_full_name(), amount),
                     "stripe")
                 charge = stripe.Charge.create(
                     amount=amount * 100,  # convert to cents,
                     currency='aud',
                     description='HSBNE Spacebucks ({})'.format(
-                        request.user.get_full_name()),
+                        request.user.profile.get_full_name()),
                     customer=request.user.profile.stripe_customer_id,
-                    metadata={'Payment By': request.user.get_full_name(),
+                    metadata={'Payment By': request.user.profile.get_full_name(),
                               "For": "Spacebucks Top Up"},
                 )
 
@@ -64,7 +64,7 @@ def add_spacebucks(request, amount=None):
                     transaction.save()
                     log_user_event(request.user,
                                    "Successfully charged {} for ${}.".format(
-                                       request.user.get_full_name(), amount),
+                                       request.user.profile.get_full_name(), amount),
                                    "stripe")
 
                     return render(
@@ -76,7 +76,7 @@ def add_spacebucks(request, amount=None):
                 else:
                     log_user_event(
                         request.user,
-                        "Problem charging {}.".format(request.user.get_full_name()),
+                        "Problem charging {}.".format(request.user.profile.get_full_name()),
                         "stripe")
                     return render(
                         request, 'add_spacebucks.html',
@@ -132,7 +132,7 @@ def add_spacebucks_payment_info(request):
             profile.save()
             log_user_event(
                 request.user, "Created stripe customer.".format(
-                    request.user.get_full_name()), "stripe")
+                    request.user.profile.get_full_name()), "stripe")
 
         except stripe.error.CardError as e:
             # Since it's a decline, stripe.error.CardError will be caught

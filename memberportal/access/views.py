@@ -83,7 +83,7 @@ def admin_grant_door(request, door_id, member_id):
         user.profile.doors.add(door)
         user.profile.save()
         log_user_event(user, "Access to {} granted.".format(door.name), "profile")
-        log_user_event(request.user, "Access to {} granted for {}.".format(door.name, user.get_full_name()), "admin")
+        log_user_event(request.user, "Access to {} granted for {}.".format(door.name, user.profile.get_full_name()), "admin")
 
         return JsonResponse({"success": True})
 
@@ -100,7 +100,7 @@ def admin_revoke_door(request, door_id, member_id):
         user.profile.doors.remove(door)
         user.profile.save()
         log_user_event(user, "Access to {} revoked.".format(door.name), "profile")
-        log_user_event(request.user, "Access to {} revoked for {}.".format(door.name, user.get_full_name()), "admin")
+        log_user_event(request.user, "Access to {} revoked for {}.".format(door.name, user.profile.get_full_name()), "admin")
 
         return JsonResponse({"success": True})
 

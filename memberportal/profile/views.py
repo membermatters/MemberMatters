@@ -225,7 +225,7 @@ def admin_edit_member(request, member_id):
             form.save()
             data['form_is_valid'] = True
             log_user_event(
-                profile.user, request.user.get_full_name() + " edited user profile.",
+                profile.user, request.user.profile.get_full_name() + " edited user profile.",
                 "profile")
 
     # render the form and return it
