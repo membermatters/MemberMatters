@@ -1,8 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from memberportal.helpers import log_event
 import pytz
+from django.conf import settings
+from django.contrib import auth
+User = auth.get_user_model()
 utc = pytz.UTC
 
 
@@ -45,6 +47,6 @@ class Doors(models.Model):
 
 
 class DoorLog(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     door = models.ForeignKey(Doors, on_delete=models.CASCADE)
     date = models.DateTimeField(default=datetime.now)

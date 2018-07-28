@@ -1,37 +1,59 @@
 from .models import Profile
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 class SignUpForm(UserCreationForm):
-    first_name = forms.CharField(max_length=30, required=True)
-    last_name = forms.CharField(max_length=30, required=True)
     email = forms.EmailField(
         max_length=254, required=True,
         help_text='We will never share your email with anyone without asking '
                   'you first.')
-    password1 = forms.CharField(
-        label="Password", widget=forms.PasswordInput,
-        help_text='The minimum length is 8 characters and you must include at '
-                  'least one capital letter, number and special character.')
+    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name',
-                  'email', 'password1', 'password2',)
+        fields = ('email',)
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        qs = User.objects.filter(email=email)
+        if qs.exists():
+            raise forms.ValidationError("Sorry, that email is already in use.")
+        return email
+
+    def clean_password2(self):
+        # Check that the two password entries match
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("Passwords don't match")
+        return password2
 
 
 class AddProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('member_type', 'causes')
+        fields = ('first_name', 'last_name', 'screen_name', 'member_type', 'causes')
 
     def clean(self):
         causes = self.cleaned_data.get('causes')
         if causes and causes.count() > 3:
-            raise ValidationError('Error, only three causes are allowed.')
+            raise ValidationError('Sorry, only three causes are allowed.')
+
+        return self.cleaned_data
+
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ('first_name', 'last_name', 'screen_name', 'causes')
+
+    def clean(self):
+        causes = self.cleaned_data.get('causes')
+        if causes and causes.count() > 3:
+            raise ValidationError('Sorry, only three causes are allowed.')
 
         return self.cleaned_data
 
@@ -39,12 +61,12 @@ class AddProfileForm(forms.ModelForm):
 class AdminEditProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('member_type', 'rfid', 'causes')
+        fields = ('rfid', 'first_name', 'last_name', 'screen_name', 'causes')
 
     def clean(self):
         causes = self.cleaned_data.get('causes')
         if causes and causes.count() > 3:
-            raise ValidationError('Error, only three causes are allowed.')
+            raise ValidationError('Sorry, only three causes are allowed.')
 
         return self.cleaned_data
 
@@ -52,7 +74,7 @@ class AdminEditProfileForm(forms.ModelForm):
 class EditUserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name']
+        fields = ('email',)
 
 
 class ResetPasswordRequestForm(forms.Form):
@@ -70,16 +92,3 @@ class ResetPasswordForm(forms.Form):
 
     class Meta:
         fields = ['password1', 'password2']
-
-
-class EditCausesForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ('causes',)
-
-    def clean(self):
-        causes = self.cleaned_data.get('causes')
-        if causes and causes.count() > 3:
-            raise ValidationError('Error, only three causes are allowed.')
-
-        return self.cleaned_data

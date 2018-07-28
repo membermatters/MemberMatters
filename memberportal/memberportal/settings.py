@@ -134,3 +134,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/signin'
+
+AUTH_USER_MODEL = 'profile.User'
+
+FROM_EMAIL = '"HSBNE Member Portal" <contact@hsbne.org>'

@@ -3,15 +3,15 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
-from django.contrib.auth.models import User
 from django.urls import reverse
 from memberportal.helpers import log_event, log_user_event
 from memberportal.decorators import no_noobs, admin_required, api_auth
 from .forms import DoorForm
 from .models import Doors
 from profile.models import Profile
-
 import pytz
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 utc = pytz.UTC
 
@@ -154,10 +154,10 @@ def check_access(request, rfid_code, door_id=None):
             if door in allowed_doors:
                 # user has access
                 door.log_access(user.id)
-                return JsonResponse({"access": True, "name": user.first_name, "door": door.name})
+                return JsonResponse({"access": True, "name": user.profile.first_name})
 
     # if the are inactive or don't have access
-    return JsonResponse({"access": False, "name": user.first_name, "door": door.name})
+    return JsonResponse({"access": False, "name": user.profile.first_name})
 
 
 @login_required

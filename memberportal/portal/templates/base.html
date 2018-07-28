@@ -38,7 +38,7 @@
             {% if user.is_authenticated %}
                 <li><a class="dropdown-trigger-hover" href="#" data-target="member-dropdown">Member Tools
                     <i class="material-icons right">arrow_drop_down</i></a></li>
-                <li><a class="dropdown-trigger-hover" href="#" data-target="profile-dropdown">Hi, {{ user.first_name }}
+                <li><a class="dropdown-trigger-hover" href="#" data-target="profile-dropdown">Hi, {{ user.profile.first_name }}
                     <i class="material-icons right">arrow_drop_down</i></a></li>
             {% endif %}
         </ul>
@@ -51,7 +51,7 @@
             {% endif %}
 
             {% if user.is_authenticated %}
-                <a class="cn-dark-text">Hi, {{ user.first_name }}!</a>
+                <a class="cn-dark-text">Hi, {{ user.profile.first_name }}!</a>
                 <div class="divider"></div>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'home' %}">Home</a></li>
                 <div class="divider"></div>

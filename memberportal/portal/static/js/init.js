@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
         "hover": false
     });
     M.Dropdown.init(document.querySelectorAll('.dropdown-trigger-hover'), {"coverTrigger": false, "hover": true});
-    M.Dropdown.init(document.querySelectorAll('body > div.container > div > form > div > div > p:nth-child(9) > div > input'), {"coverTrigger": false, "closeOnClick": true,});
+    M.Dropdown.init(document.querySelectorAll('body > div.container > div > form > div > div > p:nth-child(11) > div > input'), {"coverTrigger": false, "closeOnClick": true,});
 
     // Modal init
     let modalElem = document.getElementById('member-actions-modal');
@@ -71,7 +71,11 @@ function setState(state) {
                 state_url = active_url;
                 document.getElementById("activate-member-button").classList.add("disabled");
                 document.getElementById("deactivate-member-button").classList.remove("disabled");
-                M.toast({html: "Successfully enabled access."});
+                if (document.getElementById("activate-member-button").innerText == "MAKE MEMBER") {
+                    M.toast({html: "Successfully activated member and sent welcome email."});
+                } else {
+                    M.toast({html: "Successfully enabled access."});
+                }
             } else {
                 state_url = deactive_url;
                 document.getElementById("activate-member-button").classList.remove("disabled");
@@ -114,7 +118,7 @@ let resend_welcome_url;
 let get_logs_url;
 
 function openMemberActionsModal(e) {
-    name = e.getAttribute("name");
+    name = e.getAttribute("data-name");
     member_state = e.getAttribute("data-state");
     member_id = e.getAttribute("id");
     profile_url = e.getAttribute("data-url");

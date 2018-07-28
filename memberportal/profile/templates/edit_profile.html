@@ -8,7 +8,7 @@
         <form method="POST" action="{% url 'edit_profile' %}">
             {% csrf_token %}
             {{ user_form.as_p }}
-            {{ cause_form.as_p }}
+            {{ profile_form.as_p }}
             <label>You can be a member of up to 3 causes.</label>
             <br><br>
 

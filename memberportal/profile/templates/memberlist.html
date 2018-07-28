@@ -21,10 +21,10 @@
             <tbody>
             {% for member in members %}
                 <tr>
-                    <td>{{ member.username }}</td>
+                    <td>{{ member.profile.screen_name }}</td>
                     <td>{{ member.email }}</td>
-                    <td>{{ member.first_name }}</td>
-                    <td>{{ member.last_name }}</td>
+                    <td>{{ member.profile.first_name }}</td>
+                    <td>{{ member.profile.last_name }}</td>
                     <td>{{ member.profile.member_type.name }}</td>
                     <td>
                         {% for cause in member.profile.causes.all %}
@@ -36,7 +36,7 @@
                         <a data-url="{% url 'admin_edit_member' member_id=member.id %}"
                            data-access_url="{% url 'admin_edit_access' member_id=member.id %}"
                            onclick="openMemberActionsModal(this)"
-                           name="{{ member.first_name }} {{ member.last_name }} ({{ member.email }})"
+                           data-name="{{ member.profile.first_name }} {{ member.profile.last_name }} ({{ member.email }})"
                            data-state="{{ member.profile.state }}"
                            data-id="{{ member.id }}"
                            data-active_url="{% url 'set_state' member_id=member.id state='active' %}"
@@ -62,7 +62,7 @@
                 <a onclick="setState(false);" id="deactivate-member-button"
                    class="waves-effect waves-light btn red disabled">Disable Access</a>
                 <a onclick="resendWelcome();" id="resend-welcome-button"
-                   class="waves-effect waves-light btn blue">Resend Welcome</a>
+                   class="waves-effect waves-light btn blue">Send Welcome</a>
             </div>
         </div>
 

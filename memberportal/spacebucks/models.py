@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db.models import Sum
 
 
@@ -10,7 +10,7 @@ class SpaceBucks(models.Model):
         ('card', 'Membership Card')
     )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     amount = models.FloatField("Amount")
     transaction_type = models.CharField(
         "Transaction Type", max_length=10, choices=TRANSACTION_TYPES)

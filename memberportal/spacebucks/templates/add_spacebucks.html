@@ -54,7 +54,7 @@
                     </form>
                 </div>
                 <div class="col s3">
-                    <form method="POST" action="{% url 'add_spacebucks' amount=50 %}">
+                    <form method="POST" action="{% url 'add_spacebucks' amount=30 %}">
                         {% csrf_token %}
                         <button class="btn waves-effect waves-light" type="submit" name="action">$30</button>
                     </form>

@@ -6,15 +6,13 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+User = get_user_model()
 from django.urls import reverse
 from memberportal.decorators import no_noobs, admin_required
 from memberportal.helpers import log_user_event
-from .models import Profile
 from access.models import Doors, DoorLog
-from .forms import SignUpForm, AddProfileForm, ResetPasswordForm
-from .forms import AdminEditProfileForm, EditUserForm, ResetPasswordRequestForm
-from .forms import EditCausesForm
+from .forms import *
 from datetime import datetime
 import pytz
 
@@ -44,24 +42,21 @@ def signup(request):
                 profile.user_id = new_user.id
             profile.save()
             profile_form.save_m2m()
-            profile.email_link(
+            new_user.email_link(
                 "HSBNE New Member Signup - Action Required",
                 "Next Step: Register for an Induction",
                 "Important. Please read this email for details on how to "
                 "register for an induction.",
-                "{}, thanks for signing up! The next step to becoming a fully "
+                "Hi {}, thanks for signing up! The next step to becoming a fully "
                 "fledged member is to book in for an induction. During this "
                 "induction we will go over the basic safety and operational "
                 "aspects of HSBNE. To book in, click the link below.".format(
-                    new_user.first_name),
+                    profile.first_name),
                 "https://www.eventbrite.com.au/e/hsbne-open-night-tickets-27140078706",
                 "Register for Induction")
 
             # for convenience, we should now log the user in
-            username = user_form.cleaned_data.get('username')
-            raw_password = user_form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
-            login(request, user)
+            login(request, new_user)
 
             return redirect('/')
 
@@ -97,7 +92,7 @@ def change_password(request):
 def reset_password(request, reset_token=None):
     if reset_token:
         try:
-            profile = Profile.objects.get(password_reset_key=reset_token)
+            user = User.objects.get(password_reset_key=reset_token)
 
         except ObjectDoesNotExist:
             return render(request, 'reset_password_form.html',
@@ -108,15 +103,12 @@ def reset_password(request, reset_token=None):
 
             if form.is_valid():
                 if form.cleaned_data['password1'] == form.cleaned_data['password2']:
-                    profile.user.password = make_password(
-                        form.cleaned_data['password1'])
-                    profile.user.save()
+                    user.password = make_password(form.cleaned_data['password1'])
+                    user.password_reset_expire = None
+                    user.password_reset_key = None
+                    user.save()
 
-                    profile.password_reset_expire = None
-                    profile.password_reset_key = None
-                    profile.save()
-
-                    profile.email_notification(
+                    user.email_notification(
                         "Your HSBNE password has changed.",
                         "Your password has changed.", "",
                         "Your HSBNE password has been successfully changed.")
@@ -133,7 +125,7 @@ def reset_password(request, reset_token=None):
                          "error": "Passwords don't match."})
 
         else:
-            if utc.localize(datetime.now()) < profile.password_reset_expire:
+            if utc.localize(datetime.now()) < user.password_reset_expire:
                 return render(request, 'reset_password_form.html',
                               {'form': ResetPasswordForm()})
 
@@ -148,7 +140,7 @@ def reset_password(request, reset_token=None):
         if form.is_valid():
             try:
                 user = User.objects.get(email=form.cleaned_data['email'])
-                user.profile.reset_password()
+                user.reset_password()
                 return render(
                     request, 'reset_password.html',
                     {'form': ResetPasswordRequestForm(),
@@ -273,24 +265,23 @@ def edit_profile(request):
 
     if request.method == 'POST':
         user_form = EditUserForm(request.POST, instance=request.user)
-        cause_form = EditCausesForm(
-            request.POST, instance=request.user.profile)
+        profile_form = EditProfileForm(request.POST, instance=request.user.profile)
 
-        if user_form.is_valid() and cause_form.is_valid():
+        if user_form.is_valid() and profile_form.is_valid():
             # if it was a form submission save it
             user_form.save()
-            cause_form.save()
+            profile_form.save()
             log_user_event(request.user, "User profile edited.", "profile")
             return HttpResponseRedirect('%s' % (reverse('profile')))
 
     else:
         # if it's not a form submission, return an empty form
         user_form = EditUserForm(instance=request.user)
-        cause_form = EditCausesForm(instance=request.user.profile)
+        profile_form = EditProfileForm(instance=request.user.profile)
 
     return render(
         request, 'edit_profile.html',
-        {'user_form': user_form, "cause_form": cause_form})
+        {'user_form': user_form, "profile_form": profile_form})
 
 
 @login_required
@@ -368,7 +359,7 @@ def edit_theme_song(request):
 @login_required
 @admin_required
 def resend_welcome_email(request, member_id):
-    success = User.objects.get(pk=member_id).profile.email_welcome()
+    success = User.objects.get(pk=member_id).email_welcome()
     log_user_event(request.user, "Resent welcome email.", "profile")
 
     if success:

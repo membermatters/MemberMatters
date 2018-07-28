@@ -9,8 +9,8 @@
         <table id="profileTable" class="center striped">
             <tbody>
             <tr>
-                <td><b>Username:</b></td>
-                <td>{{ user.username }}</td>
+                <td><b>Screen Name:</b></td>
+                <td>{{ user.profile.screen_name }}</td>
             </tr>
             <tr>
                 <td><b>Email:</b></td>
@@ -18,7 +18,7 @@
             </tr>
             <tr>
                 <td><b>Name:</b></td>
-                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                <td>{{ user.profile.first_name }} {{ user.profile.last_name }}</td>
             </tr>
             <tr>
                 <td><b>Membership Type:</b></td>
@@ -28,6 +28,16 @@
                 <td><b>Membership Status:</b></td>
                 <td>{{ user.profile.get_state_display }}</td>
             </tr>
+            {% if user.is_superuser or user.is_staff %}
+                <tr>
+                    <td><b>Admin Status:</b></td>
+                    {% if user.is_superuser %}
+                        <td>You're a super user!</td>
+                    {% elif user.is_staff %}
+                        <td>You're an admin!</td>
+                    {% endif %}
+                </tr>
+            {% endif %}
             <tr>
                 <td><b>Causes:</b></td>
                 <td>{% for cause in user.profile.causes.all %}
