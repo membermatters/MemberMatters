@@ -7,6 +7,7 @@ from .forms import SpacebugForm
 import pytz
 import os
 import sendgrid
+import requests
 from sendgrid.helpers.mail import *
 
 
@@ -48,21 +49,22 @@ def spacebug(request):
     if request.method == 'POST':
         form = form_class(data=request.POST)
         if form.is_valid():
-            subject = request.POST.get('issue', '')
-            body = request.POST.get('details', '')
-            if "SENDGRID_API_KEY" in os.environ:
-                sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
-                from_email = Email("portal@hsbne.org")
-                to_email = Email("issues@hsbne.org")
-                content = Content("text/html", body)
-                mail = Mail(from_email, subject, to_email, content)
-                response = sg.client.mail.send.post(request_body=mail.get())
-                if response.status_code == 202:
-                    log_user_event(request.user, "Sent issue with subject: " + subject, "email",
-                                   "Email content: " + body)
-                    messages.success(request, 'Issue submitted successfully. Thanks.')
-                    return redirect(reverse('report_spacebug'))
-        log_user_event(request.user, "Failed to send issue with subject: " + subject, "email", "Email content: " + body)
+            issue = request.POST.get('issue', '')
+            details = request.POST.get('details', '')
+            url = "https://api.trello.com/1/cards"
+            trelloKey = os.environ.get('TRELLO_API_KEY')
+            trelloToken = os.environ.get('TRELLO_API_TOKEN')
+
+            querystring = {"name":issue,"desc":details,"pos":"top","idList":"5529dd886d658fdace75c830","keepFromSource":"all","key":trelloKey,"token":trelloToken}
+
+            response = requests.request("POST", url, params=querystring)
+
+                
+            if response.status_code == 200:
+                log_user_event(request.user, "Submitted issue: " + issue + " Content: " + details, "generic")
+                messages.success(request, 'Issue submitted successfully. Thanks.')
+                return redirect(reverse('report_spacebug'))
+        log_user_event(request.user, "Issue Submit Failed:: " + issue + " content: " + details, "error")
         messages.error(request, 'Issue failed to submit, sorry.')
         return redirect(reverse('report_spacebug'))
 
