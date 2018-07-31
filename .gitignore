@@ -109,3 +109,5 @@ venv.bak/
 /memberportal/portal/my.cnf
 
 *.sqlite3
+
+\.DS_Store

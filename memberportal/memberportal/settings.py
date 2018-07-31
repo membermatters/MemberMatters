@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'access',
     'causes',
     'spacebucks',
+    'spacedirectory'
 ]
 
 MIDDLEWARE = [
