@@ -1,3 +1,4 @@
+<h5>Doors</h5>
 <table id="edit-access-permissions" class="center striped">
     <thead>
     <tr>
@@ -7,7 +8,6 @@
     </tr>
     </thead>
     <tbody>
-
     {% for door in doors %}
         <tr>
             <td>{{ door.name }}</td>
@@ -35,6 +35,53 @@
                     <a onclick='revokeAccess("{% url 'admin_revoke_door' door_id=door.id member_id=member_id %}", {{ door.id }});'
                        class="disabled waves-effect waves-light btn modal-revoke-button" href="#"
                        id="{{ door.id }}-revoke-button">
+                        Revoke
+                    </a>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+
+<h5>Interlocks</h5>
+<table id="edit-interlock-permissions" class="center striped">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th style="width:100px;">Access</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for interlock in interlocks %}
+        <tr>
+            <td>{{ interlock.name }}</td>
+            <td>{{ interlock.description }}</td>
+            <td>
+                {% if interlock in member.profile.interlocks.all %}
+                    <a onclick='grantAccess("{% url 'admin_grant_interlock' interlock_id=interlock.id member_id=member_id %}", {{ interlock.id }});'
+                       class="disabled green waves-effect waves-light btn modal-grant-button" href="#"
+                       id="{{ interlock.id }}-grant-button">
+                        Grant
+                    </a>
+
+                    <a onclick='revokeAccess("{% url 'admin_revoke_interlock' interlock_id=interlock.id member_id=member_id %}", {{ interlock.id }});'
+                       class="waves-effect waves-light btn modal-revoke-button" href="#"
+                       id="{{ interlock.id }}-revoke-button">
+                        Revoke
+                    </a>
+
+                {% else %}
+                    <a onclick='grantAccess("{% url 'admin_grant_interlock' interlock_id=interlock.id member_id=member_id %}", {{ interlock.id }});'
+                       class="green waves-effect waves-light btn modal-grant-button" id="{{ interlock.id }}-grant-button">
+                        Grant
+                    </a>
+
+                    <a onclick='revokeAccess("{% url 'admin_revoke_interlock' interlock_id=interlock.id member_id=member_id %}", {{ interlock.id }});'
+                       class="disabled waves-effect waves-light btn modal-revoke-button" href="#"
+                       id="{{ interlock.id }}-revoke-button">
                         Revoke
                     </a>
                 {% endif %}

@@ -11,7 +11,7 @@ User = get_user_model()
 from django.urls import reverse
 from memberportal.decorators import no_noobs, admin_required
 from memberportal.helpers import log_user_event
-from access.models import Doors, DoorLog
+from access.models import *
 from .forms import *
 from datetime import datetime
 import pytz
@@ -315,13 +315,13 @@ def set_state(request, member_id, state):
 def admin_edit_access(request, member_id):
     member = get_object_or_404(User, pk=member_id)
     doors = Doors.objects.all()
+    interlocks = Interlock.objects.all()
     data = dict()
 
     # render the form and return it
     data['html_form'] = render_to_string(
         'partial_admin_edit_access.html',
-        {'member': member, 'member_id': member_id,
-         'doors': doors}, request=request)
+        {'member': member, 'member_id': member_id, 'doors': doors, 'interlocks':interlocks}, request=request)
     return JsonResponse(data)
 
 

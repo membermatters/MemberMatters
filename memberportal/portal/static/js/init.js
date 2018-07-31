@@ -299,7 +299,7 @@ function requestAccess(url) {
             }
         },
         error: function () {
-            M.toast({html: "Unkown error 6 :( "});
+            M.toast({html: "Unknown error 6 :( "});
         }
     });
 }
@@ -311,14 +311,72 @@ function unlockDoor(thing) {
         dataType: 'json',
         success: function (response) {
             if (response.success) {
-                M.toast({html: "Door unlock success."});
+                M.toast({html: "Door unlocked successfully."});
             }
             else {
                 M.toast({html: "Error while trying to unlock door :("});
             }
         },
         error: function () {
-            M.toast({html: "Unkown error while trying to unlock door :( "});
+            M.toast({html: "Unknown error while trying to unlock door :( "});
         }
     });
 }
+
+function lockDoor(thing) {
+    $.ajax({
+        url: thing.getAttribute("data-url"),  // <-- AND HERE
+        type: 'get',
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                M.toast({html: "Door locked successfully."});
+            }
+            else {
+                M.toast({html: "Error while trying to lock door :("});
+            }
+        },
+        error: function () {
+            M.toast({html: "Unknown error while trying to lock door :( "});
+        }
+    });
+}
+
+function unlockInterlock(btn) {
+    $.ajax({
+        url: btn.getAttribute("data-url"),  // <-- AND HERE
+        type: 'get',
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                M.toast({html: "Interlock unlocked successfully."});
+            }
+            else {
+                M.toast({html: "Error while trying to unlock interlock :("});
+            }
+        },
+        error: function () {
+            M.toast({html: "Unknown error while trying to unlock interlock :( "});
+        }
+    });
+}
+
+function lockInterlock(btn) {
+    $.ajax({
+        url: btn.getAttribute("data-url"),  // <-- AND HERE
+        type: 'get',
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                M.toast({html: "Interlock locked successfully."});
+            }
+            else {
+                M.toast({html: "Error while trying to lock interlock :("});
+            }
+        },
+        error: function () {
+            M.toast({html: "Unknown error while trying to lock interlock :( "});
+        }
+    });
+}
+

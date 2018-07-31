@@ -260,6 +260,7 @@ class Profile(models.Model):
     rfid = models.CharField(
         "RFID Tag", max_length=20, unique=True, null=True, blank=True)
     doors = models.ManyToManyField('access.Doors', blank=True)
+    interlocks = models.ManyToManyField('access.Interlock', blank=True)
     spacebucks_balance = models.FloatField(default=0.0)
     stripe_customer_id = models.CharField(
         max_length=100, blank=True, null=True, default="")

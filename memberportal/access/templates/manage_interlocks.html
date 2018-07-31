@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}Manage Doors{% endblock %}
+{% block title %}Manage Interlocks{% endblock %}
 
 {% block content %}
     <div class="row center">
         <div class="col s12">
-            <h4>Current Doors</h4>
-            <a href="{% url "add_door" %}" class="waves-effect waves-light btn edit-button">
-                Add Door
+            <h4>Current Interlocks</h4>
+            <a href="{% url "add_interlock" %}" class="waves-effect waves-light btn edit-button">
+                Add Interlock
             </a>
             <table class="striped responsive-table">
                 <thead>
@@ -15,38 +15,47 @@
                     <th>Name</th>
                     <th>IP</th>
                     <th>Last Seen</th>
+                    <th>Last Used</th>
                     <th>Default Access</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
 
                 <tbody>
-                {% for door in doors %}
+                {% for interlock in interlocks %}
                     <tr>
-                        <td>{{ door.name }}</td>
-                        <td>{{ door.ip_address }}</td>
-                        {% if not door.last_seen %}
+                        <td>{{ interlock.name }}</td>
+                        <td>{{ interlock.ip_address }}</td>
+
+                        {% if not interlock.last_seen %}
                             <td class="orange-text">never</td>
-                        {% elif door.get_unavailable %}
-                            <td class="red-text">{{ door.last_seen|timesince }} ago</td>
+                        {% elif interlock.get_unavailable %}
+                            <td class="red-text">{{ interlock.last_seen|timesince }} ago</td>
                         {% else %}
-                            <td class="light-green-text">{{ door.last_seen|timesince }} ago</td>
+                            <td class="light-green-text">{{ interlock.last_seen|timesince }} ago</td>
                         {% endif %}
-                        <td>{{ door.all_members }}</td>
+
+                        {% if not interlock.get_last_active %}
+                            <td class="orange-text">never</td>
+                        {% elif interlock.get_last_active %}
+                            <td>{{ interlock.get_last_active|timesince }} ago</td>
+                        {% endif %}
+
+                        <td>{{ interlock.all_members }}</td>
                         <td>
-                            <a href="{% url "edit_door" door_id=door.id %}"
+                            <a href="{% url "edit_interlock" interlock_id=interlock.id %}"
                                class="waves-effect waves-light btn-small edit-button">
                                 <i class="material-icons">edit</i>
                             </a>
-                            <a href="{% url "delete_door" door_id=door.id %}"
+                            <a href="{% url "delete_interlock" interlock_id=interlock.id %}"
                                class="waves-effect waves-light btn-small delete-button">
                                 <i class="material-icons">delete</i>
                             </a>
-                            <a data-url="{% url "unlock_door" door_id=door.id %}" onclick="unlockDoor(this);"
+                            <a data-url="{% url "unlock_interlock" interlock_id=interlock.id %}" onclick="unlockInterlock(this);"
                                class="waves-effect waves-light btn-small delete-button">
                                 <i class="material-icons">lock_open</i>
                             </a>
-                            <a data-url="{% url "lock_door" door_id=door.id %}" onclick="lockDoor(this);"
+                            <a data-url="{% url "lock_interlock" interlock_id=interlock.id %}" onclick="lockInterlock(this);"
                                class="waves-effect waves-light btn-small delete-button">
                                 <i class="material-icons">lock</i>
                             </a>

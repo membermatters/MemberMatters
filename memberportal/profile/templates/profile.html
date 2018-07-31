@@ -61,7 +61,8 @@
             <p id='last-login'>You last logged in on {{ user.last_login }}</p>
 
             <a class="btn waves-effect waves-light right" href="{% url 'edit_profile' %}">Edit Profile</a><br><br>
-            <a class="btn waves-effect waves-light right" href="{% url 'change_password' %}">Change Password</a>
+            <a class="btn waves-effect waves-light right" href="{% url 'change_password' %}">Change Password</a><br><br>
+            <a class="btn waves-effect waves-light right" href="{% url 'edit_theme_song' %}">Change My Theme</a>
         </div>
     </div>
 {% endblock %}

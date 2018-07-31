@@ -81,6 +81,9 @@
                     <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_doors' %}">Manage
                         Doors</a>
                     </li>
+                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_interlocks' %}">Manage
+                        Interlocks</a>
+                    </li>
                 {% endif %}
 
                 <li>
@@ -90,8 +93,6 @@
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'report_spacebug' %}">Report
                     Issue</a></li>
                 {% if not user.profile.state|stringformat:"s" == "noob" %}
-                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change My
-                        Theme</a></li>
                     <li><a class="waves-effect waves-light modal-trigger" href="{% url 'list_causes' %}">See Cause
                         Members</a></li>
                     <li><a class="waves-effect waves-light modal-trigger" href="{% url 'recent_swipes' %}">Recent
@@ -129,8 +130,6 @@
     <ul id="member-dropdown" class="dropdown-content">
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'report_spacebug' %}">Report Issue</a></li>
         {% if not user.profile.state|stringformat:"s" == "noob" %}
-            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'edit_theme_song' %}">Change My Theme</a>
-            </li>
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'list_causes' %}">See Cause Members</a>
             </li>
 
@@ -147,6 +146,9 @@
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage Causes</a>
             </li>
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_doors' %}">Manage Doors</a></li>
+            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_interlocks' %}">Manage
+                Interlocks</a>
+            </li>
         </ul>
     {% endif %}
 </nav>
