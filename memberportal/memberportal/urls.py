@@ -22,5 +22,6 @@ urlpatterns = [
     path('', include('causes.urls')),
     path('', include('profile.urls')),
     path('', include('spacebucks.urls')),
+    path('', include('spacedirectory.urls')),
     path('admin/', admin.site.urls),
 ]
