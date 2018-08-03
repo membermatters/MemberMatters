@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
         "hover": false
     });
     M.Dropdown.init(document.querySelectorAll('.dropdown-trigger-hover'), {"coverTrigger": false, "hover": true});
-    M.Dropdown.init(document.querySelectorAll('body > div.container > div > form > div > div > p:nth-child(11) > div > input'), {"coverTrigger": false, "closeOnClick": true,});
+    M.Dropdown.init(document.querySelectorAll('body > div.container > div > form > div > div > p:nth-child(12) > div > input'), {"coverTrigger": false, "closeOnClick": true,});
 
     // Modal init
     let modalElem = document.getElementById('member-actions-modal');
@@ -53,6 +53,20 @@ function resendWelcome() {
     });
 }
 
+function addToXero() {
+    $.ajax({
+        url: add_to_xero_url,  // <-- AND HERE
+        type: 'get',
+        dataType: 'json',
+        success: function (data) {
+                M.toast({html: data.response});
+        },
+        error: function (data) {
+            M.toast({html: data.response});
+        }
+    });
+}
+
 function setState(state) {
     let state_url;
 
@@ -70,17 +84,21 @@ function setState(state) {
             if (state) {
                 state_url = active_url;
                 document.getElementById("activate-member-button").classList.add("disabled");
+                document.getElementById("activate-member-button").classList.add("hidden");
                 document.getElementById("deactivate-member-button").classList.remove("disabled");
+                document.getElementById("deactivate-member-button").classList.remove("hidden");
                 if (document.getElementById("activate-member-button").innerText == "MAKE MEMBER") {
-                    M.toast({html: "Successfully activated member and sent welcome email."});
+                    M.toast({html: data.response});
                 } else {
-                    M.toast({html: "Successfully enabled access."});
+                    M.toast({html: data.response});
                 }
             } else {
                 state_url = deactive_url;
                 document.getElementById("activate-member-button").classList.remove("disabled");
+                document.getElementById("activate-member-button").classList.remove("hidden");
                 document.getElementById("deactivate-member-button").classList.add("disabled");
-                M.toast({html: "Successfully disabled access."});
+                document.getElementById("deactivate-member-button").classList.add("hidden");
+                M.toast({html: data.response});
             }
             // not very DRY... ideally should be modularised a bit more...
             $.ajax({
@@ -96,7 +114,7 @@ function setState(state) {
                     }, 0);
                 },
                 error: function () {
-                    M.toast({html: "Unkown error 2 :( "});
+                    M.toast({html: "unknown error 2 :( "});
                 }
             });
         },
@@ -116,6 +134,7 @@ let active_url;
 let member_state;
 let resend_welcome_url;
 let get_logs_url;
+let add_to_xero_url;
 
 function openMemberActionsModal(e) {
     name = e.getAttribute("data-name");
@@ -127,6 +146,7 @@ function openMemberActionsModal(e) {
     deactive_url = e.getAttribute("data-deactive_url");
     resend_welcome_url = e.getAttribute("data-resend_welcome_url");
     get_logs_url = e.getAttribute("data-get_logs_url");
+    add_to_xero_url = e.getAttribute("data-add_to_xero_url");
     document.getElementById('admin-member-modal-name').innerText = name;
 
     // get the edit profile form
@@ -143,7 +163,7 @@ function openMemberActionsModal(e) {
             }, 0);
         },
         error: function () {
-            M.toast({html: "Unkown error while getting profile form :( "});
+            M.toast({html: "unknown error while getting profile form :( "});
         }
     });
 
@@ -161,7 +181,7 @@ function openMemberActionsModal(e) {
             }, 0);
         },
         error: function () {
-            M.toast({html: "Unkown error while getting access form :( "});
+            M.toast({html: "unknown error while getting access form :( "});
         }
     });
 
@@ -184,21 +204,27 @@ function openMemberActionsModal(e) {
             table.order([0, 'desc']).draw();
         },
         error: function () {
-            M.toast({html: "Unkown error while getting logs :( "});
+            M.toast({html: "unknown error while getting logs :( "});
         }
     });
 
     document.getElementById("activate-member-button").innerText = "Enable Access";
     if (member_state == "inactive") {
         document.getElementById("activate-member-button").classList.remove("disabled");
+        document.getElementById("activate-member-button").classList.remove("hidden");
         document.getElementById("deactivate-member-button").classList.add("disabled");
+        document.getElementById("deactivate-member-button").classList.add("hidden");
     } else if (member_state == "active") {
         document.getElementById("activate-member-button").classList.add("disabled");
+        document.getElementById("activate-member-button").classList.add("hidden");
         document.getElementById("deactivate-member-button").classList.remove("disabled");
+        document.getElementById("deactivate-member-button").classList.remove("hidden");
     } else if (member_state == "noob") {
         document.getElementById("activate-member-button").innerText = "Make Member";
         document.getElementById("activate-member-button").classList.remove("disabled");
+        document.getElementById("activate-member-button").classList.remove("hidden");
         document.getElementById("deactivate-member-button").classList.add("disabled");
+        document.getElementById("deactivate-member-button").classList.add("hidden");
     }
 
     memberActionsModal.open();
@@ -231,7 +257,7 @@ $("#member-actions-modal").on("submit", ".member-edit-form", function () {
             }
         },
         error: function () {
-            M.toast({html: "Unkown error 3 :( "});
+            M.toast({html: "unknown error 3 :( "});
         }
     });
     return false;
@@ -259,7 +285,7 @@ function grantAccess(url, id) {
             }
         },
         error: function () {
-            M.toast({html: "Unkown error 4 :( "});
+            M.toast({html: "unknown error 4 :( "});
         }
     });
 }
@@ -280,7 +306,7 @@ function revokeAccess(url, id) {
             }
         },
         error: function () {
-            M.toast({html: "Unkown error 5 :( "});
+            M.toast({html: "unknown error 5 :( "});
         }
     });
 }

@@ -301,13 +301,28 @@ def set_state(request, member_id, state):
             # give default access
             for door in Doors.objects.filter(all_members=True):
                 user.profile.doors.add(door)
+            email = user.email_welcome()
+            xero = user.profile.add_to_xero()
+            activate = user.profile.activate()
+
+            if email and "Error" not in xero and activate:
+                return JsonResponse({"success": True, "response": "Successfully made into member - invites sent, added to xero and activated."})
+
+            elif email and activate and "Error" in xero:
+                return JsonResponse({"success": False, "response": xero})
+
+            elif xero and activate:
+                return JsonResponse({"success": False, "response": "Error, couldn't send welcome email."})
+
+            else:
+                return JsonResponse({"success": False, "response": "Unknown error while making into member."})
 
         user.profile.activate()
+        return JsonResponse({"success": True, "response": "Successfully enabled user."})
 
     else:
         user.profile.deactivate()
-
-    return JsonResponse({"success": True})
+        return JsonResponse({"success": True, "response": "Successfully disabled user."})
 
 
 @login_required
@@ -359,7 +374,7 @@ def edit_theme_song(request):
 @login_required
 @admin_required
 def resend_welcome_email(request, member_id):
-    success = User.objects.get(pk=member_id).email_welcome()
+    success = User.objects.get(pk=member_id).profile.send_to_xero()#email_welcome()
     log_user_event(request.user, "Resent welcome email.", "profile")
 
     if success:
@@ -368,3 +383,8 @@ def resend_welcome_email(request, member_id):
     else:
         return JsonResponse(
             {"success": False, "reason": "Unknown error. Error AlfSo"})
+
+
+@login_required
+def add_to_xero(request, member_id):
+    return JsonResponse({"response": User.objects.get(pk=member_id).profile.add_to_xero()})

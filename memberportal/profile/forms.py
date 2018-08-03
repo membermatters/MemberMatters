@@ -36,7 +36,7 @@ class SignUpForm(UserCreationForm):
 class AddProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('first_name', 'last_name', 'screen_name', 'member_type', 'causes')
+        fields = ('first_name', 'last_name', 'phone', 'screen_name', 'member_type', 'causes')
 
     def clean(self):
         causes = self.cleaned_data.get('causes')
@@ -48,7 +48,7 @@ class AddProfileForm(forms.ModelForm):
 class EditProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('first_name', 'last_name', 'screen_name', 'causes')
+        fields = ('first_name', 'last_name', 'phone', 'screen_name', 'causes')
 
     def clean(self):
         causes = self.cleaned_data.get('causes')
@@ -61,7 +61,7 @@ class EditProfileForm(forms.ModelForm):
 class AdminEditProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('rfid', 'first_name', 'last_name', 'member_type', 'screen_name', 'causes')
+        fields = ('rfid', 'first_name', 'last_name', 'phone', 'member_type', 'screen_name', 'causes')
 
     def clean(self):
         causes = self.cleaned_data.get('causes')
