@@ -116,6 +116,10 @@ body > div.fullwidth-container > div.modal-overlay {
     margin-right: 10px;
 }
 
+.hidden {
+    display: none;
+}
+
 /* materialize small screens (phones) */
 @media only screen and (max-width: 600px) {
     /* make the logo same height as navbar but with padding around it */

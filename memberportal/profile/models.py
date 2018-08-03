@@ -10,7 +10,10 @@ from django.template.loader import render_to_string
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser, PermissionsMixin
 )
+from django.core.validators import RegexValidator
 from django.conf import settings
+from xero import Xero
+from xero.auth import PrivateCredentials
 
 utc = pytz.UTC
 
@@ -26,6 +29,7 @@ LOG_TYPES = (
     ('admin', 'Generic admin event'),
     ('error', 'Some event that causes an error'),
 )
+
 
 class Log(models.Model):
     logtype = models.CharField(
@@ -101,7 +105,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=None, blank=True, null=True)
     staff = models.BooleanField(default=False)  # a admin user; non super-user
     admin = models.BooleanField(default=False)  # a superuser
-    # notice the absence of a "Password field", that's built in.
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []  # Email & Password are required by default.
@@ -150,7 +153,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             if response.status_code == 202:
                 log_user_event(
                     self, "Sent email with subject: " + subject, "email",
-                               "Email content: " + body)
+                          "Email content: " + body)
                 return True
 
         log_user_event(
@@ -253,6 +256,9 @@ class Profile(models.Model):
     screen_name = models.CharField("Screen Name", max_length=30)
     first_name = models.CharField("First Name", max_length=30)
     last_name = models.CharField("Last Name", max_length=30)
+    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
+                                 message="Phone number must be entered in the format: '0417123456'. Up to 12 characters allowed.")
+    phone = models.CharField(validators=[phone_regex], max_length=12, blank=True)  # validators should be a list
     state = models.CharField(max_length=8, default='noob', choices=STATES)
     member_type = models.ForeignKey(
         MemberTypes, on_delete=models.PROTECT, related_name='member_type')
@@ -268,23 +274,24 @@ class Profile(models.Model):
         max_length=10, blank=True, null=True, default="")
     stripe_card_last_digits = models.CharField(
         max_length=4, blank=True, null=True, default="")
+    xero_account_id = models.CharField(max_length=100, blank=True, null=True, default="")
+    xero_account_number = models.CharField(max_length=6, blank=True, null=True, default="")
 
     def deactivate(self):
         log_user_event(self.user, "Deactivated member", "profile")
         self.user.email_disable_member()
         self.state = "inactive"
         self.save()
+        return True
 
     def activate(self):
         log_user_event(self.user, "Activated member", "profile")
-        if self.state == "noob":
-            self.user.email_welcome()
-
-        else:
+        if self.state is not "noob":
             self.user.email_enable_member()
 
         self.state = "active"
         self.save()
+        return True
 
     def get_logs(self):
         return UserEventLog.objects.filter(user=self.user)
@@ -299,3 +306,112 @@ class Profile(models.Model):
     def get_short_name(self):
         # The user is identified by their email address
         return self.first_name
+
+    def get_xero_contact(self):
+        """
+        Returns an object with the xero contact details or None if it doesn't exist.
+        :return:
+        """
+
+        if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
+            with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
+                rsa_key = keyfile.read()
+            credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+            xero = Xero(credentials)
+            email = xero.contacts.filter(EmailAddress=self.user.email)
+            name = xero.contacts.filter(Name=self.get_full_name())
+
+            if email:
+                return email
+
+            elif name:
+                return name
+
+            return None
+
+        else:
+            return "Invalid Xero API details."
+
+    def __generate_account_number(self):
+        if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
+            with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
+                rsa_key = keyfile.read()
+            credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+            xero = Xero(credentials)
+            contacts = xero.contacts.filter(includeArchived=True)
+
+            for x in range(100, 999):
+                account_number = self.first_name[0] + self.last_name[:2] + str(x)
+                account_number = account_number.upper()
+
+                if not any(d.get('AccountNumber', None) == account_number for d in contacts):
+                    self.xero_account_number = account_number
+                    self.save()
+                    print(account_number)
+
+                    return self.xero_account_number
+
+        else:
+            return False
+
+    def add_to_xero(self):
+        member_exists = self.xero_account_id is not "" and self.xero_account_number is not ""
+        print(member_exists)
+
+        if member_exists:
+            result = "Error adding to xero, that email or contact name already exists."
+            print(result)
+            return result
+
+        else:
+            if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
+                with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
+                    rsa_key = keyfile.read()
+                credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+                xero = Xero(credentials)
+
+                contact = [
+                    {
+                        "AccountNumber": self.__generate_account_number(),
+                        "ContactStatus": "ACTIVE",
+                        "Name": self.get_full_name(),
+                        "FirstName": self.first_name,
+                        "LastName": self.last_name,
+                        "EmailAddress": self.user.email,
+                        "Addresses": [
+                            {
+                                "AddressType": "STREET",
+                                "City": "",
+                                "Region": "",
+                                "PostalCode": "",
+                                "Country": "",
+                                "AttentionTo": ""
+                            }
+                        ],
+                        "Phones": [
+                            {
+                                "PhoneType": "DEFAULT",
+                                "PhoneNumber": self.phone,
+                                "PhoneAreaCode": "",
+                                "PhoneCountryCode": ""
+                            }
+                        ],
+                        "IsSupplier": False,
+                        "IsCustomer": True,
+                        "DefaultCurrency": "AU"
+                    }
+                ]
+
+                result = xero.contacts.put(contact)
+
+                if result:
+                    print(result)
+                    self.xero_account_id = result[0]['ContactID']
+                    self.save()
+                    return "Successfully added to Xero."
+
+                else:
+                    return "Error adding to Xero."
+
+            else:
+                return "Error adding to Xero. No Xero API details."

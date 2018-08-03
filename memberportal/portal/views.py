@@ -6,9 +6,7 @@ from memberportal.helpers import log_user_event
 from .forms import SpacebugForm
 import pytz
 import os
-import sendgrid
 import requests
-from sendgrid.helpers.mail import *
 
 
 utc = pytz.UTC
