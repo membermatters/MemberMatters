@@ -5,3 +5,4 @@ stripe
 sendgrid
 pyxero
 PyCrypto
+humanize
