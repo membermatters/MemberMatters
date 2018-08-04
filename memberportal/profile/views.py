@@ -343,9 +343,10 @@ def admin_edit_access(request, member_id):
 @login_required
 @no_noobs
 def recent_swipes(request):
-    swipes = DoorLog.objects.all().order_by('date')[::-1][:50]
+    doors = DoorLog.objects.all().order_by('date')[::-1][:50]
+    interlocks = InterlockLog.objects.all().order_by('last_heartbeat')[::-1][:50]
 
-    return render(request, 'recent_swipes.html', {"swipes": swipes})
+    return render(request, 'recent_swipes.html', {"doors": doors, "interlocks": interlocks})
 
 
 @login_required
@@ -355,10 +356,9 @@ def last_seen(request):
     members = User.objects.all()
 
     for member in members:
-        door_logs = DoorLog.objects.filter(user=member).order_by("date")
-        if len(door_logs):
-            date = door_logs[::-1][0].date
-            last_seens.append({"user": member, "never": False, "date": date})
+        if member.profile.last_seen is not None:
+            last_seens.append({"user": member, "never": False, "date": member.profile.last_seen})
+
         else:
             last_seens.append({"user": member, "never": True})
 

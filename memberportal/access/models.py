@@ -56,6 +56,7 @@ class AccessControlledDevice(models.Model):
 
 class Doors(AccessControlledDevice):
     def log_access(self, member_id):
+
         return DoorLog.objects.create(user=User.objects.get(pk=member_id), door=self)
 
 

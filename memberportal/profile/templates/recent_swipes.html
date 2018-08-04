@@ -6,28 +6,66 @@
     <div class="medium-width center row small-row">
         <h3 class="header center text">Recent Swipes</h3>
         <p>Here is a list of the last 50 swipes around HSBNE.</p>
-        <table id="recent-swipes-table" class="data-table striped responsive-table">
-            <thead>
-            <tr>
-                <th>User</th>
-                <th>Door</th>
-                <th>Date</th>
-                <th>Swiped</th>
-            </tr>
-            </thead>
 
-            <tbody>
-            {% for swipe in swipes %}
-                <tr>
-                    <td>{{ swipe.user.profile.get_full_name }} ({{ swipe.user.profile.screen_name }})</td>
-                    <td>{{ swipe.door }}</td>
-                    <td>{{ swipe.date|date:"y-m-d" }}-{{ swipe.date|time:"H:i" }}</td>
-                    <td>{{ swipe.date|timesince }}</td>
-                </tr>
-            {% endfor %}
 
-            </tbody>
-        </table>
+        <div class="row">
+            <div class="col s12">
+                <ul class="tabs">
+                    <li class="tab col s3 offset-s3"><a href="#doors" class="active">Doors</a></li>
+                    <li class="tab col s3"><a href="#interlocks">Interlocks</a></li>
+                </ul>
+            </div>
+
+            <div id="doors" class="col s12">
+                <table id="recent-swipes-table" class="data-table striped responsive-table">
+                    <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Door</th>
+                        <th>Date</th>
+                        <th>Swiped</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for door in doors %}
+                        <tr>
+                            <td>{{ door.user.profile.get_full_name }} ({{ door.user.profile.screen_name }})</td>
+                            <td>{{ door.door.name }}</td>
+                            <td>{{ door.date|date:"y-m-d" }}-{{ door.date|time:"H:i" }}</td>
+                            <td>{{ door.date|timesince }}</td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="interlocks" class="col s12">
+                <table id="recent-swipes-table" class="data-table striped responsive-table">
+                    <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Interlock</th>
+                        <th>Date</th>
+                        <th>Swiped</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for interlock in interlocks %}
+                        <tr>
+                            <td>{{ interlock.user.profile.get_full_name }} ({{ interlock.user.profile.screen_name }})</td>
+                            <td>{{ interlock.interlock.name }}</td>
+                            <td>{{ interlock.last_heartbeat|date:"y-m-d" }}-{{ interlock.last_heartbeat|time:"H:i" }}</td>
+                            <td>{{ interlock.last_heartbeat|timesince }}</td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
     </div>
 {% endblock %}

@@ -221,10 +221,12 @@ def check_door_access(request, rfid_code, door_id=None):
             if door in allowed_doors:
                 # user has access
                 door.log_access(user.id)
+                user.profile.update_last_seen()
                 post_door_swipe_to_discord(user.profile.get_full_name(), door.name, True)
                 return JsonResponse({"access": True, "name": user.profile.first_name})
 
     # if the are inactive or don't have access
+    user.profile.update_last_seen()
     post_door_swipe_to_discord(user.profile.get_full_name(), door.name, False)
     return JsonResponse({"access": False, "name": user.profile.first_name})
 
@@ -444,11 +446,13 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
             if interlock in allowed_interlocks:
                 # user has access
                 session = interlock.create_session(user)
+                user.profile.update_last_seen()
                 post_interlock_swipe_to_discord(user.profile.get_full_name(), interlock.name, "activated")
                 return JsonResponse({"access": True, "session_id": session.id, "timestamp": round(time.time()),
                                      "name": user.profile.first_name})
 
     # if they are inactive or don't have access
+    user.profile.update_last_seen()
     post_interlock_swipe_to_discord(user.profile.get_full_name(), interlock.name, "rejected")
     return JsonResponse({"access": False, "name": user.profile.first_name})
 
@@ -507,7 +511,7 @@ def door_checkin(request, door_id=None):
 
 @api_auth
 def interlock_cron(request):
-    timedout_interlocks = InterlockLog.objects.filter(last_heartbeat__lt=timezone.now() - timedelta(minutes=2), session_complete=False)
+    timedout_interlocks = InterlockLog.objects.filter(last_heartbeat__lt=timezone.now() - timedelta(minutes=1), session_complete=False)
 
     if timedout_interlocks:
         for session in timedout_interlocks:
@@ -530,8 +534,8 @@ def end_interlock_session(request, session_id):
         session.save()
         session.interlock.checkin()
         on_time = humanize.naturaldelta(session.last_heartbeat - session.first_heartbeat)
-        print(post_interlock_swipe_to_discord(session.user.profile.get_full_name(), session.interlock.name,
-                                              "deactivated", on_time))
+        post_interlock_swipe_to_discord(session.user.profile.get_full_name(), session.interlock.name,
+                                              "deactivated", on_time)
 
         return JsonResponse({"success": True})
 

@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
-from datetime import datetime, timedelta
+from django.utils import timezone
+from datetime import timedelta
 import pytz
 import os
 import sendgrid
@@ -217,7 +218,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def reset_password(self):
         log_user_event(self, "Password reset requested", "profile")
         self.password_reset_key = uuid.uuid4()
-        self.password_reset_expire = datetime.now() + timedelta(hours=24)
+        self.password_reset_expire = timezone.now() + timedelta(hours=24)
         self.save()
         self.email_link(
             "Password reset request for you HSBNE account",
@@ -268,6 +269,7 @@ class Profile(models.Model):
     doors = models.ManyToManyField('access.Doors', blank=True)
     interlocks = models.ManyToManyField('access.Interlock', blank=True)
     spacebucks_balance = models.FloatField(default=0.0)
+    last_seen = models.DateTimeField(default=None, null=True)
     stripe_customer_id = models.CharField(
         max_length=100, blank=True, null=True, default="")
     stripe_card_expiry = models.CharField(
@@ -306,6 +308,10 @@ class Profile(models.Model):
     def get_short_name(self):
         # The user is identified by their email address
         return self.first_name
+
+    def update_last_seen(self):
+        self.last_seen = timezone.now()
+        return self.save()
 
     def get_xero_contact(self):
         """
