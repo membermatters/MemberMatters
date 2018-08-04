@@ -61,7 +61,7 @@ class Doors(AccessControlledDevice):
 
 class Interlock(AccessControlledDevice):
     def create_session(self, user):
-        session = InterlockLog.objects.create(id=uuid.uuid4(), user=user, interlock=self, on_date=timezone.now(), last_heartbeat=timezone.now())
+        session = InterlockLog.objects.create(id=uuid.uuid4(), user=user, interlock=self, first_heartbeat=timezone.now(), last_heartbeat=timezone.now())
 
         if session:
             return session
@@ -83,8 +83,9 @@ class InterlockLog(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     interlock = models.ForeignKey(Interlock, on_delete=models.CASCADE)
-    on_date = models.DateTimeField(default=timezone.now)
+    first_heartbeat = models.DateTimeField(default=timezone.now)
     last_heartbeat = models.DateTimeField(default=timezone.now)
+    session_complete = models.BooleanField(default=False)
 
     def heartbeat(self):
         self.last_heartbeat = timezone.now()
