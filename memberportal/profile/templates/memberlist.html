@@ -36,7 +36,11 @@
                         <a data-url="{% url 'admin_edit_member' member_id=member.id %}"
                            data-access_url="{% url 'admin_edit_access' member_id=member.id %}"
                            onclick="openMemberActionsModal(this)"
-                           data-name="{{ member.profile.first_name }} {{ member.profile.last_name }} ({{ member.email }})"
+                            {% if not member.profile.xero_account_id %}
+                                data-name="{{ member.profile.first_name }} {{ member.profile.last_name }} <span class='red-text'>(NOT IN XERO)</span>"
+                            {% else %}
+                                data-name="{{ member.profile.first_name }} {{ member.profile.last_name }}"
+                            {% endif %}
                            data-state="{{ member.profile.state }}"
                            data-id="{{ member.id }}"
                            data-active_url="{% url 'set_state' member_id=member.id state='active' %}"

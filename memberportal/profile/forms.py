@@ -71,6 +71,12 @@ class AdminEditProfileForm(forms.ModelForm):
         return self.cleaned_data
 
 
+class AdminEditUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('email', 'staff')
+
+
 class EditUserForm(forms.ModelForm):
     class Meta:
         model = User

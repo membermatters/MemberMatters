@@ -7,6 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
+
 User = get_user_model()
 from django.urls import reverse
 from memberportal.decorators import no_noobs, admin_required
@@ -212,27 +213,30 @@ def admin_edit_member(request, member_id):
     profile = get_object_or_404(Profile, user=member_id)
     data = dict()
 
-    form = AdminEditProfileForm(instance=profile)
+    profile_form = AdminEditProfileForm(instance=profile)
+    user_form = AdminEditUserForm(instance=profile.user)
+
     # if it's not valid don't save or log it
     data['form_is_valid'] = False
 
     if request.method == 'POST':
         # if it's a form submission pass it to the form
-        form = AdminEditProfileForm(request.POST, instance=profile)
+        profile_form = AdminEditProfileForm(request.POST, instance=profile)
+        user_form = AdminEditUserForm(request.POST, instance=profile.user)
 
-        if form.is_valid():
+        if profile_form.is_valid() and user_form.is_valid():
             # if it's a valid form submission then save and log it
-            form.save()
+            profile_form.save()
+            user_form.save()
             data['form_is_valid'] = True
             log_user_event(
                 profile.user, request.user.profile.get_full_name() + " edited user profile.",
                 "profile")
 
     # render the form and return it
-    data['html_form'] = render_to_string(
-        'partial_admin_edit_member.html',
-        {'form': form, 'member_id': member_id},
-        request=request)
+    data['html_form'] = render_to_string('partial_admin_edit_member.html',
+                                         {'profile_form': profile_form, 'user_form': user_form, 'member_id': member_id},
+                                         request=request)
     return JsonResponse(data)
 
 
@@ -306,7 +310,8 @@ def set_state(request, member_id, state):
             activate = user.profile.activate()
 
             if email and "Error" not in xero and activate:
-                return JsonResponse({"success": True, "response": "Successfully made into member - invites sent, added to xero and activated."})
+                return JsonResponse({"success": True,
+                                     "response": "Successfully made into member - invites sent, added to xero and activated."})
 
             elif email and activate and "Error" in xero:
                 return JsonResponse({"success": False, "response": xero})
@@ -336,7 +341,7 @@ def admin_edit_access(request, member_id):
     # render the form and return it
     data['html_form'] = render_to_string(
         'partial_admin_edit_access.html',
-        {'member': member, 'member_id': member_id, 'doors': doors, 'interlocks':interlocks}, request=request)
+        {'member': member, 'member_id': member_id, 'doors': doors, 'interlocks': interlocks}, request=request)
     return JsonResponse(data)
 
 
@@ -374,7 +379,7 @@ def edit_theme_song(request):
 @login_required
 @admin_required
 def resend_welcome_email(request, member_id):
-    success = User.objects.get(pk=member_id).profile.send_to_xero()#email_welcome()
+    success = User.objects.get(pk=member_id).profile.send_to_xero()  # email_welcome()
     log_user_event(request.user, "Resent welcome email.", "profile")
 
     if success:

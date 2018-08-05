@@ -15,6 +15,7 @@ from django.core.validators import RegexValidator
 from django.conf import settings
 from xero import Xero
 from xero.auth import PrivateCredentials
+from xero.exceptions import XeroBadRequest
 
 utc = pytz.UTC
 
@@ -408,7 +409,11 @@ class Profile(models.Model):
                     }
                 ]
 
-                result = xero.contacts.put(contact)
+                try:
+                    result = xero.contacts.put(contact)
+
+                except XeroBadRequest as e:
+                    return "Error: " + str(e)
 
                 if result:
                     print(result)

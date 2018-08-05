@@ -1,6 +1,23 @@
 <form class="member-edit-form" method="POST" action="{% url 'admin_edit_member' member_id=member_id %}"/>
 {% csrf_token %}
-{{ form.as_p }}
+
+{% for field in user_form %}
+            {% if field.name == "staff" %}
+                <label>
+                    {% if field.value == True %}
+                        <input type="checkbox" name="staff" id="staff" checked>
+                    {% else %}
+                        <input type="checkbox" name="staff" id="staff">
+                    {% endif %}
+                    <span>Has admin access?</span>
+                </label>
+            {% else %}
+                <p>{{ field.errors }}<label style="display:table-cell;">{{ field.name }}: </label>{{ field }}
+                </p>
+            {% endif %}
+        {% endfor %}
+
+{{ profile_form.as_p }}
 
 <a class="btn-flat right" onclick="memberActionsModal.close(); document.getElementById('admin-edit-member-profile').innerHTML = '';">Cancel</a>
 <button class="btn waves-effect waves-light right">Save
