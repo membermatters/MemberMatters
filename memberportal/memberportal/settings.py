@@ -137,3 +137,5 @@ LOGIN_URL = '/signin'
 AUTH_USER_MODEL = 'profile.User'
 
 FROM_EMAIL = '"HSBNE Member Portal" <contact@hsbne.org>'
+FROM_EMAIL_TREASURER = '"HSBNE Member Portal" <treasurer@hsbne.org>'
+SYSADMIN_EMAIL = "hello@jaimyn.com.au"

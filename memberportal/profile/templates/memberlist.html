@@ -9,7 +9,6 @@
             <thead>
             <tr style="max-width: 120px;">
                 <th>Username</th>
-                <th>Email</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Member Type</th>
@@ -22,7 +21,6 @@
             {% for member in members %}
                 <tr>
                     <td>{{ member.profile.screen_name }}</td>
-                    <td>{{ member.email }}</td>
                     <td>{{ member.profile.first_name }}</td>
                     <td>{{ member.profile.last_name }}</td>
                     <td>{{ member.profile.member_type.name }}</td>
@@ -68,7 +66,7 @@
                    class="waves-effect waves-light btn red disabled">Disable Access</a>
                 <a onclick="resendWelcome();" id="resend-welcome-button"
                    class="waves-effect waves-light btn blue">Resend Welcome</a>
-                <a onclick="addToXero();" id="resend-welcome-button"
+                <a onclick="addToXero();" id="resend-to-xero-button"
                    class="waves-effect waves-light btn blue">Resend to Xero</a>
             </div>
         </div>

@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta
+import datetime
 import pytz
 import os
 import sendgrid
@@ -30,6 +31,7 @@ LOG_TYPES = (
     ('email', 'Email send event'),
     ('admin', 'Generic admin event'),
     ('error', 'Some event that causes an error'),
+    ('xero', 'Generic xero log entry'),
 )
 
 
@@ -186,11 +188,28 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         return False
 
+    def email_invoice(self, name, amount, number, due_date, reference, url):
+        invoice = {
+            "name": name,
+            "amount": amount,
+            "number": number,
+            "due_date": due_date,
+            "reference": reference,
+            "url": url,
+        }
+        email_string = render_to_string(
+            'email_invoice.html', {'invoice': invoice})
+
+        if self.__send_email("You have a new invoice from HSBNE ({})".format(number), email_string):
+            return True
+
+        return False
+
     def email_welcome(self):
         email_string = render_to_string('email_welcome.html')
 
         if self.__send_email("Welcome to HSBNE", email_string):
-            return True
+            return "Successfully sent welcome email to user."
 
         return False
 
@@ -271,6 +290,7 @@ class Profile(models.Model):
     interlocks = models.ManyToManyField('access.Interlock', blank=True)
     spacebucks_balance = models.FloatField(default=0.0)
     last_seen = models.DateTimeField(default=None, null=True)
+    last_invoice = models.DateTimeField(default=None, null=True)
     stripe_customer_id = models.CharField(
         max_length=100, blank=True, null=True, default="")
     stripe_card_expiry = models.CharField(
@@ -426,3 +446,80 @@ class Profile(models.Model):
 
             else:
                 return "Error adding to Xero. No Xero API details."
+
+    def create_membership_invoice(self):
+        next_month = datetime.date.today().month + 1
+        this_year = datetime.date.today().year
+        if next_month == 13:
+            next_month = 1
+            this_year += 1
+
+        next_month_date = datetime.datetime(this_year, next_month, 1)
+
+        payload = {
+            "Type": "ACCREC",
+            "Contact": {
+                "ContactID": self.xero_account_id
+            },
+            "DueDate": next_month_date,
+            "LineAmountTypes": "Inclusive",
+            "LineItems": [
+                {
+                    "Description": "HSBNE Membership: " + self.member_type.name,
+                    "Quantity": "1",
+                    "ItemCode": self.member_type.name,
+                    "UnitAmount": self.member_type.cost,
+                    "TaxType": "OUTPUT",
+                    "AccountCode": "200"
+                }
+            ],
+            "Status": "AUTHORISED",
+            "Reference": self.xero_account_number,
+            "Url": "https://hsbne.org",
+        }
+
+        if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
+            with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
+                rsa_key = keyfile.read()
+            credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+            xero = Xero(credentials)
+
+            # Monkey patch the library to support online invoices.
+            def get_onlineinvoice(id, headers=None, summarize_errors=None):
+                uri = '/'.join([xero.invoices.base_url, xero.invoices.name, id, 'OnlineInvoice'])
+                params = {}
+                if not summarize_errors:
+                    params['summarizeErrors'] = 'false'
+                return uri, params, 'get', None, headers, False
+
+            xero.invoices.get_onlineinvoice = xero.invoices._get_data(get_onlineinvoice)
+
+            try:
+                # try to create the invoice
+                result = xero.invoices.put(payload)
+
+                invoice_id = result[0]['InvoiceID']
+                invoice_number = result[0]['InvoiceNumber']
+                invoice_reference = result[0]['Reference']
+                invoice_link = xero.invoices.get_onlineinvoice(invoice_id)['OnlineInvoices'][0]['OnlineInvoiceUrl']
+
+                # if we're successful send it to the member and log it
+                self.user.email_invoice(self.first_name, self.member_type.cost, invoice_number, next_month_date.strftime("%d-%m-%Y"), invoice_reference, invoice_link)
+                log_user_event(self.user, "Created invoice for $" + str(self.member_type.cost) + "(" + invoice_id + ")",
+                               "xero")
+                self.last_invoice = timezone.now()
+                self.save()
+
+            except XeroBadRequest as e:
+                log_user_event(self.user, "Error creating invoice for $" + str(self.member_type.cost),
+                               "xero")
+                return "Error: " + str(e)
+
+            if result:
+                return "Successfully created invoice {} in Xero.".format(invoice_number)
+
+            else:
+                return "Error creating invoice in Xero."
+
+        else:
+            return "Error created invoice in Xero. No Xero API details."

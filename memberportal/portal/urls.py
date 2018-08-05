@@ -10,4 +10,6 @@ urlpatterns = [
     path('webcams/', views.webcams, name='webcams'),
     path('spacebug/report/', views.spacebug, name='report_spacebug'),
     path('', views.home, name='home'),
+    path('cron/invoices/', views.invoice_cron, name='invoice_cron'),
+    path('cron/overdue/', views.overdue_cron, name='overdue_cron'),
 ]

@@ -21,7 +21,10 @@ document.addEventListener('DOMContentLoaded', function () {
         "hover": false
     });
     M.Dropdown.init(document.querySelectorAll('.dropdown-trigger-hover'), {"coverTrigger": false, "hover": true});
-    M.Dropdown.init(document.querySelectorAll('body > div.container > div > form > div > div > p:nth-child(12) > div > input'), {"coverTrigger": false, "closeOnClick": true,});
+    M.Dropdown.init(document.querySelectorAll('body > div.container > div > form > div > div > p:nth-child(12) > div > input'), {
+        "coverTrigger": false,
+        "closeOnClick": true,
+    });
 
     // Modal init
     let modalElem = document.getElementById('member-actions-modal');
@@ -45,10 +48,10 @@ function resendWelcome() {
         type: 'get',
         dataType: 'json',
         success: function (data) {
-                M.toast({html: "Successfully resent welcome email."});
+            M.toast({html: data.message});
         },
         error: function (data) {
-            M.toast({html: "There was an error processing the request. :("});
+            M.toast({html: data.message});
         }
     });
 }
@@ -59,7 +62,7 @@ function addToXero() {
         type: 'get',
         dataType: 'json',
         success: function (data) {
-                M.toast({html: data.response});
+            M.toast({html: data.response});
         },
         error: function (data) {
             M.toast({html: data.response});
@@ -217,6 +220,8 @@ function openMemberActionsModal(e) {
     });
 
     document.getElementById("activate-member-button").innerText = "Enable Access";
+    document.getElementById("resend-welcome-button").classList.remove("hidden");
+    document.getElementById("resend-welcome-button").classList.remove("hidden");
     if (member_state == "inactive") {
         document.getElementById("activate-member-button").classList.remove("disabled");
         document.getElementById("activate-member-button").classList.remove("hidden");
@@ -233,6 +238,8 @@ function openMemberActionsModal(e) {
         document.getElementById("activate-member-button").classList.remove("hidden");
         document.getElementById("deactivate-member-button").classList.add("disabled");
         document.getElementById("deactivate-member-button").classList.add("hidden");
+        document.getElementById("resend-welcome-button").classList.add("hidden");
+        document.getElementById("resend-to-xero-button").classList.add("hidden");
     }
 
     memberActionsModal.open();

@@ -7,7 +7,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
-
 User = get_user_model()
 from django.urls import reverse
 from memberportal.decorators import no_noobs, admin_required
@@ -307,17 +306,21 @@ def set_state(request, member_id, state):
                 user.profile.doors.add(door)
             email = user.email_welcome()
             xero = user.profile.add_to_xero()
+            invoice = user.profile.create_membership_invoice()
             activate = user.profile.activate()
 
-            if email and "Error" not in xero and activate:
+            if "Error" not in xero and "Error" not in invoice and email and activate:
                 return JsonResponse({"success": True,
-                                     "response": "Successfully made into member - invites sent, added to xero and activated."})
+                                     "response": "Successfully made into member - invites sent, added to xero and invoiced."})
 
-            elif email and activate and "Error" in xero:
+            elif "Error" in xero:
                 return JsonResponse({"success": False, "response": xero})
 
-            elif xero and activate:
-                return JsonResponse({"success": False, "response": "Error, couldn't send welcome email."})
+            elif invoice == False:
+                return JsonResponse({"success": False, "response": "Error, couldn't create invoice in xero."})
+
+            elif email == False:
+                return JsonResponse({"success": False, "response": "Error, couldn't send welcome email but invoice created."})
 
             else:
                 return JsonResponse({"success": False, "response": "Unknown error while making into member."})
@@ -379,15 +382,15 @@ def edit_theme_song(request):
 @login_required
 @admin_required
 def resend_welcome_email(request, member_id):
-    success = User.objects.get(pk=member_id).profile.send_to_xero()  # email_welcome()
-    log_user_event(request.user, "Resent welcome email.", "profile")
+    success = User.objects.get(pk=member_id).profile.create_membership_invoice() #.email_welcome()
+    #log_user_event(request.user, "Resent welcome email.", "profile")
 
     if success:
-        return JsonResponse({"success": True})
+        return JsonResponse({"message": success})
 
     else:
         return JsonResponse(
-            {"success": False, "reason": "Unknown error. Error AlfSo"})
+            {"message": "Couldn't email member, unknown error."})
 
 
 @login_required
