@@ -252,7 +252,7 @@ def lock_door(request, door_id):
 
 
 @api_auth
-def authorised_tags(request, door_id=None):
+def authorised_door_tags(request, door_id=None):
     door = None
 
     if door_id is not None:
@@ -278,11 +278,43 @@ def authorised_tags(request, door_id=None):
     authorised_tags = list()
 
     for profile in Profile.objects.all():
-        if door in profile.doors.all():
+        if door in profile.doors.all() and profile.state == "active":
             authorised_tags.append(profile.rfid)
 
     log_event("Got authorised tags for {} door.".format(door.name), "door")
     return JsonResponse({"authorised_tags": authorised_tags, "door": door.name})
+
+
+@api_auth
+def authorised_interlock_tags(request, interlock_id=None):
+    if interlock_id is not None:
+        try:
+            interlock = Interlock.objects.get(pk=interlock_id)
+            interlock.checkin()
+
+        except ObjectDoesNotExist:
+            log_event("Tried to get authorised tags for non existant interlock.", "error", request)
+            return HttpResponseBadRequest("Bad Request. Tried to get authorised tags for non existant interlock.")
+
+    else:
+        interlock_ip = request.META.get('REMOTE_ADDR')
+
+        try:
+            interlock = Interlock.objects.get(ip_address=interlock_ip)
+            interlock.checkin()
+
+        except ObjectDoesNotExist:
+            log_event("Tried to get authorised tags for non existant interlock {} (or IP set incorrectly).".format(interlock_ip), "error", request)
+            return HttpResponseBadRequest("Bad Request. Tried to get authorised tags for non existant interlock {} (or IP set incorrectly).".format(interlock_ip))
+
+    authorised_tags = list()
+
+    for profile in Profile.objects.all():
+        if interlock in profile.interlocks.all() and profile.state == "active":
+            authorised_tags.append(profile.rfid)
+
+    log_event("Got authorised tags for {} interlock.".format(interlock.name), "interlock")
+    return JsonResponse({"authorised_tags": authorised_tags, "interlock": interlock.name})
 
 
 @login_required

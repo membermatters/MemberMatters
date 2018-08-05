@@ -33,7 +33,7 @@
                             <td>{{ door.user.profile.get_full_name }} ({{ door.user.profile.screen_name }})</td>
                             <td>{{ door.door.name }}</td>
                             <td>{{ door.date|date:"y-m-d" }}-{{ door.date|time:"H:i" }}</td>
-                            <td>{{ door.date|timesince }}</td>
+                            <td>{{ door.date|timesince }} ago</td>
                         </tr>
                     {% endfor %}
 
@@ -58,7 +58,7 @@
                             <td>{{ interlock.user.profile.get_full_name }} ({{ interlock.user.profile.screen_name }})</td>
                             <td>{{ interlock.interlock.name }}</td>
                             <td>{{ interlock.last_heartbeat|date:"y-m-d" }}-{{ interlock.last_heartbeat|time:"H:i" }}</td>
-                            <td>{{ interlock.last_heartbeat|timesince }}</td>
+                            <td>{{ interlock.last_heartbeat|timesince }} ago</td>
                         </tr>
                     {% endfor %}
 

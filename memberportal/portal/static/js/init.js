@@ -147,7 +147,7 @@ function openMemberActionsModal(e) {
     resend_welcome_url = e.getAttribute("data-resend_welcome_url");
     get_logs_url = e.getAttribute("data-get_logs_url");
     add_to_xero_url = e.getAttribute("data-add_to_xero_url");
-    document.getElementById('admin-member-modal-name').innerText = name;
+    document.getElementById('admin-member-modal-name').innerHTML = name;
 
     // get the edit profile form
     $.ajax({
@@ -164,6 +164,9 @@ function openMemberActionsModal(e) {
         },
         error: function () {
             M.toast({html: "unknown error while getting profile form :( "});
+
+            let elem = document.getElementById("admin-edit-member-profile");
+            elem.innerHTML = "";
         }
     });
 
@@ -182,6 +185,8 @@ function openMemberActionsModal(e) {
         },
         error: function () {
             M.toast({html: "unknown error while getting access form :( "});
+            let elem = document.getElementById("admin-edit-member-access");
+            elem.innerHTML = "";
         }
     });
 
@@ -205,6 +210,9 @@ function openMemberActionsModal(e) {
         },
         error: function () {
             M.toast({html: "unknown error while getting logs :( "});
+
+            let elem = document.getElementById("admin-edit-member-logs");
+            elem.innerHTML = "";
         }
     });
 
