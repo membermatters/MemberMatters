@@ -12,7 +12,11 @@
         {% for field in form %}
             {% if field.name == "all_members" %}
                 <label>
-                    <input type="checkbox" name="all_members" id="id_all_members">
+                    {% if field.value == True %}
+                        <input type="checkbox" name="all_members" id="id_all_members" checked>
+                    {% else %}
+                        <input type="checkbox" name="all_members" id="id_all_members">
+                    {% endif %}
                     <span>{{ field.label }}</span>
                 </label>
             {% else %}
