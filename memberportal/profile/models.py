@@ -91,6 +91,7 @@ class UserManager(BaseUserManager):
         user = self.create_user(
             email,
             password=password,
+            is_superuser=True,
         )
         user.staff = True
         user.admin = True
