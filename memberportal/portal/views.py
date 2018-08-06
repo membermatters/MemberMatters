@@ -233,7 +233,7 @@ def overdue_cron(request):
                             if profile.state == "inactive":
                                 profile.activate()
                                 activated_members.append(profile.get_full_name())
-                                
+
                     else:
                         if profile.state == "inactive":
                             profile.activate()
