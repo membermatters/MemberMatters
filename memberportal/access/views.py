@@ -1,5 +1,5 @@
 from django.http import HttpResponseRedirect, HttpResponseForbidden
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
@@ -192,7 +192,9 @@ def check_door_access(request, rfid_code, door_id=None):
 
     except ObjectDoesNotExist:
         log_event("Tried to check access for non existant user (or rfid not set).", "error", request)
-        return HttpResponseBadRequest("Bad Request. Tried to check access for non existant user (or rfid not set).")
+        return JsonResponse({"success": False,
+                             "error": "Tried to check access for non existant user (or rfid not set).",
+                             "timestamp": round(time.time())})
 
     if door_id is not None:
         try:
@@ -201,7 +203,9 @@ def check_door_access(request, rfid_code, door_id=None):
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for non existant door.", "error", request)
-            return HttpResponseBadRequest("Bad Request. Tried to check access for non existant door.")
+            return JsonResponse({"success": False,
+                                 "error": "Tried to check access for non existant door",
+                                 "timestamp": round(time.time())})
 
     else:
         door_ip = request.META.get('REMOTE_ADDR')
@@ -211,8 +215,11 @@ def check_door_access(request, rfid_code, door_id=None):
             door.checkin()
 
         except ObjectDoesNotExist:
-            log_event("Tried to check access for door {} but none found. (or IP not set)".format(door_ip), "error", request)
-            return HttpResponseBadRequest("Bad Request. Tried to check access for door {} but none found. (or IP not set)".format(door_ip))
+            log_event("Tried to check access for door {} but none found. (or IP not set)".format(door_ip), "error",
+                      request)
+            return JsonResponse({"success": False,
+                                 "error": "Tried to check access for door {} but none found. (or IP not set)".format(door_ip),
+                                 "timestamp": round(time.time())})
 
     if user.profile.state == "active":
         allowed_doors = user.profile.doors.all()
@@ -262,7 +269,9 @@ def authorised_door_tags(request, door_id=None):
 
         except ObjectDoesNotExist:
             log_event("Tried to get authorised tags for non existant door.", "error", request)
-            return HttpResponseBadRequest("Bad Request. Tried to get authorised tags for non existant door.")
+            return JsonResponse({"success": False,
+                                 "error": "Tried to get authorised tags for non existant door.",
+                                 "timestamp": round(time.time())})
 
     else:
         door_ip = request.META.get('REMOTE_ADDR')
@@ -272,8 +281,12 @@ def authorised_door_tags(request, door_id=None):
             door.checkin()
 
         except ObjectDoesNotExist:
-            log_event("Tried to get authorised tags for non existant door {} (or IP set incorrectly).".format(door_ip), "error", request)
-            return HttpResponseBadRequest("Bad Request. Tried to get authorised tags for non existant door {} (or IP set incorrectly).".format(door_ip))
+            log_event("Tried to get authorised tags for non existant door {} (or IP set incorrectly).".format(door_ip),
+                      "error", request)
+
+            return JsonResponse({"success": False,
+                                 "error": "Tried to get authorised tags for non existant door {} (or IP set incorrectly).".format(door_ip),
+                                 "timestamp": round(time.time())})
 
     authorised_tags = list()
 
@@ -294,7 +307,9 @@ def authorised_interlock_tags(request, interlock_id=None):
 
         except ObjectDoesNotExist:
             log_event("Tried to get authorised tags for non existant interlock.", "error", request)
-            return HttpResponseBadRequest("Bad Request. Tried to get authorised tags for non existant interlock.")
+            return JsonResponse({"success": False,
+                                 "error": "Tried to get authorised tags for non existant interlock.",
+                                 "timestamp": round(time.time())})
 
     else:
         interlock_ip = request.META.get('REMOTE_ADDR')
@@ -304,8 +319,12 @@ def authorised_interlock_tags(request, interlock_id=None):
             interlock.checkin()
 
         except ObjectDoesNotExist:
-            log_event("Tried to get authorised tags for non existant interlock {} (or IP set incorrectly).".format(interlock_ip), "error", request)
-            return HttpResponseBadRequest("Bad Request. Tried to get authorised tags for non existant interlock {} (or IP set incorrectly).".format(interlock_ip))
+            log_event("Tried to get authorised tags for non existant interlock {} (or IP set incorrectly).".format(
+                interlock_ip), "error", request)
+            return JsonResponse({"success": False,
+                                 "error": "Tried to get authorised tags for non existant interlock {} (or IP set incorrectly).".format(
+                                     interlock_ip),
+                                 "timestamp": round(time.time())})
 
     authorised_tags = list()
 
@@ -449,7 +468,9 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
 
     except ObjectDoesNotExist:
         log_event("Tried to check access for non existant user (or rfid not set).", "error", request)
-        return HttpResponseBadRequest("Bad Request. Tried to check access for non existant user (or rfid not set).")
+        return JsonResponse(
+            {"success": False, "error": "Tried to check access for non existant user (or rfid not set).",
+             "timestamp": round(time.time())})
 
     if interlock_id is not None:
         try:
@@ -458,7 +479,8 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for non existant interlock.", "error", request)
-            return HttpResponseBadRequest("Bad Request. Tried to check access for non existant interlock.")
+            return JsonResponse({"success": False, "error": "Tried to check access for non existant interlock.",
+                                 "timestamp": round(time.time())})
 
     else:
         interlock_ip = request.META.get('REMOTE_ADDR')
@@ -469,7 +491,9 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for {} interlock but none found.".format(interlock_ip), "error", request)
-            return HttpResponseBadRequest("Bad Request. Tried to check access for {} interlock but none found.".format(interlock_ip))
+            return JsonResponse({"success": False,
+                                 "error": "Tried to check access for {} interlock but none found.".format(interlock_ip),
+                                 "timestamp": round(time.time())})
 
     if user.profile.state == "active":
         allowed_interlocks = user.profile.interlocks.all()
@@ -501,7 +525,8 @@ def interlock_checkin(request, interlock_id=None):
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for non existant interlock.", "error", request)
-            return HttpResponseBadRequest("Bad Request. Interlock does not exist.")
+            return JsonResponse({"success": False, "error": "Tried to check access for non existant interlock.",
+                                 "timestamp": round(time.time())})
 
     else:
         try:
@@ -512,7 +537,8 @@ def interlock_checkin(request, interlock_id=None):
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for {} interlock but none found.".format(interlock_ip), "error", request)
-            return HttpResponseBadRequest("Bad Request. Interlock does not exist (or IP not set).")
+            return JsonResponse({"success": False, "error": "Interlock does not exist.",
+                                 "timestamp": round(time.time())})
 
 
 @api_auth
@@ -527,7 +553,8 @@ def door_checkin(request, door_id=None):
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for non existant door.", "error", request)
-            return HttpResponseBadRequest("Bad Request. Door does not exist.")
+            return JsonResponse(
+                {"success": False, "error": "Error door does not exist.", "timestamp": round(time.time())})
 
     else:
         try:
@@ -538,12 +565,14 @@ def door_checkin(request, door_id=None):
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for {} door but none found.".format(door_ip), "error", request)
-            return HttpResponseBadRequest("Bad Request. Tried to check access for {} door but none found.".format(door_ip))
+            return JsonResponse({"success": False, "error": "Door does not exist..",
+                                 "timestamp": round(time.time())})
 
 
 @api_auth
 def interlock_cron(request):
-    timedout_interlocks = InterlockLog.objects.filter(last_heartbeat__lt=timezone.now() - timedelta(minutes=1), session_complete=False)
+    timedout_interlocks = InterlockLog.objects.filter(last_heartbeat__lt=timezone.now() - timedelta(minutes=1),
+                                                      session_complete=False)
 
     if timedout_interlocks:
         for session in timedout_interlocks:
@@ -567,7 +596,7 @@ def end_interlock_session(request, session_id):
         session.interlock.checkin()
         on_time = humanize.naturaldelta(session.last_heartbeat - session.first_heartbeat)
         post_interlock_swipe_to_discord(session.user.profile.get_full_name(), session.interlock.name,
-                                              "deactivated", on_time)
+                                        "deactivated", on_time)
 
         return JsonResponse({"success": True})
 

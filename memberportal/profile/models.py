@@ -243,9 +243,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.password_reset_expire = timezone.now() + timedelta(hours=24)
         self.save()
         self.email_link(
-            "Password reset request for you HSBNE account",
+            "Password reset request for your HSBNE account",
             "HSBNE Password Reset",
-            "Password reset request for you HSBNE account",
+            "Password reset request for your HSBNE account",
             "Someone has issued a password reset for your HSBNE account. "
             "The link below will expire in 24 hours. If this wasn't you, "
             "just ignore this email and nothing will happen.",
