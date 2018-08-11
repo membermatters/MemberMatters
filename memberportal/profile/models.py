@@ -291,8 +291,8 @@ class Profile(models.Model):
     doors = models.ManyToManyField('access.Doors', blank=True)
     interlocks = models.ManyToManyField('access.Interlock', blank=True)
     spacebucks_balance = models.FloatField(default=0.0)
-    last_seen = models.DateTimeField(default=None, null=True)
-    last_invoice = models.DateTimeField(default=None, null=True)
+    last_seen = models.DateTimeField(default=None, blank=True, null=True)
+    last_invoice = models.DateTimeField(default=None, blank=True, null=True)
     stripe_customer_id = models.CharField(
         max_length=100, blank=True, null=True, default="")
     stripe_card_expiry = models.CharField(
