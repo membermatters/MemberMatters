@@ -3,9 +3,22 @@
 {% block title %}Edit Theme Song{% endblock %}
 
 {% block content %}
-    <div class="row center padding-top">
-        <h5 class="header col s12 light">
-            Sorry, not implemented yet. Please <a href="http://themes.hsbne.org/audio/">click here</a> to use the old system.
-        </h5>
+    <div class="admin-container center row small-row">
+        {% if user.profile.theme %}
+        <h3 class="header center text">Current Theme Song</h3>
+        <p><audio controls>
+          <source src="{{ user.profile.theme.url }}" type="audio/mpeg">
+        Your browser does not support the audio element.
+        </audio></p>
+        {% endif %}
+        <h3 class="header center text">Edit Your Theme Song</h3>
+        <form enctype="multipart/form-data" method="POST" action="{% url 'edit_theme_song' %}">
+            {% csrf_token %}
+            {{ theme_form.as_p }}
+            <br><br>
+
+            <a class="btn-flat right" onclick="window.history.back();">Cancel</a>
+            <button class="btn waves-effect waves-light right" type="submit" name="action">Save</button>
+        </form>
     </div>
 {% endblock %}

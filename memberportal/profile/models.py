@@ -1,8 +1,9 @@
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+from django.core.validators import FileExtensionValidator
+from django.core.files.storage import FileSystemStorage
 from datetime import timedelta
-import datetime
 import pytz
 import os
 import sendgrid
@@ -14,9 +15,8 @@ from django.contrib.auth.models import (
 )
 from django.core.validators import RegexValidator
 from django.conf import settings
-from xero import Xero
-from xero.auth import PrivateCredentials
-from xero.exceptions import XeroBadRequest
+from profile.xerohelpers import get_xero_contact, create_membership_invoice
+from profile.xerohelpers import add_to_xero, __generate_account_number
 
 utc = pytz.UTC
 
@@ -57,7 +57,7 @@ from memberportal.helpers import log_user_event
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, password=None):
+    def create_user(self, email, password=None, is_superuser=False):
         """
         Creates and saves a User with the given email and password.
         """
@@ -68,6 +68,7 @@ class UserManager(BaseUserManager):
             email=self.normalize_email(email),
         )
 
+        user.is_superuser = is_superuser
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -91,6 +92,7 @@ class UserManager(BaseUserManager):
         user = self.create_user(
             email,
             password=password,
+            is_superuser=True,
         )
         user.staff = True
         user.admin = True
@@ -241,9 +243,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.password_reset_expire = timezone.now() + timedelta(hours=24)
         self.save()
         self.email_link(
-            "Password reset request for you HSBNE account",
+            "Password reset request for your HSBNE account",
             "HSBNE Password Reset",
-            "Password reset request for you HSBNE account",
+            "Password reset request for your HSBNE account",
             "Someone has issued a password reset for your HSBNE account. "
             "The link below will expire in 24 hours. If this wasn't you, "
             "just ignore this email and nothing will happen.",
@@ -265,6 +267,23 @@ class MemberTypes(models.Model):
             self.cost, self.conditions)
 
 
+class OverwriteStorage(FileSystemStorage):
+
+    def get_available_name(self, name, max_length):
+        if self.exists(name):
+            os.remove(os.path.join(settings.MEDIA_ROOT, name))
+        return name
+
+
+def theme_rename():
+    def wrapper(instance, filename):
+        ext = filename.split('.')[-1]
+        filename = 'user_{}_theme.{}'.format(instance.user.id, ext)
+        return os.path.join('media/themes/', filename)
+
+    return wrapper
+
+
 class Profile(models.Model):
     STATES = (
         ('noob', 'New Member'),
@@ -273,32 +292,47 @@ class Profile(models.Model):
     )
 
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name='profile')
     screen_name = models.CharField("Screen Name", max_length=30)
     first_name = models.CharField("First Name", max_length=30)
     last_name = models.CharField("Last Name", max_length=30)
-    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
-                                 message="Phone number must be entered in the format: '0417123456'. Up to 12 characters allowed.")
-    phone = models.CharField(validators=[phone_regex], max_length=12, blank=True)  # validators should be a list
+    phone_regex = RegexValidator(
+        regex=r'^\+?1?\d{9,15}$',
+        message="Phone number must be entered in the format: '0417123456'. "
+                "Up to 12 characters allowed.")
+    phone = models.CharField(
+        validators=[phone_regex], max_length=12, blank=True)
     state = models.CharField(max_length=8, default='noob', choices=STATES)
+
     member_type = models.ForeignKey(
         MemberTypes, on_delete=models.PROTECT, related_name='member_type')
     causes = models.ManyToManyField('causes.Causes')
+
     rfid = models.CharField(
         "RFID Tag", max_length=20, unique=True, null=True, blank=True)
     doors = models.ManyToManyField('access.Doors', blank=True)
     interlocks = models.ManyToManyField('access.Interlock', blank=True)
     spacebucks_balance = models.FloatField(default=0.0)
-    last_seen = models.DateTimeField(default=None, null=True)
-    last_invoice = models.DateTimeField(default=None, null=True)
+
+    theme = models.FileField(
+        upload_to=theme_rename(), blank=True, null=True,
+        storage=OverwriteStorage(),
+        validators=[FileExtensionValidator(allowed_extensions=['mp3'])])
+
+    last_seen = models.DateTimeField(default=None, blank=True, null=True)
+    last_invoice = models.DateTimeField(default=None, blank=True, null=True)
+
     stripe_customer_id = models.CharField(
         max_length=100, blank=True, null=True, default="")
     stripe_card_expiry = models.CharField(
         max_length=10, blank=True, null=True, default="")
     stripe_card_last_digits = models.CharField(
         max_length=4, blank=True, null=True, default="")
-    xero_account_id = models.CharField(max_length=100, blank=True, null=True, default="")
-    xero_account_number = models.CharField(max_length=6, blank=True, null=True, default="")
+    xero_account_id = models.CharField(
+        max_length=100, blank=True, null=True, default="")
+    xero_account_number = models.CharField(
+        max_length=6, blank=True, null=True, default="")
 
     def deactivate(self):
         log_user_event(self.user, "Deactivated member", "profile")
@@ -335,191 +369,13 @@ class Profile(models.Model):
         return self.save()
 
     def get_xero_contact(self):
-        """
-        Returns an object with the xero contact details or None if it doesn't exist.
-        :return:
-        """
-
-        if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
-            with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
-                rsa_key = keyfile.read()
-            credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
-            xero = Xero(credentials)
-            email = xero.contacts.filter(EmailAddress=self.user.email)
-            name = xero.contacts.filter(Name=self.get_full_name())
-
-            if email:
-                return email
-
-            elif name:
-                return name
-
-            return None
-
-        else:
-            return "Invalid Xero API details."
+        return get_xero_contact(self)
 
     def __generate_account_number(self):
-        if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
-            with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
-                rsa_key = keyfile.read()
-            credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
-            xero = Xero(credentials)
-            contacts = xero.contacts.filter(includeArchived=True)
-
-            for x in range(100, 999):
-                account_number = self.first_name[0] + self.last_name[:2] + str(x)
-                account_number = account_number.upper()
-
-                if not any(d.get('AccountNumber', None) == account_number for d in contacts):
-                    self.xero_account_number = account_number
-                    self.save()
-                    print(account_number)
-
-                    return self.xero_account_number
-
-        else:
-            return False
+        return __generate_account_number(self)
 
     def add_to_xero(self):
-        member_exists = self.xero_account_id is not "" and self.xero_account_number is not ""
-        print(member_exists)
-
-        if member_exists:
-            result = "Error adding to xero, that email or contact name already exists."
-            print(result)
-            return result
-
-        else:
-            if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
-                with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
-                    rsa_key = keyfile.read()
-                credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
-                xero = Xero(credentials)
-
-                contact = [
-                    {
-                        "AccountNumber": self.__generate_account_number(),
-                        "ContactStatus": "ACTIVE",
-                        "Name": self.get_full_name(),
-                        "FirstName": self.first_name,
-                        "LastName": self.last_name,
-                        "EmailAddress": self.user.email,
-                        "Addresses": [
-                            {
-                                "AddressType": "STREET",
-                                "City": "",
-                                "Region": "",
-                                "PostalCode": "",
-                                "Country": "",
-                                "AttentionTo": ""
-                            }
-                        ],
-                        "Phones": [
-                            {
-                                "PhoneType": "DEFAULT",
-                                "PhoneNumber": self.phone,
-                                "PhoneAreaCode": "",
-                                "PhoneCountryCode": ""
-                            }
-                        ],
-                        "IsSupplier": False,
-                        "IsCustomer": True,
-                        "DefaultCurrency": "AU"
-                    }
-                ]
-
-                try:
-                    result = xero.contacts.put(contact)
-
-                except XeroBadRequest as e:
-                    return "Error: " + str(e)
-
-                if result:
-                    print(result)
-                    self.xero_account_id = result[0]['ContactID']
-                    self.save()
-                    return "Successfully added to Xero."
-
-                else:
-                    return "Error adding to Xero."
-
-            else:
-                return "Error adding to Xero. No Xero API details."
+        return add_to_xero(self)
 
     def create_membership_invoice(self):
-        next_month = datetime.date.today().month + 1
-        this_year = datetime.date.today().year
-        if next_month == 13:
-            next_month = 1
-            this_year += 1
-
-        next_month_date = datetime.datetime(this_year, next_month, 1)
-
-        payload = {
-            "Type": "ACCREC",
-            "Contact": {
-                "ContactID": self.xero_account_id
-            },
-            "DueDate": next_month_date,
-            "LineAmountTypes": "Inclusive",
-            "LineItems": [
-                {
-                    "Description": "HSBNE Membership: " + self.member_type.name,
-                    "Quantity": "1",
-                    "ItemCode": self.member_type.name,
-                    "UnitAmount": self.member_type.cost,
-                    "TaxType": "OUTPUT",
-                    "AccountCode": "200"
-                }
-            ],
-            "Status": "AUTHORISED",
-            "Reference": self.xero_account_number,
-            "Url": "https://hsbne.org",
-        }
-
-        if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
-            with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
-                rsa_key = keyfile.read()
-            credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
-            xero = Xero(credentials)
-
-            # Monkey patch the library to support online invoices.
-            def get_onlineinvoice(id, headers=None, summarize_errors=None):
-                uri = '/'.join([xero.invoices.base_url, xero.invoices.name, id, 'OnlineInvoice'])
-                params = {}
-                if not summarize_errors:
-                    params['summarizeErrors'] = 'false'
-                return uri, params, 'get', None, headers, False
-
-            xero.invoices.get_onlineinvoice = xero.invoices._get_data(get_onlineinvoice)
-
-            try:
-                # try to create the invoice
-                result = xero.invoices.put(payload)
-
-                invoice_id = result[0]['InvoiceID']
-                invoice_number = result[0]['InvoiceNumber']
-                invoice_reference = result[0]['Reference']
-                invoice_link = xero.invoices.get_onlineinvoice(invoice_id)['OnlineInvoices'][0]['OnlineInvoiceUrl']
-
-                # if we're successful send it to the member and log it
-                self.user.email_invoice(self.first_name, self.member_type.cost, invoice_number, next_month_date.strftime("%d-%m-%Y"), invoice_reference, invoice_link)
-                log_user_event(self.user, "Created invoice for $" + str(self.member_type.cost) + "(" + invoice_id + ")",
-                               "xero")
-                self.last_invoice = timezone.now()
-                self.save()
-
-            except XeroBadRequest as e:
-                log_user_event(self.user, "Error creating invoice for $" + str(self.member_type.cost),
-                               "xero")
-                return "Error: " + str(e)
-
-            if result:
-                return "Successfully created invoice {} in Xero.".format(invoice_number)
-
-            else:
-                return "Error creating invoice in Xero."
-
-        else:
-            return "Error created invoice in Xero. No Xero API details."
+        return create_membership_invoice(user)
