@@ -8,7 +8,7 @@ class AdminLogAdmin(admin.ModelAdmin):
 
 
 @admin.register(UserEventLog)
-class AdminLogAdmin(admin.ModelAdmin):
+class UserEventLogAdmin(admin.ModelAdmin):
     pass
 
 

@@ -1,4 +1,4 @@
-from django.contrib.auth import login, authenticate, update_session_auth_hash
+from django.contrib.auth import login, update_session_auth_hash
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.forms import PasswordChangeForm
@@ -7,15 +7,18 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
-User = get_user_model()
 from django.urls import reverse
 from memberportal.decorators import no_noobs, admin_required
 from memberportal.helpers import log_user_event
-from access.models import *
-from .forms import *
+from .models import Profile
+from access.models import Doors, Interlock, DoorLog, InterlockLog
+from .forms import SignUpForm, AddProfileForm, ThemeForm, EditProfileForm
+from .forms import EditUserForm, ResetPasswordForm, ResetPasswordRequestForm
+from .forms import AdminEditProfileForm, AdminEditUserForm
 from datetime import datetime
 import pytz
 
+User = get_user_model()
 utc = pytz.UTC
 
 
@@ -229,13 +232,15 @@ def admin_edit_member(request, member_id):
             user_form.save()
             data['form_is_valid'] = True
             log_user_event(
-                profile.user, request.user.profile.get_full_name() + " edited user profile.",
+                profile.user,
+                request.user.profile.get_full_name() + " edited user profile.",
                 "profile")
 
     # render the form and return it
-    data['html_form'] = render_to_string('partial_admin_edit_member.html',
-                                         {'profile_form': profile_form, 'user_form': user_form, 'member_id': member_id},
-                                         request=request)
+    data['html_form'] = render_to_string(
+        'partial_admin_edit_member.html',
+        {'profile_form': profile_form, 'user_form': user_form,
+         'member_id': member_id}, request=request)
     return JsonResponse(data)
 
 
@@ -268,7 +273,8 @@ def edit_profile(request):
 
     if request.method == 'POST':
         user_form = EditUserForm(request.POST, instance=request.user)
-        profile_form = EditProfileForm(request.POST, instance=request.user.profile)
+        profile_form = EditProfileForm(
+            request.POST, instance=request.user.profile)
 
         if user_form.is_valid() and profile_form.is_valid():
             # if it was a form submission save it
@@ -310,27 +316,38 @@ def set_state(request, member_id, state):
             activate = user.profile.activate()
 
             if "Error" not in xero and "Error" not in invoice and email and activate:
-                return JsonResponse({"success": True,
-                                     "response": "Successfully made into member - invites sent, added to xero and invoiced."})
+                return JsonResponse(
+                    {"success": True,
+                     "response": "Successfully made into member - invites sent"
+                     ", added to xero and invoiced."})
 
             elif "Error" in xero:
                 return JsonResponse({"success": False, "response": xero})
 
-            elif invoice == False:
-                return JsonResponse({"success": False, "response": "Error, couldn't create invoice in xero."})
+            elif invoice is False:
+                return JsonResponse(
+                    {"success": False,
+                     "response": "Error, couldn't create invoice in xero."})
 
-            elif email == False:
-                return JsonResponse({"success": False, "response": "Error, couldn't send welcome email but invoice created."})
+            elif email is False:
+                return JsonResponse(
+                    {"success": False,
+                     "response": "Error, couldn't send welcome email but "
+                     "invoice created."})
 
             else:
-                return JsonResponse({"success": False, "response": "Unknown error while making into member."})
+                return JsonResponse(
+                    {"success": False,
+                     "response": "Unknown error while making into member."})
 
         user.profile.activate()
-        return JsonResponse({"success": True, "response": "Successfully enabled user."})
+        return JsonResponse(
+            {"success": True, "response": "Successfully enabled user."})
 
     else:
         user.profile.deactivate()
-        return JsonResponse({"success": True, "response": "Successfully disabled user."})
+        return JsonResponse(
+            {"success": True, "response": "Successfully disabled user."})
 
 
 @login_required
@@ -344,7 +361,8 @@ def admin_edit_access(request, member_id):
     # render the form and return it
     data['html_form'] = render_to_string(
         'partial_admin_edit_access.html',
-        {'member': member, 'member_id': member_id, 'doors': doors, 'interlocks': interlocks}, request=request)
+        {'member': member, 'member_id': member_id, 'doors': doors,
+         'interlocks': interlocks}, request=request)
     return JsonResponse(data)
 
 
@@ -352,9 +370,12 @@ def admin_edit_access(request, member_id):
 @no_noobs
 def recent_swipes(request):
     doors = DoorLog.objects.all().order_by('date')[::-1][:50]
-    interlocks = InterlockLog.objects.all().order_by('last_heartbeat')[::-1][:50]
+    interlocks = InterlockLog.objects.all().order_by(
+        'last_heartbeat')[::-1][:50]
 
-    return render(request, 'recent_swipes.html', {"doors": doors, "interlocks": interlocks})
+    return render(
+        request, 'recent_swipes.html',
+        {"doors": doors, "interlocks": interlocks})
 
 
 @login_required
@@ -365,7 +386,9 @@ def last_seen(request):
 
     for member in members:
         if member.profile.last_seen is not None:
-            last_seens.append({"user": member, "never": False, "date": member.profile.last_seen})
+            last_seens.append(
+                {"user": member, "never": False,
+                 "date": member.profile.last_seen})
 
         else:
             last_seens.append({"user": member, "never": True})
@@ -376,14 +399,32 @@ def last_seen(request):
 @login_required
 @no_noobs
 def edit_theme_song(request):
-    return render(request, 'edit_theme_song.html')
+    if request.method == 'POST':
+        theme_form = ThemeForm(request.POST, request.FILES,
+                               instance=request.user.profile)
+
+        if theme_form.is_valid():
+            # todo: pass the uploaded file (or removal request) to asterisk
+            # handle_uploaded_file(request.FILES['theme'])
+            theme_form.save()
+            log_user_event(request.user, "User theme updated.", "profile")
+            return HttpResponseRedirect('%s' % (reverse('edit_theme_song')))
+
+    else:
+        # if it's not a form submission, return an empty form
+        theme_form = ThemeForm(instance=request.user.profile)
+
+    return render(
+        request, 'edit_theme_song.html',
+        {"theme_form": theme_form}, )
 
 
 @login_required
 @admin_required
 def resend_welcome_email(request, member_id):
-    success = User.objects.get(pk=member_id).profile.create_membership_invoice() #.email_welcome()
-    #log_user_event(request.user, "Resent welcome email.", "profile")
+    success = User.objects.get(
+        pk=member_id).profile.create_membership_invoice()  # .email_welcome()
+    # log_user_event(request.user, "Resent welcome email.", "profile")
 
     if success:
         return JsonResponse({"message": success})
@@ -395,4 +436,5 @@ def resend_welcome_email(request, member_id):
 
 @login_required
 def add_to_xero(request, member_id):
-    return JsonResponse({"response": User.objects.get(pk=member_id).profile.add_to_xero()})
+    return JsonResponse(
+        {"response": User.objects.get(pk=member_id).profile.add_to_xero()})

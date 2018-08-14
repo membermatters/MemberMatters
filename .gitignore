@@ -107,6 +107,7 @@ venv.bak/
 
 .idea/
 /memberportal/portal/my.cnf
+/memberportal/media/
 
 *.sqlite3
 

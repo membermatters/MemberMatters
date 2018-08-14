@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
+from django.forms.widgets import ClearableFileInput
 User = get_user_model()
 
 
@@ -11,7 +12,8 @@ class SignUpForm(UserCreationForm):
         max_length=254, required=True,
         help_text='We will never share your email with anyone without asking '
                   'you first.')
-    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
+    password2 = forms.CharField(
+        label='Confirm password', widget=forms.PasswordInput)
 
     class Meta:
         model = User
@@ -36,7 +38,8 @@ class SignUpForm(UserCreationForm):
 class AddProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('first_name', 'last_name', 'phone', 'screen_name', 'member_type', 'causes')
+        fields = ('first_name', 'last_name', 'phone', 'screen_name',
+                  'member_type', 'causes')
 
     def clean(self):
         causes = self.cleaned_data.get('causes')
@@ -44,6 +47,7 @@ class AddProfileForm(forms.ModelForm):
             raise ValidationError('Sorry, only three causes are allowed.')
 
         return self.cleaned_data
+
 
 class EditProfileForm(forms.ModelForm):
     class Meta:
@@ -61,7 +65,8 @@ class EditProfileForm(forms.ModelForm):
 class AdminEditProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('rfid', 'first_name', 'last_name', 'phone', 'member_type', 'screen_name', 'causes')
+        fields = ('rfid', 'first_name', 'last_name', 'phone', 'member_type',
+                  'screen_name', 'causes')
 
     def clean(self):
         causes = self.cleaned_data.get('causes')
@@ -81,6 +86,18 @@ class EditUserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('email',)
+
+
+class ThemeFileInput(ClearableFileInput):
+    template_name = 'theme_input.html'
+
+
+class ThemeForm(forms.ModelForm):
+    theme = forms.FileField(widget=ThemeFileInput, required=False)
+
+    class Meta:
+        model = Profile
+        fields = ('theme',)
 
 
 class ResetPasswordRequestForm(forms.Form):
