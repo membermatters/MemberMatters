@@ -89,10 +89,10 @@ def admin_grant_door(request, door_id, member_id):
         log_user_event(request.user, "Access to {} granted for {}.".format(door.name, user.profile.get_full_name()),
                        "admin")
 
-        return JsonResponse({"access": True})
+        return JsonResponse({"success": True})
 
     except Exception:
-        return JsonResponse({"access": False, "reason": "Bad Request. User or door not found."})
+        return JsonResponse({"success": False, "reason": "Bad Request. User or door not found."})
 
 
 @login_required
@@ -107,19 +107,19 @@ def admin_revoke_door(request, door_id, member_id):
         log_user_event(request.user, "Access to {} revoked for {}.".format(door.name, user.profile.get_full_name()),
                        "admin")
 
-        return JsonResponse({"access": True})
+        return JsonResponse({"success": True})
 
     except ObjectDoesNotExist:
-        return JsonResponse({"access": False, "reason": "No access permission was found."})
+        return JsonResponse({"success": False, "reason": "No access permission was found."})
 
 
 @login_required
 @no_noobs
 def request_access(request, door_id):
-    return JsonResponse({"access": False, "reason": "Not implemented yet."})
+    return JsonResponse({"success": False, "reason": "Not implemented yet."})
 
 
-def post_door_swipe_to_discord(name, door, accessful):
+def post_door_swipe_to_discord(name, door, successful):
     if "DISCORD_DOOR_WEBHOOK" in os.environ:
         url = os.environ.get('DISCORD_DOOR_WEBHOOK')
 
@@ -128,9 +128,9 @@ def post_door_swipe_to_discord(name, door, accessful):
             "embeds": []
         }
 
-        if accessful:
+        if successful:
             json_message['embeds'].append({
-                "description": ":unlock: {} just **accessfully** swiped at {} door.".format(name, door),
+                "description": ":unlock: {} just **successfully** swiped at {} door.".format(name, door),
                 "color": 5025616
             })
 
@@ -169,6 +169,12 @@ def post_interlock_swipe_to_discord(name, interlock, type, time=None):
                 "description": "{} tried to activate the {} but was **rejected**. You can check your access [here](https://portal.hsbne.org/profile/access/view/).".format(
                     name, interlock),
                 "color": 16007990
+            })
+
+        elif type == "left_on":
+            json_message['embeds'].append({
+                "description": ":lock: The {} was just turned off by the access system because it timed out (last used by {}). It was on for {}.".format(interlock, name, time),
+                "color": 16750592
             })
 
         elif type == "deactivated":
@@ -243,7 +249,7 @@ def unlock_door(request, door_id):
     door = Doors.objects.get(pk=door_id)
     if door in request.user.profile.doors.all():
         log_user_event(request.user, "Unlocked {} door via API.".format(door.name), "door")
-        return JsonResponse({"access": door.unlock()})
+        return JsonResponse({"success": door.unlock()})
 
     return HttpResponseForbidden("You are not authorised to access that door.")
 
@@ -581,7 +587,7 @@ def interlock_cron(request):
             session.interlock.checkin()
             on_time = humanize.naturaldelta(session.last_heartbeat - session.first_heartbeat)
             post_interlock_swipe_to_discord(session.user.profile.get_full_name(), session.interlock.name,
-                                            "deactivated", on_time)
+                                            "left_on", on_time)
 
     return HttpResponseRedirect("/")
 
