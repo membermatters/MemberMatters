@@ -315,10 +315,10 @@ class Profile(models.Model):
     interlocks = models.ManyToManyField('access.Interlock', blank=True)
     spacebucks_balance = models.FloatField(default=0.0)
 
-    theme = models.FileField(
-        upload_to=theme_rename(), blank=True, null=True,
-        storage=OverwriteStorage(),
-        validators=[FileExtensionValidator(allowed_extensions=['mp3'])])
+    # theme = models.FileField(
+    #     upload_to=theme_rename(), blank=True, null=True,
+    #     storage=OverwriteStorage(),
+    #     validators=[FileExtensionValidator(allowed_extensions=['mp3'])])
 
     last_seen = models.DateTimeField(default=None, blank=True, null=True)
     last_invoice = models.DateTimeField(default=None, blank=True, null=True)

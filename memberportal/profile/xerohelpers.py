@@ -76,7 +76,7 @@ def add_to_xero(user):
 
             contact = [
                 {
-                    "AccountNumber": user.__generate_account_number(),
+                    "AccountNumber": __generate_account_number(user),
                     "ContactStatus": "ACTIVE",
                     "Name": user.get_full_name(),
                     "FirstName": user.first_name,

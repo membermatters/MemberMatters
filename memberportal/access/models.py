@@ -54,6 +54,17 @@ class AccessControlledDevice(models.Model):
         return self.name
 
 
+class SpacebucksDevice(AccessControlledDevice):
+    # These three things aren't used/relevant
+    all_members = False
+
+    def lock(self):
+        return False
+
+    def unlock(self):
+        return False
+
+
 class Doors(AccessControlledDevice):
     def log_access(self, member_id):
 

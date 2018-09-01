@@ -576,8 +576,36 @@ def door_checkin(request, door_id=None):
 
 
 @api_auth
+def spacebucks_device_checkin(request, device_id=None):
+    device_ip = None
+
+    if device_id is not None:
+        try:
+            device = SpacebucksDevice.objects.get(pk=device_id)
+            device.checkin()
+            return JsonResponse({"access": True})
+
+        except ObjectDoesNotExist:
+            log_event("Tried to check access for non existant spacebucks device.", "error", request)
+            return JsonResponse(
+                {"access": False, "error": "Error spacebucks device does not exist.", "timestamp": round(time.time())})
+
+    else:
+        try:
+            device_ip = request.META.get('REMOTE_ADDR')
+            device = SpacebucksDevice.objects.get(ip_address=device_ip)
+            device.checkin()
+            return JsonResponse({"access": True})
+
+        except ObjectDoesNotExist:
+            log_event("Tried to check access for {} spacebucks device but none found.".format(device_ip), "error", request)
+            return JsonResponse({"access": False, "error": "spacebucks device does not exist..",
+                                 "timestamp": round(time.time())})
+
+
+@api_auth
 def interlock_cron(request):
-    timedout_interlocks = InterlockLog.objects.filter(last_heartbeat__lt=timezone.now() - timedelta(minutes=1),
+    timedout_interlocks = InterlockLog.objects.filter(last_heartbeat__lt=timezone.now() - timedelta(minutes=2),
                                                       session_complete=False)
 
     if timedout_interlocks:
