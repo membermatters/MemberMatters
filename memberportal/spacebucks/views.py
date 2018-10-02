@@ -38,7 +38,7 @@ def add_spacebucks(request, amount=None):
 
         if amount is not None:
             # lets restrict this to something reasonable
-            if amount <= 50:
+            if amount <= 30:
                 log_user_event(
                     request.user,
                     "Attempting to charge {} for ${}.".format(
@@ -218,35 +218,41 @@ def delete_spacebucks_payment_info(request):
 
 @csrf_exempt
 @api_auth
-def spacebucks_debit(request):
-    if request.method == "POST":
+def spacebucks_debit(request, amount=None, description=None, rfid=None):
+    if request.method == "GET":
+        amount = abs(amount/100)
+        profile = Profile.objects.get(rfid=rfid)
+
+    elif request.method == "POST":
         details = json.loads(request.body)
+        amount = abs(details['amount']/100)
+        description = details['description']
         profile = Profile.objects.get(rfid=details['rfid_code'])
-
-        if profile.spacebucks_balance >= details['amount']:
-            transaction = SpaceBucks()
-            transaction.amount = details['amount'] * -1.0
-            transaction.user = profile.user
-            transaction.description = details['description']
-            transaction.transaction_type = "card"
-            transaction.save()
-
-            log_user_event(
-              profile.user,
-              "Successfully debited ${} from spacebucks account.".format(details['amount']),
-              "spacebucks")
-
-            return JsonResponse(
-              {"success": True, "balance": round(profile.spacebucks_balance, 2)})
-
-        # not enough $$
-        log_user_event(
-            profile.user,
-            "Not enough funds to debit ${} from spacebucks account.".format(details['amount']),
-            "spacebucks")
-        return JsonResponse(
-            {"success": False,
-             "balance": round(profile.spacebucks_balance, 2)})
 
     else:
         return HttpResponseBadRequest("Invalid request method.")
+
+    if profile.spacebucks_balance >= amount:
+        transaction = SpaceBucks()
+        transaction.amount = amount * -1.0  # abs() handles if we're given a negative number
+        transaction.user = profile.user
+        transaction.description = description
+        transaction.transaction_type = "card"
+        transaction.save()
+
+        log_user_event(
+          profile.user,
+          "Successfully debited ${} from spacebucks account.".format(amount),
+          "spacebucks")
+
+        return JsonResponse(
+          {"success": True, "balance": round(profile.spacebucks_balance, 2)})
+
+    # not enough $$
+    log_user_event(
+        profile.user,
+        "Not enough funds to debit ${} from spacebucks account.".format(amount),
+        "spacebucks")
+    return JsonResponse(
+        {"success": False,
+         "balance": round(profile.spacebucks_balance, 2)})
