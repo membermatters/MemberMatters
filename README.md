@@ -114,7 +114,7 @@ You will need to re-run the database migration every time the db models change. 
 ```python3 manage.py migrate```
 
 If you're testing locally you may need some api keys, namely
-* SeNDGRID_API_KEY
+* SENDGRID_API_KEY
 * TRELLO_API_KEY
 * TRELLO_API_TOKEN
 

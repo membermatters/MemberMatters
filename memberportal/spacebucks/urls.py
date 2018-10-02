@@ -16,4 +16,8 @@ urlpatterns = [
          name='delete_spacebucks_payment_info'),
     path('api/spacebucks/debit/',
          views.spacebucks_debit, name="spacebucks_debit"),
+    path('api/spacebucks/debit/<int:rfid>/<int:amount>/',
+         views.spacebucks_debit, name="spacebucks_debit"),
+    path('api/spacebucks/debit/<int:rfid>/<int:amount>/<str:description>',
+         views.spacebucks_debit, name="spacebucks_debit"),
 ]
