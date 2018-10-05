@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
+from django.utils import timezone
 from memberportal.decorators import no_noobs, api_auth
 from memberportal.helpers import log_user_event
 from .models import SpaceBucks
@@ -241,20 +242,27 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
         return HttpResponseBadRequest("400 Invalid request method.")
 
     if profile.spacebucks_balance >= amount:
-        transaction = SpaceBucks()
-        transaction.amount = amount * -1.0  # abs() handles if we're given a negative number
-        transaction.user = profile.user
-        transaction.description = description
-        transaction.transaction_type = "card"
-        transaction.save()
+        time_dif = (timezone.now() - profile.last_spacebucks_purchase).total_seconds()
+        print(time_dif)
 
-        log_user_event(
-            profile.user,
-            "Successfully debited ${} from spacebucks account.".format(amount),
-            "spacebucks")
+        if time_dif > 5:
+            transaction = SpaceBucks()
+            transaction.amount = amount * -1.0  # abs() handles if we're given a negative number
+            transaction.user = profile.user
+            transaction.description = description
+            transaction.transaction_type = "card"
+            transaction.save()
 
-        return JsonResponse(
-            {"success": True, "balance": round(profile.spacebucks_balance, 2)})
+            profile.last_spacebucks_purchase = timezone.now()
+            profile.save()
+
+            log_user_event(profile.user, "Successfully debited ${} from spacebucks account.".format(amount), "spacebucks")
+
+            return JsonResponse({"success": True, "balance": round(profile.spacebucks_balance, 2)})
+
+        else:
+            return JsonResponse({"success": False, "balance": round(profile.spacebucks_balance, 2),
+                                 "message": "Whoa! Not so fast!!"})
 
     # not enough $$
     log_user_event(

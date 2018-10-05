@@ -289,6 +289,7 @@ class Profile(models.Model):
     doors = models.ManyToManyField('access.Doors', blank=True)
     interlocks = models.ManyToManyField('access.Interlock', blank=True)
     spacebucks_balance = models.FloatField(default=0.0)
+    last_spacebucks_purchase = models.DateTimeField(default=timezone.now)
 
     last_seen = models.DateTimeField(default=None, blank=True, null=True)
     last_invoice = models.DateTimeField(default=None, blank=True, null=True)
