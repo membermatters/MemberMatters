@@ -238,7 +238,7 @@ def admin_edit_member(request, member_id):
     data['html_form'] = render_to_string(
         'partial_admin_edit_member.html',
         {'profile_form': profile_form, 'user_form': user_form,
-         'member_id': member_id}, request=request)
+         'member_id': member_id, "profile": profile}, request=request)
     return JsonResponse(data)
 
 

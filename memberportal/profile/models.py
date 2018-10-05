@@ -14,7 +14,7 @@ from django.contrib.auth.models import (
 from django.core.validators import RegexValidator
 from django.conf import settings
 from profile.xerohelpers import get_xero_contact, create_membership_invoice
-from profile.xerohelpers import add_to_xero, generate_account_number
+from profile.xerohelpers import add_to_xero
 
 utc = pytz.UTC
 
@@ -270,6 +270,8 @@ class Profile(models.Model):
     )
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    created = models.DateTimeField(editable=False)
+    modified = models.DateTimeField()
     screen_name = models.CharField("Screen Name", max_length=30)
     first_name = models.CharField("First Name", max_length=30)
     last_name = models.CharField("Last Name", max_length=30)
@@ -339,3 +341,10 @@ class Profile(models.Model):
 
     def create_membership_invoice(self):
         return create_membership_invoice(self.user)
+
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.id:
+            self.created = timezone.now()
+        self.modified = timezone.now()
+        return super(Profile, self).save(*args, **kwargs)
