@@ -3,7 +3,7 @@
 {% block title %}Add Spacebucks{% endblock %}
 {% load staticfiles %}
 {% block content %}
-    <div class="admin-container center row small-row">
+    <div class="center row small-row" style="max-width: 70%;">
         <h3 class="header center text">Add funds to Spacebucks</h3>
         {% if success %}
             <p class="light-green-text">{{ message }}</p>
@@ -11,59 +11,53 @@
             <p class="light-green-text">There was an error saving your payment details. {{ message }}</p>
         {% endif %}
 
-        <p class="larger-text">Your current spacebucks balance is ${{ user.profile.spacebucks_balance|floatformat:2 }}</p>
+        <p class="larger-text">Your current spacebucks balance is
+            ${{ user.profile.spacebucks_balance|floatformat:2 }}</p>
 
-        <h5 class="header center text">Card Details</h5>
         {% if not user.profile.stripe_card_last_digits == "" %}
             <div class="row">
                 <div class="col s12 m6">
-                    <p><b>Card Number:</b> **** **** **** {{ user.profile.stripe_card_last_digits }} </p>
+                    <h5 class="header center text">Saved Card</h5>
+                    <div class="row">
+                        <div class="col s12">
+                            <p><b>Card Number:</b> **** **** **** {{ user.profile.stripe_card_last_digits }} </p>
+                            <p><b>Expiry Date:</b> {{ user.profile.stripe_card_expiry }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <a href="{% url 'delete_spacebucks_payment_info' %}" class="btn waves-effect waves-light">Remove
+                            Card</a>
+                    </div>
                 </div>
+
                 <div class="col s12 m6">
-                    <p><b>Expiry Date:</b> {{ user.profile.stripe_card_expiry }}</p>
-                </div>
-            </div>
-            <div class="row">
-                <a href="{% url 'delete_spacebucks_payment_info' %}" class="btn waves-effect waves-light">Remove
-                    Card</a>
-                <br>
-                <br>
-            </div>
+                    <div class="row" style="min-height: 80px;">
+                        <h5 class="header center text">Add Funds</h5>
+                        <div class="row">
+                            <p>
+                                Click a button below to add spacebucks. This will immediately <b>charge your saved
+                                card</b> with the specified amount.
+                            </p>
+                        </div>
+                    </div>
 
-            <div class="row">
-                <h5 class="header center text">Add Funds</h5>
-                <p>Click a button below to add spacebucks. This will immediately charge your card with the specified
-                    amount.</p>
-
-                <div class="col s3">
-                    <form method="POST" action="{% url 'add_spacebucks' amount=5 %}">
-                        {% csrf_token %}
-                        <button class="btn waves-effect waves-light" type="submit" name="action">$5</button>
-                    </form>
-                </div>
-                <div class="col s3">
-                    <form method="POST" action="{% url 'add_spacebucks' amount=10 %}">
-                        {% csrf_token %}
-                        <button class="btn waves-effect waves-light" type="submit" name="action">$10</button>
-                    </form>
-                </div>
-                <div class="col s3">
-                    <form method="POST" action="{% url 'add_spacebucks' amount=20 %}">
-                        {% csrf_token %}
-                        <button class="btn waves-effect waves-light" type="submit" name="action">$20</button>
-                    </form>
-                </div>
-                <div class="col s3">
-                    <form method="POST" action="{% url 'add_spacebucks' amount=30 %}">
-                        {% csrf_token %}
-                        <button class="btn waves-effect waves-light" type="submit" name="action">$30</button>
-                    </form>
+                    <div class="row">
+                        <div class="col s4">
+                            <button class="btn waves-effect waves-light add-spacebucks" type="submit" data-url="{% url 'add_spacebucks' amount=10 %}" name="action">$10</button>
+                        </div>
+                        <div class="col s4">
+                            <button class="btn waves-effect waves-light add-spacebucks" type="submit" data-url="{% url 'add_spacebucks' amount=20 %}" name="action">$20</button>
+                        </div>
+                        <div class="col s4">
+                            <button class="btn waves-effect waves-light add-spacebucks" type="submit" data-url="{% url 'add_spacebucks' amount=30 %}" name="action">$30</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
         {% else %}
-            <p>We currently have no card details on record. Please add one below. The process of adding a card will not
-                charge any money to it.</p>
+            <p>We currently have no card details on record. Please add one below. The process of adding a card
+                <b>will not charge it</b>.</p>
             <form action="{% url 'add_spacebucks_payment_info' %}" method="POST">
                 <script
                         src="https://checkout.stripe.com/checkout.js" class="stripe-button"

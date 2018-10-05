@@ -5,9 +5,13 @@
 {% block content %}
     <div class="medium-width center row small-row">
         <h3 class="header center text">Manage Spacebucks</h3>
-        <p class="larger-text">Your current spacebucks balance is ${{ user.profile.spacebucks_balance|floatformat:2 }}</p>
+        <p class="larger-text">Your current spacebucks balance is
+            ${{ user.profile.spacebucks_balance|floatformat:2 }}</p>
         <a href="{% url "add_spacebucks" %}" class="waves-effect waves-light btn edit-button">
             Add Spacebucks
+        </a>
+        <a href="{% url "add_spacebucks" %}" class="waves-effect waves-light btn edit-button">
+            Manage Saved Card
         </a>
         <table id="memberList" class="data-table striped responsive-table">
             <thead>

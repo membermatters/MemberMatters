@@ -1,8 +1,6 @@
 django==2.0
 requests
-mysqlclient
 stripe
 sendgrid
 pyxero
-PyCrypto
 humanize

@@ -4,35 +4,45 @@ The HSBNE member portal is how HSBNE members manage their membership.
 ### Features
 * Member registration system (signup, login etc)
 * Profile - members can update all their info in one place
-   * Personal details like name, email etc.
+    * Personal details like name, email etc.
     * Cause membership
+    * Members can see their current access restrictions
+* Spacebug reporting tool (issue reporting form)
 * Access system built in
     * Activate new members
     * Enable/Disable existing members
-    * Doors and tools/machinary permissions
+    * Doors and tools/machinery permissions
     * API so readers/interlocks can check access
+    * Swipe Statistics
+        * Last seen (last time a member swipes)
+        * Recent swipes (last x swipes at any door/interlock)
 * Member overview for executive
     * Search for members
     * Sort members by status, etc
     * Change a member's details/membership type
+* Causes
+    * List of all causes
+    * List of members in each cause and quorum
+* Admin Interface
+    * View, add and edit the following:
+        * Causes
+        * Doors
+        * Interlocks
 * Space webcam integration
-* Swipe Statistics
-    * Last seen (last time a member swipes)
-    * Recent swipes (last x swipes at any door)
-* Basic Spacebucks Support
-    * Members can see a transaction list
+* Full Spacebucks Support
+    * Debit API for vending machines etc. 
+    * Members can see a transaction history (credits & debits)
     * Can see current balance
-    * Basic stripe integration working
-        * Members can add a card to their profile
-        * Can see existing card info
-        * Can charge card and get spacebucks
-        * Update/remove their card details (coming soon)
+    * Stripe integration
+        * Members can save a card to their profile
+        * Can view and remove saved card info
+        * Can charge card to add spacebucks
+* Automatically create a xero contact when a noob is made into a member
+
  
  ### Coming Soon
- * Integration with xero or direct debit service for billing management
-    * Manage membership costs and recurring invoices
-    * Spacebucks payment processing
-    * Let Xero or direct debit service handle payment details
+ * Manage recurring membership fees via direct debit service
+ * Manage recurring membership via xero invoices
  * Edit member swipe in theme
  
  ### Getting Started

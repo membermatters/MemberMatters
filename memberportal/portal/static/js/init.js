@@ -1,11 +1,5 @@
 let memberActionsModal;
 
-(function ($) {
-    $(function () {
-
-    }); // end of document ready
-})(jQuery); // end of jQuery name space
-
 // when the page finishes loading
 document.addEventListener('DOMContentLoaded', function () {
     // Side bar init
@@ -35,6 +29,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Collapsible init
     M.Collapsible.init(document.querySelectorAll('.collapsible'), {});
+
+    // Add spacebucks buttons
+    let spacebucksButtons = document.getElementsByClassName("add-spacebucks");
+    for (var i = 0; i < spacebucksButtons.length; i++) {
+        spacebucksButtons[i].addEventListener('click', addSpacebucks);
+    }
 });
 
 
@@ -44,7 +44,7 @@ function initSelects() {
 
 function resendWelcome() {
     $.ajax({
-        url: resend_welcome_url,  // <-- AND HERE
+        url: resend_welcome_url,
         type: 'get',
         dataType: 'json',
         success: function (data) {
@@ -58,7 +58,7 @@ function resendWelcome() {
 
 function addToXero() {
     $.ajax({
-        url: add_to_xero_url,  // <-- AND HERE
+        url: add_to_xero_url,
         type: 'get',
         dataType: 'json',
         success: function (data) {
@@ -80,7 +80,7 @@ function setState(state) {
     }
 
     $.ajax({
-        url: state_url,  // <-- AND HERE
+        url: state_url,
         type: 'get',
         dataType: 'json',
         success: function (data) {
@@ -105,7 +105,7 @@ function setState(state) {
             }
             // not very DRY... ideally should be modularised a bit more...
             $.ajax({
-                url: access_url,  // <-- AND HERE
+                url: access_url,
                 type: 'get',
                 dataType: 'json',
                 success: function (data) {
@@ -154,7 +154,7 @@ function openMemberActionsModal(e) {
 
     // get the edit profile form
     $.ajax({
-        url: profile_url,  // <-- AND HERE
+        url: profile_url,
         type: 'get',
         dataType: 'json',
         success: function (data) {
@@ -175,7 +175,7 @@ function openMemberActionsModal(e) {
 
     // get the access form
     $.ajax({
-        url: access_url,  // <-- AND HERE
+        url: access_url,
         type: 'get',
         dataType: 'json',
         success: function (data) {
@@ -195,7 +195,7 @@ function openMemberActionsModal(e) {
 
     // get the member logs
     $.ajax({
-        url: get_logs_url,  // <-- AND HERE
+        url: get_logs_url,
         type: 'get',
         dataType: 'json',
         success: function (data) {
@@ -286,7 +286,7 @@ function deleteCause(btn) {
 
 function grantAccess(url, id) {
     $.ajax({
-        url: url,  // <-- AND HERE
+        url: url,
         type: 'get',
         dataType: 'json',
         success: function (response) {
@@ -307,7 +307,7 @@ function grantAccess(url, id) {
 
 function revokeAccess(url, id) {
     $.ajax({
-        url: url,  // <-- AND HERE
+        url: url,
         type: 'get',
         dataType: 'json',
         success: function (response) {
@@ -328,7 +328,7 @@ function revokeAccess(url, id) {
 
 function requestAccess(url) {
     $.ajax({
-        url: url,  // <-- AND HERE
+        url: url,
         type: 'get',
         dataType: 'json',
         success: function (response) {
@@ -347,7 +347,7 @@ function requestAccess(url) {
 
 function unlockDoor(thing) {
     $.ajax({
-        url: thing.getAttribute("data-url"),  // <-- AND HERE
+        url: thing.getAttribute("data-url"),
         type: 'get',
         dataType: 'json',
         success: function (response) {
@@ -366,7 +366,7 @@ function unlockDoor(thing) {
 
 function lockDoor(thing) {
     $.ajax({
-        url: thing.getAttribute("data-url"),  // <-- AND HERE
+        url: thing.getAttribute("data-url"),
         type: 'get',
         dataType: 'json',
         success: function (response) {
@@ -385,7 +385,7 @@ function lockDoor(thing) {
 
 function unlockInterlock(btn) {
     $.ajax({
-        url: btn.getAttribute("data-url"),  // <-- AND HERE
+        url: btn.getAttribute("data-url"),
         type: 'get',
         dataType: 'json',
         success: function (response) {
@@ -404,7 +404,7 @@ function unlockInterlock(btn) {
 
 function lockInterlock(btn) {
     $.ajax({
-        url: btn.getAttribute("data-url"),  // <-- AND HERE
+        url: btn.getAttribute("data-url"),
         type: 'get',
         dataType: 'json',
         success: function (response) {
@@ -421,3 +421,22 @@ function lockInterlock(btn) {
     });
 }
 
+function addSpacebucks() {
+    $.ajax({
+        url: this.getAttribute("data-url"),
+        type: 'get',
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                M.toast({html: "Successfuly charged your card."});
+                setTimeout(() => {location.reload();}, 2000)
+            }
+            else {
+                M.toast({html: "Failed to charge your card :("});
+            }
+        },
+        error: function () {
+            M.toast({html: "Unknown error while trying to charge your card :( "});
+        }
+    });
+}

@@ -1,8 +1,6 @@
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
-from django.core.validators import FileExtensionValidator
-from django.core.files.storage import FileSystemStorage
 from datetime import timedelta
 import pytz
 import os
@@ -16,7 +14,7 @@ from django.contrib.auth.models import (
 from django.core.validators import RegexValidator
 from django.conf import settings
 from profile.xerohelpers import get_xero_contact, create_membership_invoice
-from profile.xerohelpers import add_to_xero, __generate_account_number
+from profile.xerohelpers import add_to_xero, generate_account_number
 
 utc = pytz.UTC
 
@@ -64,9 +62,7 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError('Users must have an email address')
 
-        user = self.model(
-            email=self.normalize_email(email),
-        )
+        user = self.model(email=self.normalize_email(email))
 
         user.is_superuser = is_superuser
         user.set_password(password)
@@ -107,8 +103,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         unique=True,
     )
     password_reset_key = models.UUIDField(default=None, blank=True, null=True)
-    password_reset_expire = models.DateTimeField(
-        default=None, blank=True, null=True)
+    password_reset_expire = models.DateTimeField(default=None, blank=True, null=True)
     staff = models.BooleanField(default=False)  # a admin user; non super-user
     admin = models.BooleanField(default=False)  # a superuser
 
@@ -221,8 +216,8 @@ class User(AbstractBaseUser, PermissionsMixin):
                 "Your access has been disabled.",
                 "Your HSBNE site access has been disabled.",
                 "Your access to HSBNE has been disabled. This could be due to overdue membership fees, a ban being "
-                "issued or your membership ending. If this is temporary, you are not allowed back on site until your "
-                "membership has been reactivated."):
+                "issued or your membership ending. If this is because of a ban, you are not allowed back on site until "
+                "your ban has ended and your membership has been reactivated."):
             return True
 
         return False
@@ -267,23 +262,6 @@ class MemberTypes(models.Model):
             self.cost, self.conditions)
 
 
-class OverwriteStorage(FileSystemStorage):
-
-    def get_available_name(self, name, max_length):
-        if self.exists(name):
-            os.remove(os.path.join(settings.MEDIA_ROOT, name))
-        return name
-
-
-def theme_rename():
-    def wrapper(instance, filename):
-        ext = filename.split('.')[-1]
-        filename = 'user_{}_theme.{}'.format(instance.user.id, ext)
-        return os.path.join('media/themes/', filename)
-
-    return wrapper
-
-
 class Profile(models.Model):
     STATES = (
         ('noob', 'New Member'),
@@ -291,9 +269,7 @@ class Profile(models.Model):
         ('inactive', 'Inactive Member'),
     )
 
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-        related_name='profile')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
     screen_name = models.CharField("Screen Name", max_length=30)
     first_name = models.CharField("First Name", max_length=30)
     last_name = models.CharField("Last Name", max_length=30)
@@ -301,38 +277,25 @@ class Profile(models.Model):
         regex=r'^\+?1?\d{9,15}$',
         message="Phone number must be entered in the format: '0417123456'. "
                 "Up to 12 characters allowed.")
-    phone = models.CharField(
-        validators=[phone_regex], max_length=12, blank=True)
+    phone = models.CharField(validators=[phone_regex], max_length=12, blank=True)
     state = models.CharField(max_length=8, default='noob', choices=STATES)
 
-    member_type = models.ForeignKey(
-        MemberTypes, on_delete=models.PROTECT, related_name='member_type')
+    member_type = models.ForeignKey(MemberTypes, on_delete=models.PROTECT, related_name='member_type')
     causes = models.ManyToManyField('causes.Causes')
 
-    rfid = models.CharField(
-        "RFID Tag", max_length=20, unique=True, null=True, blank=True)
+    rfid = models.CharField("RFID Tag", max_length=20, unique=True, null=True, blank=True)
     doors = models.ManyToManyField('access.Doors', blank=True)
     interlocks = models.ManyToManyField('access.Interlock', blank=True)
     spacebucks_balance = models.FloatField(default=0.0)
 
-    # theme = models.FileField(
-    #     upload_to=theme_rename(), blank=True, null=True,
-    #     storage=OverwriteStorage(),
-    #     validators=[FileExtensionValidator(allowed_extensions=['mp3'])])
-
     last_seen = models.DateTimeField(default=None, blank=True, null=True)
     last_invoice = models.DateTimeField(default=None, blank=True, null=True)
 
-    stripe_customer_id = models.CharField(
-        max_length=100, blank=True, null=True, default="")
-    stripe_card_expiry = models.CharField(
-        max_length=10, blank=True, null=True, default="")
-    stripe_card_last_digits = models.CharField(
-        max_length=4, blank=True, null=True, default="")
-    xero_account_id = models.CharField(
-        max_length=100, blank=True, null=True, default="")
-    xero_account_number = models.CharField(
-        max_length=6, blank=True, null=True, default="")
+    stripe_customer_id = models.CharField(max_length=100, blank=True, null=True, default="")
+    stripe_card_expiry = models.CharField(max_length=10, blank=True, null=True, default="")
+    stripe_card_last_digits = models.CharField(max_length=4, blank=True, null=True, default="")
+    xero_account_id = models.CharField(max_length=100, blank=True, null=True, default="")
+    xero_account_number = models.CharField(max_length=6, blank=True, null=True, default="")
 
     def deactivate(self):
         log_user_event(self.user, "Deactivated member", "profile")
@@ -371,11 +334,8 @@ class Profile(models.Model):
     def get_xero_contact(self):
         return get_xero_contact(self)
 
-    def __generate_account_number(self):
-        return __generate_account_number(self)
-
     def add_to_xero(self):
         return add_to_xero(self)
 
     def create_membership_invoice(self):
-        return create_membership_invoice(user)
+        return create_membership_invoice(self.user)
