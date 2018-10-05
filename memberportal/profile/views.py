@@ -16,6 +16,7 @@ from .forms import SignUpForm, AddProfileForm, ThemeForm, EditProfileForm
 from .forms import EditUserForm, ResetPasswordForm, ResetPasswordRequestForm
 from .forms import AdminEditProfileForm, AdminEditUserForm
 from datetime import datetime
+from django.utils import timezone
 import pytz
 
 User = get_user_model()
@@ -238,7 +239,7 @@ def admin_edit_member(request, member_id):
     data['html_form'] = render_to_string(
         'partial_admin_edit_member.html',
         {'profile_form': profile_form, 'user_form': user_form,
-         'member_id': member_id}, request=request)
+         'member_id': member_id, "profile": profile}, request=request)
     return JsonResponse(data)
 
 
