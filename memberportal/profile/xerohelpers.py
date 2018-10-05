@@ -19,8 +19,8 @@ def get_xero_contact(user):
         credentials = PrivateCredentials(
             os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
         xero = Xero(credentials)
-        email = xero.contacts.filter(EmailAddress=user.user.email)
-        name = xero.contacts.filter(Name=user.get_full_name())
+        email = xero.contacts.filter(EmailAddress=user.profile.email)
+        name = xero.contacts.filter(Name=user.profile.get_full_name())
 
         if email:
             return email
@@ -34,7 +34,7 @@ def get_xero_contact(user):
         return "Invalid Xero API details."
 
 
-def __generate_account_number(user):
+def generate_account_number(profile):
     if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
         with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
             rsa_key = keyfile.read()
@@ -44,23 +44,22 @@ def __generate_account_number(user):
         contacts = xero.contacts.filter(includeArchived=True)
 
         for x in range(100, 999):
-            account_number = user.first_name[0] + user.last_name[:2] + str(x)
+            account_number = profile.first_name[0] + profile.last_name[:2] + str(x)
             account_number = account_number.upper()
 
             if not any(d.get('AccountNumber', None) == account_number for d in contacts):
-                user.xero_account_number = account_number
-                user.save()
-                print(account_number)
+                profile.xero_account_number = account_number
+                profile.save()
+                print("Generated Xero Account: " + account_number)
 
-                return user.xero_account_number
+                return profile.xero_account_number
 
     else:
         return False
 
 
-def add_to_xero(user):
-    member_exists = user.xero_account_id is not "" and user.xero_account_number is not ""
-    print(member_exists)
+def add_to_xero(profile):
+    member_exists = profile.xero_account_id is not "" and profile.xero_account_number is not ""
 
     if member_exists:
         result = "Error adding to xero, that email or contact name already exists."
@@ -76,12 +75,12 @@ def add_to_xero(user):
 
             contact = [
                 {
-                    "AccountNumber": __generate_account_number(user),
+                    "AccountNumber": generate_account_number(profile),
                     "ContactStatus": "ACTIVE",
-                    "Name": user.get_full_name(),
-                    "FirstName": user.first_name,
-                    "LastName": user.last_name,
-                    "EmailAddress": user.user.email,
+                    "Name": profile.get_full_name(),
+                    "FirstName": profile.first_name,
+                    "LastName": profile.last_name,
+                    "EmailAddress": profile.user.email,
                     "Addresses": [
                         {
                             "AddressType": "STREET",
@@ -95,7 +94,7 @@ def add_to_xero(user):
                     "Phones": [
                         {
                             "PhoneType": "DEFAULT",
-                            "PhoneNumber": user.phone,
+                            "PhoneNumber": profile.phone,
                             "PhoneAreaCode": "",
                             "PhoneCountryCode": ""
                         }
@@ -114,8 +113,8 @@ def add_to_xero(user):
 
             if result:
                 print(result)
-                user.xero_account_id = result[0]['ContactID']
-                user.save()
+                profile.xero_account_id = result[0]['ContactID']
+                profile.save()
                 return "Successfully added to Xero."
 
             else:
@@ -137,22 +136,22 @@ def create_membership_invoice(user):
     payload = {
         "Type": "ACCREC",
         "Contact": {
-            "ContactID": user.xero_account_id
+            "ContactID": user.profile.xero_account_id
         },
         "DueDate": next_month_date,
         "LineAmountTypes": "Inclusive",
         "LineItems": [
             {
-                "Description": "HSBNE Membership: " + user.member_type.name,
+                "Description": "HSBNE Membership: " + user.profile.member_type.name,
                 "Quantity": "1",
-                "ItemCode": user.member_type.name,
-                "UnitAmount": user.member_type.cost,
+                "ItemCode": user.profile.member_type.name,
+                "UnitAmount": user.profile.member_type.cost,
                 "TaxType": "OUTPUT",
                 "AccountCode": "200"
             }
         ],
         "Status": "AUTHORISED",
-        "Reference": user.xero_account_number,
+        "Reference": user.profile.xero_account_number,
         "Url": "https://hsbne.org",
     }
 
@@ -173,6 +172,9 @@ def create_membership_invoice(user):
         xero.invoices.get_onlineinvoice = xero.invoices._get_data(get_onlineinvoice)
 
         try:
+
+            from memberportal.helpers import log_user_event
+
             # try to create the invoice
             result = xero.invoices.put(payload)
 
@@ -182,16 +184,13 @@ def create_membership_invoice(user):
             invoice_link = xero.invoices.get_onlineinvoice(invoice_id)['OnlineInvoices'][0]['OnlineInvoiceUrl']
 
             # if we're successful send it to the member and log it
-            user.user.email_invoice(user.first_name, user.member_type.cost, invoice_number, next_month_date.strftime("%d-%m-%Y"), invoice_reference, invoice_link)
-            from memberportal.helpers import log_user_event
-            log_user_event(user.user, "Created invoice for $" + str(user.member_type.cost) + "(" + invoice_id + ")",
-                           "xero")
-            user.last_invoice = timezone.now()
-            user.save()
+            user.email_invoice(user.profile.first_name, user.profile.member_type.cost, invoice_number, next_month_date.strftime("%d-%m-%Y"), invoice_reference, invoice_link)
+            log_user_event(user.user, "Created invoice for $" + str(user.profile.member_type.cost) + "(" + invoice_id + ")", "xero")
+            user.profile.last_invoice = timezone.now()
+            user.profile.save()
 
         except XeroBadRequest as e:
-            log_user_event(user.user, "Error creating invoice for $" + str(user.member_type.cost),
-                           "xero")
+            log_user_event(user, "Error creating invoice for $" + str(user.profile.member_type.cost), "xero")
             return "Error: " + str(e)
 
         if result:
