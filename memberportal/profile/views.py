@@ -55,7 +55,7 @@ def signup(request):
                 "induction we will go over the basic safety and operational "
                 "aspects of HSBNE. To book in, click the link below.".format(
                     profile.first_name),
-                "https://www.eventbrite.com.au/e/hsbne-open-night-tickets-27140078706",
+                "https://hsbnemembership.eventbrite.com.au",
                 "Register for Induction")
 
             # for convenience, we should now log the user in
@@ -197,10 +197,11 @@ def member_list(request):
 @no_noobs
 def access_permissions(request):
     doors = Doors.objects.all()
+    interlocks = Interlock.objects.all()
 
     return render(
         request, 'access_permissions.html',
-        {"doors": doors, "member_id": request.user.id})
+        {"doors": doors, "interlocks": interlocks, "member_id": request.user.id})
 
 
 @login_required
@@ -231,10 +232,7 @@ def admin_edit_member(request, member_id):
             profile_form.save()
             user_form.save()
             data['form_is_valid'] = True
-            log_user_event(
-                profile.user,
-                request.user.profile.get_full_name() + " edited user profile.",
-                "profile")
+            log_user_event(profile.user, request.user.profile.get_full_name() + " edited user profile.", "profile")
 
     # render the form and return it
     data['html_form'] = render_to_string(
@@ -422,9 +420,8 @@ def edit_theme_song(request):
 @login_required
 @admin_required
 def resend_welcome_email(request, member_id):
-    success = User.objects.get(
-        pk=member_id).profile.create_membership_invoice()  # .email_welcome()
-    # log_user_event(request.user, "Resent welcome email.", "profile")
+    success = User.objects.get(pk=member_id).email_welcome()
+    log_user_event(request.user, "Resent welcome email.", "profile")
 
     if success:
         return JsonResponse({"message": success})
