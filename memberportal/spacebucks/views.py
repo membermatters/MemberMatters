@@ -1,5 +1,5 @@
-from django.http import JsonResponse, HttpResponseBadRequest
-from django.http import HttpResponseServerError
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseServerError
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -28,8 +28,22 @@ def manage_spacebucks(request):
 
 @login_required
 @no_noobs
+def add_spacebucks_page(request):
+    if "STRIPE_PUBLIC_KEY" in os.environ:
+        return render(
+            request, 'add_spacebucks.html',
+            {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"]})
+
+    else:
+        return HttpResponseServerError(
+            "Error unable to find stripe details in environment variables.")
+
+
+@login_required
+@csrf_exempt
+@no_noobs
 def add_spacebucks(request, amount=None):
-    if request.method == "POST":
+    if request.method == "GET":
         if "STRIPE_SECRET_KEY" in os.environ:
             stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
             stripe.default_http_client = stripe.http_client.RequestsClient()
@@ -67,42 +81,25 @@ def add_spacebucks(request, amount=None):
                                        request.user.profile.get_full_name(), amount),
                                    "stripe")
 
-                    return render(
-                        request, 'add_spacebucks.html',
-                        {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"],
-                         "success": True,
-                         "message": "Successfully charged ${} to your card ending in {}. Please check your spacebucks balance.".format(
-                             amount, request.user.profile.stripe_card_last_digits)})
+                    return JsonResponse({"success": True})
                 else:
                     log_user_event(
                         request.user,
                         "Problem charging {}.".format(request.user.profile.get_full_name()),
                         "stripe")
-                    return render(
-                        request, 'add_spacebucks.html',
-                        {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"],
-                         "success": False,
-                         "message": "There was a problem collecting the funds off your card."})
+                    return JsonResponse({"success": False})
             else:
                 log_user_event(
-                  request.user,
-                  "Tried to add invalid amount {} to spacebucks via stripe.".format(amount),
-                  "stripe")
+                    request.user,
+                    "Tried to add invalid amount {} to spacebucks via stripe.".format(amount),
+                    "stripe")
 
         return render(request, 'add_spacebucks.html',
                       {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"],
                        "success": False,
                        "message": "Invalid amount."})
-
     else:
-        if "STRIPE_PUBLIC_KEY" in os.environ:
-            return render(
-                request, 'add_spacebucks.html',
-                {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"]})
-
-        else:
-            return HttpResponseServerError(
-                "Error unable to find stripe details in environment variables.")
+        return HttpResponseBadRequest("Invalid method")
 
 
 @csrf_exempt
@@ -218,19 +215,30 @@ def delete_spacebucks_payment_info(request):
 
 @csrf_exempt
 @api_auth
-def spacebucks_debit(request, amount=None, description=None, rfid=None):
+def spacebucks_debit(request, amount=None, description="No Description", rfid=None):
+    if amount is not None:
+        if abs(amount / 100) > 10:
+            return HttpResponseBadRequest("400 Invalid request. A maximum of $10 may be debited with this API.")
+
     if request.method == "GET":
-        amount = abs(amount/100)
-        profile = Profile.objects.get(rfid=rfid)
+        if amount is None or rfid is None:
+            return HttpResponseBadRequest("400 Invalid request.")
+
+        amount = abs(amount / 100)
+        try:
+            profile = Profile.objects.get(rfid=rfid)
+
+        except ObjectDoesNotExist:
+            return HttpResponseBadRequest("400 Invalid request. User does not exist.")
 
     elif request.method == "POST":
         details = json.loads(request.body)
-        amount = abs(details['amount']/100)
+        amount = abs(details['amount'] / 100)
         description = details['description']
         profile = Profile.objects.get(rfid=details['rfid_code'])
 
     else:
-        return HttpResponseBadRequest("Invalid request method.")
+        return HttpResponseBadRequest("400 Invalid request method.")
 
     if profile.spacebucks_balance >= amount:
         transaction = SpaceBucks()
@@ -241,12 +249,12 @@ def spacebucks_debit(request, amount=None, description=None, rfid=None):
         transaction.save()
 
         log_user_event(
-          profile.user,
-          "Successfully debited ${} from spacebucks account.".format(amount),
-          "spacebucks")
+            profile.user,
+            "Successfully debited ${} from spacebucks account.".format(amount),
+            "spacebucks")
 
         return JsonResponse(
-          {"success": True, "balance": round(profile.spacebucks_balance, 2)})
+            {"success": True, "balance": round(profile.spacebucks_balance, 2)})
 
     # not enough $$
     log_user_event(
