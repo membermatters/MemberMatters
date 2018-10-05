@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.urls import reverse
-from memberportal.helpers import log_event, log_user_event
+from memberportal.helpers import log_user_event
 from memberportal.decorators import no_noobs, admin_required, api_auth
 from .forms import *
 from .models import *
@@ -405,7 +405,7 @@ def unlock_interlock(request, interlock_id):
     interlock = Interlock.objects.get(pk=interlock_id)
     if interlock in request.user.profile.interlocks.all():
         log_user_event(request.user, "Unlocked {} interlock via API.".format(interlock.name), "door")
-        return JsonResponse({"access": interlock.unlock()})
+        return JsonResponse({"success": interlock.unlock()})
 
     return HttpResponseForbidden("You are not authorised to access that interlock.")
 
@@ -415,7 +415,7 @@ def lock_interlock(request, interlock_id):
     interlock = Interlock.objects.get(pk=interlock_id)
     if interlock in request.user.profile.interlocks.all():
         log_user_event(request.user, "Locked {} interlock via API.".format(interlock.name), "door")
-        return JsonResponse({"access": interlock.lock()})
+        return JsonResponse({"success": interlock.lock()})
 
     return HttpResponseForbidden("You are not authorised to access that interlock.")
 
@@ -432,10 +432,10 @@ def admin_grant_interlock(request, interlock_id, member_id):
         log_user_event(request.user,
                        "Access to {} granted for {}.".format(interlock.name, user.profile.get_full_name()), "admin")
 
-        return JsonResponse({"access": True})
+        return JsonResponse({"success": True})
 
     except Exception:
-        return JsonResponse({"access": False, "reason": "Bad Request. User or interlock not found."})
+        return JsonResponse({"success": False, "reason": "Bad Request. User or interlock not found."})
 
 
 @login_required
@@ -450,10 +450,10 @@ def admin_revoke_interlock(request, interlock_id, member_id):
         log_user_event(request.user,
                        "Access to {} revoked for {}.".format(interlock.name, user.profile.get_full_name()), "admin")
 
-        return JsonResponse({"access": True})
+        return JsonResponse({"success": True})
 
     except ObjectDoesNotExist:
-        return JsonResponse({"access": False, "reason": "No access permission was found."})
+        return JsonResponse({"success": False, "reason": "No access permission was found."})
 
 
 @api_auth
@@ -527,11 +527,11 @@ def interlock_checkin(request, interlock_id=None):
         try:
             interlock = Interlock.objects.get(pk=interlock_id)
             interlock.checkin()
-            return JsonResponse({"access": True})
+            return JsonResponse({"success": True, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for non existant interlock.", "error", request)
-            return JsonResponse({"access": False, "error": "Tried to check access for non existant interlock.",
+            return JsonResponse({"success": False, "error": "Tried to check access for non existant interlock.",
                                  "timestamp": round(time.time())})
 
     else:
@@ -539,11 +539,11 @@ def interlock_checkin(request, interlock_id=None):
             interlock_ip = request.META.get('REMOTE_ADDR')
             interlock = Interlock.objects.get(ip_address=interlock_ip)
             interlock.checkin()
-            return JsonResponse({"access": True})
+            return JsonResponse({"success": True, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for {} interlock but none found.".format(interlock_ip), "error", request)
-            return JsonResponse({"access": False, "error": "Interlock does not exist.",
+            return JsonResponse({"success": False, "error": "Interlock does not exist.",
                                  "timestamp": round(time.time())})
 
 
@@ -555,24 +555,23 @@ def door_checkin(request, door_id=None):
         try:
             door = Doors.objects.get(pk=door_id)
             door.checkin()
-            return JsonResponse({"access": True})
+            return JsonResponse({"success": True, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for non existant door.", "error", request)
             return JsonResponse(
-                {"access": False, "error": "Error door does not exist.", "timestamp": round(time.time())})
+                {"success": False, "error": "Error door does not exist.", "timestamp": round(time.time())})
 
     else:
         try:
             door_ip = request.META.get('REMOTE_ADDR')
-            door = Interlock.objects.get(ip_address=door_ip)
+            door = Doors.objects.get(ip_address=door_ip)
             door.checkin()
-            return JsonResponse({"access": True})
+            return JsonResponse({"success": True, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for {} door but none found.".format(door_ip), "error", request)
-            return JsonResponse({"access": False, "error": "Door does not exist..",
-                                 "timestamp": round(time.time())})
+            return JsonResponse({"success": False, "error": "Door does not exist..", "timestamp": round(time.time())})
 
 
 @api_auth
@@ -583,23 +582,23 @@ def spacebucks_device_checkin(request, device_id=None):
         try:
             device = SpacebucksDevice.objects.get(pk=device_id)
             device.checkin()
-            return JsonResponse({"access": True})
+            return JsonResponse({"success": True, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for non existant spacebucks device.", "error", request)
             return JsonResponse(
-                {"access": False, "error": "Error spacebucks device does not exist.", "timestamp": round(time.time())})
+                {"success": False, "error": "Error spacebucks device does not exist.", "timestamp": round(time.time())})
 
     else:
         try:
             device_ip = request.META.get('REMOTE_ADDR')
             device = SpacebucksDevice.objects.get(ip_address=device_ip)
             device.checkin()
-            return JsonResponse({"access": True})
+            return JsonResponse({"success": True, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for {} spacebucks device but none found.".format(device_ip), "error", request)
-            return JsonResponse({"access": False, "error": "spacebucks device does not exist..",
+            return JsonResponse({"success": False, "error": "spacebucks device does not exist..",
                                  "timestamp": round(time.time())})
 
 

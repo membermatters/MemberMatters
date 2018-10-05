@@ -15,6 +15,8 @@ urlpatterns = [
     path('api/door/check/<int:rfid_code>/', views.check_door_access, name='check_access'),
     path('api/door/<int:door_id>/authorised/', views.authorised_door_tags, name='authorised_tags'),
     path('api/door/authorised/', views.authorised_door_tags, name='authorised_tags'),
+    path('api/door/<int:door_id>/checkin/', views.door_checkin, name='door_checkin'),
+    path('api/door/checkin/', views.door_checkin, name='door_checkin'),
     path('interlocks/', views.manage_interlocks, name='manage_interlocks'),
     path('interlocks/add', views.add_interlock, name='add_interlock'),
     path('interlocks/<int:interlock_id>/edit', views.edit_interlock, name='edit_interlock'),
@@ -31,7 +33,5 @@ urlpatterns = [
     path('api/interlock/checkin/', views.interlock_checkin, name='interlock_checkin'),
     path('api/interlock/authorised/', views.authorised_interlock_tags, name='authorised_interlock_tags'),
     path('api/interlock/<int:interlock_id>/authorised/', views.authorised_interlock_tags, name='authorised_interlock_tags'),
-    path('api/door/<int:door_id>/checkin/', views.door_checkin, name='door_checkin'),
-    path('api/door/checkin/', views.door_checkin, name='door_checkin'),
     path('cron/interlock/', views.interlock_cron, name='interlock_cron'),
 ]
