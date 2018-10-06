@@ -6,15 +6,15 @@ with open('/home/jabelone/Downloads/access.csv') as csv_file:
     kept_people_phone = []
 
     for row in csv_reader:
-        if int(row[7]):
+        if int(row[6]):
             active = "active"
         else:
             active = "inactive"
 
         if len(row[5]) == 10:
-            kept_people_phone.append({"nickname": row[0], "first_name": row[1], "last_name": row[2], "mobile": row[3], "email": row[4], "rfid": row[5], "created": row[6], "active": active})
+            kept_people_phone.append({"nickname": row[2], "first_name": row[1], "last_name": "", "mobile": "", "email": row[3], "rfid": row[5], "created": "2018-10-06 11:59:59", "active": active})
         else:
-            kept_people.append({"nickname": row[0], "first_name": row[1], "last_name": row[2], "mobile": row[3], "email": row[4], "rfid": row[5], "created": row[6], "active": active})
+            kept_people.append({"nickname": row[2], "first_name": row[1], "last_name": "", "mobile": "", "email": row[3], "rfid": row[5], "created": "2018-10-06 11:59:59", "active": active})
 
     print("with card {}:".format(len(kept_people)))
     for person in kept_people:
