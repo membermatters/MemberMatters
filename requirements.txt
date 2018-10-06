@@ -4,3 +4,4 @@ stripe
 sendgrid
 pyxero
 humanize
+uwsgi
