@@ -104,7 +104,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     password_reset_key = models.UUIDField(default=None, blank=True, null=True)
     password_reset_expire = models.DateTimeField(default=None, blank=True, null=True)
-    staff = models.BooleanField(default=False)  # a admin user; non super-user
+    staff = models.BooleanField(default=False)  # an admin user for the portal
     admin = models.BooleanField(default=False)  # a superuser
 
     USERNAME_FIELD = 'email'
@@ -290,6 +290,7 @@ class Profile(models.Model):
     interlocks = models.ManyToManyField('access.Interlock', blank=True)
     spacebucks_balance = models.FloatField(default=0.0)
     last_spacebucks_purchase = models.DateTimeField(default=timezone.now)
+    must_update_profile = models.BooleanField(default=False)
 
     last_seen = models.DateTimeField(default=None, blank=True, null=True)
     last_invoice = models.DateTimeField(default=None, blank=True, null=True)

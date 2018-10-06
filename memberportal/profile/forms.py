@@ -65,8 +65,7 @@ class EditProfileForm(forms.ModelForm):
 class AdminEditProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('rfid', 'first_name', 'last_name', 'phone', 'member_type',
-                  'screen_name', 'causes')
+        fields = ('rfid', 'first_name', 'last_name', 'phone', 'member_type', 'screen_name', 'causes')
 
     def clean(self):
         causes = self.cleaned_data.get('causes')

@@ -25,16 +25,6 @@ from profile.models import Profile
 utc = pytz.UTC
 
 
-def signin(request):
-    """
-    The sign in view.
-    :param request:
-    :return:
-    """
-    log_user_event(request.user, "User logged in.", "usage")
-    return render(request, 'registration/login.html')
-
-
 def loggedout(request):
     """
     The view to show the logged out page.

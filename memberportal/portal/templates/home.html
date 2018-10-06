@@ -5,19 +5,28 @@
 
 {% block content %}
     {% if user.is_authenticated %}
-        {% if user.profile.state == "noob" %}
+        {% if user.profile.must_update_profile %}
             <div class="row center padding-top">
-                <h5 class="header col s12 light">
-                    Welcome to the HSBNE member portal!
-                </h5>
-                <p>
-                    Thanks for signing up to become a member. To continue the membership process, you need to get
-                    inducted. To do this, click the button below to sign up for a spot in the next available induction
-                    session.
-                </p>
+            <h5 class="header col s12 light">
+                Welcome! <br> You are required to update your profile (causes and personal info) before using this
+                portal.<br><br>
+            </h5>
             <div class="row center">
-                            <a href="https://hsbnemembership.eventbrite.com.au" target="_blank" id="go-to-induction"
-                               class="btn-large cn-green">Induction Signup</a>
+                <a href="{% url 'edit_profile' %}" target="_blank" class="btn-large cn-green">Update Profile</a>
+            </div>
+        {% elif user.profile.state == "noob" %}
+            <div class="row center padding-top">
+            <h5 class="header col s12 light">
+                Welcome to the HSBNE member portal!
+            </h5>
+            <p>
+                Thanks for signing up to become a member. To continue the membership process, you need to get
+                inducted. To do this, click the button below to sign up for a spot in the next available induction
+                session.
+            </p>
+            <div class="row center">
+                <a href="https://hsbnemembership.eventbrite.com.au" target="_blank" id="go-to-induction"
+                   class="btn-large cn-green">Induction Signup</a>
             </div>
         {% else %}
             <div class="row center padding-top">
@@ -47,15 +56,16 @@
 
                 <div class="col s12 m6">
                     <div class="icon-block">
-                    <h2 class="center"><i class="material-icons">sentiment_very_dissatisfied
-</i></h2>
-                    <h5 class="center">Report Spacebug</h5>
-                     <p class="center light home-text-columns">Found something broken at HSBNE that you don't have the time or skills to fix? Report it here.</p>
-                     <div class="row center">
-                        <a href="{% url 'report_spacebug' %}" id="report_spacebug"
-                           class="btn-large cn-green">Report Spacebug</a>
+                        <h2 class="center"><i class="material-icons">sentiment_very_dissatisfied
+                        </i></h2>
+                        <h5 class="center">Report Spacebug</h5>
+                        <p class="center light home-text-columns">Found something broken at HSBNE that you don't have
+                            the time or skills to fix? Report it here.</p>
+                        <div class="row center">
+                            <a href="{% url 'report_spacebug' %}" id="report_spacebug"
+                               class="btn-large cn-green">Report Spacebug</a>
+                        </div>
                     </div>
-                </div>
                 </div>
             </div>
         {% endif %}
@@ -73,10 +83,12 @@
             <br><br>
             <div class="row">
                 <div class="col s12 m4">
-                    <a href="https://hsbne.org" target="_blank" id="go-to-website" class="btn-large cn-green center">About HSBNE</a><br><br>
+                    <a href="https://hsbne.org" target="_blank" id="go-to-website" class="btn-large cn-green center">About
+                        HSBNE</a><br><br>
                 </div>
                 <div class="col s12 m4">
-                    <a href="{% url 'signup' %}" id="go-to-signup" class="btn-large cn-green center">Member Sign Up</a><br><br>
+                    <a href="{% url 'signup' %}" id="go-to-signup" class="btn-large cn-green center">Member Sign
+                        Up</a><br><br>
                 </div>
                 <div class="col s12 m4">
                     <a href="{% url 'signin' %}" id="go-to-signin" class="btn-large cn-green center">Member Sign In</a>
