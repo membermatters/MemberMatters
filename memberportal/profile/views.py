@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from memberportal.decorators import no_noobs, admin_required, api_auth
 from memberportal.helpers import log_user_event

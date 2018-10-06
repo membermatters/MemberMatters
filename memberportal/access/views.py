@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from memberportal.helpers import log_user_event
 from memberportal.decorators import no_noobs, admin_required, api_auth
+from profile.models import User
 from .forms import *
 from .models import *
 from profile.models import Profile
@@ -16,8 +17,6 @@ import os
 from datetime import timedelta
 from django.utils import timezone
 import humanize
-
-User = get_user_model()
 
 utc = pytz.UTC
 
@@ -634,3 +633,16 @@ def end_interlock_session(request, session_id):
         return JsonResponse({"access": True})
 
     return JsonResponse({"access": False, "error": "Session already ended.", "timestamp": round(time.time())})
+
+
+@api_auth
+def reset_default_door_access(request):
+    users = User.objects.all()
+    try:
+        for user in users:
+            for door in Doors.objects.filter(all_members=True):
+                user.profile.doors.add(door)
+
+        return JsonResponse({"success": True})
+    except:
+        return JsonResponse({"success": False, "message": "Failed to reset access permissions for unknown reason."})
