@@ -20,4 +20,5 @@ urlpatterns = [
     path('api/member/<int:member_id>/logs/', views.admin_member_logs, name='admin_member_logs'),
     path('api/member/<int:member_id>/email/welcome', views.resend_welcome_email, name='resend_welcome_email'),
     path('api/member/<int:member_id>/xero/add', views.add_to_xero, name='add_to_xero'),
+    path('api/member/create', views.create_account_api, name='create_account_api'),
 ]

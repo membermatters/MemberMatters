@@ -1,5 +1,5 @@
 from django.contrib.auth import login, update_session_auth_hash
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponseBadRequest
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
@@ -8,19 +8,59 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from memberportal.decorators import no_noobs, admin_required
+from memberportal.decorators import no_noobs, admin_required, api_auth
 from memberportal.helpers import log_user_event
-from .models import Profile
+from .models import Profile, User, MemberTypes
 from access.models import Doors, Interlock, DoorLog, InterlockLog
 from .forms import SignUpForm, AddProfileForm, ThemeForm, EditProfileForm
 from .forms import EditUserForm, ResetPasswordForm, ResetPasswordRequestForm
 from .forms import AdminEditProfileForm, AdminEditUserForm
+from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
-from django.utils import timezone
+import json
 import pytz
 
-User = get_user_model()
 utc = pytz.UTC
+
+
+@csrf_exempt
+@api_auth
+def create_account_api(request):
+    if request.method == 'POST':
+        try:
+            details = json.loads(request.body)
+        except:
+            return JsonResponse({"success": False, "message": "Invalid json input."})
+
+        # Create a new instance of the user model and fill it with data
+        user = User()
+        user.email = details["email"]
+        user.save()
+
+        # Create a new instance of the profile model and fill it with data
+        profile = Profile()
+        created_date = datetime.strptime(details["created"], '%Y-%m-%d %H:%M:%S')
+        profile.screen_name = details["screen_name"]
+        profile.first_name = details["first_name"]
+        profile.last_name = details["last_name"]
+        profile.phone = details["phone"]
+        profile.rfid = details["rfid_code"]
+        profile.created = created_date
+        profile.state = details["state"]
+        profile.member_type = MemberTypes.objects.get(id=4)
+        profile.user = user
+        profile.must_update_profile = True
+        profile.save()
+
+        # give default access
+        for door in Doors.objects.filter(all_members=True):
+            profile.doors.add(door)
+
+        profile.save()
+
+        return JsonResponse({"success": True})
+
+    return HttpResponseBadRequest("Bad request method")
 
 
 def signup(request):
@@ -279,6 +319,9 @@ def edit_profile(request):
             # if it was a form submission save it
             user_form.save()
             profile_form.save()
+            if request.user.profile.must_update_profile:
+                request.user.profile.must_update_profile = False
+                request.user.profile.save()
             log_user_event(request.user, "User profile edited.", "profile")
             return HttpResponseRedirect('%s' % (reverse('profile')))
 
@@ -311,14 +354,14 @@ def set_state(request, member_id, state):
                 user.profile.doors.add(door)
             email = user.email_welcome()
             xero = user.profile.add_to_xero()
-            invoice = user.profile.create_membership_invoice()
+            invoice = True  # user.profile.create_membership_invoice() # Don't create them an invoice for now
             activate = user.profile.activate()
 
             if "Error" not in xero and "Error" not in invoice and email and activate:
                 return JsonResponse(
                     {"success": True,
                      "response": "Successfully made into member - invites sent"
-                     ", added to xero and invoiced."})
+                                 ", added to xero and invoiced."})
 
             elif "Error" in xero:
                 return JsonResponse({"success": False, "response": xero})
@@ -332,7 +375,7 @@ def set_state(request, member_id, state):
                 return JsonResponse(
                     {"success": False,
                      "response": "Error, couldn't send welcome email but "
-                     "invoice created."})
+                                 "invoice created."})
 
             else:
                 return JsonResponse(
