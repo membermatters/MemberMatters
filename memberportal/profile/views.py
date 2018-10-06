@@ -120,10 +120,7 @@ def change_password(request):
             user = form.save()
             update_session_auth_hash(request, user)
             log_user_event(request.user, "User password changed.", "profile")
-            return render(
-                request, 'change_password.html',
-                {'form': form, "message": "Password changed successfully."})
-
+            return redirect('profile')
         else:
             return render(request, 'change_password.html', {'form': form})
     else:
@@ -209,13 +206,13 @@ def reset_password(request, reset_token=None):
 
 
 @login_required
-def profile(request):
+def profile(request, extra_context=None):
     """
     The profile view.
     :param request:
     :return:
     """
-    return render(request, 'profile.html')
+    return render(request, 'profile.html', context=extra_context)
 
 
 @login_required
