@@ -26,8 +26,8 @@
         </a>
         <ul class="right hide-on-med-and-down">
             {% if not user.is_authenticated %}
-                <li><a class="waves-effect waves-light modal-trigger" href="https://portal.hsbne.org/signup">Sign Up</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="https://portal.hsbne.org/signin">Log In</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'signup' %}">Sign Up</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'signin' %}">Log In</a></li>
             {% endif %}
 
             {% if user.is_staff %}
@@ -47,8 +47,8 @@
         <ul id="nav-mobile" class="sidenav padding-top-small">
             {% if not user.is_authenticated %}
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'home' %}">Home</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="https://portal.hsbne.org/signup">Sign Up</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="https://portal.hsbne.org/signin">Log In</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'signup' %}">Sign Up</a></li>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'signin' %}">Log In</a></li>
             {% endif %}
 
             {% if user.is_authenticated %}
