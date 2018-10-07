@@ -137,6 +137,7 @@ let active_url;
 let member_state;
 let resend_welcome_url;
 let get_logs_url;
+let get_spacebucks_url;
 let add_to_xero_url;
 
 function openMemberActionsModal(e) {
@@ -150,6 +151,7 @@ function openMemberActionsModal(e) {
     resend_welcome_url = e.getAttribute("data-resend_welcome_url");
     get_logs_url = e.getAttribute("data-get_logs_url");
     add_to_xero_url = e.getAttribute("data-add_to_xero_url");
+    get_spacebucks_url = e.getAttribute("data-get_spacebucks_url");
     document.getElementById('admin-member-modal-name').innerHTML = name;
 
     // get the edit profile form
@@ -215,6 +217,26 @@ function openMemberActionsModal(e) {
             M.toast({html: "unknown error while getting logs :( "});
 
             let elem = document.getElementById("admin-edit-member-logs");
+            elem.innerHTML = "";
+        }
+    });
+
+    // get the member spacebucks transactions
+    $.ajax({
+        url: get_spacebucks_url,
+        type: 'get',
+        dataType: 'json',
+        success: function (data) {
+            let elem = document.getElementById("admin-edit-member-spacebucks");
+            elem.innerHTML = data.body;
+
+            // init the table
+            let table = $('#spacebucksTable').DataTable({});
+        },
+        error: function () {
+            M.toast({html: "unknown error while getting spacebucks data :( "});
+
+            let elem = document.getElementById("admin-edit-member-spacebucks");
             elem.innerHTML = "";
         }
     });
@@ -421,22 +443,24 @@ function lockInterlock(btn) {
     });
 }
 
-function addSpacebucks() {
+function addSpacebucks(url) {
+    let amount = Math.round(document.getElementById("addAmountInput").value * 100);
+
     $.ajax({
-        url: this.getAttribute("data-url"),
+        url: url + amount,
         type: 'get',
         dataType: 'json',
         success: function (response) {
             if (response.success) {
-                M.toast({html: "Successfuly charged your card."});
-                setTimeout(() => {location.reload();}, 2000)
+                M.toast({html: "Successfuly added spacebucks."});
             }
             else {
-                M.toast({html: "Failed to charge your card :("});
+                M.toast({html: "Failed to add spacebucks :("});
             }
         },
         error: function () {
-            M.toast({html: "Unknown error while trying to charge your card :( "});
+            M.toast({html: "Unknown error while trying to add spacebucks :( "});
         }
     });
 }
+

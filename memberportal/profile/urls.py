@@ -20,5 +20,8 @@ urlpatterns = [
     path('api/member/<int:member_id>/logs/', views.admin_member_logs, name='admin_member_logs'),
     path('api/member/<int:member_id>/email/welcome', views.resend_welcome_email, name='resend_welcome_email'),
     path('api/member/<int:member_id>/xero/add', views.add_to_xero, name='add_to_xero'),
+    path('api/member/<int:member_id>/spacebucks/transactions/', views.admin_spacebucks_transactions, name="admin_spacebucks_transactions"),
+    path('api/member/<int:member_id>/spacebucks/add/<int:amount>', views.admin_add_spacebucks, name='admin_add_spacebucks_amount'),
+    path('api/member/<int:member_id>/spacebucks/add/', views.admin_add_spacebucks, name='admin_add_spacebucks'),
     path('api/member/create', views.create_account_api, name='create_account_api'),
 ]
