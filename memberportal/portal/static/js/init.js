@@ -468,7 +468,7 @@ function chargeCardForSpacebucks() {
     document.getElementById("spacebucks-progress-bar").classList.add("progress");
 
     $.ajax({
-        url: "", //this.getAttribute("data-url"),
+        url: this.getAttribute("data-url"),
         type: 'get',
         dataType: 'json',
         success: function (response) {
