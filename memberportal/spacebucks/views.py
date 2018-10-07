@@ -9,7 +9,7 @@ from memberportal.decorators import no_noobs, api_auth
 from memberportal.helpers import log_user_event
 from .models import SpaceBucks
 from profile.models import Profile, User
-import urllib
+from urllib import parse
 import stripe
 import json
 import pytz
@@ -266,7 +266,7 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
             transaction = SpaceBucks()
             transaction.amount = amount * -1.0
             transaction.user = profile.user
-            transaction.description = urllib.parse.unquote(description)
+            transaction.description = description.replace("+", " ")
             transaction.transaction_type = "card"
             transaction.save()
 
