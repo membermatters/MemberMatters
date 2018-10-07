@@ -9,6 +9,7 @@ from memberportal.decorators import no_noobs, api_auth
 from memberportal.helpers import log_user_event
 from .models import SpaceBucks
 from profile.models import Profile
+import urllib
 import stripe
 import json
 import pytz
@@ -249,7 +250,7 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
             transaction = SpaceBucks()
             transaction.amount = amount * -1.0  # abs() handles if we're given a negative number
             transaction.user = profile.user
-            transaction.description = description
+            transaction.description = urllib.unquote(description).decode('utf8')
             transaction.transaction_type = "card"
             transaction.save()
 
