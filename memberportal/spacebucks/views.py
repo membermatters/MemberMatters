@@ -54,10 +54,8 @@ def add_spacebucks(request, amount=None):
         if amount is not None:
             # lets restrict this to something reasonable
             if amount <= 30:
-                log_user_event(
-                    request.user,
-                    "Attempting to charge {} for ${}.".format(
-                        request.user.profile.get_full_name(), amount),
+                log_user_event(request.user, "Attempting to charge {} for ${}.".format(
+                    request.user.profile.get_full_name(), amount),
                     "stripe")
                 charge = stripe.Charge.create(
                     amount=amount * 100,  # convert to cents,
@@ -77,10 +75,9 @@ def add_spacebucks(request, amount=None):
                     transaction.transaction_type = "stripe"
                     transaction.logging_info = charge
                     transaction.save()
-                    log_user_event(request.user,
-                                   "Successfully charged {} for ${}.".format(
-                                       request.user.profile.get_full_name(), amount),
-                                   "stripe")
+                    log_user_event(request.user, "Successfully charged {} for ${}.".format(
+                                    request.user.profile.get_full_name(), amount),
+                                    "stripe")
                     subject = "You just added Spacebucks to your HSBNE account."
                     request.user.email_notification(subject, subject, subject, "We just charged you card for ${} and "
                                                                                "added this to your spacebucks balance."
@@ -98,9 +95,7 @@ def add_spacebucks(request, amount=None):
                                                                                "let us know immediately.")
                     return JsonResponse({"success": False})
             else:
-                log_user_event(
-                    request.user,
-                    "Tried to add invalid amount {} to spacebucks via stripe.".format(amount),
+                log_user_event(request.user, "Tried to add invalid amount {} to spacebucks via stripe.".format(amount),
                     "stripe")
 
         return render(request, 'add_spacebucks.html',
@@ -195,7 +190,7 @@ def add_spacebucks_payment_info(request):
                           {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
                            "message": "Unkown error (unrelated to stripe)."})
 
-        log_user_event(request.user, "Successfully save payment details.", "stripe")
+        log_user_event(request.user, "Successfully saved payment details.", "stripe")
         return render(request, 'add_spacebucks.html',
                       {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": True,
                        "message": "Your payment details were successfully saved."})
@@ -273,8 +268,8 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
             profile.last_spacebucks_purchase = timezone.now()
             profile.save()
 
-            subject = "You just made a ${} Spacebucks purchase.".format(transaction.amount)
-            message = subject + " Description: {} If this wasn't you, or you believe there has been an error, please " \
+            subject = "You just made a ${} Spacebucks purchase.".format(amount)
+            message = "Description of purchase: {} If this wasn't you, or you believe there has been an error, please "\
                                 "reply to this email.".format(transaction.description)
             User.objects.get(profile=profile).email_notification(subject, subject, subject, message)
 
@@ -290,7 +285,7 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
     log_user_event(profile.user, "Not enough funds to debit ${} from spacebucks account.".format(amount),
         "spacebucks")
     subject = "Failed to make a ${} Spacebucks purchase.".format(amount)
-    request.user.email_notification(subject, subject, subject,
+    User.objects.get(profile=profile).email_notification(subject, subject, subject,
                                     "We just tried to debit ${} from your Spacebucks balance but were not successful." \
                                     "You currently have ${}. If this wasn't you, please let us know " \
                                     "immediately.".format(amount, profile.spacebucks_balance)
