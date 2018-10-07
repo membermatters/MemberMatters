@@ -242,7 +242,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def reset_password(self):
         log_user_event(self, "Password reset requested", "profile")
         self.password_reset_key = uuid.uuid4()
-        self.password_reset_expire = timezone.now() + timedelta(hours=24)
+        self.password_reset_expire = timezone.now() + timedelta(days=7)
         self.save()
         self.email_password_reset("https://portal.hsbne.org" + reverse('reset_password', kwargs={'reset_token': self.password_reset_key}))
 

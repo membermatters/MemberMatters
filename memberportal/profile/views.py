@@ -136,8 +136,7 @@ def reset_password(request, reset_token=None):
             user = User.objects.get(password_reset_key=reset_token)
 
         except ObjectDoesNotExist:
-            return render(request, 'reset_password_form.html',
-                          {"error": "Invalid link."})
+            return render(request, 'reset_password_form.html', {"error": "Invalid link."})
 
         if request.method == "POST":
             form = ResetPasswordForm(request.POST)
