@@ -25,7 +25,7 @@ SECRET_KEY = 'l)#t68rzepzp)0l#x=9mntciapun$whl+$j&=_@nl^zl1xm3j*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["members.hsbne.org", "localhost", "127.0.0.1", "*"]
+ALLOWED_HOSTS = ["portal.hsbne.org", "porthack.hsbne.org", "localhost", "127.0.0.1"]
 
 
 # Application definition
