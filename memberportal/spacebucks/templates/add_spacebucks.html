@@ -43,14 +43,23 @@
 
                     <div class="row">
                         <div class="col s4">
-                            <button class="btn waves-effect waves-light add-spacebucks" type="submit" data-url="{% url 'add_spacebucks' amount=10 %}" name="action">$10</button>
+                            <button class="btn waves-effect waves-light add-spacebucks" type="submit"
+                                    data-url="{% url 'add_spacebucks' amount=10 %}" name="action">$10
+                            </button>
                         </div>
                         <div class="col s4">
-                            <button class="btn waves-effect waves-light add-spacebucks" type="submit" data-url="{% url 'add_spacebucks' amount=20 %}" name="action">$20</button>
+                            <button class="btn waves-effect waves-light add-spacebucks" type="submit"
+                                    data-url="{% url 'add_spacebucks' amount=20 %}" name="action">$20
+                            </button>
                         </div>
                         <div class="col s4">
-                            <button class="btn waves-effect waves-light add-spacebucks" type="submit" data-url="{% url 'add_spacebucks' amount=30 %}" name="action">$30</button>
+                            <button class="btn waves-effect waves-light add-spacebucks" type="submit"
+                                    data-url="{% url 'add_spacebucks' amount=30 %}" name="action">$30
+                            </button>
                         </div>
+                    </div>
+                    <div id="spacebucks-progress-bar">
+                        <div class="indeterminate"></div>
                     </div>
                 </div>
             </div>

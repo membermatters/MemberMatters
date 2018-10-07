@@ -465,14 +465,16 @@ function addSpacebucks(url) {
 }
 
 function chargeCardForSpacebucks() {
+    document.getElementById("spacebucks-progress-bar").classList.add("progress");
+
     $.ajax({
-        url: this.getAttribute("data-url"),
+        url: "", //this.getAttribute("data-url"),
         type: 'get',
         dataType: 'json',
         success: function (response) {
             if (response.success) {
                 M.toast({html: "Successfuly charged your card."});
-                setTimeout(() => {location.reload();}, 3000)
+                setTimeout(() => {location = "/profile/spacebucks/manage/";}, 2000)
             }
             else {
                 M.toast({html: "Failed to charge your card :("});
