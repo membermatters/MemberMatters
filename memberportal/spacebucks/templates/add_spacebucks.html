@@ -62,7 +62,7 @@
             <form action="{% url 'add_spacebucks_payment_info' %}" method="POST">
                 <script
                         src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-                        data-key="pk_test_RMZy6yDuPpdxa0pCQsBkwbJC"
+                        data-key="{{ STRIPE_PUBLIC_KEY }}"
                         data-name="HSBNE Member Portal"
                         data-description="Link a card to your HSBNE account."
                         data-image="{% static '/img/logo.png' %}"

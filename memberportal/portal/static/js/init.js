@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Add spacebucks buttons
     let spacebucksButtons = document.getElementsByClassName("add-spacebucks");
     for (var i = 0; i < spacebucksButtons.length; i++) {
-        spacebucksButtons[i].addEventListener('click', addSpacebucks);
+        spacebucksButtons[i].addEventListener('click', chargeCardForSpacebucks);
     }
 });
 
@@ -464,3 +464,22 @@ function addSpacebucks(url) {
     });
 }
 
+function chargeCardForSpacebucks() {
+    $.ajax({
+        url: this.getAttribute("data-url"),
+        type: 'get',
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                M.toast({html: "Successfuly charged your card."});
+                setTimeout(() => {location.reload();}, 3000)
+            }
+            else {
+                M.toast({html: "Failed to charge your card :("});
+            }
+        },
+        error: function () {
+            M.toast({html: "Unknown error while trying to charge your card :( "});
+        }
+    });
+}
