@@ -171,6 +171,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.__send_email(subject, email_string):
             return True
 
+    def email_password_reset(self, link):
+        email_vars = {"link": link}
+        email_string = render_to_string('email_password_reset.html', {'email': email_vars})
+
+        if self.__send_email("Claim your HSBNE account", email_string):
+            return True
+
     def email_link(self, subject, title, preheader, message, link, btn_text):
         email_vars = {"preheader": preheader,
                       "title": title,
@@ -237,17 +244,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.password_reset_key = uuid.uuid4()
         self.password_reset_expire = timezone.now() + timedelta(hours=24)
         self.save()
-        self.email_link(
-            "Password reset request for your HSBNE account",
-            "HSBNE Password Reset",
-            "Password reset request for your HSBNE account",
-            "Someone has issued a password reset for your HSBNE account. "
-            "The link below will expire in 24 hours. If this wasn't you, "
-            "just ignore this email and nothing will happen.",
-            "https://portal.hsbne.org" + reverse(
-                'reset_password',
-                kwargs={'reset_token': self.password_reset_key}),
-            "Reset Password")
+        self.email_password_reset("https://portal.hsbne.org" + reverse('reset_password', kwargs={'reset_token': self.password_reset_key}))
 
         return True
 

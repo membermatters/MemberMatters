@@ -136,8 +136,8 @@ def add_spacebucks_payment_info(request):
                     request.user.profile.get_full_name()), "stripe")
 
             subject = "You just added a payment card to your HSBNE account."
-            request.user.email_notification(subject, subject, subject, "Don't worry, your card details are stored safe"
-                                                                       "with Stripe and are not on our servers. You"
+            request.user.email_notification(subject, subject, subject, "Don't worry, your card details are stored safe "
+                                                                       "with Stripe and are not on our servers. You "
                                                                        "can remove this card at any time via the "
                                                                        "HSBNE portal.")
 
@@ -269,7 +269,7 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
             profile.save()
 
             subject = "You just made a ${} Spacebucks purchase.".format(amount)
-            message = "Description of purchase: {} If this wasn't you, or you believe there has been an error, please "\
+            message = "Description of purchase: {}. If this wasn't you, or you believe there has been an error, please "\
                                 "reply to this email.".format(transaction.description)
             User.objects.get(profile=profile).email_notification(subject, subject, subject, message)
 
@@ -286,7 +286,7 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
         "spacebucks")
     subject = "Failed to make a ${} Spacebucks purchase.".format(amount)
     User.objects.get(profile=profile).email_notification(subject, subject, subject,
-                                    "We just tried to debit ${} from your Spacebucks balance but were not successful." \
+                                    "We just tried to debit ${} from your Spacebucks balance but were not successful. "\
                                     "You currently have ${}. If this wasn't you, please let us know " \
                                     "immediately.".format(amount, profile.spacebucks_balance)
                                     )

@@ -157,7 +157,7 @@ def reset_password(request, reset_token=None):
                     return render(
                         request, 'reset_password_form.html',
                         {'form': ResetPasswordForm(),
-                         "message": "Password changed successfully."})
+                         "message": "Password changed successfully. Please use the login link in the menu."})
 
                 else:
                     return render(
