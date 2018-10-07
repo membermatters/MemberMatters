@@ -638,11 +638,29 @@ def end_interlock_session(request, session_id):
 @api_auth
 def reset_default_door_access(request):
     users = User.objects.all()
+    doors = Doors.objects.filter(all_members=True)
+
     try:
         for user in users:
-            for door in Doors.objects.filter(all_members=True):
+            for door in doors:
                 user.profile.doors.add(door)
 
         return JsonResponse({"success": True})
+    
+    except:
+        return JsonResponse({"success": False, "message": "Failed to reset access permissions for unknown reason."})
+
+@api_auth
+def reset_default_interlock_access(request):
+    users = User.objects.all()
+    interlocks = Interlock.objects.filter(all_members=True)
+
+    try:
+        for user in users:
+            for interlock in interlocks:
+                user.profile.interlocks.add(interlock)
+
+        return JsonResponse({"success": True})
+
     except:
         return JsonResponse({"success": False, "message": "Failed to reset access permissions for unknown reason."})

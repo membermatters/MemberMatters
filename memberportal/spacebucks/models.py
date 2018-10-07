@@ -22,7 +22,6 @@ class SpaceBucks(models.Model):
 
     def save(self, *args, **kwargs):
         super(SpaceBucks, self).save(*args, **kwargs)
-        balance = SpaceBucks.objects.filter(
-            user=self.user).aggregate(Sum('amount'))['amount__sum']
+        balance = SpaceBucks.objects.filter(user=self.user).aggregate(Sum('amount'))['amount__sum']
         self.user.profile.spacebucks_balance = balance
         self.user.profile.save()
