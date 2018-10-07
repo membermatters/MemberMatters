@@ -8,7 +8,7 @@ from django.utils import timezone
 from memberportal.decorators import no_noobs, api_auth
 from memberportal.helpers import log_user_event
 from .models import SpaceBucks
-from profile.models import Profile
+from profile.models import Profile, User
 import urllib
 import stripe
 import json
@@ -42,7 +42,6 @@ def add_spacebucks_page(request):
 
 
 @login_required
-@csrf_exempt
 @no_noobs
 def add_spacebucks(request, amount=None):
     if request.method == "GET":
@@ -82,13 +81,21 @@ def add_spacebucks(request, amount=None):
                                    "Successfully charged {} for ${}.".format(
                                        request.user.profile.get_full_name(), amount),
                                    "stripe")
+                    subject = "You just added Spacebucks to your HSBNE account."
+                    request.user.email_notification(subject, subject, subject, "We just charged you card for ${} and "
+                                                                               "added this to your spacebucks balance."
+                                                                               "If this wasn't you, please let us know "
+                                                                               "immediately.".format(transaction.amount))
 
                     return JsonResponse({"success": True})
                 else:
-                    log_user_event(
-                        request.user,
-                        "Problem charging {}.".format(request.user.profile.get_full_name()),
+                    log_user_event(request.user, "Problem charging {}.".format(request.user.profile.get_full_name()),
                         "stripe")
+                    subject = "Failed to add Spacebucks to your HSBNE account."
+                    request.user.email_notification(subject, subject, subject, "We just tried to charge your card for"
+                                                                               "${} for spacebucks but were not "
+                                                                               "successful. If this wasn't you, please "
+                                                                               "let us know immediately.")
                     return JsonResponse({"success": False})
             else:
                 log_user_event(
@@ -132,6 +139,12 @@ def add_spacebucks_payment_info(request):
             log_user_event(
                 request.user, "Created stripe customer.".format(
                     request.user.profile.get_full_name()), "stripe")
+
+            subject = "You just added a payment card to your HSBNE account."
+            request.user.email_notification(subject, subject, subject, "Don't worry, your card details are stored safe"
+                                                                       "with Stripe and are not on our servers. You"
+                                                                       "can remove this card at any time via the "
+                                                                       "HSBNE portal.")
 
         except stripe.error.CardError as e:
             # Since it's a decline, stripe.error.CardError will be caught
@@ -209,6 +222,9 @@ def delete_spacebucks_payment_info(request):
     profile.stripe_card_expiry = ""
     profile.save()
 
+    subject = "You just removed a saved card from your HSBNE account."
+    request.user.email_notification(subject, subject, subject, "If this wasn't you, please let us know immediately.")
+
     return render(
         request, 'add_spacebucks.html',
         {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": True,
@@ -235,7 +251,7 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
 
     elif request.method == "POST":
         details = json.loads(request.body)
-        amount = abs(details['amount'] / 100)
+        amount = abs(details['amount'] / 100)  # the abs() stops us accidentally crediting an account if it's negative
         description = details['description']
         profile = Profile.objects.get(rfid=details['rfid_code'])
 
@@ -248,7 +264,7 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
 
         if time_dif > 5:
             transaction = SpaceBucks()
-            transaction.amount = amount * -1.0  # abs() handles if we're given a negative number
+            transaction.amount = amount * -1.0
             transaction.user = profile.user
             transaction.description = urllib.unquote(description).decode('utf8')
             transaction.transaction_type = "card"
@@ -256,6 +272,11 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
 
             profile.last_spacebucks_purchase = timezone.now()
             profile.save()
+
+            subject = "You just made a ${} Spacebucks purchase.".format(transaction.amount)
+            message = subject + " Description: {} If this wasn't you, or you believe there has been an error, please " \
+                                "reply to this email.".format(transaction.description)
+            User.objects.get(profile=profile).email_notification(subject, subject, subject, message)
 
             log_user_event(profile.user, "Successfully debited ${} from spacebucks account.".format(amount), "spacebucks")
 
@@ -266,10 +287,13 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
                                  "message": "Whoa! Not so fast!!"})
 
     # not enough $$
-    log_user_event(
-        profile.user,
-        "Not enough funds to debit ${} from spacebucks account.".format(amount),
+    log_user_event(profile.user, "Not enough funds to debit ${} from spacebucks account.".format(amount),
         "spacebucks")
-    return JsonResponse(
-        {"success": False,
-         "balance": round(profile.spacebucks_balance, 2)})
+    subject = "Failed to make a ${} Spacebucks purchase.".format(amount)
+    request.user.email_notification(subject, subject, subject,
+                                    "We just tried to debit ${} from your Spacebucks balance but were not successful." \
+                                    "You currently have ${}. If this wasn't you, please let us know " \
+                                    "immediately.".format(amount, profile.spacebucks_balance)
+                                    )
+
+    return JsonResponse({"success": False, "balance": round(profile.spacebucks_balance, 2)})
