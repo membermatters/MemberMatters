@@ -134,12 +134,9 @@ body > div.fullwidth-container > div.modal-overlay {
         text-align: left;
     }
 
-    #activate-member-button, #deactivate-member-button {
-        margin-bottom: 5px;
-    }
-
-    #activate-member-button, #deactivate-member-button, #resend-welcome-button {
+    #activate-member-button, #deactivate-member-button, #resend-welcome-button, #resend-to-xero-button {
         width: 100%;
+        margin-bottom: 5px;
     }
 
     .modal {
@@ -221,4 +218,9 @@ body > div.fullwidth-container > div.modal-overlay {
     .container {
         width: 90%;
     }
+}
+
+#addAmountInput {
+    display: inline-block;
+    width: auto;
 }

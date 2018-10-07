@@ -11,6 +11,7 @@ from memberportal.decorators import no_noobs, admin_required, api_auth
 from memberportal.helpers import log_user_event
 from .models import Profile, User, MemberTypes
 from access.models import Doors, Interlock, DoorLog, InterlockLog
+from spacebucks.models import SpaceBucks
 from .forms import SignUpForm, AddProfileForm, ThemeForm, EditProfileForm
 from .forms import EditUserForm, ResetPasswordForm, ResetPasswordRequestForm
 from .forms import AdminEditProfileForm, AdminEditUserForm
@@ -239,6 +240,49 @@ def access_permissions(request):
     return render(
         request, 'access_permissions.html',
         {"doors": doors, "interlocks": interlocks, "member_id": request.user.id})
+
+
+@login_required
+@admin_required
+def admin_spacebucks_transactions(request, member_id):
+    user = User.objects.get(pk=member_id)
+    transactions = SpaceBucks.objects.filter(user_id=member_id)
+    context = {
+        "transactions": transactions,
+        "balance": user.profile.spacebucks_balance,
+        "member": user
+    }
+    rendered = render_to_string('partial_admin_member_spacebucks.html', context)
+
+    return JsonResponse({"body": rendered})
+
+
+@login_required
+@admin_required
+def admin_add_spacebucks(request, member_id, amount):
+    if request.method == 'GET':
+        user = User.objects.get(pk=member_id)
+
+        # Convert from cents
+        amount = round(amount/100, 2)
+
+        if amount > 50:
+            return HttpResponseBadRequest("Invalid amount.")
+
+        transaction = SpaceBucks()
+        transaction.amount = amount
+        transaction.user = user
+        transaction.description = "Manually added by administrator."
+        transaction.transaction_type = "bank"
+        transaction.logging_info = ""
+        transaction.save()
+        log_user_event(request.user, "Manually added ${} to {}.".format(amount, user.profile.get_full_name()), "spacebucks")
+        log_user_event(user, "{} manually added ${} to {}.".format(request.user.profile.get_full_name(), amount, user.profile.get_full_name()), "stripe")
+
+        return JsonResponse({"success": True})
+
+    else:
+        return HttpResponseBadRequest("Invalid request method.")
 
 
 @login_required

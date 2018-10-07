@@ -46,6 +46,7 @@
                            data-resend_welcome_url="{% url 'resend_welcome_email' member_id=member.id %}"
                            data-get_logs_url="{% url 'admin_member_logs' member_id=member.id %}"
                            data-add_to_xero_url="{% url 'add_to_xero' member_id=member.id %}"
+                           data-get_spacebucks_url="{% url 'admin_spacebucks_transactions' member_id=member.id %}"
                            class="waves-effect waves-light btn" href="#">Actions</a>
                     </td>
                 </tr>
@@ -76,6 +77,7 @@
                 <ul class="tabs">
                     <li class="tab col s3"><a href="#edit-profile" class="active">Profile</a></li>
                     <li class="tab col s3"><a href="#manage-access">Access</a></li>
+                    <li class="tab col s3"><a href="#spacebucks">Spacebucks</a></li>
                     <li class="tab col s3"><a href="#access-history">Log</a></li>
                 </ul>
             </div>
@@ -86,6 +88,10 @@
 
             <div id="manage-access" class="col s12">
                 <div id="admin-edit-member-access"></div>
+            </div>
+
+            <div id="spacebucks" class="col s12">
+                <div id="admin-edit-member-spacebucks"></div>
             </div>
 
             <div id="access-history" class="col s12">
