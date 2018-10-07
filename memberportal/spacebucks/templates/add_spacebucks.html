@@ -57,7 +57,8 @@
 
         {% else %}
             <p>We currently have no card details on record. Please add one below. The process of adding a card
-                <b>will not charge it</b>.</p>
+                <b>will not charge it</b>. Funds added to spacebucks are not refundable and can only be
+                used on HSBNE vending machines.</p>
             <form action="{% url 'add_spacebucks_payment_info' %}" method="POST">
                 <script
                         src="https://checkout.stripe.com/checkout.js" class="stripe-button"

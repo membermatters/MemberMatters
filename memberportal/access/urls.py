@@ -34,5 +34,6 @@ urlpatterns = [
     path('api/interlock/checkin/', views.interlock_checkin, name='interlock_checkin'),
     path('api/interlock/authorised/', views.authorised_interlock_tags, name='authorised_interlock_tags'),
     path('api/interlock/<int:interlock_id>/authorised/', views.authorised_interlock_tags, name='authorised_interlock_tags'),
+    path('api/interlock/reset-default-access', views.reset_default_interlock_access, name='reset_default_interlock_access'),
     path('cron/interlock/', views.interlock_cron, name='interlock_cron'),
 ]
