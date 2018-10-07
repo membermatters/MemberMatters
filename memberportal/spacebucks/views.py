@@ -266,7 +266,7 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
             transaction = SpaceBucks()
             transaction.amount = amount * -1.0
             transaction.user = profile.user
-            transaction.description = urllib.unquote(description).decode('utf8')
+            transaction.description = urllib.parse.unquote(description)
             transaction.transaction_type = "card"
             transaction.save()
 
