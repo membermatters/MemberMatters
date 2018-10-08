@@ -1,4 +1,5 @@
 from django.db import models
+import math
 
 
 class Causes(models.Model):
@@ -9,7 +10,7 @@ class Causes(models.Model):
         return str(self.profile_set.filter(state="active").count())
 
     def get_quorum(self):
-        quorum = self.profile_set.filter(state="active").count() * 0.4
+        quorum = math.ceil(self.profile_set.filter(state="active").count() * 0.4)
         if quorum < 3:
             quorum = 3
         return str(quorum)
