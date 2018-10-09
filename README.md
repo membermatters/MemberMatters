@@ -46,8 +46,8 @@ The HSBNE member portal is how HSBNE members manage their membership.
  * Edit member swipe in theme
  
  ### Getting Started
- See the [GETTING_STARTED.md](https://github.com/HSBNE/hsbneportal/blob/master/GETTING_STARTED.md) file in this repo
- for instructions on how to setup your developmen environment and run the portal software.
+ See the [GETTING_STARTED.md](/GETTING_STARTED.md) file in this repo
+ for instructions on how to setup your development environment and run the portal software.
  
  ### Contributing Guidelines
 If you're able to write python (django) or JavaScript please contribute. It's a lot of work to write something like 
