@@ -1,0 +1,6 @@
+django==2.0
+requests
+stripe
+sendgrid
+pyxero
+humanize
