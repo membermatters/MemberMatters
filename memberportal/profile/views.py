@@ -388,15 +388,21 @@ def set_state(request, member_id, state):
 
     if state == 'active':
         if user.profile.state == "noob":
-            # give default access
+            # give default door access
             for door in Doors.objects.filter(all_members=True):
                 user.profile.doors.add(door)
+
+            # give default interlock access
+            for interlock in Interlock.objects.filter(all_members=True):
+                user.profile.interlocks.add(interlock)
+
             email = user.email_welcome()
             xero = user.profile.add_to_xero()
             invoice = True  # user.profile.create_membership_invoice() # Don't create them an invoice for now
-            activate = user.profile.activate()
+            user.profile.state = "inactive"  # and admin should them active when they pay their invoice
+            # activate = user.profile.activate() # uncomment this to activate users when they're made a member
 
-            if "Error" not in xero and "Error" not in invoice and email and activate:
+            if "Error" not in xero and "Error" not in invoice and email:
                 return JsonResponse(
                     {"success": True,
                      "response": "Successfully made into member - invites sent"
