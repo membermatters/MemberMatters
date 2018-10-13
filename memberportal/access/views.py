@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from memberportal.helpers import log_user_event
 from memberportal.decorators import no_noobs, admin_required, api_auth
+from background_task import background
 from profile.models import User
 from .forms import *
 from .models import *
@@ -17,6 +18,7 @@ import os
 from datetime import timedelta
 from django.utils import timezone
 import humanize
+import hashlib
 
 utc = pytz.UTC
 
@@ -118,6 +120,7 @@ def request_access(request, door_id):
     return JsonResponse({"success": False, "reason": "Not implemented yet."})
 
 
+@background(schedule=1)
 def post_door_swipe_to_discord(name, door, successful):
     if "DISCORD_DOOR_WEBHOOK" in os.environ:
         url = os.environ.get('DISCORD_DOOR_WEBHOOK')
@@ -148,6 +151,7 @@ def post_door_swipe_to_discord(name, door, successful):
     return False
 
 
+@background(schedule=1)
 def post_interlock_swipe_to_discord(name, interlock, type, time=None):
     if "DISCORD_INTERLOCK_WEBHOOK" in os.environ:
         url = os.environ.get('DISCORD_INTERLOCK_WEBHOOK')
@@ -516,7 +520,16 @@ def interlock_checkin(request, interlock_id=None):
         try:
             interlock = Interlock.objects.get(pk=interlock_id)
             interlock.checkin()
-            return JsonResponse({"success": True, "timestamp": round(time.time())})
+            authorised_tags = list()
+
+            for profile in Profile.objects.all():
+                if interlock in profile.interlocks.all() and profile.state == "active":
+                    authorised_tags.append(profile.rfid)
+
+            print(authorised_tags)
+            authorised_tags = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
+
+            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for non existant interlock.", "error", request)
@@ -528,7 +541,17 @@ def interlock_checkin(request, interlock_id=None):
             interlock_ip = request.META.get('REMOTE_ADDR')
             interlock = Interlock.objects.get(ip_address=interlock_ip)
             interlock.checkin()
-            return JsonResponse({"success": True, "timestamp": round(time.time())})
+
+            authorised_tags = list()
+
+            for profile in Profile.objects.all():
+                if interlock in profile.interlocks.all() and profile.state == "active":
+                    authorised_tags.append(profile.rfid)
+
+            print(authorised_tags)
+            authorised_tags = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
+
+            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for {} interlock but none found.".format(interlock_ip), "error", request)
@@ -544,7 +567,16 @@ def door_checkin(request, door_id=None):
         try:
             door = Doors.objects.get(pk=door_id)
             door.checkin()
-            return JsonResponse({"success": True, "timestamp": round(time.time())})
+            authorised_tags = list()
+
+            for profile in Profile.objects.all():
+                if door in profile.doors.all() and profile.state == "active":
+                    authorised_tags.append(profile.rfid)
+
+            print(authorised_tags)
+            authorised_tags = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
+
+            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for non existant door.", "error", request)
@@ -556,7 +588,17 @@ def door_checkin(request, door_id=None):
             door_ip = request.META.get('REMOTE_ADDR')
             door = Doors.objects.get(ip_address=door_ip)
             door.checkin()
-            return JsonResponse({"success": True, "timestamp": round(time.time())})
+
+            authorised_tags = list()
+
+            for profile in Profile.objects.all():
+                if door in profile.doors.all() and profile.state == "active":
+                    authorised_tags.append(profile.rfid)
+
+            print(authorised_tags)
+            authorised_tags = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
+
+            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for {} door but none found.".format(door_ip), "error", request)

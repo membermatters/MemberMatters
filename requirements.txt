@@ -5,3 +5,4 @@ sendgrid
 pyxero
 humanize
 uwsgi
+django-background-tasks

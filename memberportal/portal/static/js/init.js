@@ -22,11 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Modal init
     let modalElem = document.getElementById('member-actions-modal');
-    memberActionsModal = M.Modal.init(modalElem, {
-        'endingBottom': '5%', onCloseStart: () => {
-            location.reload();
-        }
-    });
+    memberActionsModal = M.Modal.init(modalElem, {'endingBottom': '5%'});
 
     // Tabs init
     M.Tabs.init(document.querySelectorAll('.tabs'));
