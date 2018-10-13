@@ -43,34 +43,45 @@ function initSelects() {
 }
 
 function resendWelcome() {
+    document.getElementById("btn-loader").classList.add("progress");
     $.ajax({
         url: resend_welcome_url,
         type: 'get',
         dataType: 'json',
         success: function (data) {
+            document.getElementById("btn-loader").classList.remove("progress");
+            console.log(data.response);
             M.toast({html: data.message});
         },
         error: function (data) {
+            document.getElementById("btn-loader").classList.remove("progress");
+            console.log(data.response);
             M.toast({html: data.message});
         }
     });
 }
 
 function addToXero() {
+    document.getElementById("btn-loader").classList.add("progress");
     $.ajax({
         url: add_to_xero_url,
         type: 'get',
         dataType: 'json',
         success: function (data) {
+            document.getElementById("btn-loader").classList.remove("progress");
+            console.log(data.response);
             M.toast({html: data.response});
         },
         error: function (data) {
+            document.getElementById("btn-loader").classList.remove("progress");
+            console.log(data.response);
             M.toast({html: data.response});
         }
     });
 }
 
 function setState(state) {
+    document.getElementById("btn-loader").classList.add("progress");
     let state_url;
 
     if (state) {
@@ -84,24 +95,18 @@ function setState(state) {
         type: 'get',
         dataType: 'json',
         success: function (data) {
+            document.getElementById("btn-loader").classList.remove("progress");
+            console.log(data.response);
+            M.toast({html: data.response});
             if (state) {
-                state_url = active_url;
-                document.getElementById("activate-member-button").classList.add("disabled");
-                document.getElementById("activate-member-button").classList.add("hidden");
-                document.getElementById("deactivate-member-button").classList.remove("disabled");
-                document.getElementById("deactivate-member-button").classList.remove("hidden");
-                if (document.getElementById("activate-member-button").innerText == "MAKE MEMBER") {
-                    M.toast({html: data.response});
-                } else {
-                    M.toast({html: data.response});
-                }
+                document.getElementById("activate-member-button").innerText = "Enable Access";
+                document.getElementById("resend-welcome-button").classList.remove("hidden");
+                document.getElementById("resend-to-xero-button").classList.remove("hidden");
             } else {
-                state_url = deactive_url;
                 document.getElementById("activate-member-button").classList.remove("disabled");
                 document.getElementById("activate-member-button").classList.remove("hidden");
                 document.getElementById("deactivate-member-button").classList.add("disabled");
                 document.getElementById("deactivate-member-button").classList.add("hidden");
-                M.toast({html: data.response});
             }
             // not very DRY... ideally should be modularised a bit more...
             $.ajax({
@@ -122,6 +127,8 @@ function setState(state) {
             });
         },
         error: function (data) {
+            document.getElementById("btn-loader").classList.remove("progress");
+            console.log(data.response);
             M.toast({html: "There was an error processing the request. :("});
         }
     });
@@ -244,17 +251,17 @@ function openMemberActionsModal(e) {
     document.getElementById("activate-member-button").innerText = "Enable Access";
     document.getElementById("resend-welcome-button").classList.remove("hidden");
     document.getElementById("resend-welcome-button").classList.remove("hidden");
-    if (member_state == "inactive") {
+    if (member_state === "inactive") {
         document.getElementById("activate-member-button").classList.remove("disabled");
         document.getElementById("activate-member-button").classList.remove("hidden");
         document.getElementById("deactivate-member-button").classList.add("disabled");
         document.getElementById("deactivate-member-button").classList.add("hidden");
-    } else if (member_state == "active") {
+    } else if (member_state === "active") {
         document.getElementById("activate-member-button").classList.add("disabled");
         document.getElementById("activate-member-button").classList.add("hidden");
         document.getElementById("deactivate-member-button").classList.remove("disabled");
         document.getElementById("deactivate-member-button").classList.remove("hidden");
-    } else if (member_state == "noob") {
+    } else if (member_state === "noob") {
         document.getElementById("activate-member-button").innerText = "Make Member";
         document.getElementById("activate-member-button").classList.remove("disabled");
         document.getElementById("activate-member-button").classList.remove("hidden");
@@ -474,7 +481,9 @@ function chargeCardForSpacebucks() {
         success: function (response) {
             if (response.success) {
                 M.toast({html: "Successfuly charged your card."});
-                setTimeout(() => {location = "/profile/spacebucks/manage/";}, 2000)
+                setTimeout(() => {
+                    location = "/profile/spacebucks/manage/";
+                }, 2000)
             }
             else {
                 M.toast({html: "Failed to charge your card :("});
