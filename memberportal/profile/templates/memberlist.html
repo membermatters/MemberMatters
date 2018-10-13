@@ -31,7 +31,7 @@
                     </td>
                     <td>{{ member.profile.get_state_display }}</td>
                     <td>
-                        <a data-url="{% url 'admin_edit_member' member_id=member.id %}"
+                        <a id="member-{{ member.id }}" data-url="{% url 'admin_edit_member' member_id=member.id %}"
                            data-access_url="{% url 'admin_edit_access' member_id=member.id %}"
                            onclick="openMemberActionsModal(this)"
                                 {% if not member.profile.xero_account_id %}

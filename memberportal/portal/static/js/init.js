@@ -22,7 +22,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Modal init
     let modalElem = document.getElementById('member-actions-modal');
-    memberActionsModal = M.Modal.init(modalElem, {'endingBottom': '5%', onCloseStart: () => {location.reload();}});
+    memberActionsModal = M.Modal.init(modalElem, {
+        'endingBottom': '5%', onCloseStart: () => {
+            location.reload();
+        }
+    });
 
     // Tabs init
     M.Tabs.init(document.querySelectorAll('.tabs'));
@@ -101,10 +105,15 @@ function setState(state) {
             document.getElementById("btn-loader").classList.remove("progress");
             console.log(data.response);
             M.toast({html: data.response});
+            document.getElementById("resend-welcome-button").classList.remove("hidden");
+            document.getElementById("resend-to-xero-button").classList.remove("hidden");
+
             if (state) {
-                document.getElementById("activate-member-button").innerText = "Enable Access";
-                document.getElementById("resend-welcome-button").classList.remove("hidden");
-                document.getElementById("resend-to-xero-button").classList.remove("hidden");
+                // document.getElementById("activate-member-button").innerText = "Enable Access";
+                document.getElementById("activate-member-button").classList.add("hidden");
+                document.getElementById("activate-member-button").classList.add("disabled");
+                document.getElementById("deactivate-member-button").classList.remove("disabled");
+                document.getElementById("deactivate-member-button").classList.remove("hidden");
             } else {
                 document.getElementById("activate-member-button").classList.remove("disabled");
                 document.getElementById("activate-member-button").classList.remove("hidden");
@@ -257,8 +266,8 @@ function openMemberActionsModal(e) {
 
     activeButton.innerText = "Enable Access";
     activeButton.setAttribute("data-tooltip", "Enable Site Access");
-    resendWelcomeButton .classList.remove("hidden");
-    resendWelcomeButton .classList.remove("hidden");
+    resendWelcomeButton.classList.remove("hidden");
+    resendWelcomeButton.classList.remove("hidden");
     if (member_state === "inactive") {
         activeButton.classList.remove("disabled");
         activeButton.classList.remove("hidden");
@@ -276,7 +285,7 @@ function openMemberActionsModal(e) {
         activeButton.classList.remove("hidden");
         deactiveButton.classList.add("disabled");
         deactiveButton.classList.add("hidden");
-        resendWelcomeButton .classList.add("hidden");
+        resendWelcomeButton.classList.add("hidden");
         document.getElementById("resend-to-xero-button").classList.add("hidden");
     }
 
