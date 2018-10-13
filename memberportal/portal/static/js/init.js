@@ -301,7 +301,7 @@ $("#member-actions-modal").on("submit", ".member-edit-form", function () {
         type: form.attr("method"),
         dataType: 'json',
         success: function (data) {
-            if (data.form_is_valid) {
+            if (data.form_is_valid === true) {
                 M.toast({html: "Saved successfully :D"});
                 let elem = document.getElementById("admin-edit-member-profile");
                 elem.innerHTML = data.html_form;
@@ -310,7 +310,7 @@ $("#member-actions-modal").on("submit", ".member-edit-form", function () {
                 }, 0);
             }
             else {
-                M.toast({html: "There was an error saving the data. :("});
+                M.toast({html: "Error saving data. Probably duplicate RFID or email."});
                 let elem = document.getElementById("admin-edit-member-profile");
                 elem.innerHTML = data.html_form;
                 setTimeout(function () {
@@ -319,7 +319,7 @@ $("#member-actions-modal").on("submit", ".member-edit-form", function () {
             }
         },
         error: function () {
-            M.toast({html: "unknown error 3 :( "});
+            M.toast({html: "Unknown server error 3 :( "});
         }
     });
     return false;
