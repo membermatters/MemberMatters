@@ -43,43 +43,6 @@ def home(request):
     return render(request, 'home.html')
 
 
-@login_required
-def spacebug(request):
-    form_class = SpacebugForm
-    # if this is a submission, handle it and render a thankyou.
-    if request.method == 'POST':
-        form = form_class(data=request.POST)
-        if form.is_valid():
-            if "TRELLO_API_KEY" in os.environ and "TRELLO_API_TOKEN" in os.environ:
-                issue = request.POST.get('issue', '')
-                details = request.POST.get('details', '')
-                url = "https://api.trello.com/1/cards"
-                trelloKey = os.environ.get('TRELLO_API_KEY')
-                trelloToken = os.environ.get('TRELLO_API_TOKEN')
-
-                querystring = {"name": issue, "desc": details, "pos": "top", "idList": "5529dd886d658fdace75c830",
-                               "keepFromSource": "all", "key": trelloKey, "token": trelloToken}
-
-                response = requests.request("POST", url, params=querystring)
-
-                if response.status_code == 200:
-                    log_user_event(request.user, "Submitted issue: " + issue + " Content: " + details, "generic")
-                    messages.success(request, 'Issue submitted successfully. Thanks.')
-                    return redirect(reverse('report_spacebug'))
-
-            else:
-                return HttpResponseBadRequest("No trello API details found in environment.")
-
-        log_user_event(request.user, "Issue Submit Failed:: " + issue + " content: " + details, "error")
-        messages.error(request, 'Issue failed to submit, sorry.')
-        return redirect(reverse('report_spacebug'))
-
-    # render template normally
-    return render(request, 'spacebug.html', {
-        'form': form_class,
-    })
-
-
 def webcams(request):
     return render(request, 'webcams.html')
 
