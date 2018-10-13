@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
+from django.db.utils import IntegrityError
 from django.urls import reverse
 from memberportal.decorators import no_noobs, admin_required, api_auth
 from memberportal.helpers import log_user_event
@@ -298,9 +299,7 @@ def admin_edit_member(request, member_id):
 
     profile_form = AdminEditProfileForm(instance=profile)
     user_form = AdminEditUserForm(instance=profile.user)
-
-    # if it's not valid don't save or log it
-    data['form_is_valid'] = False
+    form_valid = False
 
     if request.method == 'POST':
         # if it's a form submission pass it to the form
@@ -309,12 +308,17 @@ def admin_edit_member(request, member_id):
 
         if profile_form.is_valid() and user_form.is_valid():
             # if it's a valid form submission then save and log it
-            profile_form.save()
-            user_form.save()
-            data['form_is_valid'] = True
-            log_user_event(profile.user, request.user.profile.get_full_name() + " edited user profile.", "profile")
+            try:
+                profile_form.save()
+                user_form.save()
+                form_valid = True
+                log_user_event(profile.user, request.user.profile.get_full_name() + " edited user profile.", "profile")
+
+            except IntegrityError:
+                form_valid = False
 
     # render the form and return it
+    data["form_is_valid"] = form_valid
     data['html_form'] = render_to_string(
         'partial_admin_edit_member.html',
         {'profile_form': profile_form, 'user_form': user_form,
