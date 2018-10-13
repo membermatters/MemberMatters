@@ -244,23 +244,13 @@ def check_door_access(request, rfid_code, door_id=None):
 
 
 @login_required
-def unlock_door(request, door_id):
+def bump_door(request, door_id):
     door = Doors.objects.get(pk=door_id)
     if door in request.user.profile.doors.all():
-        log_user_event(request.user, "Unlocked {} door via API.".format(door.name), "door")
-        return JsonResponse({"success": door.unlock()})
+        log_user_event(request.user, "Bumped {} door via API.".format(door.name), "door")
+        return JsonResponse({"success": door.bump()})
 
-    return HttpResponseForbidden("You are not authorised to access that door.")
-
-
-@login_required
-def lock_door(request, door_id):
-    door = Doors.objects.get(pk=door_id)
-    if door in request.user.profile.doors.all():
-        log_user_event(request.user, "Locked {} door via API.".format(door.name), "door")
-        return JsonResponse({"access": door.lock()})
-
-    return HttpResponseForbidden("You are not authorised to access that door.")
+    return JsonResponse({"success": False, "message": "You are not authorised to access that door."})
 
 
 @api_auth

@@ -30,6 +30,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Collapsible init
     M.Collapsible.init(document.querySelectorAll('.collapsible'), {});
 
+    // Tooltips init
+    M.Tooltip.init(document.querySelectorAll('.tooltipped'), {});
+
     // Add spacebucks buttons
     let spacebucksButtons = document.getElementsByClassName("add-spacebucks");
     for (var i = 0; i < spacebucksButtons.length; i++) {
@@ -248,26 +251,32 @@ function openMemberActionsModal(e) {
         }
     });
 
-    document.getElementById("activate-member-button").innerText = "Enable Access";
-    document.getElementById("resend-welcome-button").classList.remove("hidden");
-    document.getElementById("resend-welcome-button").classList.remove("hidden");
+    let activeButton = document.getElementById("activate-member-button");
+    let deactiveButton = document.getElementById("deactivate-member-button");
+    let resendWelcomeButton = document.getElementById("resend-welcome-button");
+
+    activeButton.innerText = "Enable Access";
+    activeButton.setAttribute("data-tooltip", "Enable Site Access");
+    resendWelcomeButton .classList.remove("hidden");
+    resendWelcomeButton .classList.remove("hidden");
     if (member_state === "inactive") {
-        document.getElementById("activate-member-button").classList.remove("disabled");
-        document.getElementById("activate-member-button").classList.remove("hidden");
-        document.getElementById("deactivate-member-button").classList.add("disabled");
-        document.getElementById("deactivate-member-button").classList.add("hidden");
+        activeButton.classList.remove("disabled");
+        activeButton.classList.remove("hidden");
+        deactiveButton.classList.add("disabled");
+        deactiveButton.classList.add("hidden");
     } else if (member_state === "active") {
-        document.getElementById("activate-member-button").classList.add("disabled");
-        document.getElementById("activate-member-button").classList.add("hidden");
-        document.getElementById("deactivate-member-button").classList.remove("disabled");
-        document.getElementById("deactivate-member-button").classList.remove("hidden");
+        activeButton.classList.add("disabled");
+        activeButton.classList.add("hidden");
+        deactiveButton.classList.remove("disabled");
+        deactiveButton.classList.remove("hidden");
     } else if (member_state === "noob") {
-        document.getElementById("activate-member-button").innerText = "Make Member";
-        document.getElementById("activate-member-button").classList.remove("disabled");
-        document.getElementById("activate-member-button").classList.remove("hidden");
-        document.getElementById("deactivate-member-button").classList.add("disabled");
-        document.getElementById("deactivate-member-button").classList.add("hidden");
-        document.getElementById("resend-welcome-button").classList.add("hidden");
+        activeButton.innerText = "Make Member";
+        activeButton.setAttribute("data-tooltip", "Send welcome email, add to xero, and create first invoice.");
+        activeButton.classList.remove("disabled");
+        activeButton.classList.remove("hidden");
+        deactiveButton.classList.add("disabled");
+        deactiveButton.classList.add("hidden");
+        resendWelcomeButton .classList.add("hidden");
         document.getElementById("resend-to-xero-button").classList.add("hidden");
     }
 
@@ -322,7 +331,7 @@ function grantAccess(url, id) {
             if (response.success) {
                 document.getElementById(id + "-grant-button").classList.add("disabled");
                 document.getElementById(id + "-revoke-button").classList.remove("disabled");
-                M.toast({html: "Access Granted :D"});
+                M.toast({html: "Access Granted 🔓"});
             }
             else {
                 M.toast({html: "Error :( " + response.reason});
@@ -343,7 +352,7 @@ function revokeAccess(url, id) {
             if (response.success) {
                 document.getElementById(id + "-grant-button").classList.remove("disabled");
                 document.getElementById(id + "-revoke-button").classList.add("disabled");
-                M.toast({html: "Access Revoked :O"});
+                M.toast({html: "Access Revoked 🔒"});
             }
             else {
                 M.toast({html: "Error :( " + response.reason});
@@ -374,40 +383,21 @@ function requestAccess(url) {
     });
 }
 
-function unlockDoor(thing) {
+function bumpDoor(thing) {
     $.ajax({
         url: thing.getAttribute("data-url"),
         type: 'get',
         dataType: 'json',
         success: function (response) {
             if (response.success) {
-                M.toast({html: "Door unlocked successfully."});
+                M.toast({html: "Door bumped successfully."});
             }
             else {
-                M.toast({html: "Error while trying to unlock door :("});
+                M.toast({html: "Error: " + response.message});
             }
         },
         error: function () {
-            M.toast({html: "Unknown error while trying to unlock door :( "});
-        }
-    });
-}
-
-function lockDoor(thing) {
-    $.ajax({
-        url: thing.getAttribute("data-url"),
-        type: 'get',
-        dataType: 'json',
-        success: function (response) {
-            if (response.success) {
-                M.toast({html: "Door locked successfully."});
-            }
-            else {
-                M.toast({html: "Error while trying to lock door :("});
-            }
-        },
-        error: function () {
-            M.toast({html: "Unknown error while trying to lock door :( "});
+            M.toast({html: "Unknown server error while trying to bump door :( "});
         }
     });
 }
