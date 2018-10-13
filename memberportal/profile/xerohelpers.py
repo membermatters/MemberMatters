@@ -59,69 +59,65 @@ def generate_account_number(profile):
 
 
 def add_to_xero(profile):
-    member_exists = profile.xero_account_id is not "" and profile.xero_account_number is not ""
+    if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
+        with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
+            rsa_key = keyfile.read()
+        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+        xero = Xero(credentials)
 
-    if member_exists:
-        result = "Error adding to xero, that email or contact name already exists."
-        print(result)
-        return result
+        contact = [
+            {
+                "AccountNumber": generate_account_number(profile),
+                "ContactStatus": "ACTIVE",
+                "Name": profile.get_full_name(),
+                "FirstName": profile.first_name,
+                "LastName": profile.last_name,
+                "EmailAddress": profile.user.email,
+                "Addresses": [
+                    {
+                        "AddressType": "STREET",
+                        "City": "",
+                        "Region": "",
+                        "PostalCode": "",
+                        "Country": "",
+                        "AttentionTo": ""
+                    }
+                ],
+                "Phones": [
+                    {
+                        "PhoneType": "DEFAULT",
+                        "PhoneNumber": profile.phone,
+                        "PhoneAreaCode": "",
+                        "PhoneCountryCode": ""
+                    }
+                ],
+                "IsSupplier": False,
+                "IsCustomer": True,
+                "DefaultCurrency": "AU"
+            }
+        ]
 
-    else:
-        if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
-            with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
-                rsa_key = keyfile.read()
-            credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
-            xero = Xero(credentials)
+        try:
+            result = xero.contacts.put(contact)
 
-            contact = [
-                {
-                    "AccountNumber": generate_account_number(profile),
-                    "ContactStatus": "ACTIVE",
-                    "Name": profile.get_full_name(),
-                    "FirstName": profile.first_name,
-                    "LastName": profile.last_name,
-                    "EmailAddress": profile.user.email,
-                    "Addresses": [
-                        {
-                            "AddressType": "STREET",
-                            "City": "",
-                            "Region": "",
-                            "PostalCode": "",
-                            "Country": "",
-                            "AttentionTo": ""
-                        }
-                    ],
-                    "Phones": [
-                        {
-                            "PhoneType": "DEFAULT",
-                            "PhoneNumber": profile.phone,
-                            "PhoneAreaCode": "",
-                            "PhoneCountryCode": ""
-                        }
-                    ],
-                    "IsSupplier": False,
-                    "IsCustomer": True,
-                    "DefaultCurrency": "AU"
-                }
-            ]
+        except XeroBadRequest as e:
+            error = str(e)
+            if "is already assigned to another contact" in error:
+                error = "That contact name is already in Xero."
 
-            try:
-                result = xero.contacts.put(contact)
+            return "Error: " + error
 
-            except XeroBadRequest as e:
-                return "Error: " + str(e)
-
-            if result:
-                print(result)
-                profile.xero_account_id = result[0]['ContactID']
-                profile.save()
-                return "Successfully added to Xero."
-
-            else:
-                return "Error adding to Xero."
+        if result:
+            print(result)
+            profile.xero_account_id = result[0]['ContactID']
+            profile.save()
+            return "Successfully added to Xero."
 
         else:
-            return "Error adding to Xero. No Xero API details."
+            return "Error adding to Xero."
+
+    else:
+        return "Error adding to Xero. No Xero API details."
 
 
 def create_membership_invoice(user):
@@ -184,8 +180,10 @@ def create_membership_invoice(user):
             invoice_link = xero.invoices.get_onlineinvoice(invoice_id)['OnlineInvoices'][0]['OnlineInvoiceUrl']
 
             # if we're successful send it to the member and log it
-            user.email_invoice(user.profile.first_name, user.profile.member_type.cost, invoice_number, next_month_date.strftime("%d-%m-%Y"), invoice_reference, invoice_link)
-            log_user_event(user.user, "Created invoice for $" + str(user.profile.member_type.cost) + "(" + invoice_id + ")", "xero")
+            user.email_invoice(user.profile.first_name, user.profile.member_type.cost, invoice_number,
+                               next_month_date.strftime("%d-%m-%Y"), invoice_reference, invoice_link)
+            log_user_event(user, "Created invoice for $" + str(user.profile.member_type.cost) + "(" + invoice_id + ")",
+                           "xero")
             user.profile.last_invoice = timezone.now()
             user.profile.save()
 

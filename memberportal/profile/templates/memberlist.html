@@ -34,11 +34,11 @@
                         <a data-url="{% url 'admin_edit_member' member_id=member.id %}"
                            data-access_url="{% url 'admin_edit_access' member_id=member.id %}"
                            onclick="openMemberActionsModal(this)"
-                            {% if not member.profile.xero_account_id %}
-                                data-name="{{ member.profile.first_name }} {{ member.profile.last_name }} <span class='red-text'>(NOT IN XERO)</span>"
-                            {% else %}
-                                data-name="{{ member.profile.first_name }} {{ member.profile.last_name }}"
-                            {% endif %}
+                                {% if not member.profile.xero_account_id %}
+                           data-name="{{ member.profile.first_name }} {{ member.profile.last_name }} <span class='red-text'>(NOT IN XERO)</span>"
+                                {% else %}
+                           data-name="{{ member.profile.first_name }} {{ member.profile.last_name }}"
+                                {% endif %}
                            data-state="{{ member.profile.state }}"
                            data-id="{{ member.id }}"
                            data-active_url="{% url 'set_state' member_id=member.id state='active' %}"
@@ -69,6 +69,9 @@
                    class="waves-effect waves-light btn blue">Resend Welcome</a>
                 <a onclick="addToXero();" id="resend-to-xero-button"
                    class="waves-effect waves-light btn blue">Resend to Xero</a>
+                <div id="btn-loader">
+                    <div class="indeterminate"></div>
+                </div>
             </div>
         </div>
 

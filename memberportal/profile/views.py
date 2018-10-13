@@ -398,38 +398,28 @@ def set_state(request, member_id, state):
 
             email = user.email_welcome()
             xero = user.profile.add_to_xero()
-            invoice = True  # user.profile.create_membership_invoice() # Don't create them an invoice for now
-            user.profile.state = "inactive"  # and admin should them active when they pay their invoice
-            # activate = user.profile.activate() # uncomment this to activate users when they're made a member
+            invoice = user.profile.create_membership_invoice() # Don't create them an invoice for now
+            user.profile.state = "inactive"  # an admin should activate them when they pay their invoice
+            user.profile.save()
 
             if "Error" not in xero and "Error" not in invoice and email:
-                return JsonResponse(
-                    {"success": True,
-                     "response": "Successfully made into member - invites sent"
-                                 ", added to xero and invoiced."})
+                return JsonResponse({"success": True, "response": "Successfully added to Xero and sent welcome email."})
 
             elif "Error" in xero:
                 return JsonResponse({"success": False, "response": xero})
 
-            elif invoice is False:
-                return JsonResponse(
-                    {"success": False,
-                     "response": "Error, couldn't create invoice in xero."})
+            elif "Error" in invoice:
+                return JsonResponse({"success": False, "response": invoice})
 
             elif email is False:
-                return JsonResponse(
-                    {"success": False,
-                     "response": "Error, couldn't send welcome email but "
-                                 "invoice created."})
+                return JsonResponse({"success": False, "response": "Error, couldn't send welcome email."})
 
             else:
-                return JsonResponse(
-                    {"success": False,
-                     "response": "Unknown error while making into member."})
+                return JsonResponse({"success": False, "response": "Unknown error while making into member."})
 
-        user.profile.activate()
-        return JsonResponse(
-            {"success": True, "response": "Successfully enabled user."})
+        else:
+            user.profile.activate()
+            return JsonResponse({"success": True, "response": "Successfully enabled user."})
 
     else:
         user.profile.deactivate()
