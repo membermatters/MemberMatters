@@ -175,7 +175,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         email_vars = {"link": link}
         email_string = render_to_string('email_password_reset.html', {'email': email_vars})
 
-        if self.__send_email("Claim your HSBNE account", email_string):
+        if self.__send_email("Reset your HSBNE password", email_string):
             return True
 
     def email_link(self, subject, title, preheader, message, link, btn_text):
