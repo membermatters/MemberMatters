@@ -419,12 +419,12 @@ def set_state(request, member_id, state):
 
         else:
             user.profile.activate()
-            return JsonResponse({"success": True, "response": "Successfully enabled user."})
+            return JsonResponse({"success": True, "response": "Successfully enabled user. ✅"})
 
     else:
         user.profile.deactivate()
         return JsonResponse(
-            {"success": True, "response": "Successfully disabled user."})
+            {"success": True, "response": "Successfully disabled user. ⛔"})
 
 
 @login_required

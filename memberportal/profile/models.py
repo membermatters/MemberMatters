@@ -213,7 +213,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         email_string = render_to_string('email_welcome.html')
 
         if self.__send_email("Welcome to HSBNE", email_string):
-            return "Successfully sent welcome email to user."
+            return "Successfully sent welcome email to user. ✉"
 
         return False
 

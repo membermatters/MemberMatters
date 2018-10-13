@@ -26,24 +26,27 @@
                         <td>{{ door.name }}</td>
                         <td>{{ door.ip_address }}</td>
                         {% if not door.last_seen %}
-                            <td class="orange-text">never</td>
+                            <td class="orange-text tooltipped" data-position="top" data-tooltip="Time since the last check in.">never</td>
                         {% elif door.get_unavailable %}
-                            <td class="red-text">{{ door.last_seen|timesince }} ago</td>
+                            <td class="red-text tooltipped" data-position="top" data-tooltip="Time since the last check in.">{{ door.last_seen|timesince }} ago</td>
                         {% else %}
-                            <td class="light-green-text">{{ door.last_seen|timesince }} ago</td>
+                            <td class="light-green-text tooltipped" data-position="top" data-tooltip="Time since the last check in.">{{ door.last_seen|timesince }} ago</td>
                         {% endif %}
                         <td>{{ door.all_members }}</td>
                         <td>
                             <a href="{% url "edit_door" door_id=door.id %}"
-                               class="waves-effect waves-light btn-small edit-button">
+                               class="waves-effect waves-light btn-small edit-button tooltipped"
+                               data-position="top" data-tooltip="Edit Door">
                                 <i class="material-icons">edit</i>
                             </a>
                             <a href="{% url "delete_door" door_id=door.id %}"
-                               class="waves-effect waves-light btn-small delete-button">
+                               class="waves-effect waves-light btn-small delete-button tooltipped"
+                               data-position="top" data-tooltip="Delete Door">
                                 <i class="material-icons">delete</i>
                             </a>
                             <a data-url="{% url "bump_door" door_id=door.id %}" onclick="bumpDoor(this);"
-                               class="waves-effect waves-light btn-small delete-button">
+                               class="waves-effect waves-light btn-small delete-button tooltipped"
+                               data-position="top" data-tooltip="Bump door open">
                                 <i class="material-icons">lock_open</i>
                             </a>
                         </td>
