@@ -30,24 +30,14 @@ class AccessControlledDevice(models.Model):
 
         return False
 
-    def unlock(self):
+    def bump(self):
         import requests
-        r = requests.get('http://{}/unlock?key=key'.format(self.ip_address))
+        r = requests.get('http://{}/bump'.format(self.ip_address))
         if r.status_code == 200:
-            log_event(self.name + " unlocked from admin interface.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
+            log_event(self.name + " bumped from admin interface.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
             return True
         else:
-            log_event(self.name + " unlock from admin interface failed.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
-            return False
-
-    def lock(self):
-        import requests
-        r = requests.get('http://{}/lock?key=key'.format(self.ip_address))
-        if r.status_code == 200:
-            log_event(self.name + " unlocked from admin interface.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
-            return True
-        else:
-            log_event(self.name + " unlock from admin interface failed.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
+            log_event(self.name + " bumped from admin interface failed.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
             return False
 
     def __str__(self):

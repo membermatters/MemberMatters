@@ -42,13 +42,9 @@
                                class="waves-effect waves-light btn-small delete-button">
                                 <i class="material-icons">delete</i>
                             </a>
-                            <a data-url="{% url "unlock_door" door_id=door.id %}" onclick="unlockDoor(this);"
+                            <a data-url="{% url "bump_door" door_id=door.id %}" onclick="bumpDoor(this);"
                                class="waves-effect waves-light btn-small delete-button">
                                 <i class="material-icons">lock_open</i>
-                            </a>
-                            <a data-url="{% url "lock_door" door_id=door.id %}" onclick="lockDoor(this);"
-                               class="waves-effect waves-light btn-small delete-button">
-                                <i class="material-icons">lock</i>
                             </a>
                         </td>
                     </tr>

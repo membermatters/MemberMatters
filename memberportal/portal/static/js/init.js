@@ -374,40 +374,21 @@ function requestAccess(url) {
     });
 }
 
-function unlockDoor(thing) {
+function bumpDoor(thing) {
     $.ajax({
         url: thing.getAttribute("data-url"),
         type: 'get',
         dataType: 'json',
         success: function (response) {
             if (response.success) {
-                M.toast({html: "Door unlocked successfully."});
+                M.toast({html: "Door bumped successfully."});
             }
             else {
-                M.toast({html: "Error while trying to unlock door :("});
+                M.toast({html: "Error: " + response.message});
             }
         },
         error: function () {
-            M.toast({html: "Unknown error while trying to unlock door :( "});
-        }
-    });
-}
-
-function lockDoor(thing) {
-    $.ajax({
-        url: thing.getAttribute("data-url"),
-        type: 'get',
-        dataType: 'json',
-        success: function (response) {
-            if (response.success) {
-                M.toast({html: "Door locked successfully."});
-            }
-            else {
-                M.toast({html: "Error while trying to lock door :("});
-            }
-        },
-        error: function () {
-            M.toast({html: "Unknown error while trying to lock door :( "});
+            M.toast({html: "Unknown server error while trying to bump door :( "});
         }
     });
 }
