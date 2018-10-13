@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'causes',
     'spacebucks',
     'spacedirectory',
-    'background_task',
 ]
 
 MIDDLEWARE = [
