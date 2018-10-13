@@ -6,7 +6,6 @@ from django.shortcuts import render
 from django.urls import reverse
 from memberportal.helpers import log_user_event
 from memberportal.decorators import no_noobs, admin_required, api_auth
-from background_task import background
 from profile.models import User
 from .forms import *
 from .models import *
@@ -120,7 +119,6 @@ def request_access(request, door_id):
     return JsonResponse({"success": False, "reason": "Not implemented yet."})
 
 
-@background(schedule=1)
 def post_door_swipe_to_discord(name, door, successful):
     if "DISCORD_DOOR_WEBHOOK" in os.environ:
         url = os.environ.get('DISCORD_DOOR_WEBHOOK')
@@ -151,7 +149,6 @@ def post_door_swipe_to_discord(name, door, successful):
     return False
 
 
-@background(schedule=1)
 def post_interlock_swipe_to_discord(name, interlock, type, time=None):
     if "DISCORD_INTERLOCK_WEBHOOK" in os.environ:
         url = os.environ.get('DISCORD_INTERLOCK_WEBHOOK')
