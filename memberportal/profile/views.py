@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
+from django.db.utils import IntegrityError
 from django.urls import reverse
 from memberportal.decorators import no_noobs, admin_required, api_auth
 from memberportal.helpers import log_user_event
@@ -298,9 +299,7 @@ def admin_edit_member(request, member_id):
 
     profile_form = AdminEditProfileForm(instance=profile)
     user_form = AdminEditUserForm(instance=profile.user)
-
-    # if it's not valid don't save or log it
-    data['form_is_valid'] = False
+    form_valid = False
 
     if request.method == 'POST':
         # if it's a form submission pass it to the form
@@ -309,12 +308,17 @@ def admin_edit_member(request, member_id):
 
         if profile_form.is_valid() and user_form.is_valid():
             # if it's a valid form submission then save and log it
-            profile_form.save()
-            user_form.save()
-            data['form_is_valid'] = True
-            log_user_event(profile.user, request.user.profile.get_full_name() + " edited user profile.", "profile")
+            try:
+                profile_form.save()
+                user_form.save()
+                form_valid = True
+                log_user_event(profile.user, request.user.profile.get_full_name() + " edited user profile.", "profile")
+
+            except IntegrityError:
+                form_valid = False
 
     # render the form and return it
+    data["form_is_valid"] = form_valid
     data['html_form'] = render_to_string(
         'partial_admin_edit_member.html',
         {'profile_form': profile_form, 'user_form': user_form,
@@ -388,47 +392,43 @@ def set_state(request, member_id, state):
 
     if state == 'active':
         if user.profile.state == "noob":
-            # give default access
+            # give default door access
             for door in Doors.objects.filter(all_members=True):
                 user.profile.doors.add(door)
+
+            # give default interlock access
+            for interlock in Interlock.objects.filter(all_members=True):
+                user.profile.interlocks.add(interlock)
+
             email = user.email_welcome()
             xero = user.profile.add_to_xero()
-            invoice = True  # user.profile.create_membership_invoice() # Don't create them an invoice for now
-            activate = user.profile.activate()
+            invoice = user.profile.create_membership_invoice() # Don't create them an invoice for now
+            user.profile.state = "inactive"  # an admin should activate them when they pay their invoice
+            user.profile.save()
 
-            if "Error" not in xero and "Error" not in invoice and email and activate:
-                return JsonResponse(
-                    {"success": True,
-                     "response": "Successfully made into member - invites sent"
-                                 ", added to xero and invoiced."})
+            if "Error" not in xero and "Error" not in invoice and email:
+                return JsonResponse({"success": True, "response": "Successfully added to Xero and sent welcome email."})
 
             elif "Error" in xero:
                 return JsonResponse({"success": False, "response": xero})
 
-            elif invoice is False:
-                return JsonResponse(
-                    {"success": False,
-                     "response": "Error, couldn't create invoice in xero."})
+            elif "Error" in invoice:
+                return JsonResponse({"success": False, "response": invoice})
 
             elif email is False:
-                return JsonResponse(
-                    {"success": False,
-                     "response": "Error, couldn't send welcome email but "
-                                 "invoice created."})
+                return JsonResponse({"success": False, "response": "Error, couldn't send welcome email."})
 
             else:
-                return JsonResponse(
-                    {"success": False,
-                     "response": "Unknown error while making into member."})
+                return JsonResponse({"success": False, "response": "Unknown error while making into member."})
 
-        user.profile.activate()
-        return JsonResponse(
-            {"success": True, "response": "Successfully enabled user."})
+        else:
+            user.profile.activate()
+            return JsonResponse({"success": True, "response": "Successfully enabled user. ✅"})
 
     else:
         user.profile.deactivate()
         return JsonResponse(
-            {"success": True, "response": "Successfully disabled user."})
+            {"success": True, "response": "Successfully disabled user. ⛔"})
 
 
 @login_required

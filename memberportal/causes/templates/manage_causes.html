@@ -23,11 +23,11 @@
                         <td>{{ cause.description }}</td>
                         <td>
                             <a href="{% url "edit_cause" cause_id=cause.id %}"
-                               class="waves-effect waves-light btn-small edit-button">
+                               class="waves-effect waves-light btn-small edit-button tooltipped" data-position="top" data-tooltip="Edit Cause">
                                 <i class="material-icons">edit</i>
                             </a>
                             <a data-url="{% url "delete_cause" cause_id=cause.id %}" onclick="deleteCause(this)"
-                               class="waves-effect waves-light btn-small delete-button">
+                               class="waves-effect waves-light btn-small delete-button tooltipped" data-position="top" data-tooltip="Delete Cause">
                                 <i class="material-icons">delete</i>
                             </a>
                         </td>

@@ -17,6 +17,7 @@ import os
 from datetime import timedelta
 from django.utils import timezone
 import humanize
+import hashlib
 
 utc = pytz.UTC
 
@@ -244,23 +245,20 @@ def check_door_access(request, rfid_code, door_id=None):
 
 
 @login_required
-def unlock_door(request, door_id):
+def bump_door(request, door_id):
     door = Doors.objects.get(pk=door_id)
     if door in request.user.profile.doors.all():
-        log_user_event(request.user, "Unlocked {} door via API.".format(door.name), "door")
-        return JsonResponse({"success": door.unlock()})
+        log_user_event(request.user, "Bumped {} door via API.".format(door.name), "door")
+        return JsonResponse({"success": door.bump()})
 
-    return HttpResponseForbidden("You are not authorised to access that door.")
+    return JsonResponse({"success": False, "message": "You are not authorised to access that door."})
 
 
 @login_required
-def lock_door(request, door_id):
-    door = Doors.objects.get(pk=door_id)
-    if door in request.user.profile.doors.all():
-        log_user_event(request.user, "Locked {} door via API.".format(door.name), "door")
-        return JsonResponse({"access": door.lock()})
-
-    return HttpResponseForbidden("You are not authorised to access that door.")
+def lock_interlock(request, interlock_id):
+        interlock = Interlock.objects.get(pk=interlock_id)
+        log_user_event(request.user, "Locked {} interlock via API.".format(interlock.name), "interlock")
+        return JsonResponse({"success": interlock.lock()})
 
 
 @api_auth
@@ -299,8 +297,10 @@ def authorised_door_tags(request, door_id=None):
         if door in profile.doors.all() and profile.state == "active":
             authorised_tags.append(profile.rfid)
 
+    authorised_tags_hash = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
+
     log_event("Got authorised tags for {} door.".format(door.name), "door")
-    return JsonResponse({"authorised_tags": authorised_tags, "door": door.name})
+    return JsonResponse({"authorised_tags": authorised_tags, "authorised_tags_hash": authorised_tags_hash, "door": door.name})
 
 
 @api_auth
@@ -337,8 +337,10 @@ def authorised_interlock_tags(request, interlock_id=None):
         if interlock in profile.interlocks.all() and profile.state == "active":
             authorised_tags.append(profile.rfid)
 
+    authorised_tags_hash = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
+
     log_event("Got authorised tags for {} interlock.".format(interlock.name), "interlock")
-    return JsonResponse({"authorised_tags": authorised_tags, "interlock": interlock.name})
+    return JsonResponse({"authorised_tags": authorised_tags, "authorised_tags_hash": authorised_tags_hash, "interlock": interlock.name})
 
 
 @login_required
@@ -346,6 +348,31 @@ def authorised_interlock_tags(request, interlock_id=None):
 def manage_interlocks(request):
     interlocks = Interlock.objects.all()
     return render(request, 'manage_interlocks.html', {"interlocks": interlocks})
+
+
+@login_required
+@admin_required
+def view_interlock_sessions(request):
+    raw_sessions = InterlockLog.objects.all()
+    interlock_sessions = []
+
+    for session in raw_sessions:
+        user_off = "IN USE"
+        if session.user_off:
+            user_off = session.user_off.profile.get_full_name()
+        session = {
+            "id": session.id,
+            "interlock_name": session.interlock.name,
+            "time_on": timezone.make_naive(session.first_heartbeat).strftime("%Y-%m-%d %H:%M:%S"),
+            "time_off": timezone.make_naive(session.last_heartbeat).strftime("%Y-%m-%d %H:%M:%S"),
+            "user_on": session.user.profile.get_full_name(),
+            "user_off": user_off,
+            "on_for": humanize.naturaldelta(session.last_heartbeat - session.first_heartbeat),
+            "completed": session.session_complete
+        }
+        interlock_sessions.append(session)
+
+    return render(request, 'view_interlock_sessions.html', {"sessions": interlock_sessions})
 
 
 @login_required
@@ -526,7 +553,16 @@ def interlock_checkin(request, interlock_id=None):
         try:
             interlock = Interlock.objects.get(pk=interlock_id)
             interlock.checkin()
-            return JsonResponse({"success": True, "timestamp": round(time.time())})
+            authorised_tags = list()
+
+            for profile in Profile.objects.all():
+                if interlock in profile.interlocks.all() and profile.state == "active":
+                    authorised_tags.append(profile.rfid)
+
+            print(authorised_tags)
+            authorised_tags = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
+
+            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for non existant interlock.", "error", request)
@@ -538,7 +574,17 @@ def interlock_checkin(request, interlock_id=None):
             interlock_ip = request.META.get('REMOTE_ADDR')
             interlock = Interlock.objects.get(ip_address=interlock_ip)
             interlock.checkin()
-            return JsonResponse({"success": True, "timestamp": round(time.time())})
+
+            authorised_tags = list()
+
+            for profile in Profile.objects.all():
+                if interlock in profile.interlocks.all() and profile.state == "active":
+                    authorised_tags.append(profile.rfid)
+
+            print(authorised_tags)
+            authorised_tags = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
+
+            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for {} interlock but none found.".format(interlock_ip), "error", request)
@@ -554,7 +600,16 @@ def door_checkin(request, door_id=None):
         try:
             door = Doors.objects.get(pk=door_id)
             door.checkin()
-            return JsonResponse({"success": True, "timestamp": round(time.time())})
+            authorised_tags = list()
+
+            for profile in Profile.objects.all():
+                if door in profile.doors.all() and profile.state == "active":
+                    authorised_tags.append(profile.rfid)
+
+            print(authorised_tags)
+            authorised_tags = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
+
+            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for non existant door.", "error", request)
@@ -566,7 +621,17 @@ def door_checkin(request, door_id=None):
             door_ip = request.META.get('REMOTE_ADDR')
             door = Doors.objects.get(ip_address=door_ip)
             door.checkin()
-            return JsonResponse({"success": True, "timestamp": round(time.time())})
+
+            authorised_tags = list()
+
+            for profile in Profile.objects.all():
+                if door in profile.doors.all() and profile.state == "active":
+                    authorised_tags.append(profile.rfid)
+
+            print(authorised_tags)
+            authorised_tags = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
+
+            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for {} door but none found.".format(door_ip), "error", request)
@@ -619,15 +684,22 @@ def interlock_cron(request):
 
 
 @api_auth
-def end_interlock_session(request, session_id):
+def end_interlock_session(request, session_id, rfid=None):
     session = InterlockLog.objects.get(pk=session_id)
     if not session.session_complete:
+        user = None
+        if rfid is not None:
+            user = Profile.objects.get(rfid=rfid).user
+        else:
+            user = session.user
+
         session.session_complete = True
         session.last_heartbeat = timezone.now()
+        session.user_off = user
         session.save()
         session.interlock.checkin()
         on_time = humanize.naturaldelta(session.last_heartbeat - session.first_heartbeat)
-        post_interlock_swipe_to_discord(session.user.profile.get_full_name(), session.interlock.name,
+        post_interlock_swipe_to_discord(session.user_off.profile.get_full_name(), session.interlock.name,
                                         "deactivated", on_time)
 
         return JsonResponse({"access": True})

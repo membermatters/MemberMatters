@@ -175,7 +175,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         email_vars = {"link": link}
         email_string = render_to_string('email_password_reset.html', {'email': email_vars})
 
-        if self.__send_email("Claim your HSBNE account", email_string):
+        if self.__send_email("Reset your HSBNE password", email_string):
             return True
 
     def email_link(self, subject, title, preheader, message, link, btn_text):
@@ -213,7 +213,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         email_string = render_to_string('email_welcome.html')
 
         if self.__send_email("Welcome to HSBNE", email_string):
-            return "Successfully sent welcome email to user."
+            return "Successfully sent welcome email to user. ✉"
 
         return False
 
@@ -242,7 +242,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def reset_password(self):
         log_user_event(self, "Password reset requested", "profile")
         self.password_reset_key = uuid.uuid4()
-        self.password_reset_expire = timezone.now() + timedelta(days=7)
+        self.password_reset_expire = timezone.now() + timedelta(hours=24)
         self.save()
         self.email_password_reset("https://portal.hsbne.org" + reverse('reset_password', kwargs={'reset_token': self.password_reset_key}))
 

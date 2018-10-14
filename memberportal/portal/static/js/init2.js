@@ -21,14 +21,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Modal init
-    let modalElem = document.getElementById('member-actions-modal');
-    memberActionsModal = M.Modal.init(modalElem, {'endingBottom': '5%'});
+    memberActionsModal = M.Modal.init(document.getElementById('member-actions-modal'), {'endingBottom': '5%'});
+    M.Modal.init(document.getElementById('aboutModal'), {});
 
     // Tabs init
     M.Tabs.init(document.querySelectorAll('.tabs'));
 
     // Collapsible init
     M.Collapsible.init(document.querySelectorAll('.collapsible'), {});
+
+    // Tooltips init
+    M.Tooltip.init(document.querySelectorAll('.tooltipped'), {});
 
     // Add spacebucks buttons
     let spacebucksButtons = document.getElementsByClassName("add-spacebucks");
@@ -43,34 +46,45 @@ function initSelects() {
 }
 
 function resendWelcome() {
+    document.getElementById("btn-loader").classList.add("progress");
     $.ajax({
         url: resend_welcome_url,
         type: 'get',
         dataType: 'json',
         success: function (data) {
+            document.getElementById("btn-loader").classList.remove("progress");
+            console.log(data.response);
             M.toast({html: data.message});
         },
         error: function (data) {
+            document.getElementById("btn-loader").classList.remove("progress");
+            console.log(data.response);
             M.toast({html: data.message});
         }
     });
 }
 
 function addToXero() {
+    document.getElementById("btn-loader").classList.add("progress");
     $.ajax({
         url: add_to_xero_url,
         type: 'get',
         dataType: 'json',
         success: function (data) {
+            document.getElementById("btn-loader").classList.remove("progress");
+            console.log(data.response);
             M.toast({html: data.response});
         },
         error: function (data) {
+            document.getElementById("btn-loader").classList.remove("progress");
+            console.log(data.response);
             M.toast({html: data.response});
         }
     });
 }
 
 function setState(state) {
+    document.getElementById("btn-loader").classList.add("progress");
     let state_url;
 
     if (state) {
@@ -84,24 +98,23 @@ function setState(state) {
         type: 'get',
         dataType: 'json',
         success: function (data) {
+            document.getElementById("btn-loader").classList.remove("progress");
+            console.log(data.response);
+            M.toast({html: data.response});
+            document.getElementById("resend-welcome-button").classList.remove("hidden");
+            document.getElementById("resend-to-xero-button").classList.remove("hidden");
+
             if (state) {
-                state_url = active_url;
-                document.getElementById("activate-member-button").classList.add("disabled");
+                // document.getElementById("activate-member-button").innerText = "Enable Access";
                 document.getElementById("activate-member-button").classList.add("hidden");
+                document.getElementById("activate-member-button").classList.add("disabled");
                 document.getElementById("deactivate-member-button").classList.remove("disabled");
                 document.getElementById("deactivate-member-button").classList.remove("hidden");
-                if (document.getElementById("activate-member-button").innerText == "MAKE MEMBER") {
-                    M.toast({html: data.response});
-                } else {
-                    M.toast({html: data.response});
-                }
             } else {
-                state_url = deactive_url;
                 document.getElementById("activate-member-button").classList.remove("disabled");
                 document.getElementById("activate-member-button").classList.remove("hidden");
                 document.getElementById("deactivate-member-button").classList.add("disabled");
                 document.getElementById("deactivate-member-button").classList.add("hidden");
-                M.toast({html: data.response});
             }
             // not very DRY... ideally should be modularised a bit more...
             $.ajax({
@@ -122,6 +135,8 @@ function setState(state) {
             });
         },
         error: function (data) {
+            document.getElementById("btn-loader").classList.remove("progress");
+            console.log(data.response);
             M.toast({html: "There was an error processing the request. :("});
         }
     });
@@ -241,26 +256,32 @@ function openMemberActionsModal(e) {
         }
     });
 
-    document.getElementById("activate-member-button").innerText = "Enable Access";
-    document.getElementById("resend-welcome-button").classList.remove("hidden");
-    document.getElementById("resend-welcome-button").classList.remove("hidden");
-    if (member_state == "inactive") {
-        document.getElementById("activate-member-button").classList.remove("disabled");
-        document.getElementById("activate-member-button").classList.remove("hidden");
-        document.getElementById("deactivate-member-button").classList.add("disabled");
-        document.getElementById("deactivate-member-button").classList.add("hidden");
-    } else if (member_state == "active") {
-        document.getElementById("activate-member-button").classList.add("disabled");
-        document.getElementById("activate-member-button").classList.add("hidden");
-        document.getElementById("deactivate-member-button").classList.remove("disabled");
-        document.getElementById("deactivate-member-button").classList.remove("hidden");
-    } else if (member_state == "noob") {
-        document.getElementById("activate-member-button").innerText = "Make Member";
-        document.getElementById("activate-member-button").classList.remove("disabled");
-        document.getElementById("activate-member-button").classList.remove("hidden");
-        document.getElementById("deactivate-member-button").classList.add("disabled");
-        document.getElementById("deactivate-member-button").classList.add("hidden");
-        document.getElementById("resend-welcome-button").classList.add("hidden");
+    let activeButton = document.getElementById("activate-member-button");
+    let deactiveButton = document.getElementById("deactivate-member-button");
+    let resendWelcomeButton = document.getElementById("resend-welcome-button");
+
+    activeButton.innerText = "Enable Access";
+    activeButton.setAttribute("data-tooltip", "Enable Site Access");
+    resendWelcomeButton.classList.remove("hidden");
+    resendWelcomeButton.classList.remove("hidden");
+    if (member_state === "inactive") {
+        activeButton.classList.remove("disabled");
+        activeButton.classList.remove("hidden");
+        deactiveButton.classList.add("disabled");
+        deactiveButton.classList.add("hidden");
+    } else if (member_state === "active") {
+        activeButton.classList.add("disabled");
+        activeButton.classList.add("hidden");
+        deactiveButton.classList.remove("disabled");
+        deactiveButton.classList.remove("hidden");
+    } else if (member_state === "noob") {
+        activeButton.innerText = "Make Member";
+        activeButton.setAttribute("data-tooltip", "Send welcome email, add to xero, and create first invoice.");
+        activeButton.classList.remove("disabled");
+        activeButton.classList.remove("hidden");
+        deactiveButton.classList.add("disabled");
+        deactiveButton.classList.add("hidden");
+        resendWelcomeButton.classList.add("hidden");
         document.getElementById("resend-to-xero-button").classList.add("hidden");
     }
 
@@ -276,7 +297,7 @@ $("#member-actions-modal").on("submit", ".member-edit-form", function () {
         type: form.attr("method"),
         dataType: 'json',
         success: function (data) {
-            if (data.form_is_valid) {
+            if (data.form_is_valid === true) {
                 M.toast({html: "Saved successfully :D"});
                 let elem = document.getElementById("admin-edit-member-profile");
                 elem.innerHTML = data.html_form;
@@ -285,7 +306,7 @@ $("#member-actions-modal").on("submit", ".member-edit-form", function () {
                 }, 0);
             }
             else {
-                M.toast({html: "There was an error saving the data. :("});
+                M.toast({html: "Error saving data. Probably duplicate RFID or email."});
                 let elem = document.getElementById("admin-edit-member-profile");
                 elem.innerHTML = data.html_form;
                 setTimeout(function () {
@@ -294,7 +315,7 @@ $("#member-actions-modal").on("submit", ".member-edit-form", function () {
             }
         },
         error: function () {
-            M.toast({html: "unknown error 3 :( "});
+            M.toast({html: "Unknown server error 3 :( "});
         }
     });
     return false;
@@ -315,7 +336,7 @@ function grantAccess(url, id) {
             if (response.success) {
                 document.getElementById(id + "-grant-button").classList.add("disabled");
                 document.getElementById(id + "-revoke-button").classList.remove("disabled");
-                M.toast({html: "Access Granted :D"});
+                M.toast({html: "Access Granted 🔓"});
             }
             else {
                 M.toast({html: "Error :( " + response.reason});
@@ -336,7 +357,7 @@ function revokeAccess(url, id) {
             if (response.success) {
                 document.getElementById(id + "-grant-button").classList.remove("disabled");
                 document.getElementById(id + "-revoke-button").classList.add("disabled");
-                M.toast({html: "Access Revoked :O"});
+                M.toast({html: "Access Revoked 🔒"});
             }
             else {
                 M.toast({html: "Error :( " + response.reason});
@@ -367,59 +388,21 @@ function requestAccess(url) {
     });
 }
 
-function unlockDoor(thing) {
+function bumpDoor(thing) {
     $.ajax({
         url: thing.getAttribute("data-url"),
         type: 'get',
         dataType: 'json',
         success: function (response) {
             if (response.success) {
-                M.toast({html: "Door unlocked successfully."});
+                M.toast({html: "Door bumped successfully."});
             }
             else {
-                M.toast({html: "Error while trying to unlock door :("});
+                M.toast({html: "Error: " + response.message});
             }
         },
         error: function () {
-            M.toast({html: "Unknown error while trying to unlock door :( "});
-        }
-    });
-}
-
-function lockDoor(thing) {
-    $.ajax({
-        url: thing.getAttribute("data-url"),
-        type: 'get',
-        dataType: 'json',
-        success: function (response) {
-            if (response.success) {
-                M.toast({html: "Door locked successfully."});
-            }
-            else {
-                M.toast({html: "Error while trying to lock door :("});
-            }
-        },
-        error: function () {
-            M.toast({html: "Unknown error while trying to lock door :( "});
-        }
-    });
-}
-
-function unlockInterlock(btn) {
-    $.ajax({
-        url: btn.getAttribute("data-url"),
-        type: 'get',
-        dataType: 'json',
-        success: function (response) {
-            if (response.success) {
-                M.toast({html: "Interlock unlocked successfully."});
-            }
-            else {
-                M.toast({html: "Error while trying to unlock interlock :("});
-            }
-        },
-        error: function () {
-            M.toast({html: "Unknown error while trying to unlock interlock :( "});
+            M.toast({html: "Unknown server error while trying to bump door :( "});
         }
     });
 }
@@ -474,7 +457,9 @@ function chargeCardForSpacebucks() {
         success: function (response) {
             if (response.success) {
                 M.toast({html: "Successfuly charged your card."});
-                setTimeout(() => {location = "/profile/spacebucks/manage/";}, 2000)
+                setTimeout(() => {
+                    location = "/profile/spacebucks/manage/";
+                }, 2000)
             }
             else {
                 M.toast({html: "Failed to charge your card :("});

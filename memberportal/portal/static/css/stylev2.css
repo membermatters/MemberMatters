@@ -193,7 +193,7 @@ body > div.fullwidth-container > div.modal-overlay {
 @media only screen and (min-width: 993px) {
     /* Make all the columns on the home page equal height when they're next to each other on desktop */
     .home-text-columns {
-        min-height: 150px;
+        min-height: 90px;
     }
 
     .modal {
@@ -223,4 +223,19 @@ body > div.fullwidth-container > div.modal-overlay {
 #addAmountInput {
     display: inline-block;
     width: auto;
+}
+
+#homeContainer {
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    margin-top: 50px;
+    border-radius: 40px;
+    padding: 0 10px;
+}
+
+@media only screen and (max-width: 600px) {
+    #homeContainer {
+        border-radius: 10px;
+        margin-top: 20px;
+    }
 }
