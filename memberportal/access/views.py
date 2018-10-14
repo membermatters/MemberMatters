@@ -297,8 +297,10 @@ def authorised_door_tags(request, door_id=None):
         if door in profile.doors.all() and profile.state == "active":
             authorised_tags.append(profile.rfid)
 
+    authorised_tags_hash = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
+
     log_event("Got authorised tags for {} door.".format(door.name), "door")
-    return JsonResponse({"authorised_tags": authorised_tags, "door": door.name})
+    return JsonResponse({"authorised_tags": authorised_tags, "authorised_tags_hash": authorised_tags_hash, "door": door.name})
 
 
 @api_auth
@@ -335,8 +337,10 @@ def authorised_interlock_tags(request, interlock_id=None):
         if interlock in profile.interlocks.all() and profile.state == "active":
             authorised_tags.append(profile.rfid)
 
+    authorised_tags_hash = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
+
     log_event("Got authorised tags for {} interlock.".format(interlock.name), "interlock")
-    return JsonResponse({"authorised_tags": authorised_tags, "interlock": interlock.name})
+    return JsonResponse({"authorised_tags": authorised_tags, "authorised_tags_hash": authorised_tags_hash, "interlock": interlock.name})
 
 
 @login_required
