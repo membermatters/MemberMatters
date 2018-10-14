@@ -4,40 +4,31 @@ The HSBNE member portal is how HSBNE members manage their membership.
 ### Features
 * Member registration system (signup, login etc)
 * Profile - members can update all their info in one place
-    * Personal details like name, email etc.
-    * Cause membership
+    * Personal details like name, email, cause membership
     * Members can see their current access restrictions
 * Spacebug reporting tool (issue reporting form)
 * Access system built in
-    * Activate new members
-    * Enable/Disable existing members
-    * Doors and tools/machinery permissions
+    * Activate new members & enable/disable existing members
+    * Granular door and tool/machines permissions
     * API so readers/interlocks can check access
-    * Swipe Statistics
-        * Last seen (last time a member swipes)
-        * Recent swipes (last x swipes at any door/interlock)
+    * Swipe Statistics (last seen and recent swipes)
 * Member overview for executive
-    * Search for members
-    * Sort members by status, etc
-    * Change a member's details/membership type
+    * Search for members and sort by name, status, etc
+    * Change a member's profile
 * Causes
     * List of all causes
     * List of members in each cause and quorum
 * Admin Interface
     * View, add and edit the following:
-        * Causes
-        * Doors
-        * Interlocks
+        * Causes, doors and interlocks
 * Space webcam integration
 * Full Spacebucks Support
     * Debit API for vending machines etc. 
-    * Members can see a transaction history (credits & debits)
-    * Can see current balance
+    * Members can see a transaction history (credits & debits) and current balance
     * Stripe integration
-        * Members can save a card to their profile
-        * Can view and remove saved card info
-        * Can charge card to add spacebucks
-* Automatically create a xero contact when a noob is made into a member
+        * Members can add/remove a card to their profile
+        * Can charge card to add spacebucks to profile
+* Automatically create a xero contact and create invoice when a noob is made into a member
 
  
  ### Coming Soon
