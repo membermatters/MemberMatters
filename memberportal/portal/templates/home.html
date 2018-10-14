@@ -3,7 +3,12 @@
 {% block title %}Home{% endblock %}
 {% block page_title %}Home{% endblock %}
 
+{% block body_tag %}
+    <body style="background: url(/static/img/home-bg.jpg) no-repeat center center fixed;">
+{% endblock %}
+
 {% block content %}
+    <div id="homeContainer">
     {% if user.is_authenticated %}
         {% if user.profile.must_update_profile %}
             <div class="row center padding-top">
@@ -30,44 +35,101 @@
             </div>
         {% else %}
             <div class="row center padding-top">
-                <h5 class="header col s12 light">
+                <h4 class="header col s12 light">
                     Welcome to the HSBNE member portal!
-                </h5>
-                <p>
-                    You can manage your membership details, causes, etc. Here are some handy links:
-                </p>
+                </h4>
             </div>
             <!--   Icon Section   -->
             <div class="row">
-                <div class="col s12 m6">
+            <div class="col s12 m4">
                     <div class="icon-block">
-                        <h2 class="center"><i class="material-icons">chat</i></h2>
-                        <h5 class="center">Discord</h5>
+                        <h4 class="center"><i class="material-icons">class</i></h4>
+                        <h5 class="center">HSBNE Wiki</h5>
 
-                        <p class="center light home-text-columns">If you want to chat with like minded people, need any
-                            help or just want a friendly place to hang, check out our discord server.</p>
+                        <p class="center light home-text-columns">Our wiki is like the rule book for HSBNE. It contains
+                        all the information about our tools, processes and other helpful tips.</p>
 
                         <div class="row center">
-                            <a href="https://hsbne.org" target="_blank" id="go-to-discord"
-                               class="btn-large cn-green">Go to Discord</a>
+                            <a target="_blank" href="https://wiki.hsbne.org" id="go-to-wiki"
+                               class="btn-large cn-green">Read Wiki</a>
                         </div>
                     </div>
                 </div>
 
-                <div class="col s12 m6">
+                <div class="col s12 m4">
                     <div class="icon-block">
-                        <h2 class="center"><i class="material-icons">sentiment_very_dissatisfied
-                        </i></h2>
-                        <h5 class="center">Report Spacebug</h5>
+                        <h4 class="center"><i class="material-icons">bug_report
+                        </i></h4>
+                        <h5 class="center">Report a Spacebug</h5>
                         <p class="center light home-text-columns">Found something broken at HSBNE that you don't have
-                            the time or skills to fix? Report it here.</p>
+                            the time or skills to fix? You can submit a spacebug report.</p>
                         <div class="row center">
                             <a href="{% url 'report_spacebug' %}" id="report_spacebug"
                                class="btn-large cn-green">Report Spacebug</a>
                         </div>
                     </div>
                 </div>
+
+                <div class="col s12 m4">
+                    <div class="icon-block">
+                        <h4 class="center"><i class="material-icons">forum</i></h4>
+                        <h5 class="center">Discussion Forum</h5>
+
+                        <p class="center light home-text-columns">Visit our official forum for discussions
+                        about purchase proposals, policies, build logs and other information.</p>
+
+                        <div class="row center">
+                            <a target="_blank" href="https://hsbne.org" id="go-to-discord"
+                               class="btn-large cn-green">Go to Forum</a>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <div class="row">
+                <div class="col s12 m4">
+                    <div class="icon-block">
+                        <h4 class="center"><i class="material-icons">description</i></h4>
+                        <h5 class="center">HSBNE Policies</h5>
+
+                        <p class="center light home-text-columns">HSBNE is governed by several important policies,
+                            including the code of conduct and safe space policy.</p>
+
+                        <div class="row center">
+                            <a target="_blank" href="https://hsbne.org/admin/" id="go-to-policies"
+                               class="btn-large cn-green">View Policies</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12 m4">
+                    <div class="icon-block">
+                        <h4 class="center"><i class="material-icons">thumb_up</i></h4>
+                        <h5 class="center">Facebook</h5>
+                        <p class="center light home-text-columns">Using the Facebook check in feature and tagging us
+                            in posts help to spread the word about HSBNE.</p>
+                        <div class="row center">
+                            <a target="_blank" href="https://www.facebook.com/HSBNE/" id="go-to-facebook"
+                               class="btn-large cn-green">Visit Facebook</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12 m4">
+                    <div class="icon-block">
+                        <h4 class="center"><i class="material-icons">chat</i></h4>
+                        <h5 class="center">Discord Guild</h5>
+
+                        <p class="center light home-text-columns">If you get stuck on something, locked out of the space,
+                            or just want a friendly place to hang, check out our discord server.</p>
+
+                        <div class="row center">
+                            <a target="_blank" href="https://hsbne.org" id="go-to-discord"
+                               class="btn-large cn-green">Go to Discord</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br><br>
         {% endif %}
     {% else %}
         <div class="row center padding-top">
@@ -94,7 +156,9 @@
                     <a href="{% url 'signin' %}" id="go-to-signin" class="btn-large cn-green center">Member Sign In</a>
                 </div>
             </div>
+            <br><br>
         </div>
 
     {% endif %}
+</div>
 {% endblock %}

@@ -21,8 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Modal init
-    let modalElem = document.getElementById('member-actions-modal');
-    memberActionsModal = M.Modal.init(modalElem, {'endingBottom': '5%'});
+    memberActionsModal = M.Modal.init(document.getElementById('member-actions-modal'), {'endingBottom': '5%'});
+    M.Modal.init(document.getElementById('aboutModal'), {});
 
     // Tabs init
     M.Tabs.init(document.querySelectorAll('.tabs'));
