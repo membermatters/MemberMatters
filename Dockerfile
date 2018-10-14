@@ -27,6 +27,6 @@ WORKDIR /app/memberportal
 
 VOLUME /data
 RUN python3 manage.py migrate
-
+RUN python3 manage.py loaddata fixtures/initial.json
 EXPOSE 8000
 CMD ["supervisord", "-n"]
