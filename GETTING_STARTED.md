@@ -44,7 +44,11 @@ Please follow the instructions below to setup dev environment in Windows (tested
 * You're all set up. Follow the instructions below to start the dev server.
  
 ### Running the dev server
-In production, we have an nginx reverse proxy setup. For development however, it's useful to use the built in development server. Navigate to the memberportal folder. (`cd memberportal` on bash or cmd) First we need to make sure we have a local sqlite database with the correct migrations applied so run this:
+In production, we have an apache reverse proxy setup. For development however, it's useful to use the built in 
+development server. Navigate to the memberportal folder. (`cd memberportal` on bash or cmd) First we need to make 
+sure we have a local sqlite database with the correct migrations applied, and default database. 
+
+To do this run the following:
 
 ```bash
 python3 manage.py migrate
@@ -56,14 +60,13 @@ Operations to perform:
   Apply all migrations: access, admin, auth, causes, contenttypes, profile, sessions, spacebucks
 Running migrations:
   Applying causes.0001_initial... OK
-  Applying contenttypes.0001_initial... OK
-  Applying contenttypes.0002_remove_content_type_name... OK
   Applying auth.0001_initial... OK
-  Applying auth.0002_alter_permission_name_max_length... OK
-  Applying auth.0003_alter_user_email_max_length... OK
-  Applying auth.0004_alter_user_username_opts... OK
-  Applying auth.0005_alter_user_last_login_null... OK
   ...
+```
+
+Now load some initial data into the database:
+```bash
+python3 manage.py loaddata fixtures/initial.json
 ```
 
 If that completes with no errors run the command below to start the development server.
@@ -79,8 +82,10 @@ Django version 2.0.7, using settings 'memberportal.settings'
 Starting development server at http://127.0.0.1:8000/
 ```
 
-Take note of the IP and port. In this case, open your favourite browser and go to `http://127.0.0.1:8000/`. You should
-be presented with the home page of the web app. If you want to contribute any changes to the portal please see below.
+Take note of the IP and port. In this case, open your favourite browser and go to `http://127.0.0.1:8000/`. You should 
+be presented with the home page of the web app. You can login with the username "default@example.com" and password 
+"hsbne123". You should create a new account, then use the default account to give your new account admin rights. You 
+should change the password of the default admin account.
 
 ##### NOTE
 You will need to re-run the database migration every time the db models change. You may see random database related errors such as column does not exist if you forget to do this. You can do that by running:
