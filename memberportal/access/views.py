@@ -341,6 +341,31 @@ def manage_interlocks(request):
 
 @login_required
 @admin_required
+def view_interlock_sessions(request):
+    raw_sessions = InterlockLog.objects.all()
+    interlock_sessions = []
+
+    for session in raw_sessions:
+        user_off = "IN USE"
+        if session.user_off:
+            user_off = session.user_off.profile.get_full_name()
+        session = {
+            "id": session.id,
+            "interlock_name": session.interlock.name,
+            "time_on": session.first_heartbeat.strftime("%Y-%m-%d %H:%M:%S"),
+            "time_off": session.last_heartbeat.strftime("%Y-%m-%d %H:%M:%S"),
+            "user_on": session.user.profile.get_full_name(),
+            "user_off": user_off,
+            "on_for": humanize.naturaldelta(session.last_heartbeat - session.first_heartbeat),
+            "completed": session.session_complete
+        }
+        interlock_sessions.append(session)
+
+    return render(request, 'view_interlock_sessions.html', {"sessions": interlock_sessions})
+
+
+@login_required
+@admin_required
 def add_interlock(request):
     if request.method == 'POST':
         form = InterlockForm(request.POST)

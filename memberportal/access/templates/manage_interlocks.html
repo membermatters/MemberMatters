@@ -5,9 +5,12 @@
 {% block content %}
     <div class="row center">
         <div class="col s12">
-            <h4>Current Interlocks</h4>
+            <h4>Manage Interlocks</h4>
             <a href="{% url "add_interlock" %}" class="waves-effect waves-light btn edit-button">
                 Add Interlock
+            </a>
+            <a href="{% url "view_interlock_sessions" %}" class="waves-effect waves-light btn edit-button">
+                View Sessions
             </a>
             <table class="striped responsive-table">
                 <thead>

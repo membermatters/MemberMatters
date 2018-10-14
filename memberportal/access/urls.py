@@ -19,6 +19,7 @@ urlpatterns = [
     path('api/door/reset-default-access', views.reset_default_door_access, name='reset_default_access'),
     path('interlocks/', views.manage_interlocks, name='manage_interlocks'),
     path('interlocks/add', views.add_interlock, name='add_interlock'),
+    path('interlocks/sessions', views.view_interlock_sessions, name='view_interlock_sessions'),
     path('interlocks/<int:interlock_id>/edit', views.edit_interlock, name='edit_interlock'),
     path('interlocks/<int:interlock_id>/delete', views.delete_interlock, name='delete_interlock'),
     path('interlocks/<int:interlock_id>/unlock', views.unlock_interlock, name='unlock_interlock'),
