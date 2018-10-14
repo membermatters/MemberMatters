@@ -13,11 +13,14 @@
 
     <!-- CSS -->
     <link href="{% static '/css/materialize.css' %}" type="text/css" rel="stylesheet" media="screen,projection"/>
-    <link href="{% static '/css/style.css' %}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{% static '/css/stylev2.css' %}" type="text/css" rel="stylesheet" media="screen,projection"/>
 
     <link rel="shortcut icon" type="image/png" href="{% static '/img/logo.png' %}"/>
 </head>
+
+{% block body_tag %}
 <body>
+{% endblock %}
 <nav class="cn-dark-background lighten-1" role="navigation">
     <div class="nav-wrapper container">
         <a id="logo-container" href="/" class="brand-logo">
@@ -153,6 +156,23 @@
     {% endif %}
 </nav>
 
+<!-- Modal Structure -->
+  <div id="aboutModal" class="modal" style="min-height: auto !important;">
+    <div class="modal-content">
+      <h4>About HSBNE Portal</h4>
+        <p>This is an open source, full featured membership portal. It is designed for
+            <a href="https://hsbne.org/">HSBNE</a> (Hackerspace Brisbane). It was created by
+            <a href="https://jaimyn.com.au">Jaimyn Mayer</a> in his spare time, with a little help from some HSBNE members.</p>
+        <p>It can manage membership, access permissions, spacebucks, doors, interlocks and more!
+            For more information please see the GitHub repo <a target="_blank"
+                                                              href="https://github.com/HSBNE/hsbneportal/">here</a>.</p>
+        <p>For a brief user guide, please see <a target="_blank" href="https://github.com/HSBNE/hsbneportal/wiki">this page</a>.</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+    </div>
+  </div>
+
 <div class="fullwidth-container">
     {% block fullwidth-content %}
     {% endblock %}
@@ -165,7 +185,7 @@
 
 <footer class="page-footer">
     <div class="container">
-        <a target="_blank" href="https://github.com/HSBNE/hsbneportal">HSBNE Portal</a>
+        <a target="_blank" class="modal-trigger" href="#aboutModal">About HSBNE Portal</a>
     </div>
 </footer>
 
@@ -176,7 +196,7 @@
 {% block scripts %}
 {% endblock %}
 
-<script src="{% static '/js/init.js' %}"></script>
+<script src="{% static '/js/init2.js' %}"></script>
 
 </body>
 </html>
