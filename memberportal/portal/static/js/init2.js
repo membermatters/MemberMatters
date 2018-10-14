@@ -407,25 +407,6 @@ function bumpDoor(thing) {
     });
 }
 
-function unlockInterlock(btn) {
-    $.ajax({
-        url: btn.getAttribute("data-url"),
-        type: 'get',
-        dataType: 'json',
-        success: function (response) {
-            if (response.success) {
-                M.toast({html: "Interlock unlocked successfully."});
-            }
-            else {
-                M.toast({html: "Error while trying to unlock interlock :("});
-            }
-        },
-        error: function () {
-            M.toast({html: "Unknown error while trying to unlock interlock :( "});
-        }
-    });
-}
-
 function lockInterlock(btn) {
     $.ajax({
         url: btn.getAttribute("data-url"),

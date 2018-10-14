@@ -254,6 +254,13 @@ def bump_door(request, door_id):
     return JsonResponse({"success": False, "message": "You are not authorised to access that door."})
 
 
+@login_required
+def lock_interlock(request, interlock_id):
+        interlock = Interlock.objects.get(pk=interlock_id)
+        log_user_event(request.user, "Locked {} interlock via API.".format(interlock.name), "interlock")
+        return JsonResponse({"success": interlock.lock()})
+
+
 @api_auth
 def authorised_door_tags(request, door_id=None):
     door = None

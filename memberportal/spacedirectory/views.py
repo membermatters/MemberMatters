@@ -1,19 +1,13 @@
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from django.urls import reverse
-from profile.models import Profile
+from django.http import JsonResponse
 import pytz
 
 utc = pytz.UTC
 
 def spacedirectory_status(request):
-
-
     return JsonResponse({
     "state": {
-        "open": False,
-        "message": "Closed until Tuesday 5PM",
+        "open": True,
+        "message": "Open Tuesday nights to the public. All other times membership is required.",
         "icon": {
             "open": "http://hsbne.org/assets/img/headerlogo.png",
             "closed": "http://hsbne.org/assets/img/headerlogo.png"

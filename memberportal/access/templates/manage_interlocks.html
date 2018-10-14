@@ -54,10 +54,6 @@
                                class="waves-effect waves-light btn-small delete-button tooltipped" data-position="top" data-tooltip="Delete Interlock">
                                 <i class="material-icons">delete</i>
                             </a>
-                            <a data-url="{% url "unlock_interlock" interlock_id=interlock.id %}" onclick="unlockInterlock(this);"
-                               class="waves-effect waves-light btn-small delete-button tooltipped" data-position="top" data-tooltip="Unlock Interlock">
-                                <i class="material-icons">lock_open</i>
-                            </a>
                             <a data-url="{% url "lock_interlock" interlock_id=interlock.id %}" onclick="lockInterlock(this);"
                                class="waves-effect waves-light btn-small delete-button tooltipped" data-position="top" data-tooltip="Lock Interlock">
                                 <i class="material-icons">lock</i>
