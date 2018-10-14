@@ -363,8 +363,8 @@ def view_interlock_sessions(request):
         session = {
             "id": session.id,
             "interlock_name": session.interlock.name,
-            "time_on": session.first_heartbeat.strftime("%Y-%m-%d %H:%M:%S"),
-            "time_off": session.last_heartbeat.strftime("%Y-%m-%d %H:%M:%S"),
+            "time_on": timezone.make_naive(session.first_heartbeat).strftime("%Y-%m-%d %H:%M:%S"),
+            "time_off": timezone.make_naive(session.last_heartbeat).strftime("%Y-%m-%d %H:%M:%S"),
             "user_on": session.user.profile.get_full_name(),
             "user_off": user_off,
             "on_for": humanize.naturaldelta(session.last_heartbeat - session.first_heartbeat),
