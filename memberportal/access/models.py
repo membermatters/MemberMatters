@@ -84,6 +84,7 @@ class DoorLog(models.Model):
 class InterlockLog(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user_off = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True, related_name="user_off")
     interlock = models.ForeignKey(Interlock, on_delete=models.CASCADE)
     first_heartbeat = models.DateTimeField(default=timezone.now)
     last_heartbeat = models.DateTimeField(default=timezone.now)

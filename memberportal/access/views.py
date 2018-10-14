@@ -648,15 +648,22 @@ def interlock_cron(request):
 
 
 @api_auth
-def end_interlock_session(request, session_id):
+def end_interlock_session(request, session_id, rfid=None):
     session = InterlockLog.objects.get(pk=session_id)
     if not session.session_complete:
+        user = None
+        if rfid is not None:
+            user = Profile.objects.get(rfid=rfid).user
+        else:
+            user = session.user
+
         session.session_complete = True
         session.last_heartbeat = timezone.now()
+        session.user_off = user
         session.save()
         session.interlock.checkin()
         on_time = humanize.naturaldelta(session.last_heartbeat - session.first_heartbeat)
-        post_interlock_swipe_to_discord(session.user.profile.get_full_name(), session.interlock.name,
+        post_interlock_swipe_to_discord(session.user_off.profile.get_full_name(), session.interlock.name,
                                         "deactivated", on_time)
 
         return JsonResponse({"access": True})
