@@ -269,8 +269,8 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
             profile.save()
 
             subject = "You just made a ${} Spacebucks purchase.".format(amount)
-            message = "Description of purchase: {}. If this wasn't you, or you believe there has been an error, please "\
-                                "reply to this email.".format(transaction.description)
+            message = "Description: {}. Balance Remaining: ${}. If this wasn't you, or you believe there has been an "\
+                                "error, please let us know.".format(transaction.description, profile.spacebucks_balance)
             User.objects.get(profile=profile).email_notification(subject, subject, subject, message)
 
             log_user_event(profile.user, "Successfully debited ${} from spacebucks account.".format(amount), "spacebucks")
