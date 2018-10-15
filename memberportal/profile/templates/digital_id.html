@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}HSBNE Digital ID{% endblock %}
+
+{% block content %}
+    <div class="admin-container row small-row center-align">
+        <h3 class="header center text">Your Digital ID</h3>
+
+        <h4><i class="material-icons">perm_contact_calendar</i></h4>
+        <h5>{{ user.profile.first_name }} {{ user.profile.last_name }}</h5>
+        {% if user.profile.get_state_display == "Active Member" %}
+            <h5>Active Member</h5>
+        {% elif user.profile.get_state_display == "Inactive Member" %}
+            <h5>Inactive Member</h5>
+        {% else %}
+            <h5>Not a Member</h5>
+        {% endif %}
+        <h5>Member ID: {{ user.id }}</h5>
+        <h5>Signup Date: {{ user.profile.created|date:"m/d/y" }}</h5>
+        <br>
+        <p>This is an official HSBNE Inc digital ID. Ensure the URL of this page is <b>portal.hsbne.org/profile/id</b>
+            and refresh this page to check validity.</p>
+    </div>
+{% endblock %}

@@ -8,6 +8,7 @@ urlpatterns = [
     path('profile/password/reset', views.reset_password, name='reset_password'),
     path('profile/password/reset/<uuid:reset_token>', views.reset_password, name='reset_password'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('profile/id/', views.digital_id, name='digital_id'),
     path('profile/access/view/', views.access_permissions, name='access_permissions'),
     path('profile/theme/edit/', views.edit_theme_song, name='edit_theme_song'),
     path('members/list/', views.member_list, name='member_list'),
