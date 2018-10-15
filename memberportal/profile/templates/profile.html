@@ -3,8 +3,10 @@
 {% block title %}Profile{% endblock %}
 
 {% block content %}
-    <div class="admin-container row small-row">
+    <div class="admin-container row small-row center">
         <h3 class="header center text">Your Member Profile</h3>
+
+        <a class="btn waves-effect waves-light" style="margin: 0 auto;" href="{% url 'digital_id' %}">View Digital ID</a><br><br>
 
         <table id="profileTable" class="center striped">
             <tbody>

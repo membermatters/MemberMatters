@@ -379,6 +379,17 @@ def edit_profile(request):
 
 
 @login_required
+def digital_id(request):
+    """
+    The digital ID view.
+    :param request:
+    :return:
+    """
+
+    return render(request, 'digital_id.html')
+
+
+@login_required
 @admin_required
 def set_state(request, member_id, state):
     """
