@@ -169,6 +169,12 @@ function openMemberActionsModal(e) {
     get_spacebucks_url = e.getAttribute("data-get_spacebucks_url");
     document.getElementById('admin-member-modal-name').innerHTML = name;
 
+    if (name.indexOf("NOT IN XERO") > 0) {
+        document.getElementById("resend-to-xero-button").classList.remove("disabled");
+    } else {
+        document.getElementById("resend-to-xero-button").classList.add("disabled");
+    }
+
     // get the edit profile form
     $.ajax({
         url: profile_url,
@@ -259,11 +265,13 @@ function openMemberActionsModal(e) {
     let activeButton = document.getElementById("activate-member-button");
     let deactiveButton = document.getElementById("deactivate-member-button");
     let resendWelcomeButton = document.getElementById("resend-welcome-button");
+    let xeroButton = document.getElementById("resend-to-xero-button");
 
     activeButton.innerText = "Enable Access";
     activeButton.setAttribute("data-tooltip", "Enable Site Access");
     resendWelcomeButton.classList.remove("hidden");
     resendWelcomeButton.classList.remove("hidden");
+    xeroButton.classList.remove("hidden");
     if (member_state === "inactive") {
         activeButton.classList.remove("disabled");
         activeButton.classList.remove("hidden");
@@ -282,7 +290,7 @@ function openMemberActionsModal(e) {
         deactiveButton.classList.add("disabled");
         deactiveButton.classList.add("hidden");
         resendWelcomeButton.classList.add("hidden");
-        document.getElementById("resend-to-xero-button").classList.add("hidden");
+        xeroButton.classList.add("hidden");
     }
 
     memberActionsModal.open();
