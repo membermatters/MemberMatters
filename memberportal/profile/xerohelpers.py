@@ -129,6 +129,32 @@ def create_membership_invoice(user):
 
     next_month_date = datetime.datetime(this_year, next_month, 1)
 
+    line_items = [
+        {
+            "Description": "HSBNE Membership: " + user.profile.member_type.name,
+            "Quantity": "1",
+            "ItemCode": user.profile.member_type.name,
+            "UnitAmount": round(user.profile.member_type.cost * 0.7, 2),
+            "TaxType": "OUTPUT",
+            "AccountCode": "200"
+        }
+    ]
+
+    causes = user.profile.causes.all()
+    length = causes.count()
+
+    if length:
+        for cause in causes:
+            item = {
+                "Description": "Cause Membership: " + cause.name,
+                "Quantity": "1",
+                "ItemCode": cause.item_code,
+                "UnitAmount": round(user.profile.member_type.cost * (0.3 / length), 2),
+                "TaxType": "OUTPUT",
+                "AccountCode": cause.account_code
+            }
+            line_items.append(item)
+
     payload = {
         "Type": "ACCREC",
         "Contact": {
@@ -136,19 +162,10 @@ def create_membership_invoice(user):
         },
         "DueDate": next_month_date,
         "LineAmountTypes": "Inclusive",
-        "LineItems": [
-            {
-                "Description": "HSBNE Membership: " + user.profile.member_type.name,
-                "Quantity": "1",
-                "ItemCode": user.profile.member_type.name,
-                "UnitAmount": user.profile.member_type.cost,
-                "TaxType": "OUTPUT",
-                "AccountCode": "200"
-            }
-        ],
+        "LineItems": line_items,
         "Status": "AUTHORISED",
         "Reference": user.profile.xero_account_number,
-        "Url": "https://hsbne.org",
+        "Url": "https://portal.hsbne.org",
     }
 
     if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:

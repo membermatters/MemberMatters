@@ -5,4 +5,4 @@ from .models import Causes
 class CauseForm(forms.ModelForm):
     class Meta:
         model = Causes
-        fields = ['name', 'description']
+        fields = ['name', 'description', "item_code", "account_code"]
