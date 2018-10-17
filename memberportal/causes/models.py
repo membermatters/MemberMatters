@@ -5,7 +5,7 @@ import math
 class Causes(models.Model):
     name = models.CharField("Cause Name", max_length=20, unique=True)
     description = models.CharField("Cause Description", max_length=100)
-    item_code = models.CharField("Item Code", max_length=50, unique=True)
+    item_code = models.CharField("Item Code", max_length=50)
     account_code = models.IntegerField("Account Code")
 
 
