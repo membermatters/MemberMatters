@@ -38,8 +38,7 @@ def generate_account_number(profile):
     if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
         with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(
-            os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
         xero = Xero(credentials)
         contacts = xero.contacts.filter(includeArchived=True)
 
@@ -53,6 +52,61 @@ def generate_account_number(profile):
                 print("Generated Xero Account: " + account_number)
 
                 return profile.xero_account_number
+
+    else:
+        return False
+
+
+def sync_xero_accounts(users):
+    print(users)
+    if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
+        with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
+            rsa_key = keyfile.read()
+        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+        xero = Xero(credentials)
+        contacts = xero.contacts.filter(includeArchived=True)
+        matches = []
+        non_matches = []
+
+        for user in users:
+            profile = user.profile
+            if profile.state == "noob":
+                print("Not syncing new member ({} {}).".format(user.profile.get_full_name(), user.email))
+                continue
+            if profile.xero_account_id or profile.xero_account_number:
+                print("{} already has xero details ({} {})".format(user.profile.get_full_name(), profile.xero_account_number, profile.xero_account_id))
+                continue
+            else:
+                contact = next((item for item in contacts if str(item['EmailAddress']).lower() == str(user.email).lower()), None)
+                if contact:
+                    print("Found match for {} ({})".format(profile.get_full_name(), user.email) + str(contact))
+                    if "AccountNumber" not in contact:
+                        if contact["ContactStatus"] == "ARCHIVED":
+                            continue
+                        else:
+                            raise FileNotFoundError("No account number exists for " + user.profile.get_full_name())
+                    user.profile.xero_account_number = contact["AccountNumber"]
+                    user.profile.xero_account_id = contact["ContactID"]
+                    user.profile.save()
+                    matches.append(user)
+                else:
+                    print("No match found for {} ({})".format(profile.get_full_name(), user.email))
+                    non_matches.append(user)
+
+        message = "\nDone syncing {} users. Found {} matches and {} non-matches. {} users untouched.".format(len(users), len(matches), len(non_matches), str(len(users) - (len(matches)+len(non_matches))))
+        print(message)
+        print("\nMatched Users:")
+        for match in matches:
+            print(match.profile.get_full_name())
+        print("\nNon-matched Users:")
+        for non_match in non_matches:
+            print(non_match.profile.get_full_name() + " " + non_match.email)
+
+        non_matches_string = ""
+        for non_match in non_matches:
+            non_matches_string += "{} ({}), ".format(non_match.profile.get_full_name(), non_match.email)
+
+        return message + "Non matches: " + non_matches_string
 
     else:
         return False

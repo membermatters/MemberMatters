@@ -25,4 +25,5 @@ urlpatterns = [
     path('api/member/<int:member_id>/spacebucks/add/<int:amount>', views.admin_add_spacebucks, name='admin_add_spacebucks_amount'),
     path('api/member/<int:member_id>/spacebucks/add/', views.admin_add_spacebucks, name='admin_add_spacebucks'),
     path('api/member/create', views.create_account_api, name='create_account_api'),
+    path('api/members/xero/sync', views.sync_xero_accounts, name='sync_xero_accounts'),
 ]

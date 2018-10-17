@@ -526,6 +526,21 @@ def resend_welcome_email(request, member_id):
 
 
 @login_required
+@admin_required
+def sync_xero_accounts(request):
+    from .xerohelpers import sync_xero_accounts
+    success = sync_xero_accounts(User.objects.all().prefetch_related())
+    log_user_event(request.user, "Resynced xero accounts.", "profile")
+
+    if success:
+        return JsonResponse({"message": success})
+
+    else:
+        return JsonResponse(
+            {"message": "Couldn't sync xero accounts, unknown error."})
+
+
+@login_required
 def add_to_xero(request, member_id):
     return JsonResponse(
         {"response": User.objects.get(pk=member_id).profile.add_to_xero()})
