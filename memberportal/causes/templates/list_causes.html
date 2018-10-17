@@ -17,7 +17,7 @@
                     <br>
                         <span>
                             {% for member in cause.get_active_set %}
-                                {{ member.user.profile.get_full_name }} ({{ member.user.profile.screen_name }}){% if not forloop.last %},{% endif %}
+                                {{ member.user.profile.get_full_name }} ({{ member.user.profile.screen_name }})<br>
                             {% endfor %}
                         </span>
                     </div>
