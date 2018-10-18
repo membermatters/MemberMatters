@@ -8,12 +8,12 @@ class Causes(models.Model):
     item_code = models.CharField("Item Code", max_length=50)
     account_code = models.IntegerField("Account Code")
 
-
     def get_active_count(self):
         return str(self.profile_set.filter(state="active").count())
 
     def get_quorum(self):
-        quorum = math.ceil(self.profile_set.filter(state="active").count() * 0.4)
+        quorum = math.ceil(
+            self.profile_set.filter(state="active").count() * 0.4)
         if quorum < 3:
             quorum = 3
         return str(quorum)
@@ -23,3 +23,11 @@ class Causes(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class CauseFund(models.Model):
+    cause = models.ForeignKey('Causes', on_delete=models.CASCADE)
+    name = models.CharField("Fund Name", max_length=20, unique=True)
+    description = models.CharField(
+        "Description of Fund", max_length=100)
+    balance = models.FloatField("Amount", default=0)

@@ -12,6 +12,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Description</th>
+                    <th>Funds</th>
                     <th style="min-width: 100px;">Edit</th>
                 </tr>
                 </thead>
@@ -21,6 +22,12 @@
                     <tr>
                         <td>{{ cause.name }}</td>
                         <td>{{ cause.description }}</td>
+                        <td>
+                            <a href="{% url "manage_cause_funds" cause_id=cause.id %}"
+                               class="waves-effect waves-light btn-small edit-button tooltipped" data-position="top" data-tooltip="Manage Funds">
+                                Cause funds
+                            </a>
+                        </td>
                         <td>
                             <a href="{% url "edit_cause" cause_id=cause.id %}"
                                class="waves-effect waves-light btn-small edit-button tooltipped" data-position="top" data-tooltip="Edit Cause">

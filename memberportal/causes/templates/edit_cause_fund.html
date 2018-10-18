@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Cause Fund{% endblock %}
+{% block page_title %}Edit Cause Fund{% endblock %}
+
+{% block content %}
+    <div class="admin-container center row small-row">
+        <h3 class="header center text">Edit Cause Fund</h3>
+        <p>Use the form below to update the cause fund details.</p>
+        <form method="POST" action=""/>
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <a class="btn-flat right" onclick="window.history.back()">Cancel</a>
+        <button class="btn waves-effect waves-light right" type="submit" name="action">Save
+            <i class="material-icons right">check</i>
+        </button>
+        </form>
+    </div>
+{% endblock %}

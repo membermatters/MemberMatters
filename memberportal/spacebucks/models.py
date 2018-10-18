@@ -7,10 +7,14 @@ class SpaceBucks(models.Model):
     TRANSACTION_TYPES = (
         ('stripe', 'Stripe Payment'),
         ('bank', 'Bank Transfer'),
-        ('card', 'Membership Card')
+        ('card', 'Membership Card'),
+        ('web', 'Internal Web Payment')
     )
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    fund = models.ForeignKey(
+        "causes.CauseFund", null=True, blank=True, on_delete=models.SET_NULL)
     amount = models.FloatField("Amount")
     transaction_type = models.CharField(
         "Transaction Type", max_length=10, choices=TRANSACTION_TYPES)
@@ -22,6 +26,10 @@ class SpaceBucks(models.Model):
 
     def save(self, *args, **kwargs):
         super(SpaceBucks, self).save(*args, **kwargs)
-        balance = SpaceBucks.objects.filter(user=self.user).aggregate(Sum('amount'))['amount__sum']
+        balance = SpaceBucks.objects.filter(
+            user=self.user).aggregate(Sum('amount'))['amount__sum']
         self.user.profile.spacebucks_balance = round(balance, 2)
         self.user.profile.save()
+        if self.fund:
+            self.fund.balance += self.amount * -1.0
+            self.fund.save()
