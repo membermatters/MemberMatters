@@ -129,6 +129,6 @@ MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL = 'profile.User'
 
-FROM_EMAIL = '"HSBNE Member Portal" <contact@hsbne.org>'
+FROM_EMAIL = '"HSBNE Member Portal" <treasurer@hsbne.org>'
 FROM_EMAIL_TREASURER = '"HSBNE Member Portal" <treasurer@hsbne.org>'
 SYSADMIN_EMAIL = "infrastructure@hsbne.org"
