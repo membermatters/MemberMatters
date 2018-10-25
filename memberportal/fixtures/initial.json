@@ -13,7 +13,9 @@
     "pk": 1,
     "fields": {
         "name": "Default Cause",
-        "description": "Nothing to describe really!"
+        "description": "Nothing to describe really!",
+        "account_code": 200,
+        "item_code": "Change Me"
     }
 },
 {
