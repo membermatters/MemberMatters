@@ -541,6 +541,12 @@ def sync_xero_accounts(request):
 
 
 @login_required
+@admin_required
 def add_to_xero(request, member_id):
-    return JsonResponse(
-        {"response": User.objects.get(pk=member_id).profile.add_to_xero()})
+    return JsonResponse({"response": User.objects.get(pk=member_id).profile.add_to_xero()})
+
+
+@login_required
+@admin_required
+def create_first_invoice(request, member_id):
+    return JsonResponse({"response": User.objects.get(pk=member_id).profile.create_membership_invoice()})
