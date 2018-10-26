@@ -87,6 +87,9 @@ def signup(request):
                 profile.user_id = new_user.id
             profile.save()
             profile_form.save_m2m()
+
+            profile.email_profile_to("contact@hsbne.org")
+
             new_user.email_link(
                 "HSBNE New Member Signup - Action Required",
                 "Next Step: Register for an Induction",
@@ -548,5 +551,5 @@ def add_to_xero(request, member_id):
 
 @login_required
 @admin_required
-def create_first_invoice(request, member_id):
+def create_invoice(request, member_id):
     return JsonResponse({"response": User.objects.get(pk=member_id).profile.create_membership_invoice()})
