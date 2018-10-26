@@ -142,8 +142,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __send_email(self, subject, body):
         if "SENDGRID_API_KEY" in os.environ:
-            sg = sendgrid.SendGridAPIClient(
-                apikey=os.environ.get('SENDGRID_API_KEY'))
+            sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
             from_email = sendgrid.Email(settings.FROM_EMAIL)
             to_email = sendgrid.Email(self.email)
             subject = subject
@@ -152,14 +151,10 @@ class User(AbstractBaseUser, PermissionsMixin):
             response = sg.client.mail.send.post(request_body=mail.get())
 
             if response.status_code == 202:
-                log_user_event(
-                    self, "Sent email with subject: " + subject, "email",
-                          "Email content: " + body)
+                log_user_event(self, "Sent email with subject: " + subject, "email", "Email content: " + body)
                 return True
 
-        log_user_event(
-            self, "Failed to send email with subject: " + subject,
-            "email", "Email content: " + body)
+        log_user_event(self, "Failed to send email with subject: " + subject, "email", "Email content: " + body)
         return False
 
     def email_notification(self, subject, title, preheader, message):
@@ -313,6 +308,40 @@ class Profile(models.Model):
         self.state = "active"
         self.save()
         return True
+
+    def email_profile_to(self, to_email):
+        causes = self.causes.all()
+        causes_string = "none :("
+
+        if causes.count() == 3:
+            causes_string = "{}, {} and {}".format(causes[0], causes[1], causes[2])
+        elif causes.count() == 2:
+            causes_string = "{} and {}".format(causes[0], causes[1])
+        elif causes.count() == 1:
+            causes_string = causes[0]
+
+        message = "{} has just signed up. Their membership level is {} and their selected causes are {}. " \
+                  "Their email is {}.".format(self.get_full_name(), self.member_type, causes_string, self.user.email)
+        email_vars = {"preheader": "", "title": "New member signup", "message": message}
+        email_string = render_to_string('email_without_button.html', {'email': email_vars})
+        subject = "A new member signed up! ({})".format(self.get_full_name())
+
+        if "SENDGRID_API_KEY" in os.environ:
+            sg = sendgrid.SendGridAPIClient(
+                apikey=os.environ.get('SENDGRID_API_KEY'))
+
+            from_email = sendgrid.Email(settings.FROM_EMAIL)
+            to_email = sendgrid.Email(to_email)
+            content = Content("text/html", email_string)
+            mail = Mail(from_email, subject, to_email, content)
+            response = sg.client.mail.send.post(request_body=mail.get())
+
+            if response.status_code == 202:
+                log_user_event(self.user, "Sent email with subject: " + subject, "email", "Email content: " + email_string)
+                return True
+
+        log_user_event(self.user, "Failed to send email with subject: " + subject, "email", "Email content: " + email_string)
+        return False
 
     def get_logs(self):
         return UserEventLog.objects.filter(user=self.user)
