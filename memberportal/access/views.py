@@ -197,9 +197,9 @@ def check_door_access(request, rfid_code, door_id=None):
         user = Profile.objects.get(rfid=rfid_code).user
 
     except ObjectDoesNotExist:
-        log_event("Tried to check access for non existant user (or rfid not set).", "error", request)
+        log_event("Tried to check access for non existent user (or rfid not set).", "error", request)
         return JsonResponse({"access": False,
-                             "error": "Tried to check access for non existant user (or rfid not set).",
+                             "error": "Tried to check access for non existent user (or rfid not set).",
                              "timestamp": round(time.time())})
 
     if door_id is not None:
@@ -208,9 +208,9 @@ def check_door_access(request, rfid_code, door_id=None):
             door.checkin()
 
         except ObjectDoesNotExist:
-            log_event("Tried to check access for non existant door.", "error", request)
+            log_event("Tried to check access for non existent door.", "error", request)
             return JsonResponse({"access": False,
-                                 "error": "Tried to check access for non existant door",
+                                 "error": "Tried to check access for non existent door",
                                  "timestamp": round(time.time())})
 
     else:
@@ -261,86 +261,172 @@ def lock_interlock(request, interlock_id):
         return JsonResponse({"success": interlock.lock()})
 
 
-@api_auth
-def authorised_door_tags(request, door_id=None):
-    door = None
+def get_door_tags(door, return_hash=False):
+    try:
+        door = Doors.objects.get(pk=door)
 
-    if door_id is not None:
+    except (ObjectDoesNotExist, ValueError):
         try:
-            door = Doors.objects.get(pk=door_id)
-            door.checkin()
+            door = Doors.objects.get(ip_address=door)
 
         except ObjectDoesNotExist:
-            log_event("Tried to get authorised tags for non existant door.", "error", request)
-            return JsonResponse({"access": False,
-                                 "error": "Tried to get authorised tags for non existant door.",
-                                 "timestamp": round(time.time())})
+            return False
 
-    else:
-        door_ip = request.META.get('REMOTE_ADDR')
+        except TypeError:
+            return False
 
-        try:
-            door = Doors.objects.get(ip_address=door_ip)
-            door.checkin()
-
-        except ObjectDoesNotExist:
-            log_event("Tried to get authorised tags for non existant door {} (or IP set incorrectly).".format(door_ip),
-                      "error", request)
-
-            return JsonResponse({"access": False,
-                                 "error": "Tried to get authorised tags for non existant door {} (or IP set incorrectly).".format(door_ip),
-                                 "timestamp": round(time.time())})
-
+    door.checkin()
     authorised_tags = list()
 
     for profile in Profile.objects.all():
         if door in profile.doors.all() and profile.state == "active":
-            authorised_tags.append(profile.rfid)
+            if profile.rfid:
+                authorised_tags.append(profile.rfid)
 
-    authorised_tags_hash = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
-
-    log_event("Got authorised tags for {} door.".format(door.name), "door")
-    return JsonResponse({"authorised_tags": authorised_tags, "authorised_tags_hash": authorised_tags_hash, "door": door.name})
-
-
-@api_auth
-def authorised_interlock_tags(request, interlock_id=None):
-    if interlock_id is not None:
-        try:
-            interlock = Interlock.objects.get(pk=interlock_id)
-            interlock.checkin()
-
-        except ObjectDoesNotExist:
-            log_event("Tried to get authorised tags for non existant interlock.", "error", request)
-            return JsonResponse({"access": False,
-                                 "error": "Tried to get authorised tags for non existant interlock.",
-                                 "timestamp": round(time.time())})
+    if return_hash:
+        return hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
 
     else:
-        interlock_ip = request.META.get('REMOTE_ADDR')
+        return authorised_tags
 
+
+def get_interlock_tags(interlock, return_hash=False):
+    try:
+        interlock = Interlock.objects.get(pk=interlock)
+
+    except (ObjectDoesNotExist, ValueError):
         try:
-            interlock = Interlock.objects.get(ip_address=interlock_ip)
-            interlock.checkin()
+            interlock = Interlock.objects.get(ip_address=interlock)
 
         except ObjectDoesNotExist:
-            log_event("Tried to get authorised tags for non existant interlock {} (or IP set incorrectly).".format(
-                interlock_ip), "error", request)
-            return JsonResponse({"access": False,
-                                 "error": "Tried to get authorised tags for non existant interlock {} (or IP set incorrectly).".format(
-                                     interlock_ip),
-                                 "timestamp": round(time.time())})
+            return False
 
+        except TypeError:
+            return False
+
+    interlock.checkin()
     authorised_tags = list()
 
     for profile in Profile.objects.all():
         if interlock in profile.interlocks.all() and profile.state == "active":
-            authorised_tags.append(profile.rfid)
+            if profile.rfid:
+                authorised_tags.append(profile.rfid)
 
-    authorised_tags_hash = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
+    if return_hash:
+        return hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
 
-    log_event("Got authorised tags for {} interlock.".format(interlock.name), "interlock")
-    return JsonResponse({"authorised_tags": authorised_tags, "authorised_tags_hash": authorised_tags_hash, "interlock": interlock.name})
+    else:
+        return authorised_tags
+
+
+@api_auth
+def interlock_checkin(request, interlock=None):
+    if interlock is not None:
+        authorised_tags = get_interlock_tags(interlock, True)
+
+        if authorised_tags:
+            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
+
+        else:
+            log_event("Tried to check access for non existent interlock.", "error", request)
+            return JsonResponse({"success": False, "error": "Error interlock does not exist.", "timestamp": round(time.time())})
+
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+        authorised_tags = get_interlock_tags(ip, True)
+
+        if authorised_tags:
+            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
+
+        else:
+            log_event("Tried to check access for non existent interlock.", "error", request)
+            return JsonResponse({"success": False, "error": "Error interlock does not exist.", "timestamp": round(time.time())})
+
+
+@api_auth
+def door_checkin(request, door=None):
+    if door is not None:
+        authorised_tags = get_door_tags(door, True)
+
+        if authorised_tags:
+            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
+
+        else:
+            log_event("Tried to check access for non existent door.", "error", request)
+            return JsonResponse({"success": False, "error": "Error door does not exist.", "timestamp": round(time.time())})
+
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+        authorised_tags = get_door_tags(ip, True)
+
+        if authorised_tags:
+            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
+
+        else:
+            log_event("Tried to check access for non existent door.", "error", request)
+            return JsonResponse({"success": False, "error": "Error door does not exist.", "timestamp": round(time.time())})
+
+
+@api_auth
+def authorised_door_tags(request, door=None):
+    if door is not None:
+        tags = get_door_tags(door)
+
+        if tags:
+            tags_hash = hashlib.md5(str(tags).encode('utf-8')).hexdigest()
+
+            return JsonResponse({"authorised_tags": tags, "authorised_tags_hash": tags_hash})
+
+        else:
+            log_event("Tried to get authorised tags for non existent interlock.", "error", request)
+            return JsonResponse({"access": False,
+                                 "error": "Tried to get authorised tags for non existent interlock.",
+                                 "timestamp": round(time.time())})
+
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+        tags = get_door_tags(ip)
+
+        if tags:
+            tags_hash = hashlib.md5(str(tags).encode('utf-8')).hexdigest()
+
+            return JsonResponse({"authorised_tags": tags, "authorised_tags_hash": tags_hash})
+
+        else:
+            log_event("Tried to get tags for non existent door {} (or IP set incorrectly).".format(ip), "error", request)
+            return JsonResponse({"access": False,
+                                 "error": "Tried to get tags for non existent door {} (or IP set incorrectly).".format(ip),
+                                 "timestamp": round(time.time())})
+
+
+@api_auth
+def authorised_interlock_tags(request, interlock=None):
+    if interlock is not None:
+        tags = get_interlock_tags(interlock)
+        if tags:
+            tags_hash = hashlib.md5(str(tags).encode('utf-8')).hexdigest()
+
+            return JsonResponse({"authorised_tags": tags, "authorised_tags_hash": tags_hash})
+
+        else:
+            log_event("Tried to get authorised tags for non existent interlock.", "error", request)
+            return JsonResponse({"access": False,
+                                 "error": "Tried to get authorised tags for non existent interlock.",
+                                 "timestamp": round(time.time())})
+
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+        tags = get_interlock_tags(ip)
+
+        if tags:
+            tags_hash = hashlib.md5(str(tags).encode('utf-8')).hexdigest()
+            return JsonResponse({"authorised_tags": tags, "authorised_tags_hash": tags_hash})
+
+        else:
+            log_event("Tried to get tags for non existent interlock {} (or IP set incorrectly).".format(ip), "error", request)
+            return JsonResponse({"access": False,
+                                 "error": "Tried to get tags for non existent interlock {} (or IP set incorrectly).".format(ip),
+                                 "timestamp": round(time.time())})
 
 
 @login_required
@@ -499,9 +585,9 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
         user = Profile.objects.get(rfid=rfid_code).user
 
     except ObjectDoesNotExist:
-        log_event("Tried to check access for non existant user (or rfid not set).", "error", request)
+        log_event("Tried to check access for non existent user (or rfid not set).", "error", request)
         return JsonResponse(
-            {"access": False, "error": "Tried to check access for non existant user (or rfid not set).",
+            {"access": False, "error": "Tried to check access for non existent user (or rfid not set).",
              "timestamp": round(time.time())})
 
     if interlock_id is not None:
@@ -510,8 +596,8 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
             interlock.checkin()
 
         except ObjectDoesNotExist:
-            log_event("Tried to check access for non existant interlock.", "error", request)
-            return JsonResponse({"access": False, "error": "Tried to check access for non existant interlock.",
+            log_event("Tried to check access for non existent interlock.", "error", request)
+            return JsonResponse({"access": False, "error": "Tried to check access for non existent interlock.",
                                  "timestamp": round(time.time())})
 
     else:
@@ -546,99 +632,6 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
 
 
 @api_auth
-def interlock_checkin(request, interlock_id=None):
-    interlock_ip = None
-
-    if interlock_id is not None:
-        try:
-            interlock = Interlock.objects.get(pk=interlock_id)
-            interlock.checkin()
-            authorised_tags = list()
-
-            for profile in Profile.objects.all():
-                if interlock in profile.interlocks.all() and profile.state == "active":
-                    authorised_tags.append(profile.rfid)
-
-            print(authorised_tags)
-            authorised_tags = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
-
-            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
-
-        except ObjectDoesNotExist:
-            log_event("Tried to check access for non existant interlock.", "error", request)
-            return JsonResponse({"success": False, "error": "Tried to check access for non existant interlock.",
-                                 "timestamp": round(time.time())})
-
-    else:
-        try:
-            interlock_ip = request.META.get('REMOTE_ADDR')
-            interlock = Interlock.objects.get(ip_address=interlock_ip)
-            interlock.checkin()
-
-            authorised_tags = list()
-
-            for profile in Profile.objects.all():
-                if interlock in profile.interlocks.all() and profile.state == "active":
-                    authorised_tags.append(profile.rfid)
-
-            print(authorised_tags)
-            authorised_tags = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
-
-            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
-
-        except ObjectDoesNotExist:
-            log_event("Tried to check access for {} interlock but none found.".format(interlock_ip), "error", request)
-            return JsonResponse({"success": False, "error": "Interlock does not exist.",
-                                 "timestamp": round(time.time())})
-
-
-@api_auth
-def door_checkin(request, door_id=None):
-    door_ip = None
-
-    if door_id is not None:
-        try:
-            door = Doors.objects.get(pk=door_id)
-            door.checkin()
-            authorised_tags = list()
-
-            for profile in Profile.objects.all():
-                if door in profile.doors.all() and profile.state == "active":
-                    authorised_tags.append(profile.rfid)
-
-            print(authorised_tags)
-            authorised_tags = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
-
-            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
-
-        except ObjectDoesNotExist:
-            log_event("Tried to check access for non existant door.", "error", request)
-            return JsonResponse(
-                {"success": False, "error": "Error door does not exist.", "timestamp": round(time.time())})
-
-    else:
-        try:
-            door_ip = request.META.get('REMOTE_ADDR')
-            door = Doors.objects.get(ip_address=door_ip)
-            door.checkin()
-
-            authorised_tags = list()
-
-            for profile in Profile.objects.all():
-                if door in profile.doors.all() and profile.state == "active":
-                    authorised_tags.append(profile.rfid)
-
-            print(authorised_tags)
-            authorised_tags = hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
-
-            return JsonResponse({"success": True, "hashOfTags": authorised_tags, "timestamp": round(time.time())})
-
-        except ObjectDoesNotExist:
-            log_event("Tried to check access for {} door but none found.".format(door_ip), "error", request)
-            return JsonResponse({"success": False, "error": "Door does not exist..", "timestamp": round(time.time())})
-
-
-@api_auth
 def spacebucks_device_checkin(request, device_id=None):
     device_ip = None
 
@@ -649,7 +642,7 @@ def spacebucks_device_checkin(request, device_id=None):
             return JsonResponse({"success": True, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
-            log_event("Tried to check access for non existant spacebucks device.", "error", request)
+            log_event("Tried to check access for non existent spacebucks device.", "error", request)
             return JsonResponse(
                 {"success": False, "error": "Error spacebucks device does not exist.", "timestamp": round(time.time())})
 
