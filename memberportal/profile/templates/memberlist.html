@@ -9,6 +9,8 @@
             <thead>
             <tr style="max-width: 120px;">
                 <th>Username</th>
+                <th>RFID</th>
+                <th>Email</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Member Type</th>
@@ -21,6 +23,8 @@
             {% for member in members %}
                 <tr>
                     <td>{{ member.profile.screen_name }}</td>
+                    <td>{{ member.profile.rfid }}</td>
+                    <td>{{ member.email }}</td>
                     <td>{{ member.profile.first_name }}</td>
                     <td>{{ member.profile.last_name }}</td>
                     <td>{{ member.profile.member_type.name }}</td>
