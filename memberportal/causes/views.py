@@ -80,10 +80,9 @@ def edit_cause(request, cause_id):
 def delete_cause(request, cause_id):
     cause = get_object_or_404(Causes, pk=cause_id)
     cause.delete()
-    log_user_event(
-        request.user, "Deleted {} cause.".format(cause.name), "admin")
+    log_user_event(request.user, "Deleted {} cause.".format(cause.name), "admin")
 
-    return HttpResponse("Success")
+    return HttpResponseRedirect(reverse("manage_causes"))
 
 
 @login_required

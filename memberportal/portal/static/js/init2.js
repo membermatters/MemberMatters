@@ -456,6 +456,11 @@ function addSpacebucks(url) {
 }
 
 function chargeCardForSpacebucks() {
+    if (confirm('Are you sure you want to add Spacebucks?') === false) {
+        M.toast({html: "Cancelled :("});
+        return false
+    }
+
     document.getElementById("spacebucks-progress-bar").classList.add("progress");
 
     $.ajax({
@@ -474,6 +479,7 @@ function chargeCardForSpacebucks() {
             }
         },
         error: function () {
+            document.getElementById("spacebucks-progress-bar").classList.remove("progress");
             M.toast({html: "Unknown error while trying to charge your card :( "});
         }
     });

@@ -50,7 +50,7 @@
                                class="waves-effect waves-light btn-small edit-button tooltipped" data-position="top" data-tooltip="Edit Interlock">
                                 <i class="material-icons">edit</i>
                             </a>
-                            <a href="{% url "delete_interlock" interlock_id=interlock.id %}"
+                            <a href="{% url "delete_interlock" interlock_id=interlock.id %}" onclick="return confirm('Are you sure you want delete the {{ interlock.name }} interlock?')"
                                class="waves-effect waves-light btn-small delete-button tooltipped" data-position="top" data-tooltip="Delete Interlock">
                                 <i class="material-icons">delete</i>
                             </a>

@@ -8,7 +8,7 @@
         {% if success %}
             <p class="light-green-text">{{ message }}</p>
         {% elif success is False %}
-            <p class="light-green-text">There was an error saving your payment details. {{ message }}</p>
+            <p class="light-red-text">There was an error saving your payment details. {{ message }}</p>
         {% endif %}
 
         <p class="larger-text">Your current spacebucks balance is
@@ -36,7 +36,8 @@
                         <div class="row">
                             <p>
                                 Click a button below to add spacebucks. This will immediately <b>charge your saved
-                                card</b> with the specified amount.
+                                card</b> with the specified amount. By using Spacebucks you agree to our
+                                <a href="https://docs.google.com/document/d/1JhjO1mddxl9n2FXcs3Jb4Y1itPEvKf5C0C-IkJfDfcI">terms</a>.
                             </p>
                         </div>
                     </div>

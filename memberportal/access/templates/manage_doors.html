@@ -39,7 +39,7 @@
                                data-position="top" data-tooltip="Edit Door">
                                 <i class="material-icons">edit</i>
                             </a>
-                            <a href="{% url "delete_door" door_id=door.id %}"
+                            <a href="{% url "delete_door" door_id=door.id %}" onclick="return confirm('Are you sure you want delete the {{ door.name }} door?')"
                                class="waves-effect waves-light btn-small delete-button tooltipped"
                                data-position="top" data-tooltip="Delete Door">
                                 <i class="material-icons">delete</i>
