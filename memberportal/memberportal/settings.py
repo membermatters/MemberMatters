@@ -25,6 +25,9 @@ SECRET_KEY = 'l)#t68rzepzp)0l#x=9mntciapun$whl+$j&=_@nl^zl1xm3j*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+if os.environ.get("HSBNE_PORTAL_ENV") == "Production":
+    DEBUG = False
+
 ALLOWED_HOSTS = ["portal.hsbne.org", "porthack.hsbne.org", "localhost", "127.0.0.1"]
 
 # Slightly hacky, but lets us use a direct IP while on the local HSBNE network.

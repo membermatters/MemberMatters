@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Error 500{% endblock %}
+{% block page_title %}Error 500{% endblock %}
+
+{% block body_tag %}
+    <body style="background: url(/static/img/home-bg.jpg) no-repeat center center fixed;">
+{% endblock %}
+
+{% block content %}
+    <div id="homeContainer">
+        <div class="row center padding-top">
+            <h5 class="header col s12 light">
+                Error 500. Internal Server Error!
+            </h5>
+            <p>
+                Sorry but the portal is experiencing an internal technical difficulty. If this error persists, please email infrastructure@hsbne.org.
+            </p>
+            <br><br>
+        </div>
+    </div>
+{% endblock %}
