@@ -183,6 +183,12 @@ def post_interlock_swipe_to_discord(name, interlock, type, time=None):
                 "color": 5025616
             })
 
+        elif type == "maintenance_lock_out":
+            json_message['embeds'].append({
+                "description": "{} tried to access the {} but it is currently under a maintenance lockout".format(name, interlock),
+                "color": 16007990
+            })
+
         response = requests.post(url, json=json_message)
 
         if response.status_code == 200:
@@ -229,6 +235,10 @@ def check_door_access(request, rfid_code, door_id=None):
 
     if user.profile.state == "active":
         allowed_doors = user.profile.doors.all()
+
+        if door.locked_out:
+            post_interlock_swipe_to_discord(user.profile.get_full_name(), door.name, "maintenance_lock_out")
+            return JsonResponse({"access": False, "error": "Maintenance lockout enabled.", "timestamp": round(time.time())})
 
         if allowed_doors:
             if door in allowed_doors:
@@ -513,26 +523,6 @@ def delete_interlock(request, interlock_id):
 
 
 @login_required
-def unlock_interlock(request, interlock_id):
-    interlock = Interlock.objects.get(pk=interlock_id)
-    if interlock in request.user.profile.interlocks.all():
-        log_user_event(request.user, "Unlocked {} interlock via API.".format(interlock.name), "door")
-        return JsonResponse({"success": interlock.unlock()})
-
-    return HttpResponseForbidden("You are not authorised to access that interlock.")
-
-
-@login_required
-def lock_interlock(request, interlock_id):
-    interlock = Interlock.objects.get(pk=interlock_id)
-    if interlock in request.user.profile.interlocks.all():
-        log_user_event(request.user, "Locked {} interlock via API.".format(interlock.name), "door")
-        return JsonResponse({"success": interlock.lock()})
-
-    return HttpResponseForbidden("You are not authorised to access that interlock.")
-
-
-@login_required
 @admin_required
 def admin_grant_interlock(request, interlock_id, member_id):
     try:
@@ -614,6 +604,10 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
                                  "timestamp": round(time.time())})
 
     if user.profile.state == "active":
+        if interlock.locked_out:
+            post_interlock_swipe_to_discord(user.profile.get_full_name(), interlock.name, "maintenance_lock_out")
+            return JsonResponse({"access": False, "error": "Maintenance lockout enabled.", "timestamp": round(time.time())})
+
         allowed_interlocks = user.profile.interlocks.all()
 
         if allowed_interlocks:
