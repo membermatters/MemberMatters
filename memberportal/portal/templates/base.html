@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-129685827-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'UA-129685827-1');
+    </script>
+
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
     <title>{% block title %}HSBNE Member Portal{% endblock %} - HSBNE Member Portal</title>
@@ -19,7 +33,7 @@
 </head>
 
 {% block body_tag %}
-<body>
+    <body>
 {% endblock %}
 <nav class="cn-dark-background lighten-1" role="navigation">
     <div class="nav-wrapper container">
@@ -157,21 +171,24 @@
 </nav>
 
 <!-- Modal Structure -->
-  <div id="aboutModal" class="modal" style="min-height: auto !important;">
+<div id="aboutModal" class="modal" style="min-height: auto !important;">
     <div class="modal-content">
-      <h4>About HSBNE Portal</h4>
+        <h4>About HSBNE Portal</h4>
         <p>This is an open source, full featured membership portal. It is designed for
             <a href="https://hsbne.org/">HSBNE</a> (Hackerspace Brisbane). It was created by
-            <a href="https://jaimyn.com.au">Jaimyn Mayer</a> in his spare time, with a little help from some HSBNE members.</p>
+            <a href="https://jaimyn.com.au">Jaimyn Mayer</a> in his spare time, with a little help from some HSBNE
+            members.</p>
         <p>It can manage membership, access permissions, spacebucks, doors, interlocks and more!
             For more information please see the GitHub repo <a target="_blank"
-                                                              href="https://github.com/HSBNE/hsbneportal/">here</a>.</p>
-        <p>For a brief user guide, please see <a target="_blank" href="https://github.com/HSBNE/hsbneportal/wiki">this page</a>.</p>
+                                                               href="https://github.com/HSBNE/hsbneportal/">here</a>.
+        </p>
+        <p>For a brief user guide, please see <a target="_blank" href="https://github.com/HSBNE/hsbneportal/wiki">this
+            page</a>.</p>
     </div>
     <div class="modal-footer">
-      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
     </div>
-  </div>
+</div>
 
 <div class="fullwidth-container">
     {% block fullwidth-content %}
