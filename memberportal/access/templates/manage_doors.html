@@ -16,6 +16,7 @@
                     <th>IP</th>
                     <th>Last Seen</th>
                     <th>Default Access</th>
+                    <th>Locked Out</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -26,20 +27,29 @@
                         <td>{{ door.name }}</td>
                         <td>{{ door.ip_address }}</td>
                         {% if not door.last_seen %}
-                            <td class="orange-text tooltipped" data-position="top" data-tooltip="Time since the last check in.">never</td>
+                            <td class="orange-text tooltipped" data-position="top"
+                                data-tooltip="Time since the last check in.">never
+                            </td>
                         {% elif door.get_unavailable %}
-                            <td class="red-text tooltipped" data-position="top" data-tooltip="Time since the last check in.">{{ door.last_seen|timesince }} ago</td>
+                            <td class="red-text tooltipped" data-position="top"
+                                data-tooltip="Time since the last check in.">{{ door.last_seen|timesince }} ago
+                            </td>
                         {% else %}
-                            <td class="light-green-text tooltipped" data-position="top" data-tooltip="Time since the last check in.">{{ door.last_seen|timesince }} ago</td>
+                            <td class="light-green-text tooltipped" data-position="top"
+                                data-tooltip="Time since the last check in.">{{ door.last_seen|timesince }} ago
+                            </td>
                         {% endif %}
                         <td>{{ door.all_members }}</td>
+                        <td>{% if door.locked_out %} <span class="red-text">LOCKED OUT</span>{% else %}
+                            <span>False</span> {% endif %}</td>
                         <td>
                             <a href="{% url "edit_door" door_id=door.id %}"
                                class="waves-effect waves-light btn-small edit-button tooltipped"
                                data-position="top" data-tooltip="Edit Door">
                                 <i class="material-icons">edit</i>
                             </a>
-                            <a href="{% url "delete_door" door_id=door.id %}" onclick="return confirm('Are you sure you want delete the {{ door.name }} door?')"
+                            <a href="{% url "delete_door" door_id=door.id %}"
+                               onclick="return confirm('Are you sure you want delete the {{ door.name }} door?')"
                                class="waves-effect waves-light btn-small delete-button tooltipped"
                                data-position="top" data-tooltip="Delete Door">
                                 <i class="material-icons">delete</i>

@@ -11,11 +11,20 @@
         {% csrf_token %}
         {% for field in form %}
             {% if field.name == "all_members" %}
-                <label>
+                <label class="left">
                     {% if field.value == True %}
                         <input type="checkbox" name="all_members" id="id_all_members" checked>
                     {% else %}
                         <input type="checkbox" name="all_members" id="id_all_members">
+                    {% endif %}
+                    <span>{{ field.label }}</span>
+                </label>
+            {% elif field.name == "locked_out" %}
+                <label class="left">
+                    {% if field.value == True %}
+                        <input type="checkbox" name="locked_out" id="id_locked_out" checked>
+                    {% else %}
+                        <input type="checkbox" name="locked_out" id="id_locked_out">
                     {% endif %}
                     <span>{{ field.label }}</span>
                 </label>
