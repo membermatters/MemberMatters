@@ -17,6 +17,7 @@
                     <th>Last Seen</th>
                     <th>Default Access</th>
                     <th>Locked Out</th>
+                    <th>Play Theme</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -42,6 +43,7 @@
                         <td>{{ door.all_members }}</td>
                         <td>{% if door.locked_out %} <span class="red-text">LOCKED OUT</span>{% else %}
                             <span>False</span> {% endif %}</td>
+                        <td>{{ door.play_theme }}</td>
                         <td>
                             <a href="{% url "edit_door" door_id=door.id %}"
                                class="waves-effect waves-light btn-small edit-button tooltipped"
