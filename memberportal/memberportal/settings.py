@@ -135,3 +135,5 @@ AUTH_USER_MODEL = 'profile.User'
 FROM_EMAIL = '"HSBNE Member Portal" <treasurer@hsbne.org>'
 FROM_EMAIL_TREASURER = '"HSBNE Member Portal" <treasurer@hsbne.org>'
 SYSADMIN_EMAIL = "infrastructure@hsbne.org"
+EXEC_EMAIL = "exec@hsbne.org"
+REQUEST_TIMEOUT = 0.02

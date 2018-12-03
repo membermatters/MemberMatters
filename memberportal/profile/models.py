@@ -8,9 +8,7 @@ import sendgrid
 from sendgrid.helpers.mail import *
 import uuid
 from django.template.loader import render_to_string
-from django.contrib.auth.models import (
-    BaseUserManager, AbstractBaseUser, PermissionsMixin
-)
+from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser, PermissionsMixin)
 from django.core.validators import RegexValidator
 from django.conf import settings
 from profile.xerohelpers import get_xero_contact, create_membership_invoice
@@ -155,7 +153,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 return True
 
         log_user_event(self, "Failed to send email with subject: " + subject, "email", "Email content: " + body)
-        return False
+        raise RuntimeError("No SendGrid API key found in environment variables.")
 
     def email_notification(self, subject, title, preheader, message):
         email_vars = {"preheader": preheader,

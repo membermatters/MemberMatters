@@ -28,6 +28,15 @@
                     {% endif %}
                     <span>{{ field.label }}</span>
                 </label>
+            {% elif field.name == "play_theme" %}
+                <label class="left">
+                    {% if field.value == True %}
+                        <input type="checkbox" name="play_theme" id="id_play_theme" checked>
+                    {% else %}
+                        <input type="checkbox" name="play_theme" id="id_play_theme">
+                    {% endif %}
+                    <span>{{ field.label }}</span>
+                </label>
             {% else %}
                 <p>{{ field.errors }}<label style="display:table-cell;">{{ field.name }}: </label>{{ field }}
                 </p>
@@ -35,7 +44,8 @@
         {% endfor %}
         <br>
         <br>
-
+        <br>
+        <br>
         <a class="btn-flat right" onclick="window.history.back()">Cancel</a>
         <button class="btn waves-effect waves-light right" type="submit" name="action">Save
             <i class="material-icons right">check</i>

@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -18,9 +18,10 @@ from datetime import timedelta
 from django.utils import timezone
 import humanize
 import hashlib
+from urllib.parse import urlencode
 
 utc = pytz.UTC
-
+request_timeout = settings.REQUEST_TIMEOUT
 
 @login_required
 @admin_required
@@ -119,6 +120,20 @@ def request_access(request, door_id):
     return JsonResponse({"success": False, "reason": "Not implemented yet."})
 
 
+def play_theme_song(user):
+    url = "https://10.0.1.50/playmp3.php?nickname="
+    url += user.profile.screen_name
+    url = urlencode(url)
+    print(url)
+
+    try:
+        requests.get(url, timeout=request_timeout)
+    except requests.exceptions.ReadTimeout:
+        return True
+
+    return False
+
+
 def post_door_swipe_to_discord(name, door, successful):
     if "DISCORD_DOOR_WEBHOOK" in os.environ:
         url = os.environ.get('DISCORD_DOOR_WEBHOOK')
@@ -141,9 +156,9 @@ def post_door_swipe_to_discord(name, door, successful):
                 "color": 16007990
             })
 
-        response = requests.post(url, json=json_message)
-
-        if response.status_code == 200:
+        try:
+            requests.post(url, json=json_message, timeout=request_timeout)
+        except requests.exceptions.ReadTimeout:
             return True
 
     return False
@@ -189,9 +204,9 @@ def post_interlock_swipe_to_discord(name, interlock, type, time=None):
                 "color": 16007990
             })
 
-        response = requests.post(url, json=json_message)
-
-        if response.status_code == 200:
+        try:
+            requests.post(url, json=json_message, timeout=request_timeout)
+        except requests.exceptions.ReadTimeout:
             return True
 
     return False
@@ -246,6 +261,9 @@ def check_door_access(request, rfid_code, door_id=None):
                 door.log_access(user.id)
                 user.profile.update_last_seen()
                 post_door_swipe_to_discord(user.profile.get_full_name(), door.name, True)
+                if door.play_theme:
+                    play_theme_song(user)
+
                 return JsonResponse({"access": True, "name": user.profile.first_name})
 
     # if the are inactive or don't have access
@@ -616,6 +634,9 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
                 session = interlock.create_session(user)
                 user.profile.update_last_seen()
                 post_interlock_swipe_to_discord(user.profile.get_full_name(), interlock.name, "activated")
+                if interlock.play_theme:
+                    play_theme_song(user)
+
                 return JsonResponse({"access": True, "session_id": session.id, "timestamp": round(time.time()),
                                      "name": user.profile.first_name})
 
