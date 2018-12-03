@@ -1,12 +1,13 @@
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
+from django.utils.html import escape
 from django.urls import reverse
 from memberportal.helpers import log_user_event
 from .forms import CauseForm, CauseFundForm
 from .models import Causes, CauseFund
 from memberportal.decorators import admin_required, no_noobs
-from profile.models import Profile
+from profile.emailhelpers import send_group_email
 import pytz
 
 utc = pytz.UTC
@@ -15,6 +16,8 @@ utc = pytz.UTC
 @login_required
 @admin_required
 def manage_causes(request):
+    if not request.user.profile.can_manage_causes:
+        return HttpResponseForbidden("You do not have permission to access that.")
     # if we want to add a cause
     if request.method == 'POST':
         form = CauseForm(request.POST)
@@ -31,8 +34,7 @@ def manage_causes(request):
 
     causes = Causes.objects.all()
 
-    return render(
-        request, 'manage_causes.html', {"form": form, "causes": causes})
+    return render(request, 'manage_causes.html', {"form": form, "causes": causes})
 
 
 @login_required
@@ -54,6 +56,9 @@ def edit_cause(request, cause_id):
     :param cause_id: cause id to edit
     :return:
     """
+    if not request.user.profile.can_manage_causes:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     cause = get_object_or_404(Causes, pk=cause_id)
     if request.method == 'POST':
         form = CauseForm(request.POST, instance=cause)
@@ -78,6 +83,9 @@ def edit_cause(request, cause_id):
 @login_required
 @admin_required
 def delete_cause(request, cause_id):
+    if not request.user.profile.can_manage_causes:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     cause = get_object_or_404(Causes, pk=cause_id)
     cause.delete()
     log_user_event(request.user, "Deleted {} cause.".format(cause.name), "admin")
@@ -88,6 +96,9 @@ def delete_cause(request, cause_id):
 @login_required
 @admin_required
 def manage_cause_funds(request, cause_id):
+    if not request.user.profile.can_manage_causes:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     cause = get_object_or_404(Causes, pk=cause_id)
     # if we want to add a cause
     if request.method == 'POST':
@@ -116,6 +127,9 @@ def manage_cause_funds(request, cause_id):
 @login_required
 @no_noobs
 def list_cause_funds(request):
+    if not request.user.profile.can_manage_causes:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     causes = Causes.objects.all()
 
     return render(
@@ -132,6 +146,9 @@ def edit_cause_fund(request, fund_id):
     :param cause_id: cause id to edit
     :return:
     """
+    if not request.user.profile.can_manage_causes:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     fund = get_object_or_404(CauseFund, pk=fund_id)
     if request.method == 'POST':
         form = CauseFundForm(request.POST, instance=fund)
@@ -158,6 +175,9 @@ def edit_cause_fund(request, fund_id):
 @login_required
 @admin_required
 def delete_cause_fund(request, fund_id):
+    if not request.user.profile.can_manage_causes:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     fund = get_object_or_404(CauseFund, pk=fund_id)
     fund.delete()
     log_user_event(

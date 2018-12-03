@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load staticfiles %}
 {% block title %}Member List{% endblock %}
 
 {% block fullwidth-content %}
@@ -10,7 +10,8 @@
             <tr style="max-width: 120px;">
                 <th>Username</th>
                 <th>RFID</th>
-                <th>Email</th>
+                {% if user.profile.can_see_members_personal_details %}
+                    <th>Email</th>{% endif %}
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Member Type</th>
@@ -24,7 +25,8 @@
                 <tr>
                     <td>{{ member.profile.screen_name }}</td>
                     <td>{{ member.profile.rfid }}</td>
-                    <td>{{ member.email }}</td>
+                    {% if user.profile.can_see_members_personal_details %}
+                        <td>{{ member.email }}</td>{% endif %}
                     <td>{{ member.profile.first_name }}</td>
                     <td>{{ member.profile.last_name }}</td>
                     <td>{{ member.profile.member_type.name }}</td>
@@ -65,14 +67,19 @@
         <div class="row">
             <div class="col s12">
                 <h5 id="admin-member-modal-name">{MEMBER NAME}</h5><br>
-                <a onclick="setState(true);" id="activate-member-button"
-                   class="waves-effect waves-light btn green disabled tooltipped" data-position="top" data-tooltip="Enable Site Access">Enable Access</a>
-                <a onclick="setState(false);" id="deactivate-member-button"
-                   class="waves-effect waves-light btn red disabled tooltipped" data-position="top"
-                   data-tooltip="Disable Site Access">Disable Access</a>
-                <a onclick="resendWelcome();" id="resend-welcome-button" class="waves-effect waves-light btn blue tooltipped"
+                {% if user.profile.can_disable_members %}
+                    <a onclick="setState(true);" id="activate-member-button"
+                       class="waves-effect waves-light btn green disabled tooltipped" data-position="top"
+                       data-tooltip="Enable Site Access">Enable Access</a>
+                    <a onclick="setState(false);" id="deactivate-member-button"
+                       class="waves-effect waves-light btn red disabled tooltipped" data-position="top"
+                       data-tooltip="Disable Site Access">Disable Access</a>
+                {% endif %}
+                <a onclick="resendWelcome();" id="resend-welcome-button"
+                   class="waves-effect waves-light btn blue tooltipped"
                    data-position="top" data-tooltip="Resend Welcome Email">Resend Welcome</a>
-                <a onclick="addToXero();" id="resend-to-xero-button" class="waves-effect waves-light btn blue tooltipped"
+                <a onclick="addToXero();" id="resend-to-xero-button"
+                   class="waves-effect waves-light btn blue tooltipped"
                    data-position="top" data-tooltip="Warning: Use with caution.">Resend to Xero</a>
                 <div id="btn-loader">
                     <div class="indeterminate"></div>
@@ -83,28 +90,44 @@
         <div class="row">
             <div class="col s12">
                 <ul class="tabs">
-                    <li class="tab col s3"><a href="#edit-profile" class="active">Profile</a></li>
-                    <li class="tab col s3"><a href="#manage-access">Access</a></li>
-                    <li class="tab col s3"><a href="#spacebucks">Spacebucks</a></li>
-                    <li class="tab col s3"><a href="#access-history">Log</a></li>
+                    {% if user.profile.can_see_members_personal_details %}
+                        <li class="tab col s3"><a href="#edit-profile" class="active">Profile</a></li>
+                    {% endif %}
+                    {% if user.profile.can_manage_access %}
+                        <li class="tab col s3"><a href="#manage-access">Access</a></li>
+                    {% endif %}
+                    {% if user.profile.can_see_members_spacebucks %}
+                        <li class="tab col s3"><a href="#spacebucks">Spacebucks</a></li>
+                    {% endif %}
+                    {% if user.profile.can_see_members_logs %}
+                        <li class="tab col s3"><a href="#access-history">Log</a></li>
+                    {% endif %}
                 </ul>
             </div>
 
-            <div id="edit-profile" class="col s12">
-                <div id="admin-edit-member-profile"></div>
-            </div>
+            {% if user.profile.can_see_members_personal_details %}
+                <div id="edit-profile" class="col s12">
+                    <div id="admin-edit-member-profile"></div>
+                </div>
+            {% endif %}
 
-            <div id="manage-access" class="col s12">
-                <div id="admin-edit-member-access"></div>
-            </div>
+            {% if user.profile.can_manage_access %}
+                <div id="manage-access" class="col s12">
+                    <div id="admin-edit-member-access"></div>
+                </div>
+            {% endif %}
 
-            <div id="spacebucks" class="col s12">
-                <div id="admin-edit-member-spacebucks"></div>
-            </div>
+            {% if user.profile.can_see_members_spacebucks %}
+                <div id="spacebucks" class="col s12">
+                    <div id="admin-edit-member-spacebucks"></div>
+                </div>
+            {% endif %}
 
-            <div id="access-history" class="col s12">
-                <div id="admin-edit-member-logs"></div>
-            </div>
+            {% if user.profile.can_see_members_logs %}
+                <div id="access-history" class="col s12">
+                    <div id="admin-edit-member-logs"></div>
+                </div>
+            {% endif %}
         </div>
     </div>
 
@@ -114,7 +137,29 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
     <script type="text/javascript" charset="utf8"
             src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
+
+    <script type="text/javascript" src="{% static '/js/memberlist.js' %}"></script>
     <script>
+        {% if user.profile.can_manage_access %}
+            can_manage_access = true;
+        {% endif %}
+
+        {% if user.profile.can_disable_members %}
+            can_disable_members = true;
+        {% endif %}
+
+        {% if user.profile.can_see_members_personal_details %}
+            can_see_members_personal_details = true;
+        {% endif %}
+
+        {% if user.profile.can_see_members_spacebucks %}
+            can_see_members_spacebucks = true;
+        {% endif %}
+
+        {% if user.profile.can_see_members_logs %}
+            can_see_members_logs = true;
+        {% endif %}
+
         (function ($) {
             $(function () {
                 $('#memberList').DataTable({

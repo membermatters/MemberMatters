@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load staticfiles %}
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-129685827-1"></script>
     <script>
@@ -18,7 +19,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
     <title>{% block title %}HSBNE Member Portal{% endblock %} - HSBNE Member Portal</title>
-    {% load staticfiles %}
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -92,15 +92,21 @@
                     <li><a class="subheader">Admin Tools</a></li>
                     <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a>
                     </li>
-                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage
-                        Causes</a>
-                    </li>
-                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_doors' %}">Manage
-                        Doors</a>
-                    </li>
-                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_interlocks' %}">Manage
-                        Interlocks</a>
-                    </li>
+                    {% if request.user.profile.can_manage_causes %}
+                        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage
+                            Causes</a>
+                        </li>
+                    {% endif %}
+                    {% if request.user.profile.can_manage_doors %}
+                        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_doors' %}">Manage
+                            Doors</a>
+                        </li>
+                    {% endif %}
+                    {% if request.user.profile.can_manage_interlocks %}
+                        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_interlocks' %}">Manage
+                            Interlocks</a>
+                        </li>
+                    {% endif %}
                 {% endif %}
 
                 <li>
@@ -160,12 +166,21 @@
     {% if user.is_staff %}
         <ul id="admin-dropdown" class="dropdown-content">
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a></li>
-            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage Causes</a>
-            </li>
-            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_doors' %}">Manage Doors</a></li>
-            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_interlocks' %}">Manage
-                Interlocks</a>
-            </li>
+            {% if request.user.profile.can_manage_causes %}
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage
+                    Causes</a>
+                </li>
+            {% endif %}
+            {% if request.user.profile.can_manage_doors %}
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_doors' %}">Manage
+                    Doors</a>
+                </li>
+            {% endif %}
+            {% if request.user.profile.can_manage_interlocks %}
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_interlocks' %}">Manage
+                    Interlocks</a>
+                </li>
+            {% endif %}
         </ul>
     {% endif %}
 </nav>

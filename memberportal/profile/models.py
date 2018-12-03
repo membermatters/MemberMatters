@@ -291,6 +291,18 @@ class Profile(models.Model):
     xero_account_id = models.CharField(max_length=100, blank=True, null=True, default="")
     xero_account_number = models.CharField(max_length=6, blank=True, null=True, default="")
 
+    # for now our permissions are stored here
+    can_send_cause_emails = models.BooleanField("Can send cause emails", default=False)
+    can_manage_access = models.BooleanField("Can manage access", default=False)
+    can_disable_members = models.BooleanField("Can disable members", default=False)
+    can_see_members_personal_details = models.BooleanField("Can see member personal details", default=False)
+    can_see_members_spacebucks = models.BooleanField("Can see member spacebucks details", default=False)
+    can_see_members_logs = models.BooleanField("Can see member logs", default=False)
+    can_manage_doors = models.BooleanField("Can manage doors", default=False)
+    can_manage_interlocks = models.BooleanField("Can manage interlocks", default=False)
+    can_manage_causes = models.BooleanField("Can manage causes", default=False)
+
+
     def deactivate(self):
         log_user_event(self.user, "Deactivated member", "profile")
         self.user.email_disable_member()

@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -26,6 +26,9 @@ request_timeout = settings.REQUEST_TIMEOUT
 @login_required
 @admin_required
 def manage_doors(request):
+    if not request.user.profile.can_manage_doors:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     doors = Doors.objects.all()
     return render(request, 'manage_doors.html', {"doors": doors})
 
@@ -33,6 +36,9 @@ def manage_doors(request):
 @login_required
 @admin_required
 def add_door(request):
+    if not request.user.profile.can_manage_doors:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     if request.method == 'POST':
         form = DoorForm(request.POST)
         if form.is_valid():
@@ -49,6 +55,9 @@ def add_door(request):
 @login_required
 @admin_required
 def edit_door(request, door_id):
+    if not request.user.profile.can_manage_doors:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     if request.method == 'POST':
         form = DoorForm(request.POST, instance=Doors.objects.get(pk=door_id))
         if form.is_valid():
@@ -72,6 +81,9 @@ def edit_door(request, door_id):
 @login_required
 @admin_required
 def delete_door(request, door_id):
+    if not request.user.profile.can_manage_doors:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     door = Doors.objects.get(pk=door_id)
     log_user_event(request.user, "Deleted {} door.".format(door.name), "admin")
     door.delete()
@@ -81,6 +93,9 @@ def delete_door(request, door_id):
 @login_required
 @admin_required
 def admin_grant_door(request, door_id, member_id):
+    if not request.user.profile.can_manage_access:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     try:
         user = User.objects.get(pk=member_id)
         door = Doors.objects.get(pk=door_id)
@@ -99,6 +114,9 @@ def admin_grant_door(request, door_id, member_id):
 @login_required
 @admin_required
 def admin_revoke_door(request, door_id, member_id):
+    if not request.user.profile.can_manage_access:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     try:
         user = User.objects.get(pk=member_id)
         door = Doors.objects.get(pk=door_id)
@@ -112,12 +130,6 @@ def admin_revoke_door(request, door_id, member_id):
 
     except ObjectDoesNotExist:
         return JsonResponse({"success": False, "reason": "No access permission was found."})
-
-
-@login_required
-@no_noobs
-def request_access(request, door_id):
-    return JsonResponse({"success": False, "reason": "Not implemented yet."})
 
 
 def play_theme_song(user):
@@ -273,7 +285,11 @@ def check_door_access(request, rfid_code, door_id=None):
 
 
 @login_required
+@admin_required
 def bump_door(request, door_id):
+    if not request.user.profile.can_manage_doors:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     door = Doors.objects.get(pk=door_id)
     if door in request.user.profile.doors.all():
         log_user_event(request.user, "Bumped {} door via API.".format(door.name), "door")
@@ -283,7 +299,10 @@ def bump_door(request, door_id):
 
 
 @login_required
+@admin_required
 def lock_interlock(request, interlock_id):
+    if not request.user.profile.can_manage_interlocks:
+        return HttpResponseForbidden("You do not have permission to access that.")
         interlock = Interlock.objects.get(pk=interlock_id)
         log_user_event(request.user, "Locked {} interlock via API.".format(interlock.name), "interlock")
         return JsonResponse({"success": interlock.lock()})
@@ -460,6 +479,9 @@ def authorised_interlock_tags(request, interlock=None):
 @login_required
 @admin_required
 def manage_interlocks(request):
+    if not request.user.profile.can_manage_interlocks:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     interlocks = Interlock.objects.all()
     return render(request, 'manage_interlocks.html', {"interlocks": interlocks})
 
@@ -467,6 +489,9 @@ def manage_interlocks(request):
 @login_required
 @admin_required
 def view_interlock_sessions(request):
+    if not request.user.profile.can_manage_interlocks:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     raw_sessions = InterlockLog.objects.all()
     interlock_sessions = []
 
@@ -492,6 +517,9 @@ def view_interlock_sessions(request):
 @login_required
 @admin_required
 def add_interlock(request):
+    if not request.user.profile.can_manage_interlocks:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     if request.method == 'POST':
         form = InterlockForm(request.POST)
         if form.is_valid():
@@ -511,6 +539,9 @@ def add_interlock(request):
 @login_required
 @admin_required
 def edit_interlock(request, interlock_id):
+    if not request.user.profile.can_manage_interlocks:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     if request.method == 'POST':
         form = InterlockForm(request.POST, instance=Interlock.objects.get(pk=interlock_id))
         if form.is_valid():
@@ -534,6 +565,9 @@ def edit_interlock(request, interlock_id):
 @login_required
 @admin_required
 def delete_interlock(request, interlock_id):
+    if not request.user.profile.can_manage_interlocks:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     interlock = Interlock.objects.get(pk=interlock_id)
     log_user_event(request.user, "Deleted {} interlock.".format(interlock.name), "admin")
     interlock.delete()
@@ -543,6 +577,9 @@ def delete_interlock(request, interlock_id):
 @login_required
 @admin_required
 def admin_grant_interlock(request, interlock_id, member_id):
+    if not request.user.profile.can_manage_access:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     try:
         user = User.objects.get(pk=member_id)
         interlock = Interlock.objects.get(pk=interlock_id)
@@ -561,6 +598,9 @@ def admin_grant_interlock(request, interlock_id, member_id):
 @login_required
 @admin_required
 def admin_revoke_interlock(request, interlock_id, member_id):
+    if not request.user.profile.can_manage_access:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     try:
         user = User.objects.get(pk=member_id)
         interlock = Interlock.objects.get(pk=interlock_id)
