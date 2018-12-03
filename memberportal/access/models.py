@@ -12,7 +12,7 @@ utc = pytz.UTC
 
 
 class AccessControlledDevice(models.Model):
-    name = models.CharField("Name", max_length=20, unique=True)
+    name = models.CharField("Name", max_length=30, unique=True)
     description = models.CharField("Description/Location", max_length=100)
     ip_address = models.GenericIPAddressField("IP Address of device", unique=True, null=True, blank=True)
     last_seen = models.DateTimeField(null=True)
