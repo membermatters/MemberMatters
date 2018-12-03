@@ -17,7 +17,8 @@ class AccessControlledDevice(models.Model):
     ip_address = models.GenericIPAddressField("IP Address of device", unique=True, null=True, blank=True)
     last_seen = models.DateTimeField(null=True)
     all_members = models.BooleanField("Members have access by default", default=False)
-    locked_out = models.BooleanField("Lockout general members", default=False)
+    locked_out = models.BooleanField("Maintenance lockout enabled", default=False)
+    play_theme = models.BooleanField("Play theme on door swipe", default=False)
 
     def checkin(self):
         log_event(self.name + " checked in with server.", "door")

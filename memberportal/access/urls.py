@@ -9,7 +9,6 @@ urlpatterns = [
     path('api/door/<int:door_id>/unlock/', views.bump_door, name='bump_door'),
     path('api/door/<int:door_id>/grant/<int:member_id>/', views.admin_grant_door, name='admin_grant_door'),
     path('api/door/<int:door_id>/revoke/<int:member_id>/', views.admin_revoke_door, name='admin_revoke_door'),
-    path('api/door/<int:door_id>/request/', views.request_access, name='request_access'),
     path('api/door/<int:door_id>/check/<int:rfid_code>/', views.check_door_access, name='check_access'),
     path('api/door/check/<int:rfid_code>/', views.check_door_access, name='check_access'),
     path('api/door/<int:door>/authorised/', views.authorised_door_tags, name='authorised_tags'),

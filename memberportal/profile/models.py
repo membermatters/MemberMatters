@@ -8,9 +8,7 @@ import sendgrid
 from sendgrid.helpers.mail import *
 import uuid
 from django.template.loader import render_to_string
-from django.contrib.auth.models import (
-    BaseUserManager, AbstractBaseUser, PermissionsMixin
-)
+from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser, PermissionsMixin)
 from django.core.validators import RegexValidator
 from django.conf import settings
 from profile.xerohelpers import get_xero_contact, create_membership_invoice
@@ -155,7 +153,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 return True
 
         log_user_event(self, "Failed to send email with subject: " + subject, "email", "Email content: " + body)
-        return False
+        raise RuntimeError("No SendGrid API key found in environment variables.")
 
     def email_notification(self, subject, title, preheader, message):
         email_vars = {"preheader": preheader,
@@ -292,6 +290,19 @@ class Profile(models.Model):
     stripe_card_last_digits = models.CharField(max_length=4, blank=True, null=True, default="")
     xero_account_id = models.CharField(max_length=100, blank=True, null=True, default="")
     xero_account_number = models.CharField(max_length=6, blank=True, null=True, default="")
+
+    # for now our permissions are stored here
+    can_manage_access = models.BooleanField("Can manage access", default=False)
+    can_disable_members = models.BooleanField("Can disable members", default=False)
+    can_see_members_personal_details = models.BooleanField("Can see member personal details", default=False)
+    can_see_members_spacebucks = models.BooleanField("Can see member spacebucks details", default=False)
+    can_see_members_logs = models.BooleanField("Can see member logs", default=False)
+    can_manage_doors = models.BooleanField("Can manage doors", default=False)
+    can_manage_interlocks = models.BooleanField("Can manage interlocks", default=False)
+    can_manage_causes = models.BooleanField("Can manage causes", default=False)
+    can_add_cause = models.BooleanField("Can add a cause", default=False)
+    can_manage_cause = models.ManyToManyField("causes.Causes", blank=True, related_name="can_manage_cause")
+
 
     def deactivate(self):
         log_user_event(self.user, "Deactivated member", "profile")

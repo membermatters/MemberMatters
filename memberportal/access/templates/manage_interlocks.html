@@ -21,6 +21,7 @@
                     <th>Last Used</th>
                     <th>Default Access</th>
                     <th>Locked Out</th>
+                    <th>Play Theme</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -58,6 +59,7 @@
                         <td>{{ interlock.all_members }}</td>
                         <td>{% if interlock.locked_out %} <span class="red-text">LOCKED OUT</span>{% else %}
                             <span>False</span> {% endif %}</td>
+                        <td>{{ interlock.play_theme }}</td>
                         <td>
                             <a href="{% url "edit_interlock" interlock_id=interlock.id %}"
                                class="waves-effect waves-light btn-small edit-button tooltipped" data-position="top"

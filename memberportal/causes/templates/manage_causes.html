@@ -5,52 +5,97 @@
 
 {% block content %}
     <div class="row">
+    {% if request.user.profile.can_add_cause %}
         <div class="col s12 m8">
-            <h4>Current Causes</h4>
-            <table class="striped responsive-table">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th style="width: 120px;">Actions</th>
-                </tr>
-                </thead>
+    {% else %}
+        <div class="col s12">
+    {% endif %}
+<h4>Current Causes</h4>
+<table class="striped responsive-table">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th style="width: 120px;">Actions</th>
+    </tr>
+    </thead>
 
-                <tbody>
-                {% for cause in causes %}
-                    <tr>
-                        <td>{{ cause.name }}</td>
-                        <td>{{ cause.description }}</td>
-                        <td>
-                            <a href="{% url "edit_cause" cause_id=cause.id %}" style="width: 52.5px;"
-                               class="waves-effect waves-light btn-small edit-button tooltipped" data-position="top" data-tooltip="Edit Cause">
-                                <i class="material-icons">edit</i>
-                            </a>
-                            <a href="{% url "delete_cause" cause_id=cause.id %}" onclick="return confirm('Are you sure you want delete the {{ cause.name }} cause?')"  style="width: 52.5px;"
-                               class="waves-effect waves-light btn-small delete-button tooltipped" data-position="top" data-tooltip="Delete Cause">
-                                <i class="material-icons">delete</i>
-                            </a>
-                            <a href="{% url "manage_cause_funds" cause_id=cause.id %}" style="width: 100%;"
-                               class="waves-effect waves-light btn-small edit-button tooltipped" data-position="top" data-tooltip="Manage Funds">
-                                Funds
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
+    <tbody>
+    {% for cause in causes %}
+        <tr>
+            <td>{{ cause.name }}</td>
+            <td>{{ cause.description }}</td>
+            <td>
+                {% if cause in user.profile.can_manage_cause.all %}
+                    <a href="{% url "edit_cause" cause_id=cause.id %}"
+                       class="cause-button waves-effect waves-light btn-small edit-button tooltipped"
+                       data-position="top"
+                       data-tooltip="Edit Cause">
+                        <i class="material-icons">edit</i>
+                    </a>
+                    <a href="{% url "delete_cause" cause_id=cause.id %}"
+                       onclick="return confirm('Are you sure you want delete the {{ cause.name }} cause?')"
+                       class="cause-button waves-effect waves-light btn-small delete-button tooltipped"
+                       data-position="top"
+                       data-tooltip="Delete Cause">
+                        <i class="material-icons">delete</i>
+                    </a>
+                    <a href="{% url "manage_cause_funds" cause_id=cause.id %}"
+                       class="cause-button waves-effect waves-light btn-small edit-button tooltipped" disabled
+                       data-position="top" data-tooltip="Manage Funds">
+                        <i class="material-icons">attach_money</i>
+                    </a>
+                    <a href="{% url "email_cause_members" cause_id=cause.id %}"
+                       class="cause-button waves-effect waves-light btn-small edit-button tooltipped"
+                       data-position="top"
+                       data-tooltip="Email Cause">
+                        <i class="material-icons">email</i>
+                    </a>
+                {% else %}
+                    <a href="#" disabled
+                       class="cause-button waves-effect waves-light btn-small edit-button tooltipped"
+                       data-position="top"
+                       data-tooltip="Edit Cause">
+                        <i class="material-icons">edit</i>
+                    </a>
+                    <a href="#" disabled
+                       onclick="return confirm('Are you sure you want delete the {{ cause.name }} cause?')"
+                       class="cause-button waves-effect waves-light btn-small delete-button tooltipped"
+                       data-position="top"
+                       data-tooltip="Delete Cause">
+                        <i class="material-icons">delete</i>
+                    </a>
+                    <a href="#" disabled
+                       class="cause-button waves-effect waves-light btn-small edit-button tooltipped" disabled
+                       data-position="top" data-tooltip="Manage Funds">
+                        <i class="material-icons">attach_money</i>
+                    </a>
+                    <a href="#" disabled
+                       class="cause-button waves-effect waves-light btn-small edit-button tooltipped"
+                       data-position="top"
+                       data-tooltip="Email Cause">
+                        <i class="material-icons">email</i>
+                    </a>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
 
-                </tbody>
-            </table>
-        </div>
+    </tbody>
+</table>
+</div>
 
-        <div class="col s12 m4">
-            <h4>Add Cause </h4>
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button class="btn waves-effect waves-light" type="submit" name="login">
-                    Add
-                </button>
-            </form>
-        </div>
+{% if request.user.profile.can_add_cause %}
+    <div class="col s12 m4">
+        <h4>Add Cause </h4>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn waves-effect waves-light" type="submit" name="login">
+                Add
+            </button>
+        </form>
     </div>
+{% endif %}
+</div>
 {% endblock %}

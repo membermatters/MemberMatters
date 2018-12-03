@@ -239,3 +239,7 @@ body > div.fullwidth-container > div.modal-overlay {
         margin-top: 20px;
     }
 }
+
+.cause-button {
+    width: 52.5px;
+}

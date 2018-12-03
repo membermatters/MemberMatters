@@ -1,5 +1,5 @@
 from django.contrib.auth import login, update_session_auth_hash
-from django.http import HttpResponseRedirect, JsonResponse, HttpResponseBadRequest
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
@@ -248,6 +248,9 @@ def access_permissions(request):
 @login_required
 @admin_required
 def admin_spacebucks_transactions(request, member_id):
+    if not request.user.profile.can_see_members_spacebucks:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     user = User.objects.get(pk=member_id)
     transactions = SpaceBucks.objects.filter(user_id=member_id)
     context = {
@@ -263,6 +266,9 @@ def admin_spacebucks_transactions(request, member_id):
 @login_required
 @admin_required
 def admin_add_spacebucks(request, member_id, amount):
+    if not request.user.profile.can_see_members_spacebucks:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     if request.method == 'GET':
         user = User.objects.get(pk=member_id)
 
@@ -297,6 +303,8 @@ def admin_edit_member(request, member_id):
     :param member_id:
     :return:
     """
+    if not request.user.profile.can_see_members_personal_details:
+        return HttpResponseForbidden("You do not have permission to access that.")
     profile = get_object_or_404(Profile, user=member_id)
     data = dict()
 
@@ -338,6 +346,9 @@ def admin_member_logs(request, member_id):
     :param member_id:
     :return:
     """
+    if not request.user.profile.can_see_members_logs:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     data = dict()
     member = User.objects.get(pk=member_id)
 
@@ -402,6 +413,9 @@ def set_state(request, member_id, state):
     :param state:
     :return:
     """
+    if not request.user.profile.can_disable_members:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     user = User.objects.get(id=member_id)
 
     if state == 'active':
@@ -448,6 +462,9 @@ def set_state(request, member_id, state):
 @login_required
 @admin_required
 def admin_edit_access(request, member_id):
+    if not request.user.profile.can_manage_access:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
     member = get_object_or_404(User, pk=member_id)
     doors = Doors.objects.all()
     interlocks = Interlock.objects.all()
