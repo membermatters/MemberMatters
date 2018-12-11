@@ -134,9 +134,7 @@ def admin_revoke_door(request, door_id, member_id):
 
 def play_theme_song(user):
     url = "http://10.0.1.50/playmp3.php?nickname="
-    url += user.profile.screen_name
-    url = urllib.parse.quote_plus(url)
-    print(url)
+    url = url + urllib.parse.quote_plus(user.profile.screen_name)
 
     try:
         requests.get(url, timeout=request_timeout)
