@@ -133,7 +133,7 @@ def admin_revoke_door(request, door_id, member_id):
 
 
 def play_theme_song(user):
-    url = "https://10.0.1.50/playmp3.php?nickname="
+    url = "http://10.0.1.50/playmp3.php?nickname="
     url += user.profile.screen_name
     url = urlencode(url)
     print(url)
