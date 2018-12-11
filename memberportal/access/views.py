@@ -18,7 +18,7 @@ from datetime import timedelta
 from django.utils import timezone
 import humanize
 import hashlib
-from urllib.parse import urlencode
+import urllib
 
 utc = pytz.UTC
 request_timeout = settings.REQUEST_TIMEOUT
@@ -135,7 +135,7 @@ def admin_revoke_door(request, door_id, member_id):
 def play_theme_song(user):
     url = "http://10.0.1.50/playmp3.php?nickname="
     url += user.profile.screen_name
-    url = urlencode(url)
+    url = urllib.parse.quote_plus(url)
     print(url)
 
     try:
