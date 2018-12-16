@@ -138,7 +138,7 @@ def play_theme_song(user):
 
     try:
         requests.get(url, timeout=request_timeout)
-    except requests.exceptions.ReadTimeout:
+    except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout):
         return True
 
     return False
