@@ -18,6 +18,7 @@
             <tr>
                 <th>Description</th>
                 <th>Amount</th>
+                <th>Date</th>
                 <th>When</th>
             </tr>
             </thead>
@@ -31,7 +32,8 @@
                     {% else %}
                         <td class="red-text">${{ transaction.amount }}</td>
                     {% endif %}
-                    <td>{{ transaction.date }} ({{ transaction.date|timesince }} ago)</td>
+                    <td>{{ transaction.date|date:"y-m-d" }}-{{ transaction.date|time:"H:i" }}</td>
+                    <td>{{ transaction.date|timesince }} ago</td>
                 </tr>
             {% endfor %}
 
