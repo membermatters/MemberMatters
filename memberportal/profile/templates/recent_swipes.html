@@ -42,7 +42,7 @@
             </div>
 
             <div id="interlocks" class="col s12">
-                <table id="recent-swipes-table" class="data-table striped responsive-table">
+                <table id="interlock-recent-swipes-table" class="data-table striped responsive-table">
                     <thead>
                     <tr>
                         <th>User</th>
@@ -83,6 +83,13 @@
                     }
                 });
                 table.order([2, 'desc']).draw();
+
+                let table2 = $('#interlock-recent-swipes-table').DataTable({
+                    "initComplete": function () {
+                        M.FormSelect.init(document.querySelectorAll('select'), {});
+                    }
+                });
+                table2.order([2, 'desc']).draw();
             }); // end of document ready
         })(jQuery); // end of jQuery name space
     </script>
