@@ -54,6 +54,7 @@
                            data-add_to_xero_url="{% url 'add_to_xero' member_id=member.id %}"
                            data-get_spacebucks_url="{% url 'admin_spacebucks_transactions' member_id=member.id %}"
                            data-generate_invoice_url="{% url 'create_invoice' member_id=member.id %}"
+                           data-xero_account_id="{{ member.profile.xero_account_id }}"
                            class="waves-effect waves-light btn" href="#">Manage</a>
                     </td>
                 </tr>
@@ -67,7 +68,8 @@
     <div class="modal-content">
         <div class="row">
             <div class="col s12">
-                <h5 id="admin-member-modal-name">{MEMBER NAME}</h5><br>
+                <h5 id="admin-member-modal-name" style="display: inline-block">{MEMBER NAME}</h5>
+                <a id="admin-member-modal-open-xero" href="https://go.xero.com/Contacts/View/" target="_blank" style="display: inline-block">&nbsp;&nbsp;(view in Xero)</a><br><br>
                 {% if user.profile.can_disable_members %}
                     <a onclick="setState(true);" id="activate-member-button"
                        class="waves-effect waves-light btn green disabled tooltipped" data-position="top"

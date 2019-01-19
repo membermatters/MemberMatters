@@ -12,6 +12,7 @@ let get_logs_url;
 let get_spacebucks_url;
 let add_to_xero_url;
 let generate_invoice_url;
+let xero_account_id;
 
 let can_send_cause_emails = false;
 let can_manage_access = false;
@@ -192,13 +193,19 @@ function openMemberActionsModal(e) {
     get_logs_url = e.getAttribute("data-get_logs_url");
     add_to_xero_url = e.getAttribute("data-add_to_xero_url");
     get_spacebucks_url = e.getAttribute("data-get_spacebucks_url");
+    xero_account_id = e.getAttribute("data-xero_account_id");
+
     document.getElementById('admin-member-modal-name').innerHTML = name;
     let xeroButton = document.getElementById("resend-to-xero-button");
+    let openXeroButton = document.getElementById("admin-member-modal-open-xero");
 
     if (name.indexOf("NOT IN XERO") > 0 && member_state !== "noob") {
         xeroButton.style.display = "inline-block";
+        openXeroButton.style.display = "none";
     } else {
         xeroButton.style.display = "none";
+        openXeroButton.style.display = "inline-block";
+        openXeroButton.setAttribute("href", "https://go.xero.com/Contacts/View/" + xero_account_id)
     }
 
     if (can_see_members_personal_details) {
