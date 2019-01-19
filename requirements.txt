@@ -1,7 +1,9 @@
-django==2.0.9
+django==2.1
 requests
 stripe
 sendgrid
 pyxero
 humanize
 uwsgi
+django-constance==2.3
+django-picklefield==2

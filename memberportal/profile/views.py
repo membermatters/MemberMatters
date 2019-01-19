@@ -23,6 +23,7 @@ import pytz
 
 utc = pytz.UTC
 
+permission_message = "You are not authorised to do that."
 
 @csrf_exempt
 @api_auth
@@ -249,7 +250,7 @@ def access_permissions(request):
 @admin_required
 def admin_spacebucks_transactions(request, member_id):
     if not request.user.profile.can_see_members_spacebucks:
-        return HttpResponseForbidden("You do not have permission to access that.")
+        return HttpResponseForbidden(permission_message)
 
     user = User.objects.get(pk=member_id)
     transactions = SpaceBucks.objects.filter(user_id=member_id)
@@ -267,7 +268,7 @@ def admin_spacebucks_transactions(request, member_id):
 @admin_required
 def admin_add_spacebucks(request, member_id, amount):
     if not request.user.profile.can_see_members_spacebucks:
-        return HttpResponseForbidden("You do not have permission to access that.")
+        return HttpResponseForbidden(permission_message)
 
     if request.method == 'GET':
         user = User.objects.get(pk=member_id)
@@ -304,7 +305,7 @@ def admin_edit_member(request, member_id):
     :return:
     """
     if not request.user.profile.can_see_members_personal_details:
-        return HttpResponseForbidden("You do not have permission to access that.")
+        return HttpResponseForbidden(permission_message)
     profile = get_object_or_404(Profile, user=member_id)
     data = dict()
 
@@ -347,7 +348,7 @@ def admin_member_logs(request, member_id):
     :return:
     """
     if not request.user.profile.can_see_members_logs:
-        return HttpResponseForbidden("You do not have permission to access that.")
+        return HttpResponseForbidden(permission_message)
 
     data = dict()
     member = User.objects.get(pk=member_id)
@@ -414,7 +415,7 @@ def set_state(request, member_id, state):
     :return:
     """
     if not request.user.profile.can_disable_members:
-        return HttpResponseForbidden("You do not have permission to access that.")
+        return JsonResponse({"message": permission_message})
 
     user = User.objects.get(id=member_id)
 
@@ -430,40 +431,40 @@ def set_state(request, member_id, state):
 
             email = user.email_welcome()
             xero = user.profile.add_to_xero()
-            invoice = user.profile.create_membership_invoice() # Don't create them an invoice for now
+            invoice = user.profile.create_membership_invoice()
             user.profile.state = "inactive"  # an admin should activate them when they pay their invoice
             user.profile.save()
 
             if "Error" not in xero and "Error" not in invoice and email:
-                return JsonResponse({"success": True, "response": "Successfully added to Xero and sent welcome email."})
+                return JsonResponse({"success": True, "message": "Successfully added to Xero and sent welcome email."})
 
             elif "Error" in xero:
-                return JsonResponse({"success": False, "response": xero})
+                return JsonResponse({"success": False, "message": xero})
 
             elif "Error" in invoice:
-                return JsonResponse({"success": False, "response": invoice})
+                return JsonResponse({"success": False, "message": invoice})
 
             elif email is False:
-                return JsonResponse({"success": False, "response": "Error, couldn't send welcome email."})
+                return JsonResponse({"success": False, "message": "Error, couldn't send welcome email."})
 
             else:
-                return JsonResponse({"success": False, "response": "Unknown error while making into member."})
+                return JsonResponse({"success": False, "message": "Unknown error while making into member."})
 
         else:
             user.profile.activate()
-            return JsonResponse({"success": True, "response": "Successfully enabled user. ✅"})
+            return JsonResponse({"success": True, "message": "Successfully enabled user. ✅"})
 
     else:
         user.profile.deactivate()
         return JsonResponse(
-            {"success": True, "response": "Successfully disabled user. ⛔"})
+            {"success": True, "message": "Successfully disabled user. ⛔"})
 
 
 @login_required
 @admin_required
 def admin_edit_access(request, member_id):
     if not request.user.profile.can_manage_access:
-        return HttpResponseForbidden("You do not have permission to access that.")
+        return HttpResponseForbidden(permission_message)
 
     member = get_object_or_404(User, pk=member_id)
     doors = Doors.objects.all()
@@ -563,10 +564,20 @@ def sync_xero_accounts(request):
 @login_required
 @admin_required
 def add_to_xero(request, member_id):
-    return JsonResponse({"response": User.objects.get(pk=member_id).profile.add_to_xero()})
+    return JsonResponse({"message": User.objects.get(pk=member_id).profile.add_to_xero()})
 
 
 @login_required
-@admin_required
-def create_invoice(request, member_id):
-    return JsonResponse({"response": User.objects.get(pk=member_id).profile.create_membership_invoice()})
+def create_invoice(request, member_id, option=False):
+    email_invoice = False
+
+    if "email" == option:
+        email_invoice = True
+
+    if request.user.profile.can_generate_invoice:
+        response = User.objects.get(pk=member_id).profile.create_membership_invoice(email_invoice=email_invoice)
+
+        return JsonResponse({"message": response})
+
+    else:
+        return JsonResponse({"message": permission_message})

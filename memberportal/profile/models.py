@@ -302,6 +302,7 @@ class Profile(models.Model):
     can_manage_causes = models.BooleanField("Can manage causes", default=False)
     can_add_cause = models.BooleanField("Can add a cause", default=False)
     can_manage_cause = models.ManyToManyField("causes.Causes", blank=True, related_name="can_manage_cause")
+    can_generate_invoice = models.BooleanField("Can generate & email invoice", default=False)
 
 
     def deactivate(self):
@@ -378,8 +379,8 @@ class Profile(models.Model):
     def add_to_xero(self):
         return add_to_xero(self)
 
-    def create_membership_invoice(self):
-        return create_membership_invoice(self.user)
+    def create_membership_invoice(self, email_invoice=True):
+        return create_membership_invoice(self.user, email_invoice)
 
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''

@@ -174,7 +174,7 @@ def add_to_xero(profile):
         return "Error adding to Xero. No Xero API details."
 
 
-def create_membership_invoice(user):
+def create_membership_invoice(user, email_invoice=False):
     next_month = datetime.date.today().month + 1
     this_year = datetime.date.today().year
     if next_month == 13:
@@ -239,7 +239,6 @@ def create_membership_invoice(user):
         xero.invoices.get_onlineinvoice = xero.invoices._get_data(get_onlineinvoice)
 
         try:
-
             from memberportal.helpers import log_user_event
 
             # try to create the invoice
@@ -250,9 +249,11 @@ def create_membership_invoice(user):
             invoice_reference = result[0]['Reference']
             invoice_link = xero.invoices.get_onlineinvoice(invoice_id)['OnlineInvoices'][0]['OnlineInvoiceUrl']
 
-            # if we're successful send it to the member and log it
-            user.email_invoice(user.profile.first_name, user.profile.member_type.cost, invoice_number,
-                               next_month_date.strftime("%d-%m-%Y"), invoice_reference, invoice_link)
+            # if we're successful and email == True send it
+            if email_invoice:
+                user.email_invoice(user.profile.first_name, user.profile.member_type.cost, invoice_number,
+                                   next_month_date.strftime("%d-%m-%Y"), invoice_reference, invoice_link)
+
             log_user_event(user, "Created invoice for $" + str(user.profile.member_type.cost) + "(" + invoice_id + ")",
                            "xero")
             user.profile.last_invoice = timezone.now()
