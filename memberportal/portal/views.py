@@ -1,13 +1,10 @@
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseBadRequest, HttpResponse
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.urls import reverse
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.conf import settings
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from memberportal.helpers import log_user_event
-from .forms import SpacebugForm
 import pytz
 import os
 import requests
@@ -49,14 +46,13 @@ def webcams(request):
 
 @login_required
 def spacebug(request):
-    form_class = SpacebugForm
-    # if this is a submission, handle it and render a thankyou.
+    # Handle submission.
     if request.method == 'POST':
-        form = form_class(data=request.POST)
-        if form.is_valid():
+        print(request.POST.get("title"))
+        if request.POST.get("title") and request.POST.get("description"):
             if "TRELLO_API_KEY" in os.environ and "TRELLO_API_TOKEN" in os.environ:
-                issue = request.POST.get('issue', '')
-                details = request.POST.get('details', '')
+                issue = request.POST.get('title', '')
+                details = request.POST.get('description', '')
                 url = "https://api.trello.com/1/cards"
                 trelloKey = os.environ.get('TRELLO_API_KEY')
                 trelloToken = os.environ.get('TRELLO_API_TOKEN')
@@ -68,20 +64,20 @@ def spacebug(request):
 
                 if response.status_code == 200:
                     log_user_event(request.user, "Submitted issue: " + issue + " Content: " + details, "generic")
-                    messages.success(request, 'Issue submitted successfully. Thanks.')
-                    return redirect(reverse('report_spacebug'))
+
+                    return render(request, 'spacebug.html', {'message': "Submission Successful!"})
+                else:
+                    return render(request, 'spacebug.html',
+                                  {'error': "Sorry but there was a server side error."})
 
             else:
-                return HttpResponseBadRequest("No trello API details found in environment.")
+                return render(request, 'spacebug.html',
+                              {'error': "Sorry but there was a server side error: Trello API is not configured."})
 
-        log_user_event(request.user, "Issue Submit Failed:: " + issue + " content: " + details, "error")
-        messages.error(request, 'Issue failed to submit, sorry.')
-        return redirect(reverse('report_spacebug'))
+        return render(request, 'spacebug.html', {'error': "Invalid form submission..."})
 
     # render template normally
-    return render(request, 'spacebug.html', {
-        'form': form_class,
-    })
+    return render(request, 'spacebug.html')
 
 
 @api_auth

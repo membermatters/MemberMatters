@@ -6,17 +6,28 @@
     <div class="admin-container center row small-row">
         <h3 class="header center text">Report A Spacebug</h3>
         <p>Report a broken door, leaky pipe or some other issue around HSBNE.</p>
+
+        {% if message %}
+            <p class="form-message">{{ message }}</p>
+        {% endif %}
+
+        {% if error %}
+            <p class="red-text">{{ error }}</p>
+        {% endif %}
+
         <form method="POST" action="{% url 'report_spacebug' %}"/>
         {% csrf_token %}
-        {{ form.as_p }}
 
-        {% if messages %}
-            <div class="materialert">
-                {% for message in messages %}
-                    <div{% if message.tags %} class="card-panel {{ message.tags }}"{% endif %}>{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
+        <div class="input-field">
+            <i class="material-icons prefix">report</i>
+            <input id="title" name="title" type="text">
+            <label for="title">Issue Title</label>
+        </div>
+        <div class="input-field">
+            <i class="material-icons prefix">subdirectory_arrow_right</i>
+            <textarea id="description" name="description" class="materialize-textarea"></textarea>
+            <label for="description">Issue Description</label>
+        </div>
 
         <a class="btn-flat right" onclick="window.history.back();">Cancel</a>
         <button class="btn waves-effect waves-light right" type="submit" name="action">Submit Issue</button>
