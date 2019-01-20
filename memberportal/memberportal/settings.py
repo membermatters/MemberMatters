@@ -28,10 +28,11 @@ DEBUG = True
 # Only these URLs are allowed access
 ALLOWED_HOSTS = ["portal.hsbne.org", "porthack.hsbne.org", "localhost", "127.0.0.1"]
 
+
 if os.environ.get("HSBNE_PORTAL_ENV") == "Production":
     DEBUG = False
     ALLOWED_HOSTS = ["portal.hsbne.org"]
-    
+
     # Slightly hacky, but allows a direct IP while on the local HSBNE network.
     for x in range(1, 255):
         ALLOWED_HOSTS.append("10.0.0." + str(x))

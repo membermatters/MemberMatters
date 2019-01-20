@@ -175,6 +175,8 @@ def add_to_xero(profile):
 
 
 def create_membership_invoice(user, email_invoice=False):
+    tax_type = os.environ.get("INVOICE_TAX_TYPE", "EXEMPTOUTPUT")
+
     next_month = datetime.date.today().month + 1
     this_year = datetime.date.today().year
     if next_month == 13:
@@ -189,7 +191,7 @@ def create_membership_invoice(user, email_invoice=False):
             "Quantity": "1",
             "ItemCode": user.profile.member_type.name,
             "UnitAmount": round(user.profile.member_type.cost * 0.7, 2),
-            "TaxType": "OUTPUT",
+            "TaxType": tax_type,
             "AccountCode": "200"
         }
     ]
@@ -204,7 +206,7 @@ def create_membership_invoice(user, email_invoice=False):
                 "Quantity": "1",
                 "ItemCode": cause.item_code,
                 "UnitAmount": round(user.profile.member_type.cost * (0.3 / length), 2),
-                "TaxType": "OUTPUT",
+                "TaxType": tax_type,
                 "AccountCode": cause.account_code
             }
             line_items.append(item)
