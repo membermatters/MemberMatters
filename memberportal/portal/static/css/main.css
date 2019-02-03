@@ -10,7 +10,6 @@ html {
 
 /* custom footer css */
 footer {
-    background-color: orange;
     position: absolute;
     left: 0;
     bottom: 0;
@@ -51,34 +50,12 @@ ul.errorlist > * {
     margin-bottom: 5px;
 }
 
-/* the code network green as a text colour */
-.cn-green-text {
-    color: #8DC641 !important;
-    font-family: 'Montserrat', 'Roboto', sans-serif;
-}
-
-.cn-grey-text {
-    color: #666766 !important;
-    font-family: 'Montserrat', 'Roboto', sans-serif;
-}
-
-.cn-light-text {
-    color: #666766 !important;
-    font-family: 'Montserrat', 'Roboto', sans-serif;
-}
-
-.cn-dark-text {
+.portal-dark-text {
     color: #333333 !important;
     font-family: 'Montserrat', 'Roboto', sans-serif;
 }
 
-/* the code network green as a background colour */
-.cn-green-background {
-    background-color: #8DC641 !important;
-}
-
-/* the code network dark as a background colour */
-.cn-dark-background {
+.portal-dark-background {
     background-color: #333333;
 }
 
@@ -124,7 +101,7 @@ body > div.fullwidth-container > div.modal-overlay {
 @media only screen and (max-width: 600px) {
     /* make the logo same height as navbar but with padding around it */
     #logo {
-        height: 70px;
+        height: 55px;
         padding: 8px;
     }
 
@@ -162,7 +139,7 @@ body > div.fullwidth-container > div.modal-overlay {
 @media only screen and (min-width: 601px) {
     /* make the logo same height as navbar but with padding around it */
     #logo {
-        height: 90px;
+        height: 60px;
         padding: 10px;
     }
 
@@ -176,7 +153,7 @@ body > div.fullwidth-container > div.modal-overlay {
     }
 
     .admin-container {
-        max-width: 40%;
+        max-width: 400px;
         padding-bottom: 70px;
     }
 
@@ -200,6 +177,10 @@ body > div.fullwidth-container > div.modal-overlay {
         width: 100% !important;
         max-width: 800px !important;
         min-height: 80vh !important;
+    }
+
+    div.modal.datepicker-modal {
+        min-height: initial !important;
     }
 
     #access-list {
@@ -242,4 +223,10 @@ body > div.fullwidth-container > div.modal-overlay {
 
 .cause-button {
     width: 52.5px;
+}
+
+.proxy-input {
+    font-style: italic;
+    font-weight: bold;
+    text-decoration: underline;
 }

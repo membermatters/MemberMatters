@@ -27,7 +27,7 @@
 
     <!-- CSS -->
     <link href="{% static '/css/materialize.css' %}" type="text/css" rel="stylesheet" media="screen,projection"/>
-    <link href="{% static '/css/stylev.css' %}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{% static '/css/main.css' %}" type="text/css" rel="stylesheet" media="screen,projection"/>
 
     <link rel="shortcut icon" type="image/png" href="{% static '/img/logo.png' %}"/>
 </head>
@@ -35,7 +35,8 @@
 {% block body_tag %}
     <body>
 {% endblock %}
-<nav class="cn-dark-background lighten-1" role="navigation">
+
+<nav class="portal-dark-background" role="navigation">
     <div class="nav-wrapper container">
         <a id="logo-container" href="/" class="brand-logo">
             <img id="logo" class="left" src="{% static '/img/logo.png' %}" class="brand-logo">
@@ -69,16 +70,16 @@
             {% endif %}
 
             {% if user.is_authenticated %}
-                <a class="cn-dark-text">Hi, {{ user.profile.first_name }}!</a>
+                <a class="portal-dark-text">Hi, {{ user.profile.first_name }}!</a>
                 <div class="divider"></div>
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'home' %}">Home</a></li>
                 <div class="divider"></div>
                 <li><a class="subheader">Profile Tools</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Manage My Profile</a>
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Profile</a>
                 </li>
                 {% if not user.profile.state|stringformat:"s" == "noob" %}
-                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_spacebucks' %}">Manage
-                        Spacebucks</a></li>
+                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_spacebucks' %}">Spacebucks</a>
+                    </li>
                     <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">My
                         Access
                         Permissions</a></li>
@@ -116,14 +117,15 @@
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'report_spacebug' %}">Report
                     Issue</a></li>
                 {% if not user.profile.state|stringformat:"s" == "noob" %}
-                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'list_causes' %}">See Cause
+                    <li><a class="waves-effect waves-light" href="{% url 'list_causes' %}">Cause
                         Members</a></li>
-                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'recent_swipes' %}">Recent
+                    <li><a class="waves-effect waves-light" href="{% url 'recent_swipes' %}">Recent
                         Swipes</a>
                     </li>
-                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'last_seen' %}">Last Seen</a>
+                    <li><a class="waves-effect waves-light" href="{% url 'last_seen' %}">Last Seen</a>
+                    <li><a class="waves-effect waves-light" href="{% url 'submit_proxy' %}">Submit Proxy</a>
                 {% endif %}
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'webcams' %}">Public Webcams</a>
+                <li><a class="waves-effect waves-light" href="{% url 'webcams' %}">Public Webcams</a>
                 </li>
             {% endif %}
 
@@ -138,11 +140,10 @@
     </div>
 
     <ul id="profile-dropdown" class="dropdown-content">
-        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Manage Profile</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Profile</a></li>
 
         {% if not user.profile.state|stringformat:"s" == "noob" %}
-            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_spacebucks' %}">Manage
-                Spacebucks</a>
+            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_spacebucks' %}">Spacebucks</a>
             </li>
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">Access
                 Permissions</a></li>
@@ -151,16 +152,17 @@
     </ul>
 
     <ul id="member-dropdown" class="dropdown-content">
-        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'report_spacebug' %}">Report Issue</a></li>
+        <li><a class="waves-effect waves-light" href="{% url 'report_spacebug' %}">Report Issue</a></li>
         {% if not user.profile.state|stringformat:"s" == "noob" %}
-            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'list_causes' %}">See Cause Members</a>
+            <li><a class="waves-effect waves-light" href="{% url 'list_causes' %}">Cause Members</a>
             </li>
 
-            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'recent_swipes' %}">Recent Swipes</a>
+            <li><a class="waves-effect waves-light" href="{% url 'recent_swipes' %}">Recent Swipes</a>
             </li>
-            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'last_seen' %}">Last Seen</a></li>
+            <li><a class="waves-effect waves-light" href="{% url 'last_seen' %}">Last Seen</a></li>
+             <li><a class="waves-effect waves-light" href="{% url 'submit_proxy' %}">Submit Proxy</a>
         {% endif %}
-        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'webcams' %}">Public Webcams</a></li>
+        <li><a class="waves-effect waves-light" href="{% url 'webcams' %}">Public Webcams</a></li>
     </ul>
 
     {% if user.is_staff %}
@@ -223,12 +225,12 @@
 
 <!-- Scripts -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="{% static '/js/materialize.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
 {% block scripts %}
 {% endblock %}
 
-<script src="{% static '/js/init.js' %}"></script>
+<script src="{% static '/js/main.js' %}"></script>
 
 </body>
 </html>

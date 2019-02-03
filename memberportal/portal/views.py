@@ -11,6 +11,7 @@ import requests
 from memberportal.decorators import no_noobs, admin_required, api_auth
 from xero import Xero
 from xero.auth import PrivateCredentials
+import datetime
 
 import sendgrid
 from multiprocessing.dummy import Pool as ThreadPool
@@ -18,6 +19,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 from profile.models import Profile
+from profile.emailhelpers import send_single_email
 
 utc = pytz.UTC
 
@@ -193,11 +195,13 @@ def overdue_cron(request):
 
         if "SENDGRID_API_KEY" in os.environ and len(deactivated_members) or len(activated_members):
             body = "HSBNE overdue fees check ran with {} overdue. These people have been deactivated:<br>{}<br><br>" \
-                   "These people have been reactivated:<br>{}".format(len(deactivated_members), deactivated_members, activated_members)
+                   "These people have been reactivated:<br>{}".format(len(deactivated_members), deactivated_members,
+                                                                      activated_members)
             sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
             from_email = sendgrid.Email(settings.FROM_EMAIL_TREASURER)
             to_email = sendgrid.Email(settings.SYSADMIN_EMAIL)
-            subject = "HSBNE overdue fees check ran with {} overdue and {} reactivated.".format(len(deactivated_members), len(activated_members))
+            subject = "HSBNE overdue fees check ran with {} overdue and {} reactivated.".format(
+                len(deactivated_members), len(activated_members))
             content = sendgrid.helpers.mail.Content("text/html", body)
             mail = sendgrid.helpers.mail.Mail(from_email, subject, to_email, content)
             sg.client.mail.send.post(request_body=mail.get())
@@ -206,3 +210,45 @@ def overdue_cron(request):
 
     else:
         return "Error checking overdue fees in Xero. No Xero API details."
+
+
+@login_required
+def proxy(request):
+    causes = request.user.profile.causes.all()
+
+    context = {"causes": causes}
+
+    # Handle submission.
+    if request.method == 'POST':
+        params = {}
+        required_aprams = ["proxy-memberaddress", "proxy-proxyname", "proxy-proxyaddress", "proxy-type",
+                           "proxy-meetingdate"]
+
+        for param in request.POST:
+            params[param] = request.POST[param]
+
+        for param in required_aprams:
+            if param not in params:
+                context["error"] = "Sorry, invalid form submission."
+
+        full_name = request.user.profile.get_full_name()
+        member_address = params["proxy-memberaddress"]
+        proxy_name = params["proxy-proxyname"]
+        proxy_address = params["proxy-proxyaddress"]
+        proxy_type = params["proxy-type"]
+        proxy_date = params["proxy-meetingdate"]
+        submit_date = datetime.datetime.now().strftime("%d-%m-%Y at %H:%M")
+
+        subject = "{} submitted a proxy for {} Meeting".format(full_name, params["proxy-type"])
+        message = "I, {}, of {}, being a member of the association, appoint {} of {} as my proxy to vote for me on my "\
+                  "behalf at the {} Meeting of the association, to be held on the day of {} and at any adjournment of "\
+                  "the meeting. ~br~ ~br~ Signed by {} on this day of {}.".format(full_name, member_address, proxy_name,
+                                                                                  proxy_address, proxy_type, proxy_date,
+                                                                                  full_name, submit_date)
+
+        send_single_email(request.user, request.user.email, subject, subject, message)
+        send_single_email(request.user, settings.EXEC_EMAIL, subject, subject, message)
+        context["message"] = "Successfully submitted proxy. A copy has been emailed to you for your records."
+
+    # render template normally
+    return render(request, 'proxy.html', context)

@@ -293,6 +293,7 @@ function openMemberActionsModal(e) {
 
                 // init the table
                 let table = $('#spacebucksTable').DataTable({});
+                table.order([2, 'desc']).draw();
             },
             error: function () {
                 M.toast({html: "unknown error while getting spacebucks data :( "});
