@@ -9,7 +9,8 @@ from memberportal.decorators import no_noobs, api_auth
 from memberportal.helpers import log_user_event
 from .models import SpaceBucks
 from profile.models import Profile, User
-from urllib import parse
+from causes.models import Causes
+from profile.xerohelpers import create_cause_donation_invoice
 import stripe
 import json
 import pytz
@@ -292,3 +293,41 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
                                     )
 
     return JsonResponse({"success": False, "balance": round(profile.spacebucks_balance, 2)})
+
+
+@api_auth
+def spacebucks_balance(request, rfid=None):
+    if rfid is None:
+        return HttpResponseBadRequest("400 Invalid request.")
+
+    try:
+        profile = Profile.objects.get(rfid=rfid)
+        return JsonResponse({"balance": profile.spacebucks_balance})
+
+    except ObjectDoesNotExist:
+        return HttpResponseBadRequest("400 Invalid request. User does not exist.")
+
+
+@api_auth
+def spacebucks_cause_donation(request, rfid=None, cause_id=None, amount=None):
+    if cause_id is None or rfid is None or amount is None:
+        return HttpResponseBadRequest("400 Invalid request.")
+
+    try:
+        cause = Causes.objects.get(pk=cause_id)
+
+    except ObjectDoesNotExist:
+        return HttpResponseBadRequest("400 Invalid request. Cause does not exist.")
+
+    try:
+        amount = amount / 100  # convert to dollars
+        profile = Profile.objects.get(rfid=rfid)
+        result = create_cause_donation_invoice(profile.user, cause, amount)
+        if "Error" not in result:
+            print(result)
+            return JsonResponse({"success": True, "balance": profile.spacebucks_balance, "donated": amount})
+
+        return HttpResponseServerError("Error while creating invoice: " + result)
+
+    except ObjectDoesNotExist:
+        return HttpResponseBadRequest("400 Invalid request. User does not exist.")

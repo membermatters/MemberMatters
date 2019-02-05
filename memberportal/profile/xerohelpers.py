@@ -273,3 +273,67 @@ def create_membership_invoice(user, email_invoice=False):
 
     else:
         return "Error created invoice in Xero. No Xero API details."
+
+
+def create_cause_donation_invoice(user, cause, amount):
+    tax_type = os.environ.get("INVOICE_TAX_TYPE", "EXEMPTOUTPUT")
+
+    line_items = [
+        {
+            "Description": "Debit funds from Spacebucks account code.",
+            "Quantity": "1",
+            "ItemCode": "Spacebucks Cause Donation",
+            "UnitAmount": amount * -1,
+            "TaxType": tax_type,
+            "AccountCode": "264"  # SpaceBucks account
+        },
+        {
+            "Description": "Credit funds to {}.".format(cause.name),
+            "Quantity": "1",
+            "ItemCode": cause.item_code,
+            "UnitAmount": amount,
+            "TaxType": tax_type,
+            "AccountCode": cause.account_code
+        }
+    ]
+
+    payload = {
+        "Type": "ACCREC",
+        "Contact": {
+            "ContactID": user.profile.xero_account_id
+        },
+        "DueDate": datetime.datetime.today(),
+        "LineAmountTypes": "Inclusive",
+        "LineItems": line_items,
+        "Status": "AUTHORISED",
+        "Reference": user.profile.xero_account_number,
+        "Url": "https://portal.hsbne.org",
+    }
+
+    if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
+        with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
+            rsa_key = keyfile.read()
+        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+        xero = Xero(credentials)
+
+        try:
+            from memberportal.helpers import log_user_event
+
+            # try to create the invoice
+            result = xero.invoices.put(payload)
+            invoice_number = result[0]['InvoiceNumber']
+
+            log_user_event(user, "Created invoice for donation to {}.".format(cause.name), "xero")
+
+        except XeroBadRequest as e:
+            log_user_event(user, "Error creating invoice for $" + str(user.profile.member_type.cost), "xero")
+            return "Error: " + str(e)
+
+        if result:
+            return "Successfully created invoice {} in Xero.".format(invoice_number)
+
+        else:
+            return "Error creating invoice in Xero."
+
+    else:
+        return "Error creating invoice in Xero. No Xero API details."

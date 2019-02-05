@@ -26,7 +26,7 @@ SECRET_KEY = 'l)#t68rzepzp)0l#x=9mntciapun$whl+$j&=_@nl^zl1xm3j*'
 DEBUG = True
 
 # Only these URLs are allowed access
-ALLOWED_HOSTS = ["portal.hsbne.org", "porthack.hsbne.org", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
 
 
 if os.environ.get("HSBNE_PORTAL_ENV") == "Production":
@@ -37,6 +37,7 @@ if os.environ.get("HSBNE_PORTAL_ENV") == "Production":
     for x in range(1, 255):
         ALLOWED_HOSTS.append("10.0.0." + str(x))
         ALLOWED_HOSTS.append("10.0.1." + str(x))
+        ALLOWED_HOSTS.append("10.0.2." + str(x))
 
 
 # Application definition
