@@ -57,7 +57,7 @@ def add_spacebucks(request, amount=None):
             if amount <= 30:
                 log_user_event(request.user, "Attempting to charge {} for ${}.".format(
                     request.user.profile.get_full_name(), amount),
-                    "stripe")
+                               "stripe")
                 charge = stripe.Charge.create(
                     amount=amount * 100,  # convert to cents,
                     currency='aud',
@@ -77,18 +77,19 @@ def add_spacebucks(request, amount=None):
                     transaction.logging_info = charge
                     transaction.save()
                     log_user_event(request.user, "Successfully charged {} for ${}.".format(
-                                    request.user.profile.get_full_name(), amount),
-                                    "stripe")
+                        request.user.profile.get_full_name(), amount),
+                                   "stripe")
                     subject = "You just added Spacebucks to your HSBNE account."
                     request.user.email_notification(subject, subject, subject, "We just charged you card for ${} and "
                                                                                "added this to your spacebucks balance."
                                                                                "If this wasn't you, please let us know "
-                                                                               "immediately.".format(transaction.amount))
+                                                                               "immediately.".format(
+                        transaction.amount))
 
                     return JsonResponse({"success": True})
                 else:
                     log_user_event(request.user, "Problem charging {}.".format(request.user.profile.get_full_name()),
-                        "stripe")
+                                   "stripe")
                     subject = "Failed to add Spacebucks to your HSBNE account."
                     request.user.email_notification(subject, subject, subject, "We just tried to charge your card for"
                                                                                "${} for spacebucks but were not "
@@ -97,7 +98,7 @@ def add_spacebucks(request, amount=None):
                     return JsonResponse({"success": False})
             else:
                 log_user_event(request.user, "Tried to add invalid amount {} to spacebucks via stripe.".format(amount),
-                    "stripe")
+                               "stripe")
 
         return render(request, 'add_spacebucks.html',
                       {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"],
@@ -270,11 +271,12 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
             profile.save()
 
             subject = "You just made a ${} Spacebucks purchase.".format(amount)
-            message = "Description: {}. Balance Remaining: ${}. If this wasn't you, or you believe there has been an "\
-                                "error, please let us know.".format(transaction.description, profile.spacebucks_balance)
+            message = "Description: {}. Balance Remaining: ${}. If this wasn't you, or you believe there has been an " \
+                      "error, please let us know.".format(transaction.description, profile.spacebucks_balance)
             User.objects.get(profile=profile).email_notification(subject, subject, subject, message)
 
-            log_user_event(profile.user, "Successfully debited ${} from spacebucks account.".format(amount), "spacebucks")
+            log_user_event(profile.user, "Successfully debited ${} from spacebucks account.".format(amount),
+                           "spacebucks")
 
             return JsonResponse({"success": True, "balance": round(profile.spacebucks_balance, 2)})
 
@@ -284,13 +286,13 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
 
     # not enough $$
     log_user_event(profile.user, "Not enough funds to debit ${} from spacebucks account.".format(amount),
-        "spacebucks")
+                   "spacebucks")
     subject = "Failed to make a ${} Spacebucks purchase.".format(amount)
     User.objects.get(profile=profile).email_notification(subject, subject, subject,
-                                    "We just tried to debit ${} from your Spacebucks balance but were not successful. "\
-                                    "You currently have ${}. If this wasn't you, please let us know " \
-                                    "immediately.".format(amount, profile.spacebucks_balance)
-                                    )
+                                                         "We just tried to debit ${} from your Spacebucks balance but were not successful. " \
+                                                         "You currently have ${}. If this wasn't you, please let us know " \
+                                                         "immediately.".format(amount, profile.spacebucks_balance)
+                                                         )
 
     return JsonResponse({"success": False, "balance": round(profile.spacebucks_balance, 2)})
 
@@ -324,7 +326,20 @@ def spacebucks_cause_donation(request, rfid=None, cause_id=None, amount=None):
         profile = Profile.objects.get(rfid=rfid)
         result = create_cause_donation_invoice(profile.user, cause, amount)
         if "Error" not in result:
-            print(result)
+            time_dif = (timezone.now() - profile.last_spacebucks_purchase).total_seconds()
+            print(time_dif)
+
+            if time_dif > 10:
+                transaction = SpaceBucks()
+                transaction.amount = amount * -1.0
+                transaction.user = profile.user
+                transaction.description = "Donation to {}.".format(cause.name)
+                transaction.transaction_type = "card"
+                transaction.save()
+
+                profile.last_spacebucks_purchase = timezone.now()
+                profile.save()
+
             return JsonResponse({"success": True, "balance": profile.spacebucks_balance, "donated": amount})
 
         return HttpResponseServerError("Error while creating invoice: " + result)
