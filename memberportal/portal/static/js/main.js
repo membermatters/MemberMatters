@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
         "coverTrigger": false,
         "closeOnClick": true,
     });
+    M.FormSelect.init(document.querySelectorAll('#id_income_bracket'), {"closeOnClick": true});
 
     // Modal init
     memberActionsModal = M.Modal.init(document.getElementById('member-actions-modal'), {'endingBottom': '5%'});

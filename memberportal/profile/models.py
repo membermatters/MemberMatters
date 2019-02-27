@@ -304,6 +304,44 @@ class Profile(models.Model):
     can_manage_cause = models.ManyToManyField("causes.Causes", blank=True, related_name="can_manage_cause")
     can_generate_invoice = models.BooleanField("Can generate & email invoice", default=False)
 
+    BRACKETS = (
+        ('low', '$0/wk to $550/wk'),
+        ('medium', '$550/wk to $950/wk'),
+        ('high', '$950/wk or more'),
+    )
+
+    updated_starving_details = models.DateTimeField(null=True)
+    studying_fulltime = models.BooleanField(default=False)
+    centrelink = models.BooleanField(default=False)
+    healthcare_card = models.BooleanField(default=False)
+    income_bracket = models.CharField(max_length=10, default="high", choices=BRACKETS)
+    special_consideration = models.BooleanField(default=False)
+    special_consideration_note = models.TextField(max_length=500, null=True, blank=True)
+    starving_override = models.BooleanField(default=False)  # override requirements and grant them starving status
+
+    def is_starving_eligible(self):
+        if self.starving_override:
+            return True
+
+        eligible = False
+        criteria_met = 0
+
+        if self.studying_fulltime:
+            criteria_met += 1
+
+        if self.centrelink:
+            criteria_met += 1
+
+        if self.healthcare_card:
+            criteria_met += 1
+
+        if criteria_met > 0:
+            eligible = True
+
+        if self.income_bracket != "low":
+            eligible = False
+
+        return eligible
 
     def deactivate(self):
         log_user_event(self.user, "Deactivated member", "profile")

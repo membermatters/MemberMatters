@@ -63,7 +63,8 @@
             </tbody>
         </table>
         <div id='account-info' style="width: 100%;" class="left">
-            <p>To change your membership type, please <a href="mailto:executive@hsbne.org">email the executive</a>.</p>
+            <p>To apply for the starving hacker discount, <a href="{% url 'starving_hacker_form' %}">click here</a>.</p>
+            <p>To change your membership type, <a href="mailto:executive@hsbne.org">email the exec</a>.</p>
             <p id='last-login'>You last logged in on {{ user.last_login }}</p>
 
             <a class="btn waves-effect waves-light right" href="{% url 'edit_profile' %}">Edit Profile</a><br><br>

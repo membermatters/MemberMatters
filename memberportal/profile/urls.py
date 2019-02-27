@@ -11,6 +11,7 @@ urlpatterns = [
     path('profile/id/', views.digital_id, name='digital_id'),
     path('profile/access/view/', views.access_permissions, name='access_permissions'),
     path('profile/theme/edit/', views.edit_theme_song, name='edit_theme_song'),
+    path('profile/starvinghacker/', views.starving_hacker_form, name='starving_hacker_form'),
     path('members/list/', views.member_list, name='member_list'),
     path('members/recent/', views.recent_swipes, name='recent_swipes'),
     path('members/lastseen/', views.last_seen, name='last_seen'),

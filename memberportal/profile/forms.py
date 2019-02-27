@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.forms.widgets import ClearableFileInput
+
 User = get_user_model()
 
 
@@ -114,3 +115,10 @@ class ResetPasswordForm(forms.Form):
 
     class Meta:
         fields = ['password1', 'password2']
+
+
+class StarvingHackerForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ('studying_fulltime', 'centrelink', 'healthcare_card', 'income_bracket', 'special_consideration',
+                  'special_consideration_note')
