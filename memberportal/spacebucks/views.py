@@ -212,8 +212,14 @@ def delete_spacebucks_payment_info(request):
         return HttpResponseServerError("Can't find stripe API details.")
 
     profile = request.user.profile
-    customer = stripe.Customer.retrieve(profile.stripe_customer_id)
-    customer.sources.retrieve(customer['default_source']).delete()
+
+    try:
+        customer = stripe.Customer.retrieve(profile.stripe_customer_id)
+        customer.sources.retrieve(customer['default_source']).delete()
+
+    except stripe.error.InvalidRequestError as e:
+        # this ignores the error that happens when a user doesn't have saved details, sometimes needed.
+        pass
 
     profile.stripe_card_last_digits = ""
     profile.stripe_card_expiry = ""
