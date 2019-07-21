@@ -115,4 +115,4 @@ venv.bak/
 
 *.pem
 
-.env-file
+env.list
