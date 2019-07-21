@@ -17,7 +17,7 @@ def get_xero_contact(user):
         with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
             rsa_key = keyfile.read()
         credentials = PrivateCredentials(
-            os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+            os.environ.get('XERO_CONSUMER_KEY', "/usr/src/data/xerkey.pem"), rsa_key)
         xero = Xero(credentials)
         email = xero.contacts.filter(EmailAddress=user.profile.email)
         name = xero.contacts.filter(Name=user.profile.get_full_name())
@@ -38,7 +38,7 @@ def generate_account_number(profile):
     if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
         with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY', "/usr/src/data/xerkey.pem"), rsa_key)
         xero = Xero(credentials)
         contacts = xero.contacts.filter(includeArchived=True)
 
@@ -62,7 +62,7 @@ def sync_xero_accounts(users):
     if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
         with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY', "/usr/src/data/xerkey.pem"), rsa_key)
         xero = Xero(credentials)
         contacts = xero.contacts.filter(includeArchived=True)
         matches = []
@@ -116,7 +116,7 @@ def add_to_xero(profile):
     if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
         with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY', "/usr/src/data/xerkey.pem"), rsa_key)
         xero = Xero(credentials)
 
         contact = [
@@ -227,7 +227,7 @@ def create_membership_invoice(user, email_invoice=False):
     if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
         with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY', "/usr/src/data/xerkey.pem"), rsa_key)
         xero = Xero(credentials)
 
         # Monkey patch the library to support online invoices.
@@ -313,7 +313,7 @@ def create_cause_donation_invoice(user, cause, amount):
     if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
         with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY', "/usr/src/data/xerkey.pem"), rsa_key)
         xero = Xero(credentials)
 
         try:

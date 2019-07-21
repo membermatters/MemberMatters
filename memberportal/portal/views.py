@@ -143,7 +143,7 @@ def overdue_cron(request):
     if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
         with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY', "/usr/src/data/xerkey.pem"), rsa_key)
         xero = Xero(credentials)
 
         # Monkey patch the library to support pagination.
