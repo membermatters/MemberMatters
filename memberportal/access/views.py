@@ -229,6 +229,7 @@ def check_door_access(request, rfid_code, door_id=None):
 
     except ObjectDoesNotExist:
         log_event("Tried to check access for non existent user (or rfid not set).", "error", request)
+        print("Tried to check access on ({}) for non existent user ({}) or rfid not set.".format(door_id, rfid_code))
         return JsonResponse({"access": False,
                              "error": "Tried to check access for non existent user (or rfid not set).",
                              "timestamp": round(time.time())})
@@ -240,12 +241,13 @@ def check_door_access(request, rfid_code, door_id=None):
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for non existent door.", "error", request)
+            print("Tried to check access for non existent door ({}).".format(door_id))
             return JsonResponse({"access": False,
                                  "error": "Tried to check access for non existent door",
                                  "timestamp": round(time.time())})
 
     else:
-        door_ip = request.META.get('REMOTE_ADDR')
+        door_ip = request.META.get('HTTP_X_REAL_IP')
 
         try:
             door = Doors.objects.get(ip_address=door_ip)
@@ -254,6 +256,7 @@ def check_door_access(request, rfid_code, door_id=None):
         except ObjectDoesNotExist:
             log_event("Tried to check access for door {} but none found. (or IP not set)".format(door_ip), "error",
                       request)
+            print("Tried to check access for non existent door ({}) ip ({}).".format(door_id, door_ip))
             return JsonResponse({"access": False,
                                  "error": "Tried to check access for door {} but none found. (or IP not set)".format(door_ip),
                                  "timestamp": round(time.time())})
@@ -377,7 +380,7 @@ def interlock_checkin(request, interlock=None):
             return JsonResponse({"success": False, "error": "Error interlock does not exist.", "timestamp": round(time.time())})
 
     else:
-        ip = request.META.get('REMOTE_ADDR')
+        ip = request.META.get('HTTP_X_REAL_IP')
         authorised_tags = get_interlock_tags(ip, True)
 
         if authorised_tags:
@@ -401,7 +404,7 @@ def door_checkin(request, door=None):
             return JsonResponse({"success": False, "error": "Error door does not exist.", "timestamp": round(time.time())})
 
     else:
-        ip = request.META.get('REMOTE_ADDR')
+        ip = request.META.get('HTTP_X_REAL_IP')
         authorised_tags = get_door_tags(ip, True)
 
         if authorised_tags:
@@ -429,7 +432,7 @@ def authorised_door_tags(request, door=None):
                                  "timestamp": round(time.time())})
 
     else:
-        ip = request.META.get('REMOTE_ADDR')
+        ip = request.META.get('HTTP_X_REAL_IP')
         tags = get_door_tags(ip)
 
         if tags:
@@ -460,7 +463,7 @@ def authorised_interlock_tags(request, interlock=None):
                                  "timestamp": round(time.time())})
 
     else:
-        ip = request.META.get('REMOTE_ADDR')
+        ip = request.META.get('HTTP_X_REAL_IP')
         tags = get_interlock_tags(ip)
 
         if tags:
@@ -632,6 +635,7 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
 
     except ObjectDoesNotExist:
         log_event("Tried to check access for non existent user (or rfid not set).", "error", request)
+        print("Tried to check access on ({}) for non existent user ({}) or rfid not set.".format(interlock_id, rfid_code))
         return JsonResponse(
             {"access": False, "error": "Tried to check access for non existent user (or rfid not set).",
              "timestamp": round(time.time())})
@@ -643,11 +647,12 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for non existent interlock.", "error", request)
+            print("Tried to check access for non existent interlock ({}) user ({}).".format(interlock_id, rfid_code))
             return JsonResponse({"access": False, "error": "Tried to check access for non existent interlock.",
                                  "timestamp": round(time.time())})
 
     else:
-        interlock_ip = request.META.get('REMOTE_ADDR')
+        interlock_ip = request.META.get('HTTP_X_REAL_IP')
 
         try:
             interlock = Interlock.objects.get(ip_address=interlock_ip)
@@ -655,6 +660,7 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
 
         except ObjectDoesNotExist:
             log_event("Tried to check access for {} interlock but none found.".format(interlock_ip), "error", request)
+            print("Tried to check access for non existent interlock ({}) ip ({}).".format(interlock_id, interlock_ip))
             return JsonResponse({"access": False,
                                  "error": "Tried to check access for {} interlock but none found.".format(interlock_ip),
                                  "timestamp": round(time.time())})
@@ -701,7 +707,7 @@ def spacebucks_device_checkin(request, device_id=None):
 
     else:
         try:
-            device_ip = request.META.get('REMOTE_ADDR')
+            device_ip = request.META.get('HTTP_X_REAL_IP')
             device = SpacebucksDevice.objects.get(ip_address=device_ip)
             device.checkin()
             return JsonResponse({"success": True, "timestamp": round(time.time())})
