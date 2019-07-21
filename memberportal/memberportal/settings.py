@@ -95,7 +95,7 @@ WSGI_APPLICATION = 'memberportal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.environ.get("HSBNE_PORTAL_DBFILE", "/usr/src/data/db.sqlite"),
+        'NAME': os.environ.get("HSBNE_PORTAL_DBFILE", "/usr/src/data/db.sqlite3"),
     }
 }
 
