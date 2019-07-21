@@ -22,6 +22,7 @@ from profile.models import Profile
 from profile.emailhelpers import send_single_email
 
 utc = pytz.UTC
+xero_rsa = os.environ.get("XERO_RSA_FILE", "/usr/src/data/xerkey.pem")
 
 
 def loggedout(request):
@@ -140,8 +141,8 @@ def invoice_cron(request):
 
 @api_auth
 def overdue_cron(request):
-    if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
-        with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
+    if "XERO_CONSUMER_KEY" in os.environ:
+        with open(xero_rsa) as keyfile:
             rsa_key = keyfile.read()
         credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY', "/usr/src/data/xerkey.pem"), rsa_key)
         xero = Xero(credentials)
