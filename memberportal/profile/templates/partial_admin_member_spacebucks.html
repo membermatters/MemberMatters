@@ -5,7 +5,8 @@
     </div>
     <div class="col s12 m6 center-align">
         $ <input id="addAmountInput" placeholder="0.00" type="number" step=".1" class="validate">
-        <a onclick="addSpacebucks('{% url 'admin_add_spacebucks' member_id=member.id %}')" class="waves-effect waves-light btn" href="#">Add</a>
+        <a onclick="addSpacebucks('{% url 'admin_add_spacebucks' member_id=member.id %}')"
+           class="waves-effect waves-light btn" href="#">Add</a>
     </div>
 </div>
 
@@ -26,7 +27,9 @@
             {% else %}
                 <td class="red-text">${{ transaction.amount }}</td>
             {% endif %}
-            <td>{{ transaction.date }} ({{ transaction.date|timesince }} ago)</td>
+            <td>{{ transaction.date|date:"y-m-d" }}-{{ transaction.date|time:"H:i" }} ({{ transaction.date|timesince }}
+                ago)
+            </td>
         </tr>
     {% endfor %}
     </tbody>

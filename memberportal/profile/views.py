@@ -13,15 +13,17 @@ from memberportal.helpers import log_user_event
 from .models import Profile, User, MemberTypes
 from access.models import Doors, Interlock, DoorLog, InterlockLog
 from spacebucks.models import SpaceBucks
-from .forms import SignUpForm, AddProfileForm, ThemeForm, EditProfileForm
-from .forms import EditUserForm, ResetPasswordForm, ResetPasswordRequestForm
-from .forms import AdminEditProfileForm, AdminEditUserForm
+from .emailhelpers import send_single_email, send_group_email
+from django.conf import settings
+from .forms import *
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 import json
 import pytz
 
 utc = pytz.UTC
+
+permission_message = "You are not authorised to do that."
 
 
 @csrf_exempt
@@ -249,7 +251,7 @@ def access_permissions(request):
 @admin_required
 def admin_spacebucks_transactions(request, member_id):
     if not request.user.profile.can_see_members_spacebucks:
-        return HttpResponseForbidden("You do not have permission to access that.")
+        return HttpResponseForbidden(permission_message)
 
     user = User.objects.get(pk=member_id)
     transactions = SpaceBucks.objects.filter(user_id=member_id)
@@ -267,13 +269,13 @@ def admin_spacebucks_transactions(request, member_id):
 @admin_required
 def admin_add_spacebucks(request, member_id, amount):
     if not request.user.profile.can_see_members_spacebucks:
-        return HttpResponseForbidden("You do not have permission to access that.")
+        return HttpResponseForbidden(permission_message)
 
     if request.method == 'GET':
         user = User.objects.get(pk=member_id)
 
         # Convert from cents
-        amount = round(amount/100, 2)
+        amount = round(amount / 100, 2)
 
         if amount > 50:
             return HttpResponseBadRequest("Invalid amount.")
@@ -285,8 +287,10 @@ def admin_add_spacebucks(request, member_id, amount):
         transaction.transaction_type = "bank"
         transaction.logging_info = ""
         transaction.save()
-        log_user_event(request.user, "Manually added ${} to {}.".format(amount, user.profile.get_full_name()), "spacebucks")
-        log_user_event(user, "{} manually added ${} to {}.".format(request.user.profile.get_full_name(), amount, user.profile.get_full_name()), "stripe")
+        log_user_event(request.user, "Manually added ${} to {}.".format(amount, user.profile.get_full_name()),
+                       "spacebucks")
+        log_user_event(user, "{} manually added ${} to {}.".format(request.user.profile.get_full_name(), amount,
+                                                                   user.profile.get_full_name()), "stripe")
 
         return JsonResponse({"success": True})
 
@@ -304,7 +308,7 @@ def admin_edit_member(request, member_id):
     :return:
     """
     if not request.user.profile.can_see_members_personal_details:
-        return HttpResponseForbidden("You do not have permission to access that.")
+        return HttpResponseForbidden(permission_message)
     profile = get_object_or_404(Profile, user=member_id)
     data = dict()
 
@@ -347,7 +351,7 @@ def admin_member_logs(request, member_id):
     :return:
     """
     if not request.user.profile.can_see_members_logs:
-        return HttpResponseForbidden("You do not have permission to access that.")
+        return HttpResponseForbidden(permission_message)
 
     data = dict()
     member = User.objects.get(pk=member_id)
@@ -414,7 +418,7 @@ def set_state(request, member_id, state):
     :return:
     """
     if not request.user.profile.can_disable_members:
-        return HttpResponseForbidden("You do not have permission to access that.")
+        return JsonResponse({"message": permission_message})
 
     user = User.objects.get(id=member_id)
 
@@ -430,40 +434,40 @@ def set_state(request, member_id, state):
 
             email = user.email_welcome()
             xero = user.profile.add_to_xero()
-            invoice = user.profile.create_membership_invoice() # Don't create them an invoice for now
+            invoice = user.profile.create_membership_invoice()
             user.profile.state = "inactive"  # an admin should activate them when they pay their invoice
             user.profile.save()
 
             if "Error" not in xero and "Error" not in invoice and email:
-                return JsonResponse({"success": True, "response": "Successfully added to Xero and sent welcome email."})
+                return JsonResponse({"success": True, "message": "Successfully added to Xero and sent welcome email."})
 
             elif "Error" in xero:
-                return JsonResponse({"success": False, "response": xero})
+                return JsonResponse({"success": False, "message": xero})
 
             elif "Error" in invoice:
-                return JsonResponse({"success": False, "response": invoice})
+                return JsonResponse({"success": False, "message": invoice})
 
             elif email is False:
-                return JsonResponse({"success": False, "response": "Error, couldn't send welcome email."})
+                return JsonResponse({"success": False, "message": "Error, couldn't send welcome email."})
 
             else:
-                return JsonResponse({"success": False, "response": "Unknown error while making into member."})
+                return JsonResponse({"success": False, "message": "Unknown error while making into member."})
 
         else:
             user.profile.activate()
-            return JsonResponse({"success": True, "response": "Successfully enabled user. ✅"})
+            return JsonResponse({"success": True, "message": "Successfully enabled user. ✅"})
 
     else:
         user.profile.deactivate()
         return JsonResponse(
-            {"success": True, "response": "Successfully disabled user. ⛔"})
+            {"success": True, "message": "Successfully disabled user. ⛔"})
 
 
 @login_required
 @admin_required
 def admin_edit_access(request, member_id):
     if not request.user.profile.can_manage_access:
-        return HttpResponseForbidden("You do not have permission to access that.")
+        return HttpResponseForbidden(permission_message)
 
     member = get_object_or_404(User, pk=member_id)
     doors = Doors.objects.all()
@@ -563,10 +567,92 @@ def sync_xero_accounts(request):
 @login_required
 @admin_required
 def add_to_xero(request, member_id):
-    return JsonResponse({"response": User.objects.get(pk=member_id).profile.add_to_xero()})
+    return JsonResponse({"message": User.objects.get(pk=member_id).profile.add_to_xero()})
 
 
 @login_required
-@admin_required
-def create_invoice(request, member_id):
-    return JsonResponse({"response": User.objects.get(pk=member_id).profile.create_membership_invoice()})
+def create_invoice(request, member_id, option=False):
+    email_invoice = False
+
+    if "email" == option:
+        email_invoice = True
+
+    if request.user.profile.can_generate_invoice:
+        response = User.objects.get(pk=member_id).profile.create_membership_invoice(email_invoice=email_invoice)
+
+        return JsonResponse({"message": response})
+
+    else:
+        return JsonResponse({"message": permission_message})
+
+
+@login_required
+def starving_hacker_form(request):
+    if request.method == 'POST':
+        starving_form = StarvingHackerForm(request.POST, instance=request.user.profile)
+
+        if starving_form.is_valid():
+            # if it was a form submission save it
+            profile = starving_form.save()
+            profile.updated_starving_details = datetime.now()
+            profile.save()
+
+            log_user_event(request.user, "User edited starving hacker details.", "profile")
+
+            message = None
+            error = None
+
+            if profile.is_starving_eligible():
+                message = "Your application for the starving hacker discount was " \
+                          "successful. Your next invoice " \
+                          "should reflect the discount. If it doesn't, email our treasurer at treasurer@hsbne.org."
+                email = send_single_email(request.user,
+                                          settings.EXEC_EMAIL,
+                                          "New Starving Hacker Approved",
+                                          "New Starving Hacker Approved",
+                                          "Hi there, a new starving hacker application has been approved for {}. Please " \
+                                          "update their membership level in the portal and change their repeating invoice in " \
+                                          "Xero to reflect the discount.".format(profile.get_full_name()))
+
+            else:
+                if profile.special_consideration:
+                    error = " Unfortunately, you aren't eligible for the discount based on the information you " \
+                            "provided. As you requested special consideration, the executive will review your " \
+                            "application and get back to you within a few days with the outcome."
+                    email = send_single_email(request.user,
+                                              settings.EXEC_EMAIL,
+                                              "New Special Consideration Application for Starving Hacker",
+                                              "New Special Consideration Application for Starving Hacker",
+                                              "Hi there, a new starving hacker application has been rejected for {}. However," \
+                                              "they have requested special consideration. Login to the portal if you'd like " \
+                                              "to check their application details. ~br~~br~ Special Consideration Reason: {}".format(
+                                                  request.user.profile.get_full_name(),
+                                                  profile.special_consideration_note))
+
+                else:
+                    error = " Unfortunately, you aren't eligible for the discount based on the information you " \
+                            "provided. Your attempt has been logged and any additional applications may require proof" \
+                            " of your circumstances."
+                    email = send_single_email(request.user,
+                                              settings.EXEC_EMAIL,
+                                              "New Starving Hacker Rejected",
+                                              "New Starving Hacker Rejected",
+                                              "Hi there, a new starving hacker application has been rejected for {}. Login to the" \
+                                              " portal if you'd like to check their application details.".format(
+                                                  request.user.profile.get_full_name()))
+
+            if not email:
+                return render(request, 'starving_hacker_form.html',
+                              {"message": message, "error": "Unable to send email to the executive.",
+                               "form": starving_form})
+
+            return render(request, 'starving_hacker_form.html',
+                          {"message": message, "error": error, "form": starving_form})
+
+        return render(request, 'starving_hacker_form.html', {"error": "Error validating form.", "form": starving_form})
+
+    else:
+        # if it's not a form submission, return an empty form
+        starving_form = StarvingHackerForm(instance=request.user.profile)
+
+    return render(request, 'starving_hacker_form.html', {"form": starving_form})

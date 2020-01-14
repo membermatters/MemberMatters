@@ -1,66 +1,66 @@
 [
-{
+  {
     "model": "profile.membertypes",
     "pk": 1,
     "fields": {
-        "name": "Default",
-        "conditions": "Default",
-        "cost": 0
+      "name": "Default",
+      "conditions": "Default",
+      "cost": 0
     }
-},
-{
+  },
+  {
     "model": "causes.causes",
     "pk": 1,
     "fields": {
-        "name": "Default Cause",
-        "description": "Nothing to describe really!",
-        "account_code": 200,
-        "item_code": "Change Me"
+      "name": "Default Cause",
+      "description": "Nothing to describe really!",
+      "account_code": 200,
+      "item_code": "Change Me"
     }
-},
-{
+  },
+  {
     "model": "profile.user",
     "pk": 1,
     "fields": {
-        "password": "pbkdf2_sha256$100000$DM5x4r6CxWup$iTmSnlZl5PYADAZF0mhPsWq3OxvNfEKY6UbcD0df5lc=",
-        "last_login": "2018-10-14T16:06:18.277Z",
-        "is_superuser": true,
-        "email": "default@example.com",
-        "password_reset_key": null,
-        "password_reset_expire": null,
-        "staff": true,
-        "admin": true,
-        "groups": [],
-        "user_permissions": []
+      "password": "pbkdf2_sha256$100000$DM5x4r6CxWup$iTmSnlZl5PYADAZF0mhPsWq3OxvNfEKY6UbcD0df5lc=",
+      "last_login": "2018-10-14T16:06:18.277Z",
+      "is_superuser": true,
+      "email": "default@example.com",
+      "password_reset_key": null,
+      "password_reset_expire": null,
+      "staff": true,
+      "admin": true,
+      "groups": [],
+      "user_permissions": []
     }
-},
-{
+  },
+  {
     "model": "profile.profile",
     "pk": 1,
     "fields": {
-        "user": 1,
-        "created": "2018-10-14T16:05:59.693Z",
-        "modified": "2018-10-14T16:06:18.363Z",
-        "screen_name": "the_admin",
-        "first_name": "Default",
-        "last_name": "Admin",
-        "phone": "0712345678",
-        "state": "noob",
-        "member_type": 1,
-        "rfid": null,
-        "spacebucks_balance": 0.0,
-        "last_spacebucks_purchase": "2018-10-14T16:05:59.692Z",
-        "must_update_profile": false,
-        "last_seen": "2018-10-14T16:06:18.358Z",
-        "last_invoice": null,
-        "stripe_customer_id": "",
-        "stripe_card_expiry": "",
-        "stripe_card_last_digits": "",
-        "xero_account_id": "",
-        "xero_account_number": "",
-        "causes": [],
-        "doors": [],
-        "interlocks": []
+      "user": 1,
+      "created": "2018-10-14T16:05:59.693Z",
+      "modified": "2018-10-14T16:06:18.363Z",
+      "screen_name": "the_admin",
+      "first_name": "Default",
+      "last_name": "Admin",
+      "phone": "0712345678",
+      "state": "noob",
+      "member_type": 1,
+      "rfid": null,
+      "spacebucks_balance": 0.0,
+      "last_spacebucks_purchase": "2018-10-14T16:05:59.692Z",
+      "must_update_profile": false,
+      "last_seen": "2018-10-14T16:06:18.358Z",
+      "last_invoice": null,
+      "stripe_customer_id": "",
+      "stripe_card_expiry": "",
+      "stripe_card_last_digits": "",
+      "xero_account_id": "",
+      "xero_account_number": "",
+      "causes": [],
+      "doors": [],
+      "interlocks": []
     }
-}
+  }
 ]

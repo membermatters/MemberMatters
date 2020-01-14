@@ -5,6 +5,8 @@ from xero.exceptions import XeroBadRequest
 import datetime
 import os
 
+xero_rsa = os.environ.get("XERO_RSA_FILE", "/usr/src/data/xerkey.pem")
+
 
 def get_xero_contact(user):
     """
@@ -13,8 +15,8 @@ def get_xero_contact(user):
     :return:
     """
 
-    if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
-        with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
+    if "XERO_CONSUMER_KEY" in os.environ:
+        with open(xero_rsa) as keyfile:
             rsa_key = keyfile.read()
         credentials = PrivateCredentials(
             os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
@@ -35,10 +37,10 @@ def get_xero_contact(user):
 
 
 def generate_account_number(profile):
-    if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
-        with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
+    if "XERO_CONSUMER_KEY" in os.environ:
+        with open(xero_rsa) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY', "/usr/src/data/xerkey.pem"), rsa_key)
         xero = Xero(credentials)
         contacts = xero.contacts.filter(includeArchived=True)
 
@@ -59,10 +61,10 @@ def generate_account_number(profile):
 
 def sync_xero_accounts(users):
     print(users)
-    if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
-        with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
+    if "XERO_CONSUMER_KEY" in os.environ:
+        with open(xero_rsa) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY', "/usr/src/data/xerkey.pem"), rsa_key)
         xero = Xero(credentials)
         contacts = xero.contacts.filter(includeArchived=True)
         matches = []
@@ -113,10 +115,10 @@ def sync_xero_accounts(users):
 
 
 def add_to_xero(profile):
-    if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
-        with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
+    if "XERO_CONSUMER_KEY" in os.environ:
+        with open(xero_rsa) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY', "/usr/src/data/xerkey.pem"), rsa_key)
         xero = Xero(credentials)
 
         contact = [
@@ -174,7 +176,9 @@ def add_to_xero(profile):
         return "Error adding to Xero. No Xero API details."
 
 
-def create_membership_invoice(user):
+def create_membership_invoice(user, email_invoice=False):
+    tax_type = os.environ.get("INVOICE_TAX_TYPE", "EXEMPTOUTPUT")
+
     next_month = datetime.date.today().month + 1
     this_year = datetime.date.today().year
     if next_month == 13:
@@ -189,7 +193,7 @@ def create_membership_invoice(user):
             "Quantity": "1",
             "ItemCode": user.profile.member_type.name,
             "UnitAmount": round(user.profile.member_type.cost * 0.7, 2),
-            "TaxType": "OUTPUT",
+            "TaxType": tax_type,
             "AccountCode": "200"
         }
     ]
@@ -204,7 +208,7 @@ def create_membership_invoice(user):
                 "Quantity": "1",
                 "ItemCode": cause.item_code,
                 "UnitAmount": round(user.profile.member_type.cost * (0.3 / length), 2),
-                "TaxType": "OUTPUT",
+                "TaxType": tax_type,
                 "AccountCode": cause.account_code
             }
             line_items.append(item)
@@ -222,10 +226,10 @@ def create_membership_invoice(user):
         "Url": "https://portal.hsbne.org",
     }
 
-    if "XERO_CONSUMER_KEY" in os.environ and "XERO_RSA_FILE" in os.environ:
-        with open(os.environ.get('XERO_RSA_FILE')) as keyfile:
+    if "XERO_CONSUMER_KEY" in os.environ:
+        with open(xero_rsa) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY'), rsa_key)
+        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY', "/usr/src/data/xerkey.pem"), rsa_key)
         xero = Xero(credentials)
 
         # Monkey patch the library to support online invoices.
@@ -239,7 +243,6 @@ def create_membership_invoice(user):
         xero.invoices.get_onlineinvoice = xero.invoices._get_data(get_onlineinvoice)
 
         try:
-
             from memberportal.helpers import log_user_event
 
             # try to create the invoice
@@ -250,9 +253,11 @@ def create_membership_invoice(user):
             invoice_reference = result[0]['Reference']
             invoice_link = xero.invoices.get_onlineinvoice(invoice_id)['OnlineInvoices'][0]['OnlineInvoiceUrl']
 
-            # if we're successful send it to the member and log it
-            user.email_invoice(user.profile.first_name, user.profile.member_type.cost, invoice_number,
-                               next_month_date.strftime("%d-%m-%Y"), invoice_reference, invoice_link)
+            # if we're successful and email == True send it
+            if email_invoice:
+                user.email_invoice(user.profile.first_name, user.profile.member_type.cost, invoice_number,
+                                   next_month_date.strftime("%d-%m-%Y"), invoice_reference, invoice_link)
+
             log_user_event(user, "Created invoice for $" + str(user.profile.member_type.cost) + "(" + invoice_id + ")",
                            "xero")
             user.profile.last_invoice = timezone.now()
@@ -270,3 +275,67 @@ def create_membership_invoice(user):
 
     else:
         return "Error created invoice in Xero. No Xero API details."
+
+
+def create_cause_donation_invoice(user, cause, amount):
+    tax_type = os.environ.get("INVOICE_TAX_TYPE", "EXEMPTOUTPUT")
+
+    line_items = [
+        {
+            "Description": "Debit funds from Spacebucks account code.",
+            "Quantity": "1",
+            "ItemCode": "Spacebucks Cause Donation",
+            "UnitAmount": amount * -1,
+            "TaxType": tax_type,
+            "AccountCode": "264"  # SpaceBucks account
+        },
+        {
+            "Description": "Credit funds to {}.".format(cause.name),
+            "Quantity": "1",
+            "ItemCode": cause.item_code,
+            "UnitAmount": amount,
+            "TaxType": tax_type,
+            "AccountCode": cause.account_code
+        }
+    ]
+
+    payload = {
+        "Type": "ACCREC",
+        "Contact": {
+            "ContactID": user.profile.xero_account_id
+        },
+        "DueDate": datetime.datetime.today(),
+        "LineAmountTypes": "Inclusive",
+        "LineItems": line_items,
+        "Status": "AUTHORISED",
+        "Reference": user.profile.xero_account_number,
+        "Url": "https://portal.hsbne.org",
+    }
+
+    if "XERO_CONSUMER_KEY" in os.environ:
+        with open(xero_rsa) as keyfile:
+            rsa_key = keyfile.read()
+        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY', "/usr/src/data/xerkey.pem"), rsa_key)
+        xero = Xero(credentials)
+
+        try:
+            from memberportal.helpers import log_user_event
+
+            # try to create the invoice
+            result = xero.invoices.put(payload)
+            invoice_number = result[0]['InvoiceNumber']
+
+            log_user_event(user, "Created invoice for donation to {}.".format(cause.name), "xero")
+
+        except XeroBadRequest as e:
+            log_user_event(user, "Error creating invoice for $" + str(user.profile.member_type.cost), "xero")
+            return "Error: " + str(e)
+
+        if result:
+            return "Successfully created invoice {} in Xero.".format(invoice_number)
+
+        else:
+            return "Error creating invoice in Xero."
+
+    else:
+        return "Error creating invoice in Xero. No Xero API details."

@@ -25,19 +25,22 @@ SECRET_KEY = 'l)#t68rzepzp)0l#x=9mntciapun$whl+$j&=_@nl^zl1xm3j*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Only these URLs are allowed access
+ALLOWED_HOSTS = ["*"]
+
+
 if os.environ.get("HSBNE_PORTAL_ENV") == "Production":
     DEBUG = False
+    ALLOWED_HOSTS = ["portal.hsbne.org"]
 
-ALLOWED_HOSTS = ["portal.hsbne.org", "porthack.hsbne.org", "localhost", "127.0.0.1"]
-
-# Slightly hacky, but lets us use a direct IP while on the local HSBNE network.
-for x in range(1, 255):
-    ALLOWED_HOSTS.append("10.0.0." + str(x))
-    ALLOWED_HOSTS.append("10.0.1." + str(x))
+    # Slightly hacky, but allows a direct IP while on the local HSBNE network.
+    for x in range(1, 255):
+        ALLOWED_HOSTS.append("10.0.0." + str(x))
+        ALLOWED_HOSTS.append("10.0.1." + str(x))
+        ALLOWED_HOSTS.append("10.0.2." + str(x))
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -52,7 +55,12 @@ INSTALLED_APPS = [
     'causes',
     'spacebucks',
     'spacedirectory',
+    'constance',
+    'constance.backends.database',
 ]
+
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -87,7 +95,7 @@ WSGI_APPLICATION = 'memberportal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.environ.get("HSBNE_PORTAL_DBFILE", "/usr/src/data/db.sqlite3"),
     }
 }
 
@@ -109,6 +117,25 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/usr/src/logs/django.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
@@ -127,7 +154,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/signin'
-
 MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL = 'profile.User'

@@ -53,6 +53,8 @@
                            data-get_logs_url="{% url 'admin_member_logs' member_id=member.id %}"
                            data-add_to_xero_url="{% url 'add_to_xero' member_id=member.id %}"
                            data-get_spacebucks_url="{% url 'admin_spacebucks_transactions' member_id=member.id %}"
+                           data-generate_invoice_url="{% url 'create_invoice' member_id=member.id %}"
+                           data-xero_account_id="{{ member.profile.xero_account_id }}"
                            class="waves-effect waves-light btn" href="#">Manage</a>
                     </td>
                 </tr>
@@ -66,7 +68,8 @@
     <div class="modal-content">
         <div class="row">
             <div class="col s12">
-                <h5 id="admin-member-modal-name">{MEMBER NAME}</h5><br>
+                <h5 id="admin-member-modal-name" style="display: inline-block">{MEMBER NAME}</h5>
+                <a id="admin-member-modal-open-xero" href="https://go.xero.com/Contacts/View/" target="_blank" style="display: inline-block">&nbsp;&nbsp;(view in Xero)</a><br><br>
                 {% if user.profile.can_disable_members %}
                     <a onclick="setState(true);" id="activate-member-button"
                        class="waves-effect waves-light btn green disabled tooltipped" data-position="top"
@@ -74,6 +77,11 @@
                     <a onclick="setState(false);" id="deactivate-member-button"
                        class="waves-effect waves-light btn red disabled tooltipped" data-position="top"
                        data-tooltip="Disable Site Access">Disable Access</a>
+                {% endif %}
+                {% if user.profile.can_generate_invoice %}
+                    <a onclick="generateInvoice();" id="generate-invoice-button"
+                       class="waves-effect waves-light btn blue tooltipped" data-position="top"
+                       data-tooltip="Generate and email an invoice">Generate Invoice</a>
                 {% endif %}
                 <a onclick="resendWelcome();" id="resend-welcome-button"
                    class="waves-effect waves-light btn blue tooltipped"
@@ -158,6 +166,10 @@
 
         {% if user.profile.can_see_members_logs %}
             can_see_members_logs = true;
+        {% endif %}
+
+        {% if user.profile.can_generate_invoice %}
+            can_generate_invoice = true;
         {% endif %}
 
         (function ($) {

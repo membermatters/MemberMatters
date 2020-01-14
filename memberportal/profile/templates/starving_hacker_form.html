@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Starving Hacker Form{% endblock %}
+
+{% block content %}
+    <div class="admin-container center row small-row">
+        <h3 class="header center text">Starving Hacker Form</h3>
+        {% if message %}
+            <p class="green-text">{{ message }}</p>
+        {% endif %}
+
+        {% if error %}
+            <p class="orange-text">{{ error }}</p>
+        {% endif %}
+
+        {% if user.profile.starving_override %}
+            <p class="green-text">
+                Lucky you! There's no need to fill out this form as your starving hacker status has been manually
+                approved by the executive.
+            </p>
+        {% else %}
+            {% if user.profile.is_starving_eligible %}
+                <p>Current Status: <span class="green-text">Discount Active</span></p>
+            {% else %}
+                <p>Current Status: <span class="orange-text">Not Eligible</span></p>
+            {% endif %}
+
+            <h5>I am currently:</h5>
+
+            <form method="POST" action="{% url 'starving_hacker_form' %}">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                {% for field in form.visible_fields %}
+                    <div class="left-align">
+                        {% if field.name == "studying_fulltime" %}
+                            <p>{{ field.errors }}</p>
+                            <label>
+                                {% if field.value == True %}
+                                    <input name="{{ field.name }}" id="{{ field.id_for_label }}" type="checkbox"
+                                           checked/>
+                                {% else %}
+                                    <input name="{{ field.name }}" id="{{ field.id_for_label }}" type="checkbox"/>
+                                {% endif %}
+                                <span>A full-time student or apprentice (enrolled in a formal education or training program)</span>
+                            </label>
+                        {% elif field.name == "centrelink" %}
+                            <p>{{ field.errors }}</p>
+                            <label>
+                                {% if field.value == True %}
+                                    <input name="{{ field.name }}" id="{{ field.id_for_label }}" type="checkbox"
+                                           checked/>
+                                {% else %}
+                                    <input name="{{ field.name }}" id="{{ field.id_for_label }}" type="checkbox"/>
+                                {% endif %}
+                                <span>Receiving a regular income assistance payment from the government (ie Centrelink)</span>
+                            </label>
+                        {% elif field.name == "healthcare_card" %}
+                            <p>{{ field.errors }}</p>
+                            <label>
+                                {% if field.value == True %}
+                                    <input name="{{ field.name }}" id="{{ field.id_for_label }}" type="checkbox"
+                                           checked/>
+                                {% else %}
+                                    <input name="{{ field.name }}" id="{{ field.id_for_label }}" type="checkbox"/>
+                                {% endif %}
+                                <span>A holder of a valid healthcare or pension card</span>
+                            </label>
+                        {% elif field.name == "income_bracket" %}
+                            <br>
+                            <h5 class="center-align">I am earning (before tax):</h5>
+                            <p>{{ field.errors }}</p>
+                            {{ field }}
+                        {% elif field.name == "special_consideration" %}
+                            <br>
+                            <p>{{ field.errors }}</p>
+                            <h5 class="center-align">Special Consideration</h5>
+                            <label>
+                                {% if field.value == True %}
+                                    <input name="{{ field.name }}" id="{{ field.id_for_label }}" type="checkbox"
+                                           checked/>
+                                {% else %}
+                                    <input name="{{ field.name }}" id="{{ field.id_for_label }}" type="checkbox"/>
+                                {% endif %}
+                                <span>I would like to apply for special consideration and provide additional information below.</span>
+                            </label>
+                        {% elif field.name == "special_consideration_note" %}
+                            <div class="input-field col s12">
+                            <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" class="materialize-textarea"
+                                      placeholder="I would like special consideration because..."
+                                      maxlength="500">{{ field.value }}</textarea>
+                            </div>
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <br>
+                <h5>Terms & Conditions</h5>
+                <p>
+                    By completing this form, you agree that HSBNE Inc. can use your responses to determine your
+                    eligibility for the starving hacker membership level. The information you submit in this form will
+                    not be used for any other purpose and will not be shared with anyone outside the executive. If you
+                    provide false or misleading information in this form we may terminate your membership for
+                    breaching our
+                    <a target="_blank" href="https://hsbne.org/admin/code.html">Code of Conduct</a>. If you are able
+                    to afford the standard rate of $60/mth please don't apply for this discount.
+                </p>
+
+                <br>
+
+                <a class="btn-flat right" onclick="window.history.back();">Cancel</a>
+                <button class="btn waves-effect waves-light right" type="submit" name="action">Submit</button>
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}
+
+<script></script>

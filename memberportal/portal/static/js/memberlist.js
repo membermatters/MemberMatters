@@ -11,6 +11,8 @@ let resend_welcome_url;
 let get_logs_url;
 let get_spacebucks_url;
 let add_to_xero_url;
+let generate_invoice_url;
+let xero_account_id;
 
 let can_send_cause_emails = false;
 let can_manage_access = false;
@@ -20,8 +22,14 @@ let can_see_members_spacebucks = false;
 let can_see_members_logs = false;
 let can_manage_access_devices = false;
 let can_manage_causes = false;
+let can_generate_invoice = false;
 
 function resendWelcome() {
+    if (confirm('Are you sure you want to resend the welcome email?') === false) {
+        M.toast({html: "Cancelled :o"});
+        return false
+    }
+
     document.getElementById("btn-loader").classList.add("progress");
     $.ajax({
         url: resend_welcome_url,
@@ -29,18 +37,53 @@ function resendWelcome() {
         dataType: 'json',
         success: function (data) {
             document.getElementById("btn-loader").classList.remove("progress");
-            console.log(data.response);
+            console.log(data.message);
             M.toast({html: data.message});
         },
         error: function (data) {
             document.getElementById("btn-loader").classList.remove("progress");
-            console.log(data.response);
+            console.log(data.message);
             M.toast({html: data.message});
         }
     });
 }
 
+function generateInvoice() {
+    if (can_generate_invoice) {
+        if (confirm('Are you sure you want to generate a new invoice? The due date will be set to the first of next month.') === false) {
+            M.toast({html: "Cancelled :o"});
+            return false
+        }
+
+        if (confirm('Would you like to send the invoice via email?') === true) {
+            generate_invoice_url += "email/"
+        }
+
+        document.getElementById("btn-loader").classList.add("progress");
+        $.ajax({
+            url: generate_invoice_url,
+            type: 'get',
+            dataType: 'json',
+            success: function (data) {
+                document.getElementById("btn-loader").classList.remove("progress");
+                console.log(data.message);
+                M.toast({html: data.message});
+            },
+            error: function (data) {
+                document.getElementById("btn-loader").classList.remove("progress");
+                console.log(data.message);
+                M.toast({html: data.message});
+            }
+        });
+    }
+}
+
 function addToXero() {
+    if (confirm('Are you sure you want to try to re-add them to Xero?') === false) {
+        M.toast({html: "Cancelled :o"});
+        return false
+    }
+
     document.getElementById("btn-loader").classList.add("progress");
     $.ajax({
         url: add_to_xero_url,
@@ -48,13 +91,13 @@ function addToXero() {
         dataType: 'json',
         success: function (data) {
             document.getElementById("btn-loader").classList.remove("progress");
-            console.log(data.response);
-            M.toast({html: data.response});
+            console.log(data.message);
+            M.toast({html: data.message});
         },
         error: function (data) {
             document.getElementById("btn-loader").classList.remove("progress");
-            console.log(data.response);
-            M.toast({html: data.response});
+            console.log(data.message);
+            M.toast({html: data.message});
         }
     });
 }
@@ -75,45 +118,62 @@ function setState(state) {
             type: 'get',
             dataType: 'json',
             success: function (data) {
-                document.getElementById("btn-loader").classList.remove("progress");
-                console.log(data.response);
-                M.toast({html: data.response});
-                document.getElementById("resend-welcome-button").classList.remove("hidden");
-                document.getElementById("resend-to-xero-button").classList.remove("hidden");
-
-                if (state) {
-                    // document.getElementById("activate-member-button").innerText = "Enable Access";
-                    document.getElementById("activate-member-button").classList.add("hidden");
-                    document.getElementById("activate-member-button").classList.add("disabled");
-                    document.getElementById("deactivate-member-button").classList.remove("disabled");
-                    document.getElementById("deactivate-member-button").classList.remove("hidden");
-                } else {
-                    document.getElementById("activate-member-button").classList.remove("disabled");
-                    document.getElementById("activate-member-button").classList.remove("hidden");
-                    document.getElementById("deactivate-member-button").classList.add("disabled");
-                    document.getElementById("deactivate-member-button").classList.add("hidden");
-                }
-                // not very DRY... ideally should be modularised a bit more...
-                $.ajax({
-                    url: access_url,
-                    type: 'get',
-                    dataType: 'json',
-                    success: function (data) {
-                        let elem = document.getElementById("admin-edit-member-access");
-                        elem.innerHTML = data.html_form;
-
-                        setTimeout(function () {
-                            initSelects();
-                        }, 0);
-                    },
-                    error: function () {
-                        M.toast({html: "unknown error 2 :( "});
+                if (data.success) {
+                    document.getElementById("btn-loader").classList.remove("progress");
+                    console.log(data.message);
+                    M.toast({html: data.message});
+                    document.getElementById("resend-welcome-button").classList.remove("hidden");
+                    if (can_generate_invoice) {
+                        document.getElementById("generate-invoice-button").classList.remove("hidden");
                     }
-                });
+                    try {
+                        document.querySelectorAll("#admin-member-modal-name > span")[0].innerHTML = "";
+                    } catch (err) {
+                        // do nothing
+                    }
+
+                    if (state && member_state !== "noob") {
+                        document.getElementById("activate-member-button").classList.add("hidden");
+                        document.getElementById("activate-member-button").classList.add("disabled");
+                        document.getElementById("deactivate-member-button").classList.remove("disabled");
+                        document.getElementById("deactivate-member-button").classList.remove("hidden");
+                    } else {
+                        document.getElementById("activate-member-button").innerText = "Enable Access";
+                        document.getElementById("activate-member-button").setAttribute("data-tooltip", "Enable Access");
+                        document.getElementById("activate-member-button").classList.remove("disabled");
+                        document.getElementById("activate-member-button").classList.remove("hidden");
+                        document.getElementById("deactivate-member-button").classList.add("disabled");
+                        document.getElementById("deactivate-member-button").classList.add("hidden");
+                    }
+
+                    // refresh the access tab
+                    $.ajax({
+                        url: access_url,
+                        type: 'get',
+                        dataType: 'json',
+                        success: function (data) {
+                            let elem = document.getElementById("admin-edit-member-access");
+                            elem.innerHTML = data.html_form;
+
+                            setTimeout(function () {
+                                initSelects();
+                            }, 0);
+                        },
+                        error: function () {
+                            M.toast({html: "There was an error processing the request 2. :("});
+                            document.getElementById("btn-loader").classList.remove("progress");
+                        }
+                    });
+                } else {
+                    M.toast({html: data.message});
+                    document.getElementById("btn-loader").classList.remove("progress");
+
+                }
+
             },
             error: function (data) {
                 document.getElementById("btn-loader").classList.remove("progress");
-                console.log(data.response);
+                console.log(data.message);
                 M.toast({html: "There was an error processing the request. :("});
             }
         });
@@ -129,15 +189,23 @@ function openMemberActionsModal(e) {
     active_url = e.getAttribute("data-active_url");
     deactive_url = e.getAttribute("data-deactive_url");
     resend_welcome_url = e.getAttribute("data-resend_welcome_url");
+    generate_invoice_url = e.getAttribute("data-generate_invoice_url");
     get_logs_url = e.getAttribute("data-get_logs_url");
     add_to_xero_url = e.getAttribute("data-add_to_xero_url");
     get_spacebucks_url = e.getAttribute("data-get_spacebucks_url");
-    document.getElementById('admin-member-modal-name').innerHTML = name;
+    xero_account_id = e.getAttribute("data-xero_account_id");
 
-    if (name.indexOf("NOT IN XERO") > 0) {
-        document.getElementById("resend-to-xero-button").classList.remove("disabled");
+    document.getElementById('admin-member-modal-name').innerHTML = name;
+    let xeroButton = document.getElementById("resend-to-xero-button");
+    let openXeroButton = document.getElementById("admin-member-modal-open-xero");
+
+    if (name.indexOf("NOT IN XERO") > 0 && member_state !== "noob") {
+        xeroButton.style.display = "inline-block";
+        openXeroButton.style.display = "none";
     } else {
-        document.getElementById("resend-to-xero-button").classList.add("disabled");
+        xeroButton.style.display = "none";
+        openXeroButton.style.display = "inline-block";
+        openXeroButton.setAttribute("href", "https://go.xero.com/Contacts/View/" + xero_account_id)
     }
 
     if (can_see_members_personal_details) {
@@ -225,6 +293,7 @@ function openMemberActionsModal(e) {
 
                 // init the table
                 let table = $('#spacebucksTable').DataTable({});
+                table.order([2, 'desc']).draw();
             },
             error: function () {
                 M.toast({html: "unknown error while getting spacebucks data :( "});
@@ -240,22 +309,33 @@ function openMemberActionsModal(e) {
         let deactiveButton = document.getElementById("deactivate-member-button");
         let resendWelcomeButton = document.getElementById("resend-welcome-button");
         let xeroButton = document.getElementById("resend-to-xero-button");
+        let generateInvoiceButton = document.getElementById("generate-invoice-button");
 
         activeButton.innerText = "Enable Access";
         activeButton.setAttribute("data-tooltip", "Enable Site Access");
         resendWelcomeButton.classList.remove("hidden");
         resendWelcomeButton.classList.remove("hidden");
         xeroButton.classList.remove("hidden");
+
         if (member_state === "inactive") {
             activeButton.classList.remove("disabled");
             activeButton.classList.remove("hidden");
             deactiveButton.classList.add("disabled");
             deactiveButton.classList.add("hidden");
+            if (can_generate_invoice) {
+                generateInvoiceButton.classList.remove("hidden");
+                generateInvoiceButton.classList.remove("disabled");
+            }
+
         } else if (member_state === "active") {
             activeButton.classList.add("disabled");
             activeButton.classList.add("hidden");
             deactiveButton.classList.remove("disabled");
             deactiveButton.classList.remove("hidden");
+            if (can_generate_invoice) {
+                generateInvoiceButton.classList.remove("hidden");
+                generateInvoiceButton.classList.remove("disabled");
+            }
         } else if (member_state === "noob") {
             activeButton.innerText = "Make Member";
             activeButton.setAttribute("data-tooltip", "Send welcome email, add to xero, and create first invoice.");
@@ -265,6 +345,10 @@ function openMemberActionsModal(e) {
             deactiveButton.classList.add("hidden");
             resendWelcomeButton.classList.add("hidden");
             xeroButton.classList.add("hidden");
+            if (can_generate_invoice) {
+                generateInvoiceButton.classList.add("hidden");
+                generateInvoiceButton.classList.add("disabled");
+            }
         }
     }
 
@@ -307,6 +391,11 @@ $("#member-actions-modal").on("submit", ".member-edit-form", function () {
 
 function addSpacebucks(url) {
     if (can_see_members_spacebucks) {
+        if (confirm('Are you sure you want to add Spacebucks?') === false) {
+            M.toast({html: "Cancelled :o"});
+            return false
+        }
+
         let amount = Math.round(document.getElementById("addAmountInput").value * 100);
 
         $.ajax({

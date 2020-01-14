@@ -9,7 +9,8 @@ from memberportal.decorators import no_noobs, api_auth
 from memberportal.helpers import log_user_event
 from .models import SpaceBucks
 from profile.models import Profile, User
-from urllib import parse
+from causes.models import Causes
+from profile.xerohelpers import create_cause_donation_invoice
 import stripe
 import json
 import pytz
@@ -56,7 +57,7 @@ def add_spacebucks(request, amount=None):
             if amount <= 30:
                 log_user_event(request.user, "Attempting to charge {} for ${}.".format(
                     request.user.profile.get_full_name(), amount),
-                    "stripe")
+                               "stripe")
                 charge = stripe.Charge.create(
                     amount=amount * 100,  # convert to cents,
                     currency='aud',
@@ -76,18 +77,19 @@ def add_spacebucks(request, amount=None):
                     transaction.logging_info = charge
                     transaction.save()
                     log_user_event(request.user, "Successfully charged {} for ${}.".format(
-                                    request.user.profile.get_full_name(), amount),
-                                    "stripe")
+                        request.user.profile.get_full_name(), amount),
+                                   "stripe")
                     subject = "You just added Spacebucks to your HSBNE account."
                     request.user.email_notification(subject, subject, subject, "We just charged you card for ${} and "
                                                                                "added this to your spacebucks balance."
                                                                                "If this wasn't you, please let us know "
-                                                                               "immediately.".format(transaction.amount))
+                                                                               "immediately.".format(
+                        transaction.amount))
 
                     return JsonResponse({"success": True})
                 else:
                     log_user_event(request.user, "Problem charging {}.".format(request.user.profile.get_full_name()),
-                        "stripe")
+                                   "stripe")
                     subject = "Failed to add Spacebucks to your HSBNE account."
                     request.user.email_notification(subject, subject, subject, "We just tried to charge your card for"
                                                                                "${} for spacebucks but were not "
@@ -96,7 +98,7 @@ def add_spacebucks(request, amount=None):
                     return JsonResponse({"success": False})
             else:
                 log_user_event(request.user, "Tried to add invalid amount {} to spacebucks via stripe.".format(amount),
-                    "stripe")
+                               "stripe")
 
         return render(request, 'add_spacebucks.html',
                       {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"],
@@ -210,8 +212,14 @@ def delete_spacebucks_payment_info(request):
         return HttpResponseServerError("Can't find stripe API details.")
 
     profile = request.user.profile
-    customer = stripe.Customer.retrieve(profile.stripe_customer_id)
-    customer.sources.retrieve(customer['default_source']).delete()
+
+    try:
+        customer = stripe.Customer.retrieve(profile.stripe_customer_id)
+        customer.sources.retrieve(customer['default_source']).delete()
+
+    except stripe.error.InvalidRequestError as e:
+        # this ignores the error that happens when a user doesn't have saved details, sometimes needed.
+        pass
 
     profile.stripe_card_last_digits = ""
     profile.stripe_card_expiry = ""
@@ -269,11 +277,12 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
             profile.save()
 
             subject = "You just made a ${} Spacebucks purchase.".format(amount)
-            message = "Description: {}. Balance Remaining: ${}. If this wasn't you, or you believe there has been an "\
-                                "error, please let us know.".format(transaction.description, profile.spacebucks_balance)
+            message = "Description: {}. Balance Remaining: ${}. If this wasn't you, or you believe there has been an " \
+                      "error, please let us know.".format(transaction.description, profile.spacebucks_balance)
             User.objects.get(profile=profile).email_notification(subject, subject, subject, message)
 
-            log_user_event(profile.user, "Successfully debited ${} from spacebucks account.".format(amount), "spacebucks")
+            log_user_event(profile.user, "Successfully debited ${} from spacebucks account.".format(amount),
+                           "spacebucks")
 
             return JsonResponse({"success": True, "balance": round(profile.spacebucks_balance, 2)})
 
@@ -283,12 +292,63 @@ def spacebucks_debit(request, amount=None, description="No Description", rfid=No
 
     # not enough $$
     log_user_event(profile.user, "Not enough funds to debit ${} from spacebucks account.".format(amount),
-        "spacebucks")
+                   "spacebucks")
     subject = "Failed to make a ${} Spacebucks purchase.".format(amount)
     User.objects.get(profile=profile).email_notification(subject, subject, subject,
-                                    "We just tried to debit ${} from your Spacebucks balance but were not successful. "\
-                                    "You currently have ${}. If this wasn't you, please let us know " \
-                                    "immediately.".format(amount, profile.spacebucks_balance)
-                                    )
+                                                         "We just tried to debit ${} from your Spacebucks balance but were not successful. " \
+                                                         "You currently have ${}. If this wasn't you, please let us know " \
+                                                         "immediately.".format(amount, profile.spacebucks_balance)
+                                                         )
 
     return JsonResponse({"success": False, "balance": round(profile.spacebucks_balance, 2)})
+
+
+@api_auth
+def spacebucks_balance(request, rfid=None):
+    if rfid is None:
+        return HttpResponseBadRequest("400 Invalid request.")
+
+    try:
+        profile = Profile.objects.get(rfid=rfid)
+        return JsonResponse({"balance": profile.spacebucks_balance})
+
+    except ObjectDoesNotExist:
+        return HttpResponseBadRequest("400 Invalid request. User does not exist.")
+
+
+@api_auth
+def spacebucks_cause_donation(request, rfid=None, cause_id=None, amount=None):
+    if cause_id is None or rfid is None or amount is None:
+        return HttpResponseBadRequest("400 Invalid request.")
+
+    try:
+        cause = Causes.objects.get(pk=cause_id)
+
+    except ObjectDoesNotExist:
+        return HttpResponseBadRequest("400 Invalid request. Cause does not exist.")
+
+    try:
+        amount = amount / 100  # convert to dollars
+        profile = Profile.objects.get(rfid=rfid)
+        result = create_cause_donation_invoice(profile.user, cause, amount)
+        if "Error" not in result:
+            time_dif = (timezone.now() - profile.last_spacebucks_purchase).total_seconds()
+            print(time_dif)
+
+            if time_dif > 10:
+                transaction = SpaceBucks()
+                transaction.amount = amount * -1.0
+                transaction.user = profile.user
+                transaction.description = "Donation to {}.".format(cause.name)
+                transaction.transaction_type = "card"
+                transaction.save()
+
+                profile.last_spacebucks_purchase = timezone.now()
+                profile.save()
+
+            return JsonResponse({"success": True, "balance": profile.spacebucks_balance, "donated": amount})
+
+        return HttpResponseServerError("Error while creating invoice: " + result)
+
+    except ObjectDoesNotExist:
+        return HttpResponseBadRequest("400 Invalid request. User does not exist.")

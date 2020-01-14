@@ -1,32 +1,27 @@
-# Dockerfile for HSBNE member portal.
-FROM ubuntu:18.04
+# Specify our base image
+FROM python:3.7
 MAINTAINER Jaimyn Mayer (infrastructure@hsbne.org)
 
-# Install required packages and remove the apt packages cache when done.
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y \
-	python3 \
-	python3-dev \
-	python3-pip \
-	nginx \
-	supervisor
+# Install nginx
+RUN apt-get update && apt-get install -y nginx
 
-# install requirements
-ADD requirements.txt /app/requirements.txt
-RUN pip3 install -r /app/requirements.txt
+# Copy our requirements across and install dependencies
+# Splitting this and copying the full code means we take advantage of the docker cache layers and don't have to
+# reinstall everything when the code changes
+RUN mkdir /usr/src/app && mkdir /usr/src/logs && mkdir /usr/src/config
+ADD ./requirements.txt /usr/src/app
+WORKDIR /usr/src/app
+RUN pip install --no-cache-dir -r requirements.txt
 
-# setup all the configfiles
-RUN echo "daemon off;" >> /etc/nginx/nginx.conf
-ADD nginx-app.conf /etc/nginx/sites-available/default
-ADD supervisor-app.conf /etc/supervisor/conf.d/
+# Copy over the nginx config file
+ADD ./nginx.conf /etc/nginx/nginx.conf
 
-# add (the rest of) our code
-ADD . /app
-WORKDIR /app/memberportal
+# Add the rest of our code
+ADD . /usr/src/app
+VOLUME /user/src/app
+VOLUME /user/src/logs
+VOLUME /usr/src/config
 
-VOLUME /data
-RUN python3 manage.py migrate
-RUN python3 manage.py loaddata fixtures/initial.json
+# Expose the port and run the app
 EXPOSE 8000
-CMD ["supervisord", "-n"]
+CMD ["sh", "./container_start.sh"]

@@ -14,7 +14,7 @@
 <table class="striped responsive-table">
     <thead>
     <tr>
-        <th>Name</th>
+        <th>Name (ID)</th>
         <th>Description</th>
         <th style="width: 120px;">Actions</th>
     </tr>
@@ -23,7 +23,7 @@
     <tbody>
     {% for cause in causes %}
         <tr>
-            <td>{{ cause.name }}</td>
+            <td>{{ cause.name }} ({{ cause.id }})</td>
             <td>{{ cause.description }}</td>
             <td>
                 {% if cause in user.profile.can_manage_cause.all %}
@@ -34,7 +34,7 @@
                         <i class="material-icons">edit</i>
                     </a>
                     <a href="{% url "delete_cause" cause_id=cause.id %}"
-                       onclick="return confirm('Are you sure you want delete the {{ cause.name }} cause?')"
+                       onclick="return confirm('Are you sure you want to delete the {{ cause.name }} cause?')"
                        class="cause-button waves-effect waves-light btn-small delete-button tooltipped"
                        data-position="top"
                        data-tooltip="Delete Cause">

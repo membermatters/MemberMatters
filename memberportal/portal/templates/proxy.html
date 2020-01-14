@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit a Proxy{% endblock %}
+
+{% block content %}
+    {% if request.user.profile.state == "active" %}
+        <div class="row">
+            <div class="center-block center" style="max-width: 600px;">
+                <h3 class="header center text">Submit a Proxy</h3>
+                <p>If you can't make it to a meeting, please submit a proxy. If your full legal name is not shown or
+                    your causes are incorrect, then you need to
+                    <a target="_blank" href="/profile/edit/">update your profile</a>
+                    and refresh this page. If the date you select is not the date of
+                    the meeting, your proxy vote will not be valid.
+                </p>
+                {% if message %}
+                    <p class="green-text">{{ message }}</p>
+                {% endif %}
+
+                {% if error %}
+                    <p class="red-text">{{ error }}</p>
+                {% endif %}
+            </div>
+
+            <form method="POST" action="{% url 'submit_proxy' %}"/>
+            <div class="col s12 m6">
+                {% csrf_token %}
+
+                <div class="input-field">
+                    <i class="material-icons prefix">location_city</i>
+                    <input id="proxy-memberaddress-input" name="proxy-memberaddress" type="text" required>
+                    <label for="proxy-memberaddress-input">Your City</label>
+                </div>
+                <div class="input-field">
+                    <i class="material-icons prefix">person</i>
+                    <textarea id="proxy-proxyname-input" name="proxy-proxyname" class="materialize-textarea"
+                              required></textarea>
+                    <label for="proxy-proxyname-input">Representative's Full Legal Name</label>
+                </div>
+                <div class="input-field">
+                    <i class="material-icons prefix">location_city</i>
+                    <textarea id="proxy-proxyaddress-input" name="proxy-proxyaddress"
+                              class="materialize-textarea" required></textarea>
+                    <label for="proxy-proxyaddress-input">Representative's City</label>
+                </div>
+
+                <div class="input-field">
+                    <i class="material-icons prefix">info</i>
+                    <select id="proxy-type-input" name="proxy-type" required>
+                        <optgroup label="General Meeting">
+                            <option value="General">General Meeting</option>
+                            <option value="Annual General">Annual General Meeting</option>
+                        </optgroup>
+                        <optgroup label="Cause Meeting">
+                            {% for cause in causes %}
+                                <option value="{{ cause.name }}">{{ cause.name }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                    <label for="proxy-type-input">Type of Meeting</label>
+                </div>
+
+                <div class="input-field">
+                    <i class="material-icons prefix">date_range</i>
+                    <input id="proxy-meetingdate-input" name="proxy-meetingdate" type="text" class="datepicker" required>
+                    <label for="proxy-meetingdate-input">Meeting Date</label>
+                </div>
+            </div>
+
+            <div class="col s12 m6">
+                <p id="proxy-preview">
+                    To HSBNE Inc: <br><br>
+
+                    I, <span class="proxy-input">{{ request.user.profile.get_full_name }}</span>, of
+                    <span id="proxy-memberaddress" class="proxy-input">__________</span>, being a member of the
+                    association, appoint <span id="proxy-proxyname" class="proxy-input">__________</span> of
+                    <span id="proxy-proxyaddress" class="proxy-input">__________</span> as my proxy to vote for me
+                    on my behalf at the <span id="proxy-type" class="proxy-input">General Meeting</span>
+                    of the association, to be held on the day of
+                    <span id="proxy-meetingdate" class="proxy-input">__________</span> and at any adjournment of the
+                    meeting. <br><br>
+
+                    Signed by
+                    <span id="proxy-signature" class="proxy-input">{{ request.user.profile.get_full_name }}</span>
+                    on this day of <span id="proxy-todaysdate" class="proxy-input">{% now "jS F Y" %}</span>.
+                </p>
+                <p>
+                    Click the submit button below to email your proxy to the secretary. If your proxy is not available
+                    or doesn't turn up, your proxy vote will not be counted.
+                </p>
+                <a class="btn-flat right" onclick="window.history.back();">Cancel</a>
+                <button class="btn waves-effect waves-light right" type="submit" name="action"
+                        onclick="return confirmProxy();">Submit Proxy
+                </button>
+            </div>
+
+            </form>
+        </div>
+
+        <script type="application/javascript">
+            let proxySelect;
+
+            function confirmProxy() {
+                let proxyName = document.getElementById("proxy-proxyname-input").value;
+                if (confirm("By clicking OK you agree to allow " + proxyName + " to vote on your behalf. To retract this proxy " +
+                    "you must email the secretary at least 24hrs before the meeting starts.") === false) {
+                    M.toast({html: "Cancelled proxy submission."});
+                    return false
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                M.Datepicker.init(document.querySelectorAll('.datepicker'), {
+                    "showDaysInNextAndPreviousMonths": true,
+                    "format": "dd/mm/yyyy",
+                    "minDate": new Date(),
+                });
+
+                setTimeout(function () {
+                    proxySelect = M.FormSelect.init(document.getElementById("proxy-type-input"),
+                        {
+                            "closeOnClick": true,
+                        }
+                    );
+                }, 0);
+            });
+
+            document.getElementById("proxy-memberaddress-input").addEventListener('input', function () {
+                document.getElementById("proxy-memberaddress").innerText = this.value;
+            });
+            document.getElementById("proxy-proxyname-input").addEventListener('input', function () {
+                document.getElementById("proxy-proxyname").innerText = this.value;
+            });
+            document.getElementById("proxy-proxyaddress-input").addEventListener('input', function () {
+                document.getElementById("proxy-proxyaddress").innerText = this.value;
+            });
+            document.getElementById("proxy-type-input").addEventListener('change', function () {
+                document.getElementById("proxy-type").innerText = this.value + " Meeting";
+            });
+            document.getElementById("proxy-meetingdate-input").addEventListener('change', function () {
+                document.getElementById("proxy-meetingdate").innerText = this.value;
+            });
+        </script>
+    {% else %}
+        <div class="admin-container center row small-row">
+            <h3 class="header center text">Submit a Proxy</h3>
+            <p>
+                Sorry, but you are not currently an active member. You must be an active member to have voting rights
+                within
+                the
+                association. If you believe this is in error, please email the executive at
+                <a href="mailto:exec@hsbne.org">exec@hsbne.org</a>.
+            </p>
+        </div>
+    {% endif %}
+{% endblock %}

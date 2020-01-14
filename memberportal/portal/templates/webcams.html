@@ -5,29 +5,38 @@
 {% block fullwidth-content %}
     <div class="center row small-row">
         <h3 class="header center text">Webcams</h3>
-        <p>This page shows images of the two public webcams at HSBNE, updated every 5 minutes for your convenience.</p>
+        <p>This page shows images of the four public webcams at HSBNE, updated every 2 minutes for your convenience.</p>
 
         <div class="col s12 l6">
             <h5>Green Room</h5>
-            <a href="https://porthack.hsbne.org/webcams/greenroom.jpg"><img style="max-width:100%;" src="https://porthack.hsbne.org/webcams/greenroom.jpg"></a>
+            <a href="/camera-snapshots/Green-Room-North.jpg"><img class="webcam-image"
+                                                                  src="/camera-snapshots/Green-Room-North.jpg"></a>
         </div>
         <div class="col s12 l6">
             <h5>The Quad</h5>
-            <a href="https://porthack.hsbne.org/webcams/quad.jpg"><img style="max-width:100%;" src="https://porthack.hsbne.org/webcams/quad.jpg"></a>
+            <a href="/camera-snapshots/Quad-Green-Room.jpg"><img class="webcam-image"
+                                                                 src="/camera-snapshots/Quad-Green-Room.jpg"></a>
         </div>
 
         <div class="col s12 l6">
             <h5>Metal Shop</h5>
-            <a href="https://porthack.hsbne.org/webcams/metalshop.jpg"><img style="max-width:100%;" src="https://porthack.hsbne.org/webcams/metalshop.jpg"></a>
+            <a href="/camera-snapshots/Metalshop.jpg"><img class="webcam-image"
+                                                           src="/camera-snapshots/Metalshop.jpg"></a>
         </div>
 
         <div class="col s12 l6">
             <h5>Wood Shop</h5>
-            <a href="https://porthack.hsbne.org/webcams/woodshop.jpg"><img style="max-width:100%;" src="https://porthack.hsbne.org/webcams/woodshop.jpg"></a>
+            <a href="/camera-snapshots/Woodshop.jpg"><img class="webcam-image" src="/camera-snapshots/Woodshop.jpg"></a>
         </div>
 
         <script type='text/javascript'>
-            setTimeout("location.reload();", 300000);
+            setTimeout("location.reload();", 120000);
         </script>
+
+        <style>
+            .webcam-image {
+                max-width: 100%;
+            }
+        </style>
     </div>
 {% endblock %}

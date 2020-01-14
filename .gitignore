@@ -112,3 +112,7 @@ venv.bak/
 *.sqlite3
 
 \.DS_Store
+
+*.pem
+
+env.list
