@@ -87,6 +87,9 @@ be presented with the home page of the web app. You can login with the username 
 "hsbne123". You should create a new account, then use the default account to give your new account admin rights. You 
 should change the password of the default admin account.
 
+##### Notes for HSBNE infrastructure maintainers
+On porthack01 you can find the mapped volumes at `/usr/app` and there's an update script at `/usr/app/update_portal.sh`. You will need to rebuild and push to docker hub the docker image.
+
 ##### NOTE
 You will need to re-run the database migration every time the db models change. You may see random database related errors such as column does not exist if you forget to do this. You can do that by running:
 
