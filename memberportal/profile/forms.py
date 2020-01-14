@@ -8,6 +8,9 @@ from django.forms.widgets import ClearableFileInput
 User = get_user_model()
 
 
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(
         max_length=254, required=True,
@@ -66,8 +69,10 @@ class EditProfileForm(forms.ModelForm):
 class AdminEditProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('rfid', 'first_name', 'last_name', 'phone', 'member_type', 'screen_name', 'causes')
-
+        fields = ('rfid', 'first_name', 'last_name', 'phone', 'member_type', 'screen_name', 'causes', 'last_induction')
+        widgets = {
+            'last_induction': DateInput()
+        }
     def clean(self):
         causes = self.cleaned_data.get('causes')
         if causes and causes.count() > 3:

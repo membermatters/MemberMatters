@@ -57,8 +57,14 @@
         (function ($) {
             $(function () {
                 $('#interlockSessions').DataTable({
+                    "order": [1, 'desc'],
+                    "ordering": true,
+
                     "initComplete": function () {
                         M.FormSelect.init(document.querySelectorAll('select'), {});
+                                            
+
+
                     }
                 });
             }); // end of document ready

@@ -284,7 +284,8 @@ class Profile(models.Model):
 
     last_seen = models.DateTimeField(default=None, blank=True, null=True)
     last_invoice = models.DateTimeField(default=None, blank=True, null=True)
-
+    last_induction = models.DateTimeField(default=None, blank=True, null=True)
+    
     stripe_customer_id = models.CharField(max_length=100, blank=True, null=True, default="")
     stripe_card_expiry = models.CharField(max_length=10, blank=True, null=True, default="")
     stripe_card_last_digits = models.CharField(max_length=4, blank=True, null=True, default="")

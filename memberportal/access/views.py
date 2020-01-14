@@ -10,11 +10,13 @@ from profile.models import User
 from .forms import *
 from .models import *
 from profile.models import Profile
+from django.db.models import *
 import pytz
 import time
 import requests
 import os
-from datetime import timedelta
+from datetime import timedelta 
+import datetime
 from django.utils import timezone
 import humanize
 import hashlib
@@ -492,8 +494,8 @@ def manage_interlocks(request):
 def view_interlock_sessions(request):
     if not request.user.profile.can_manage_interlocks:
         return HttpResponseForbidden("You do not have permission to access that.")
-
-    raw_sessions = InterlockLog.objects.all()
+    from_date = datetime.date.today() - datetime.timedelta(days=14)
+    raw_sessions = InterlockLog.objects.filter(first_heartbeat__gt=from_date)
     interlock_sessions = []
 
     for session in raw_sessions:
@@ -513,6 +515,23 @@ def view_interlock_sessions(request):
         interlock_sessions.append(session)
 
     return render(request, 'view_interlock_sessions.html', {"sessions": interlock_sessions})
+
+@login_required
+@admin_required
+def view_interlock_statistics(request):
+    if not request.user.profile.can_manage_interlocks:
+        return HttpResponseForbidden("You do not have permission to access that.")
+
+    InterlockLog.objects.annotate(
+    duration = Func(F('last_heartbeat'), F('first_heartbeat'), function='age')
+    )
+
+#    for obj in objects:
+#        print obj.id, obj.duration, obj.duration.seconds
+
+
+    return render(request, 'view_interlock_statistics.html', {"sessions": duration})
+
 
 
 @login_required
