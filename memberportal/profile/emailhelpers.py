@@ -14,7 +14,7 @@ def send_group_email(user, emails, subject, title, message):
     email_string = render_to_string('email_without_button.html', {'email': email_vars})
     emails.append(settings.EXEC_EMAIL)
 
-    if "SENDGRID_API_KEY" in os.environ:
+    if "PORTAL_SENDGRID_API_KEY" in os.environ:
         mail = Mail()
 
         for to_email in emails:
@@ -33,7 +33,7 @@ def send_group_email(user, emails, subject, title, message):
         mail.add_content(Content('text/html', email_string))
 
         # Send
-        sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+        sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('PORTAL_SENDGRID_API_KEY'))
         response = sg.client.mail.send.post(request_body=mail.get())
 
         if response.status_code == 202:
@@ -52,8 +52,8 @@ def send_single_email(user, email, subject, title, message):
     email_vars = {"preheader": "", "title": title, "message": message}
     email_string = render_to_string('email_without_button.html', {'email': email_vars})
 
-    if "SENDGRID_API_KEY" in os.environ:
-        sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+    if "PORTAL_SENDGRID_API_KEY" in os.environ:
+        sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('PORTAL_SENDGRID_API_KEY'))
         from_email = sendgrid.Email(settings.FROM_EMAIL)
         to_email = sendgrid.Email(email)
         subject = subject

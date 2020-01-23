@@ -32,10 +32,10 @@ def manage_spacebucks(request):
 @login_required
 @no_noobs
 def add_spacebucks_page(request):
-    if "STRIPE_PUBLIC_KEY" in os.environ:
+    if "PORTAL_STRIPE_PUBLIC_KEY" in os.environ:
         return render(
             request, 'add_spacebucks.html',
-            {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"]})
+            {"PORTAL_STRIPE_PUBLIC_KEY": os.environ["PORTAL_STRIPE_PUBLIC_KEY"]})
 
     else:
         return HttpResponseServerError(
@@ -46,8 +46,8 @@ def add_spacebucks_page(request):
 @no_noobs
 def add_spacebucks(request, amount=None):
     if request.method == "GET":
-        if "STRIPE_SECRET_KEY" in os.environ:
-            stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
+        if "PORTAL_STRIPE_SECRET_KEY" in os.environ:
+            stripe.api_key = os.environ["PORTAL_STRIPE_SECRET_KEY"]
             stripe.default_http_client = stripe.http_client.RequestsClient()
         else:
             return HttpResponseServerError("No stripe API details found.")
@@ -101,7 +101,7 @@ def add_spacebucks(request, amount=None):
                                "stripe")
 
         return render(request, 'add_spacebucks.html',
-                      {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"],
+                      {"PORTAL_STRIPE_PUBLIC_KEY": os.environ["PORTAL_STRIPE_PUBLIC_KEY"],
                        "success": False,
                        "message": "Invalid amount."})
     else:
@@ -111,8 +111,8 @@ def add_spacebucks(request, amount=None):
 @csrf_exempt
 def add_spacebucks_payment_info(request):
     if request.method == 'POST':
-        if "STRIPE_SECRET_KEY" in os.environ:
-            stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
+        if "PORTAL_STRIPE_SECRET_KEY" in os.environ:
+            stripe.api_key = os.environ["PORTAL_STRIPE_SECRET_KEY"]
             stripe.default_http_client = stripe.http_client.RequestsClient()
 
         else:
@@ -153,48 +153,48 @@ def add_spacebucks_payment_info(request):
                            "stripe")
 
             return render(request, 'add_spacebucks.html',
-                          {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                          {"PORTAL_STRIPE_PUBLIC_KEY": os.environ["PORTAL_STRIPE_PUBLIC_KEY"], "success": False,
                            "message": err})
 
         except stripe.error.RateLimitError as e:
             log_user_event(request.user, "Rate limtied while saving payment details.", "stripe")
             return render(request, 'add_spacebucks.html',
-                          {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                          {"PORTAL_STRIPE_PUBLIC_KEY": os.environ["PORTAL_STRIPE_PUBLIC_KEY"], "success": False,
                            "message": "Our server is talking to stripe too quickly, try again later."})
 
         except stripe.error.InvalidRequestError as e:
             log_user_event(request.user, "Invalid request while saving payment details.", "stripe", request)
             return render(request, 'add_spacebucks.html',
-                          {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                          {"PORTAL_STRIPE_PUBLIC_KEY": os.environ["PORTAL_STRIPE_PUBLIC_KEY"], "success": False,
                            "message": "There was an error with the request details."})
 
         except stripe.error.AuthenticationError as e:
             log_user_event(request.user, "Can't authenticate with stripe while saving payment details.", "stripe")
             return render(request, 'add_spacebucks.html',
-                          {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                          {"PORTAL_STRIPE_PUBLIC_KEY": os.environ["PORTAL_STRIPE_PUBLIC_KEY"], "success": False,
                            "message": "Our server was unable to authenticate with the Stripe server."})
 
         except stripe.error.APIConnectionError as e:
             log_user_event(request.user, "Stripe API connection error while saving payment details.", "stripe")
             return render(request, 'add_spacebucks.html',
-                          {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                          {"PORTAL_STRIPE_PUBLIC_KEY": os.environ["PORTAL_STRIPE_PUBLIC_KEY"], "success": False,
                            "message": "Our server was unable to communicate with the Stripe server."})
 
         except stripe.error.StripeError as e:
             log_user_event(request.user, "Unkown stripe while saving payment details.", "stripe", request)
             return render(request, 'add_spacebucks.html',
-                          {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                          {"PORTAL_STRIPE_PUBLIC_KEY": os.environ["PORTAL_STRIPE_PUBLIC_KEY"], "success": False,
                            "message": e})
 
         except Exception as e:
             log_user_event(request.user, "Unkown other error while saving payment details.", "stripe", request)
             return render(request, 'add_spacebucks.html',
-                          {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": False,
+                          {"PORTAL_STRIPE_PUBLIC_KEY": os.environ["PORTAL_STRIPE_PUBLIC_KEY"], "success": False,
                            "message": "Unkown error (unrelated to stripe)."})
 
         log_user_event(request.user, "Successfully saved payment details.", "stripe")
         return render(request, 'add_spacebucks.html',
-                      {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": True,
+                      {"PORTAL_STRIPE_PUBLIC_KEY": os.environ["PORTAL_STRIPE_PUBLIC_KEY"], "success": True,
                        "message": "Your payment details were successfully saved."})
 
     else:
@@ -204,8 +204,8 @@ def add_spacebucks_payment_info(request):
 @login_required
 @csrf_exempt
 def delete_spacebucks_payment_info(request):
-    if "STRIPE_SECRET_KEY" in os.environ:
-        stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
+    if "PORTAL_STRIPE_SECRET_KEY" in os.environ:
+        stripe.api_key = os.environ["PORTAL_STRIPE_SECRET_KEY"]
         stripe.default_http_client = stripe.http_client.RequestsClient()
 
     else:
@@ -230,7 +230,7 @@ def delete_spacebucks_payment_info(request):
 
     return render(
         request, 'add_spacebucks.html',
-        {"STRIPE_PUBLIC_KEY": os.environ["STRIPE_PUBLIC_KEY"], "success": True,
+        {"PORTAL_STRIPE_PUBLIC_KEY": os.environ["PORTAL_STRIPE_PUBLIC_KEY"], "success": True,
          "message": "Successfully removed saved card details."})
 
 

@@ -22,7 +22,7 @@ from profile.models import Profile
 from profile.emailhelpers import send_single_email
 
 utc = pytz.UTC
-xero_rsa = os.environ.get("XERO_RSA_FILE", "/usr/src/data/xerkey.pem")
+xero_rsa = os.environ.get("PORTAL_XERO_RSA_FILE", "/usr/src/data/xerkey.pem")
 
 
 def loggedout(request):
@@ -53,12 +53,12 @@ def spacebug(request):
     if request.method == 'POST':
         print(request.POST.get("title"))
         if request.POST.get("title") and request.POST.get("description"):
-            if "TRELLO_API_KEY" in os.environ and "TRELLO_API_TOKEN" in os.environ:
+            if "PORTAL_TRELLO_API_KEY" in os.environ and "PORTAL_TRELLO_API_TOKEN" in os.environ:
                 issue = request.POST.get('title', '')
                 details = request.POST.get('description', '')
                 url = "https://api.trello.com/1/cards"
-                trelloKey = os.environ.get('TRELLO_API_KEY')
-                trelloToken = os.environ.get('TRELLO_API_TOKEN')
+                trelloKey = os.environ.get('PORTAL_TRELLO_API_KEY')
+                trelloToken = os.environ.get('PORTAL_TRELLO_API_TOKEN')
 
                 querystring = {"name": issue, "desc": details, "pos": "top", "idList": "5529dd886d658fdace75c830",
                                "keepFromSource": "all", "key": trelloKey, "token": trelloToken}
@@ -85,7 +85,7 @@ def spacebug(request):
 
 @api_auth
 def invoice_cron(request):
-    if "SENDGRID_API_KEY" in os.environ:
+    if "PORTAL_SENDGRID_API_KEY" in os.environ:
         pool = ThreadPool(100)
 
         def create_invoice(member):
@@ -128,7 +128,7 @@ def invoice_cron(request):
                "Invoice creation for the following members failed: <br>{}<br><br>".format(failed_string) + \
                "Invoice creation for the following members succeeded:<br>{}".format(successful_string)
 
-        sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+        sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('PORTAL_SENDGRID_API_KEY'))
         from_email = sendgrid.Email(settings.FROM_EMAIL_TREASURER)
         to_email = sendgrid.Email(settings.SYSADMIN_EMAIL)
         subject = "HSBNE invoice generation ran with {} successful and {} failed.".format(len(successful), len(failed))
@@ -141,10 +141,10 @@ def invoice_cron(request):
 
 @api_auth
 def overdue_cron(request):
-    if "XERO_CONSUMER_KEY" in os.environ:
+    if "PORTAL_XERO_CONSUMER_KEY" in os.environ:
         with open(xero_rsa) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get('XERO_CONSUMER_KEY', "/usr/src/data/xerkey.pem"), rsa_key)
+        credentials = PrivateCredentials(os.environ.get('PORTAL_XERO_CONSUMER_KEY', "/usr/src/data/xerkey.pem"), rsa_key)
         xero = Xero(credentials)
 
         # Monkey patch the library to support pagination.
@@ -194,11 +194,11 @@ def overdue_cron(request):
                 except ObjectDoesNotExist:
                     pass
 
-        if "SENDGRID_API_KEY" in os.environ and len(deactivated_members) or len(activated_members):
+        if "PORTAL_SENDGRID_API_KEY" in os.environ and len(deactivated_members) or len(activated_members):
             body = "HSBNE overdue fees check ran with {} overdue. These people have been deactivated:<br>{}<br><br>" \
                    "These people have been reactivated:<br>{}".format(len(deactivated_members), deactivated_members,
                                                                       activated_members)
-            sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+            sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('PORTAL_SENDGRID_API_KEY'))
             from_email = sendgrid.Email(settings.FROM_EMAIL_TREASURER)
             to_email = sendgrid.Email(settings.SYSADMIN_EMAIL)
             subject = "HSBNE overdue fees check ran with {} overdue and {} reactivated.".format(

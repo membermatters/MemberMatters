@@ -96,12 +96,12 @@ You will need to re-run the database migration every time the db models change. 
 `python3 manage.py migrate`
 
 To test all of the features you will need some api keys. Define these as environment variables:
-* SENDGRID_API_KEY
-* TRELLO_API_KEY
-* TRELLO_API_TOKEN
-* STRIPE_PUBLIC_KEY
-* STRIPE_SECRET_KEY
-* XERO_CONSUMER_KEY
-* XERO_RSA_FILE (path to the rsa key)
-* DISCORD_INTERLOCK_WEBHOOK
-* DISCORD_DOOR_WEBHOOK
+* PORTAL_SENDGRID_API_KEY
+* PORTAL_TRELLO_API_KEY
+* PORTAL_TRELLO_API_TOKEN
+* PORTAL_STRIPE_PUBLIC_KEY
+* PORTAL_STRIPE_SECRET_KEY
+* PORTAL_XERO_CONSUMER_KEY
+* PORTAL_XERO_RSA_FILE (path to the rsa key)
+* PORTAL_DISCORD_INTERLOCK_WEBHOOK
+* PORTAL_DISCORD_DOOR_WEBHOOK
