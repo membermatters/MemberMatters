@@ -21,7 +21,6 @@ class AccessControlledDevice(models.Model):
     play_theme = models.BooleanField("Play theme on door swipe", default=False)
 
     def checkin(self):
-        log_event(self.name + " checked in with server.", "door")
         self.last_seen = timezone.now()
         self.save()
 
