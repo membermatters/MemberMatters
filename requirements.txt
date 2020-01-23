@@ -1,10 +1,10 @@
-django~=2.1.11
+django~=3.0.2
 requests
 stripe
-sendgrid~=5.6.0
+sendgrid~=6.1.0
 pyxero
 humanize
 uwsgi
-django-constance~=2.3.0
+django-constance~=2.5.0
 django-picklefield~=2.0
 gunicorn

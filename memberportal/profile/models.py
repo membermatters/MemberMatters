@@ -41,7 +41,7 @@ class Log(models.Model):
 
 
 class UserEventLog(Log):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, "User affected by action")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 
 class EventLog(Log):
