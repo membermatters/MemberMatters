@@ -33,8 +33,8 @@ def send_group_email(user, emails, subject, title, message):
         mail.add_content(Content('text/html', email_string))
 
         # Send
-        sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('PORTAL_SENDGRID_API_KEY'))
-        response = sg.client.mail.send.post(request_body=mail.get())
+        sg = sendgrid.SendGridAPIClient(os.environ.get('PORTAL_SENDGRID_API_KEY'))
+        response = sg.send(mail)
 
         if response.status_code == 202:
             log_user_event(user, "Sent email with subject: " + subject, "email", "Email content: " + email_string)
@@ -53,13 +53,13 @@ def send_single_email(user, email, subject, title, message):
     email_string = render_to_string('email_without_button.html', {'email': email_vars})
 
     if "PORTAL_SENDGRID_API_KEY" in os.environ:
-        sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('PORTAL_SENDGRID_API_KEY'))
-        from_email = sendgrid.Email(settings.FROM_EMAIL)
-        to_email = sendgrid.Email(email)
+        sg = sendgrid.SendGridAPIClient(os.environ.get('PORTAL_SENDGRID_API_KEY'))
+        from_email = From(settings.FROM_EMAIL)
+        to_email = To(email)
         subject = subject
         content = Content("text/html", email_string)
-        mail = Mail(from_email, subject, to_email, content)
-        response = sg.client.mail.send.post(request_body=mail.get())
+        mail = Mail(from_email, to_email, subject, content)
+        response = sg.send(mail)
 
         if response.status_code == 202:
             log_user_event(user, "Sent email with subject: " + subject, "email", "Email content: " + message)

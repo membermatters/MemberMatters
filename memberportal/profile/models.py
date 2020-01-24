@@ -140,13 +140,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __send_email(self, subject, body):
         if "PORTAL_SENDGRID_API_KEY" in os.environ:
-            sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('PORTAL_SENDGRID_API_KEY'))
-            from_email = sendgrid.Email(settings.FROM_EMAIL)
-            to_email = sendgrid.Email(self.email)
+            sg = sendgrid.SendGridAPIClient(os.environ.get('PORTAL_SENDGRID_API_KEY'))
+            from_email = From(settings.FROM_EMAIL)
+            to_email = To(self.email)
             subject = subject
             content = Content("text/html", body)
-            mail = Mail(from_email, subject, to_email, content)
-            response = sg.client.mail.send.post(request_body=mail.get())
+            mail = Mail(from_email, to_email, subject, content)
+            response = sg.send(mail)
 
             if response.status_code == 202:
                 log_user_event(self, "Sent email with subject: " + subject, "email", "Email content: " + body)
@@ -379,13 +379,13 @@ class Profile(models.Model):
 
         if "PORTAL_SENDGRID_API_KEY" in os.environ:
             sg = sendgrid.SendGridAPIClient(
-                apikey=os.environ.get('PORTAL_SENDGRID_API_KEY'))
+                os.environ.get('PORTAL_SENDGRID_API_KEY'))
 
-            from_email = sendgrid.Email(settings.FROM_EMAIL)
-            to_email = sendgrid.Email(to_email)
+            from_email = From(settings.FROM_EMAIL)
+            to_email = To(to_email)
             content = Content("text/html", email_string)
-            mail = Mail(from_email, subject, to_email, content)
-            response = sg.client.mail.send.post(request_body=mail.get())
+            mail = Mail(from_email, to_email, subject, content)
+            response = sg.send(mail)
 
             if response.status_code == 202:
                 log_user_event(self.user, "Sent email with subject: " + subject, "email", "Email content: " + email_string)
