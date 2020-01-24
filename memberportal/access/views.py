@@ -147,8 +147,8 @@ def play_theme_song(user):
 
 
 def post_door_swipe_to_discord(name, door, successful):
-    if "DISCORD_DOOR_WEBHOOK" in os.environ:
-        url = os.environ.get('DISCORD_DOOR_WEBHOOK')
+    if "PORTAL_DISCORD_DOOR_WEBHOOK" in os.environ:
+        url = os.environ.get('PORTAL_DISCORD_DOOR_WEBHOOK')
 
         json_message = {
             "description": "",
@@ -177,8 +177,8 @@ def post_door_swipe_to_discord(name, door, successful):
 
 
 def post_interlock_swipe_to_discord(name, interlock, type, time=None):
-    if "DISCORD_INTERLOCK_WEBHOOK" in os.environ:
-        url = os.environ.get('DISCORD_INTERLOCK_WEBHOOK')
+    if "PORTAL_DISCORD_INTERLOCK_WEBHOOK" in os.environ:
+        url = os.environ.get('PORTAL_DISCORD_INTERLOCK_WEBHOOK')
 
         json_message = {
             "description": "",
