@@ -139,14 +139,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         )
 
     def __send_email(self, subject, body):
-        if "SENDGRID_API_KEY" in os.environ:
-            sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
-            from_email = sendgrid.Email(settings.FROM_EMAIL)
-            to_email = sendgrid.Email(self.email)
+        if "PORTAL_SENDGRID_API_KEY" in os.environ:
+            sg = sendgrid.SendGridAPIClient(os.environ.get('PORTAL_SENDGRID_API_KEY'))
+            from_email = From(settings.FROM_EMAIL)
+            to_email = To(self.email)
             subject = subject
             content = Content("text/html", body)
-            mail = Mail(from_email, subject, to_email, content)
-            response = sg.client.mail.send.post(request_body=mail.get())
+            mail = Mail(from_email, to_email, subject, content)
+            response = sg.send(mail)
 
             if response.status_code == 202:
                 log_user_event(self, "Sent email with subject: " + subject, "email", "Email content: " + body)
@@ -377,15 +377,15 @@ class Profile(models.Model):
         email_string = render_to_string('email_without_button.html', {'email': email_vars})
         subject = "A new member signed up! ({})".format(self.get_full_name())
 
-        if "SENDGRID_API_KEY" in os.environ:
+        if "PORTAL_SENDGRID_API_KEY" in os.environ:
             sg = sendgrid.SendGridAPIClient(
-                apikey=os.environ.get('SENDGRID_API_KEY'))
+                os.environ.get('PORTAL_SENDGRID_API_KEY'))
 
-            from_email = sendgrid.Email(settings.FROM_EMAIL)
-            to_email = sendgrid.Email(to_email)
+            from_email = From(settings.FROM_EMAIL)
+            to_email = To(to_email)
             content = Content("text/html", email_string)
-            mail = Mail(from_email, subject, to_email, content)
-            response = sg.client.mail.send.post(request_body=mail.get())
+            mail = Mail(from_email, to_email, subject, content)
+            response = sg.send(mail)
 
             if response.status_code == 202:
                 log_user_event(self.user, "Sent email with subject: " + subject, "email", "Email content: " + email_string)

@@ -15,12 +15,8 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'l)#t68rzepzp)0l#x=9mntciapun$whl+$j&=_@nl^zl1xm3j*'
+SECRET_KEY = os.environ.get("PORTAL_SECRET_KEY", 'l)#t68rzepzp)0l#x=9mntciapun$whl+$j&=_@nl^zl1xm3j*')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -29,15 +25,10 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
-if os.environ.get("HSBNE_PORTAL_ENV") == "Production":
+if os.environ.get("PORTAL_ENV") == "Production":
+    ENVIRONMENT = "Production"
     DEBUG = False
     ALLOWED_HOSTS = ["portal.hsbne.org"]
-
-    # Slightly hacky, but allows a direct IP while on the local HSBNE network.
-    for x in range(1, 255):
-        ALLOWED_HOSTS.append("10.0.0." + str(x))
-        ALLOWED_HOSTS.append("10.0.1." + str(x))
-        ALLOWED_HOSTS.append("10.0.2." + str(x))
 
 
 # Application definition
@@ -95,7 +86,7 @@ WSGI_APPLICATION = 'memberportal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.environ.get("HSBNE_PORTAL_DBFILE", "/usr/src/data/db.sqlite3"),
+        'NAME': os.environ.get("PORTAL_DB_LOCATION", "/usr/src/data/db.sqlite3"),
     }
 }
 
@@ -122,15 +113,15 @@ LOGGING = {
     'disable_existing_loggers': False,
     'handlers': {
         'file': {
-            'level': 'DEBUG',
+            'level': 'WARNING',
             'class': 'logging.FileHandler',
-            'filename': '/usr/src/logs/django.log',
+            'filename': os.environ.get("PORTAL_LOG_LOCATION", "/usr/src/logs/django.log"),
         },
     },
     'loggers': {
         'django': {
             'handlers': ['file'],
-            'level': 'DEBUG',
+            'level': 'WARNING',
             'propagate': True,
         },
     },
