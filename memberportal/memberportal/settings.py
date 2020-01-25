@@ -30,6 +30,13 @@ if os.environ.get("PORTAL_ENV") == "Production":
     DEBUG = False
     ALLOWED_HOSTS = ["portal.hsbne.org"]
 
+    # Slightly hacky, but allows a direct IP while on the local HSBNE network.
+    # These are required for the interlocks, doors, etc.
+    for x in range(1, 255):
+        ALLOWED_HOSTS.append("10.0.0." + str(x))
+        ALLOWED_HOSTS.append("10.0.1." + str(x))
+        ALLOWED_HOSTS.append("10.0.2." + str(x))
+
 
 # Application definition
 INSTALLED_APPS = [
