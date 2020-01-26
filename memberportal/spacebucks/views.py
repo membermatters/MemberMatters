@@ -11,6 +11,7 @@ from .models import SpaceBucks
 from profile.models import Profile, User
 from causes.models import Causes
 from profile.xerohelpers import create_cause_donation_invoice
+from constance import config
 import stripe
 import json
 import pytz
@@ -72,32 +73,31 @@ def add_spacebucks(request, amount=None):
                     transaction = SpaceBucks()
                     transaction.amount = amount
                     transaction.user = request.user
-                    transaction.description = "Added spacebucks via Stripe"
+                    transaction.description = f"Added {config.MEMBERBUCKS_NAME} via Stripe"
                     transaction.transaction_type = "stripe"
                     transaction.logging_info = charge
                     transaction.save()
                     log_user_event(request.user, "Successfully charged {} for ${}.".format(
                         request.user.profile.get_full_name(), amount),
                                    "stripe")
-                    subject = "You just added Spacebucks to your HSBNE account."
-                    request.user.email_notification(subject, subject, subject, "We just charged you card for ${} and "
-                                                                               "added this to your spacebucks balance."
+                    subject = f"You just added {config.MEMBERBUCKS_NAME} to your HSBNE account."
+                    request.user.email_notification(subject, subject, subject, f"We just charged you card for ${amount} and "
+                                                                               f"added this to your {config.MEMBERBUCKS_NAME} balance."
                                                                                "If this wasn't you, please let us know "
-                                                                               "immediately.".format(
-                        transaction.amount))
+                                                                               "immediately.")
 
                     return JsonResponse({"success": True})
                 else:
                     log_user_event(request.user, "Problem charging {}.".format(request.user.profile.get_full_name()),
                                    "stripe")
-                    subject = "Failed to add Spacebucks to your HSBNE account."
+                    subject = "Failed to add {config.MEMBERBUCKS_NAME} to your HSBNE account."
                     request.user.email_notification(subject, subject, subject, "We just tried to charge your card for"
-                                                                               "${} for spacebucks but were not "
+                                                                               f"${amount} for {config.MEMBERBUCKS_NAME} but were not "
                                                                                "successful. If this wasn't you, please "
                                                                                "let us know immediately.")
                     return JsonResponse({"success": False})
             else:
-                log_user_event(request.user, "Tried to add invalid amount {} to spacebucks via stripe.".format(amount),
+                log_user_event(request.user, f"Tried to add invalid amount {amount} to {config.MEMBERBUCKS_NAME} via stripe.",
                                "stripe")
 
         return render(request, 'add_spacebucks.html',

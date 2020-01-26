@@ -21,6 +21,7 @@ LOG_TYPES = (
     ('generic', 'Generic log entry'),
     ('usage', 'Generic usage access'),
     ('stripe', 'Stripe related event'),
+    ('memberbucks', 'Memberbucks related event'),
     ('spacebucks', 'Spacebucks related event'),
     ('profile', 'Member profile edited'),
     ('interlock', 'Interlock related event'),

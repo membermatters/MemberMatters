@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}Edit Spacebucks Device{% endblock %}
-{% block page_title %}Edit Spacebucks Device{% endblock %}
+{% block title %}Edit {{config.MEMBERBUCKS_NAME}} Device{% endblock %}
+{% block page_title %}Edit {{config.MEMBERBUCKS_NAME}} Device{% endblock %}
 
 {% block content %}
     <div class="admin-container center row small-row">
-        <h3 class="header center text">Edit Spacebucks Device</h3>
-        <p>Use the form below to update the spacebucks device details.</p>
+        <h3 class="header center text">Edit {{config.MEMBERBUCKS_NAME}} Device</h3>
+        <p>Use the form below to update the {{config.MEMBERBUCKS_NAME}} device details.</p>
         <form method="POST" action=""/>
         {% csrf_token %}
         {% for field in form %}

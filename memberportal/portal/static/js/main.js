@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Tooltips init
     M.Tooltip.init(document.querySelectorAll('.tooltipped'), {});
 
-    // Add spacebucks buttons
+    // Add memberbucks buttons
     let spacebucksButtons = document.getElementsByClassName("add-spacebucks");
     for (var i = 0; i < spacebucksButtons.length; i++) {
         spacebucksButtons[i].addEventListener('click', chargeCardForSpacebucks);
@@ -70,7 +70,7 @@ function bumpDoor(thing) {
 }
 
 function chargeCardForSpacebucks() {
-    if (confirm('Are you sure you want to add Spacebucks?') === false) {
+    if (confirm('Are you sure you want to add to your account?') === false) {
         M.toast({html: "Cancelled :("});
         return false
     }

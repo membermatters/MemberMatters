@@ -12,29 +12,25 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("PORTAL_SECRET_KEY", "l)#t68rzepzp)0l#x=9mntciapun$whl+$j&=_@nl^zl1xm3j*")
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# Default config is for dev environments and is overwritten in prod
 DEBUG = True
-
-# Only these URLs are allowed access
 ALLOWED_HOSTS = ["*"]
 
 if os.environ.get("PORTAL_ENV") == "Production":
     ENVIRONMENT = "Production"
     DEBUG = False
-    ALLOWED_HOSTS = ["portal.hsbne.org"]
+    ALLOWED_HOSTS = [os.environ.get("PORTAL_DOMAIN", "portal.example.org")]
 
-    # Slightly hacky, but allows a direct IP while on the local HSBNE network.
-    # These are required for the interlocks, doors, etc.
+    # Slightly hacky, but allows a direct IP while on the local network.
+    # These may be required for the interlocks, doors, etc.
     for x in range(1, 255):
         ALLOWED_HOSTS.append("10.0.0." + str(x))
         ALLOWED_HOSTS.append("10.0.1." + str(x))
-        ALLOWED_HOSTS.append("10.0.2." + str(x))
+        ALLOWED_HOSTS.append("192.168.0." + str(x))
+        ALLOWED_HOSTS.append("192.168.1." + str(x))
 
 # Application definition
 INSTALLED_APPS = [
@@ -53,8 +49,6 @@ INSTALLED_APPS = [
     "spacedirectory",
     "constance",
 ]
-
-CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -141,9 +135,6 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.0/howto/static-files/
-
 STATIC_URL = "/static/"
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/signin"
@@ -153,6 +144,9 @@ AUTH_USER_MODEL = "profile.User"
 
 REQUEST_TIMEOUT = 0.05
 
+# Django constance configuration
+CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
+
 CONSTANCE_CONFIG = {
     "THE_ANSWER": (42, "Answer to the Ultimate Question of Life, "
                        "The Universe, and Everything"),
@@ -160,5 +154,6 @@ CONSTANCE_CONFIG = {
     "EMAIL_ADMIN": ("example@example.com", "The default admin email that should receive administrative notifications."),
     "EMAIL_DEFAULT_FROM": (
         "\"HSBNE Member Portal\" <treasurer@hsbne.org>", "The default email that outbound messages are sent from."),
-    "SITE_NAME": ("MemberMatters Portal", "The title shown at the top of the page and as the tab title.")
+    "SITE_NAME": ("MemberMatters Portal", "The title shown at the top of the page and as the tab title."),
+    "MEMBERBUCKS_NAME": ("Memberbucks", "You can customise the name of the portals currency.")
 }

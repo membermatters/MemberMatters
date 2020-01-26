@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 
-{% block title %}Add Spacebucks{% endblock %}
+{% block title %}Add {{config.MEMBERBUCKS_NAME}}{% endblock %}
 {% load static %}
 {% block content %}
     <div class="center row small-row" style="max-width: 70%;">
-        <h3 class="header center text">Add funds to Spacebucks</h3>
+        <h3 class="header center text">Add funds to {{config.MEMBERBUCKS_NAME}}</h3>
         {% if success %}
             <p class="light-green-text">{{ message }}</p>
         {% elif success is False %}
             <p class="light-red-text">There was an error saving your payment details. {{ message }}</p>
         {% endif %}
 
-        <p class="larger-text">Your current spacebucks balance is
+        <p class="larger-text">Your current {{config.MEMBERBUCKS_NAME}} balance is
             ${{ user.profile.spacebucks_balance|floatformat:2 }}</p>
 
         {% if not user.profile.stripe_card_last_digits == "" %}
@@ -35,8 +35,8 @@
                         <h5 class="header center text">Add Funds</h5>
                         <div class="row">
                             <p>
-                                Click a button below to add spacebucks. This will immediately <b>charge your saved
-                                card</b> with the specified amount. By using Spacebucks you agree to our
+                                Click a button below to add {{config.MEMBERBUCKS_NAME}}. This will immediately <b>charge your saved
+                                card</b> with the specified amount. By using {{config.MEMBERBUCKS_NAME}} you agree to our
                                 <a href="https://docs.google.com/document/d/1JhjO1mddxl9n2FXcs3Jb4Y1itPEvKf5C0C-IkJfDfcI">terms</a>.
                             </p>
                         </div>
@@ -67,8 +67,7 @@
 
         {% else %}
             <p>We currently have no card details on record. Please add one below. The process of adding a card
-                <b>will not charge it</b>. Funds added to spacebucks are not refundable and can only be
-                used on HSBNE vending machines.</p>
+                <b>will not charge it</b>. Funds added to {{config.MEMBERBUCKS_NAME}} are not refundable.</p>
             <form action="{% url 'add_spacebucks_payment_info' %}" method="POST">
                 <script
                         src="https://checkout.stripe.com/checkout.js" class="stripe-button"
