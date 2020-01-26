@@ -78,7 +78,7 @@ python3 manage.py runserver
 You should see something like this:
 
 ```bash
-Django version 2.0.7, using settings 'memberportal.settings'
+Django version 2.0.7, using settings 'membermatters.settings'
 Starting development server at http://127.0.0.1:8000/
 ```
 

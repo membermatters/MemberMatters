@@ -3,10 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.utils.html import escape
 from django.urls import reverse
-from memberportal.helpers import log_user_event
+from membermatters.helpers import log_user_event
 from .forms import CauseForm, CauseFundForm
 from .models import Causes, CauseFund
-from memberportal.decorators import admin_required, no_noobs
+from membermatters.decorators import admin_required, no_noobs
 from profile.emailhelpers import send_group_email
 import pytz
 

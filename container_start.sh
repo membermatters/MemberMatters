@@ -5,4 +5,4 @@ service nginx start
 # Navigate to the app and start gunicorn
 cd memberportal
 python manage.py migrate
-exec gunicorn memberportal.wsgi:application --bind unix:/tmp/gunicorn.sock --access-logfile '/usr/src/logs/access.log' --error-logfile '/usr/src/logs/error.log' --workers 6
+exec gunicorn membermatters.wsgi:application --bind unix:/tmp/gunicorn.sock --access-logfile '/usr/src/logs/access.log' --error-logfile '/usr/src/logs/error.log' --workers 6

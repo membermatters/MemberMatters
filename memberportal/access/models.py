@@ -1,7 +1,7 @@
 from django.db import models
 from datetime import timedelta
 from django.utils import timezone
-from memberportal.helpers import log_event
+from membermatters.helpers import log_event
 from django.contrib.auth import get_user_model
 import pytz
 from django.conf import settings

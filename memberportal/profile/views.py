@@ -8,8 +8,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.db.utils import IntegrityError
 from django.urls import reverse
-from memberportal.decorators import no_noobs, admin_required, api_auth
-from memberportal.helpers import log_user_event
+from membermatters.decorators import no_noobs, admin_required, api_auth
+from membermatters.helpers import log_user_event
 from .models import Profile, User, MemberTypes
 from access.models import Doors, Interlock, DoorLog, InterlockLog
 from spacebucks.models import SpaceBucks
@@ -586,73 +586,74 @@ def create_invoice(request, member_id, option=False):
         return JsonResponse({"message": permission_message})
 
 
-@login_required
-def starving_hacker_form(request):
-    if request.method == 'POST':
-        starving_form = StarvingHackerForm(request.POST, instance=request.user.profile)
-
-        if starving_form.is_valid():
-            # if it was a form submission save it
-            profile = starving_form.save()
-            profile.updated_starving_details = datetime.now()
-            profile.save()
-
-            log_user_event(request.user, "User edited starving hacker details.", "profile")
-
-            message = None
-            error = None
-
-            if profile.is_starving_eligible():
-                message = "Your application for the starving hacker discount was " \
-                          "successful. Your next invoice " \
-                          "should reflect the discount. If it doesn't, email our treasurer at treasurer@hsbne.org."
-                email = send_single_email(request.user,
-                                          settings.EXEC_EMAIL,
-                                          "New Starving Hacker Approved",
-                                          "New Starving Hacker Approved",
-                                          "Hi there, a new starving hacker application has been approved for {}. Please " \
-                                          "update their membership level in the portal and change their repeating invoice in " \
-                                          "Xero to reflect the discount.".format(profile.get_full_name()))
-
-            else:
-                if profile.special_consideration:
-                    error = " Unfortunately, you aren't eligible for the discount based on the information you " \
-                            "provided. As you requested special consideration, the executive will review your " \
-                            "application and get back to you within a few days with the outcome."
-                    email = send_single_email(request.user,
-                                              settings.EXEC_EMAIL,
-                                              "New Special Consideration Application for Starving Hacker",
-                                              "New Special Consideration Application for Starving Hacker",
-                                              "Hi there, a new starving hacker application has been rejected for {}. However," \
-                                              "they have requested special consideration. Login to the portal if you'd like " \
-                                              "to check their application details. ~br~~br~ Special Consideration Reason: {}".format(
-                                                  request.user.profile.get_full_name(),
-                                                  profile.special_consideration_note))
-
-                else:
-                    error = " Unfortunately, you aren't eligible for the discount based on the information you " \
-                            "provided. Your attempt has been logged and any additional applications may require proof" \
-                            " of your circumstances."
-                    email = send_single_email(request.user,
-                                              settings.EXEC_EMAIL,
-                                              "New Starving Hacker Rejected",
-                                              "New Starving Hacker Rejected",
-                                              "Hi there, a new starving hacker application has been rejected for {}. Login to the" \
-                                              " portal if you'd like to check their application details.".format(
-                                                  request.user.profile.get_full_name()))
-
-            if not email:
-                return render(request, 'starving_hacker_form.html',
-                              {"message": message, "error": "Unable to send email to the executive.",
-                               "form": starving_form})
-
-            return render(request, 'starving_hacker_form.html',
-                          {"message": message, "error": error, "form": starving_form})
-
-        return render(request, 'starving_hacker_form.html', {"error": "Error validating form.", "form": starving_form})
-
-    else:
-        # if it's not a form submission, return an empty form
-        starving_form = StarvingHackerForm(instance=request.user.profile)
-
-    return render(request, 'starving_hacker_form.html', {"form": starving_form})
+# TODO: remove deprecated starving hacker stuff
+# @login_required
+# def starving_hacker_form(request):
+#     if request.method == 'POST':
+#         starving_form = StarvingHackerForm(request.POST, instance=request.user.profile)
+#
+#         if starving_form.is_valid():
+#             # if it was a form submission save it
+#             profile = starving_form.save()
+#             profile.updated_starving_details = datetime.now()
+#             profile.save()
+#
+#             log_user_event(request.user, "User edited starving hacker details.", "profile")
+#
+#             message = None
+#             error = None
+#
+#             if profile.is_starving_eligible():
+#                 message = "Your application for the starving hacker discount was " \
+#                           "successful. Your next invoice " \
+#                           "should reflect the discount. If it doesn't, email our treasurer at treasurer@hsbne.org."
+#                 email = send_single_email(request.user,
+#                                           settings.EXEC_EMAIL,
+#                                           "New Starving Hacker Approved",
+#                                           "New Starving Hacker Approved",
+#                                           "Hi there, a new starving hacker application has been approved for {}. Please " \
+#                                           "update their membership level in the portal and change their repeating invoice in " \
+#                                           "Xero to reflect the discount.".format(profile.get_full_name()))
+#
+#             else:
+#                 if profile.special_consideration:
+#                     error = " Unfortunately, you aren't eligible for the discount based on the information you " \
+#                             "provided. As you requested special consideration, the executive will review your " \
+#                             "application and get back to you within a few days with the outcome."
+#                     email = send_single_email(request.user,
+#                                               settings.EXEC_EMAIL,
+#                                               "New Special Consideration Application for Starving Hacker",
+#                                               "New Special Consideration Application for Starving Hacker",
+#                                               "Hi there, a new starving hacker application has been rejected for {}. However," \
+#                                               "they have requested special consideration. Login to the portal if you'd like " \
+#                                               "to check their application details. ~br~~br~ Special Consideration Reason: {}".format(
+#                                                   request.user.profile.get_full_name(),
+#                                                   profile.special_consideration_note))
+#
+#                 else:
+#                     error = " Unfortunately, you aren't eligible for the discount based on the information you " \
+#                             "provided. Your attempt has been logged and any additional applications may require proof" \
+#                             " of your circumstances."
+#                     email = send_single_email(request.user,
+#                                               settings.EXEC_EMAIL,
+#                                               "New Starving Hacker Rejected",
+#                                               "New Starving Hacker Rejected",
+#                                               "Hi there, a new starving hacker application has been rejected for {}. Login to the" \
+#                                               " portal if you'd like to check their application details.".format(
+#                                                   request.user.profile.get_full_name()))
+#
+#             if not email:
+#                 return render(request, 'starving_hacker_form.html',
+#                               {"message": message, "error": "Unable to send email to the executive.",
+#                                "form": starving_form})
+#
+#             return render(request, 'starving_hacker_form.html',
+#                           {"message": message, "error": error, "form": starving_form})
+#
+#         return render(request, 'starving_hacker_form.html', {"error": "Error validating form.", "form": starving_form})
+#
+#     else:
+#         # if it's not a form submission, return an empty form
+#         starving_form = StarvingHackerForm(instance=request.user.profile)
+#
+#     return render(request, 'starving_hacker_form.html', {"form": starving_form})

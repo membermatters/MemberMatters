@@ -12,7 +12,7 @@ from django.core.wsgi import get_wsgi_application
 import logging, sys
 logging.basicConfig(stream=sys.stderr)
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "memberportal.settings") 
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "membermatters.settings")
 
 try: 
         application = get_wsgi_application() 

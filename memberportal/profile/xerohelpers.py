@@ -243,7 +243,7 @@ def create_membership_invoice(user, email_invoice=False):
         xero.invoices.get_onlineinvoice = xero.invoices._get_data(get_onlineinvoice)
 
         try:
-            from memberportal.helpers import log_user_event
+            from membermatters.helpers import log_user_event
 
             # try to create the invoice
             result = xero.invoices.put(payload)
@@ -319,7 +319,7 @@ def create_cause_donation_invoice(user, cause, amount):
         xero = Xero(credentials)
 
         try:
-            from memberportal.helpers import log_user_event
+            from membermatters.helpers import log_user_event
 
             # try to create the invoice
             result = xero.invoices.put(payload)

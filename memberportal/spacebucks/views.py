@@ -5,8 +5,8 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
 from django.utils import timezone
-from memberportal.decorators import no_noobs, api_auth
-from memberportal.helpers import log_user_event
+from membermatters.decorators import no_noobs, api_auth
+from membermatters.helpers import log_user_event
 from .models import SpaceBucks
 from profile.models import Profile, User
 from causes.models import Causes

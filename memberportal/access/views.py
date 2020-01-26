@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.urls import reverse
-from memberportal.helpers import log_user_event
-from memberportal.decorators import no_noobs, admin_required, api_auth
+from membermatters.helpers import log_user_event
+from membermatters.decorators import no_noobs, admin_required, api_auth
 from profile.models import User
 from .forms import *
 from .models import *

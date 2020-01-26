@@ -13,6 +13,7 @@ from django.core.validators import RegexValidator
 from django.conf import settings
 from profile.xerohelpers import get_xero_contact, create_membership_invoice
 from profile.xerohelpers import add_to_xero
+from constance import config
 
 utc = pytz.UTC
 
@@ -49,7 +50,7 @@ class EventLog(Log):
 
 
 # this needs to be here because it relies on the models defined above
-from memberportal.helpers import log_user_event
+from membermatters.helpers import log_user_event
 
 
 class UserManager(BaseUserManager):
@@ -141,7 +142,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __send_email(self, subject, body):
         if "PORTAL_SENDGRID_API_KEY" in os.environ:
             sg = sendgrid.SendGridAPIClient(os.environ.get('PORTAL_SENDGRID_API_KEY'))
-            from_email = From(settings.FROM_EMAIL)
+            from_email = From(config.EMAIL_DEFAULT_FROM)
             to_email = To(self.email)
             subject = subject
             content = Content("text/html", body)
@@ -381,7 +382,7 @@ class Profile(models.Model):
             sg = sendgrid.SendGridAPIClient(
                 os.environ.get('PORTAL_SENDGRID_API_KEY'))
 
-            from_email = From(settings.FROM_EMAIL)
+            from_email = From(config.EMAIL_DEFAULT_FROM)
             to_email = To(to_email)
             content = Content("text/html", email_string)
             mail = Mail(from_email, to_email, subject, content)
