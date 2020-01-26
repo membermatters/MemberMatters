@@ -1,65 +1,58 @@
-# HSBNE Member Portal
-The HSBNE member portal is how HSBNE members manage their membership.
+# MemberMatters Portal
+The MemberMatters portal is an open source membership and access management solution.
 
 ### Features
 * Member registration system (signup, login etc)
 * Profile - members can update all their info in one place
-    * Personal details like name, email, cause membership
+    * Personal details like name, email, group membership
     * Members can see their current access restrictions
-* Spacebug reporting tool (issue reporting form)
+* Issue reporting tool
 * Access system built in
     * Activate new members & enable/disable existing members
     * Granular door and tool/machines permissions
     * API so readers/interlocks can check access
-    * Swipe Statistics (last seen and recent swipes)
-* Member overview for executive
+    * Swipe statistics (last seen and recent swipes)
+* Member overview for admins
     * Search for members and sort by name, status, etc
     * Change a member's profile
-* Causes
-    * List of all causes
-    * List of members in each cause and quorum
+* Groups
+    * List of all groups
+    * List of members in each group and quorum
 * Admin Interface
     * View, add and edit the following:
-        * Causes, doors and interlocks
-* Space webcam integration
-* Full Spacebucks Support
+        * Groups, doors and interlocks
+* Webcam integration with Unifi Video
+* Full "Memberbucks" Support
     * Debit API for vending machines etc. 
     * Members can see a transaction history (credits & debits) and current balance
     * Stripe integration
         * Members can add/remove a card to their profile
-        * Can charge card to add spacebucks to profile
-* Automatically create a xero contact and create invoice when a noob is made into a member
+        * Can charge card to add memberbucks to profile
+* Automatically create a xero contact and create invoice when a new person is made into a member
 
  
  ### Coming Soon
- * Manage recurring membership fees via direct debit service
- * Manage recurring membership via xero invoices
+ * Manage recurring membership fees via Stripe
  * Edit member swipe in theme
  
  ### Getting Started
  See the [GETTING_STARTED.md](/GETTING_STARTED.md) file in this repo
- for instructions on how to setup your development environment and run the portal software.
+ for instructions on how to setup your development environment and run the MemberMatters software.
  
  ### Contributing Guidelines
-If you're able to write python (django) or JavaScript please contribute. It's a lot of work to write something like 
-this properly from scratch. Please use best practices while contributing. This includes writing clean code (messy/hacky 
+Please use best practices while contributing. This includes writing clean code (messy/hacky 
 code will be rejected) and making sure it's well commented. Try to think of the next person who comes along so use 
 variable names that make sense and avoid weird tricks that not everyone will understand.
 
-**HSBNE members:** Check with Jaimyn (@jabelone) before working on something, then make a pull request when you are happy with your 
-changes.
-
-**Other people:** Work on existing issues (use comments to clarify/discuss things). If you want to fix undocumented 
-bugs or add new things open an issue and ask how it should be done.
+Please work on existing issues (use comments to clarify/discuss things). If you want to fix undocumented 
+bugs or add new things open an issue for discussion.
 
 
 ## Screenshots
 
-![screenshot](https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot.png)
-![screenshot2](https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot2.png)
-![screenshot3](https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot3.png)
-![screenshot4](https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot4.png)
-<img src="https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot5.png" width="400">
-<img src="https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot6.png" width="400">
-<img src="https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot7.png" width="300">
-<img src="https://raw.githubusercontent.com/jabelone/hsbneportal/master/screenshots/screenshot8.png" width="300">
+[Coming soon once the frontend rewrite is done]
+
+### Special Note
+This software used to be called "hsbne portal". It was written by Jaimyn (@jabelone) and used by HSBNE
+to manage their membership. It has since been rewritten to be organisation agnostic so others can use it too.
+If you find references to HSBNE or HSBNE Inc. this is why. :)
