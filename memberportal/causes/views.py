@@ -8,6 +8,7 @@ from .forms import CauseForm, CauseFundForm
 from .models import Causes, CauseFund
 from membermatters.decorators import admin_required, no_noobs
 from profile.emailhelpers import send_group_email
+from constance import config
 import pytz
 
 utc = pytz.UTC
@@ -19,14 +20,14 @@ def manage_causes(request):
     if not request.user.profile.can_manage_causes:
         return HttpResponseForbidden("You do not have permission to access that.")
 
-    # if we want to add a cause
+    # if we want to add a group
     if request.method == 'POST':
         form = CauseForm(request.POST)
         if form.is_valid():
             form.save()
             log_user_event(
                 request.user,
-                "Created {} cause.".format(form.cleaned_data.get('name')),
+                f"Created {form.cleaned_data.get('name')} {config.GROUP_NAME}.",
                 "admin", form)
             return HttpResponseRedirect(reverse("manage_causes"))
 

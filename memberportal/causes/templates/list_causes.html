@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
-{% block title %}Cause Members{% endblock %}
+{% block title %}{{config.GROUP_NAME}} Members{% endblock %}
 
 {% block content %}
     <div class="medium-width center row small-row">
-        <h3 class="header center text">Cause Members</h3>
-        <p>If you think you are in the wrong cause please update your cause membership by <a
+        <h3 class="header center text">{{config.GROUP_NAME}} Members</h3>
+        <p>If you think you are in the wrong {{config.GROUP_NAME|lower}} please update your {{config.GROUP_NAME|lower}} membership by <a
                 href="{% url 'edit_profile' %}">clicking here</a>. If your access has been disabled you will not show up on this list.</p>
         <ul class="collapsible">
             {% for cause in causes %}

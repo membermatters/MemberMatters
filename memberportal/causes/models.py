@@ -1,15 +1,16 @@
 from django.db import models
+from constance import config
 import math
 
 def divround_down(value, step):
     return value//step*step
 
 class Causes(models.Model):
-    name = models.CharField("Cause Name", max_length=20, unique=True)
-    description = models.CharField("Cause Description", max_length=100)
+    name = models.CharField(f"{config.GROUP_NAME} Name", max_length=20, unique=True)
+    description = models.CharField(f"{config.GROUP_NAME} Description", max_length=100)
     leaders = models.ManyToManyField("profile.User")
-    item_code = models.CharField("Item Code", max_length=50)
-    account_code = models.IntegerField("Account Code")
+    item_code = models.CharField("Xero Item Code", max_length=50)
+    account_code = models.IntegerField("Xero Account Code")
     hidden = models.BooleanField(default=False)
 
     def get_active_count(self):

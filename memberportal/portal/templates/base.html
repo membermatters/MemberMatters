@@ -117,7 +117,7 @@
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'report_spacebug' %}">Report
                     Issue</a></li>
                 {% if not user.profile.state|stringformat:"s" == "noob" %}
-                    <li><a class="waves-effect waves-light" href="{% url 'list_causes' %}">Cause
+                    <li><a class="waves-effect waves-light" href="{% url 'list_causes' %}">{{config.GROUP_NAME}}
                         Members</a></li>
                     <li><a class="waves-effect waves-light" href="{% url 'recent_swipes' %}">Recent
                         Swipes</a>
@@ -154,7 +154,7 @@
     <ul id="member-dropdown" class="dropdown-content">
         <li><a class="waves-effect waves-light" href="{% url 'report_spacebug' %}">Report Issue</a></li>
         {% if not user.profile.state|stringformat:"s" == "noob" %}
-            <li><a class="waves-effect waves-light" href="{% url 'list_causes' %}">Cause Members</a>
+            <li><a class="waves-effect waves-light" href="{% url 'list_causes' %}">{{config.GROUP_NAME}} Members</a>
             </li>
 
             <li><a class="waves-effect waves-light" href="{% url 'recent_swipes' %}">Recent Swipes</a>
@@ -170,7 +170,7 @@
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a></li>
             {% if request.user.profile.can_manage_causes %}
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage
-                    Causes</a>
+                    {{config.GROUP_NAME}}</a>
                 </li>
             {% endif %}
             {% if request.user.profile.can_manage_doors %}
@@ -190,17 +190,15 @@
 <!-- Modal Structure -->
 <div id="aboutModal" class="modal" style="min-height: auto !important;">
     <div class="modal-content">
-        <h4>About HSBNE Portal</h4>
+        <h4>About MemberMatters</h4>
         <p>This is an open source, full featured membership portal. It is designed for
             <a href="https://hsbne.org/">HSBNE</a> (Hackerspace Brisbane). It was created by
-            <a href="https://jaimyn.com.au">Jaimyn Mayer</a> in his spare time, with a little help from some HSBNE
+            <a href="https://jaimyn.com.au">Jaimyn Mayer</a>, with a little help from some HSBNE
             members.</p>
-        <p>It can manage membership, access permissions, spacebucks, doors, interlocks and more!
+        <p>It can manage membership, access permissions, {{config.MEMBERBUCKS_NAME}}, doors, interlocks and more!
             For more information please see the GitHub repo <a target="_blank"
                                                                href="https://github.com/HSBNE/hsbneportal/">here</a>.
         </p>
-        <p>For a brief user guide, please see <a target="_blank" href="https://github.com/HSBNE/hsbneportal/wiki">this
-            page</a>.</p>
     </div>
     <div class="modal-footer">
         <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
@@ -219,7 +217,7 @@
 
 <footer class="page-footer">
     <div class="container">
-        <a target="_blank" class="modal-trigger" href="#aboutModal">About HSBNE Portal</a>
+        <a target="_blank" class="modal-trigger" href="#aboutModal">About MemberMatters</a>
     </div>
 </footer>
 

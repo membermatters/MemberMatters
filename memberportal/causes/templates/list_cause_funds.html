@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}Cause Funds{% endblock %}
+{% block title %}{{config.GROUP_NAME}} Funds{% endblock %}
 
 {% block content %}
     <div class="medium-width center row small-row">
-        <h3 class="header center text">Cause Funds</h3>
+        <h3 class="header center text">{{config.GROUP_NAME}} Funds</h3>
         <ul class="collapsible">
             {% for cause in causes %}
                 <li>

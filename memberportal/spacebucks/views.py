@@ -325,7 +325,7 @@ def spacebucks_cause_donation(request, rfid=None, cause_id=None, amount=None):
         cause = Causes.objects.get(pk=cause_id)
 
     except ObjectDoesNotExist:
-        return HttpResponseBadRequest("400 Invalid request. Cause does not exist.")
+        return HttpResponseBadRequest(f"400 Invalid request. {config.GROUP_NAME} does not exist.")
 
     try:
         amount = amount / 100  # convert to dollars

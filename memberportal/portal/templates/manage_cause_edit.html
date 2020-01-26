@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
-{% block title %}Edit Cause{% endblock %}
-{% block page_title %}Edit Cause{% endblock %}
+{% block title %}Edit {{config.GROUP_NAME}}{% endblock %}
+{% block page_title %}Edit {{config.GROUP_NAME}}{% endblock %}
 
 {% block content %}
     <div class="admin-container center row small-row">
-        <h3 class="header center text">Edit Cause Info</h3>
+        <h3 class="header center text">Edit {{config.GROUP_NAME}} Info</h3>
             <form method="POST" action="{% url 'manage_causes' %}"/>
             {% csrf_token %}
             {{ form.as_p }}

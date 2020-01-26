@@ -72,8 +72,8 @@
                 <script
                         src="https://checkout.stripe.com/checkout.js" class="stripe-button"
                         data-key="{{ PORTAL_STRIPE_PUBLIC_KEY }}"
-                        data-name="HSBNE Member Portal"
-                        data-description="Link a card to your HSBNE account."
+                        data-name="{{config.SITE_NAME}}"
+                        data-description="Link a card to your {{config.SITE_NAME}} account."
                         data-image="{% static '/img/logo.png' %}"
                         data-locale="auto"
                         data-zip-code="true"

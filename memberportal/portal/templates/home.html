@@ -22,7 +22,7 @@
         {% elif user.profile.state == "noob" %}
             <div class="row center padding-top">
             <h5 class="header col s12 light">
-                Welcome to the HSBNE member portal!
+                Welcome to the {{config.SITE_NAME}}!
             </h5>
             <p>
                 Thanks for signing up to become a member. To continue the membership process, you need to get
@@ -36,7 +36,7 @@
         {% else %}
             <div class="row center padding-top">
                 <h4 class="header col s12 light">
-                    Welcome to the HSBNE member portal!
+                    Welcome to the {{config.SITE_NAME}}!
                 </h4>
             </div>
             <!--   Icon Section   -->
@@ -134,7 +134,7 @@
     {% else %}
         <div class="row center padding-top">
             <h5 class="header col s12 light">
-                Welcome to the HSBNE member portal!
+                Welcome to the {{config.SITE_NAME}}!
             </h5>
             <span>
                 Please note this is not our main website. This is the membership portal for HSBNE members or those who
