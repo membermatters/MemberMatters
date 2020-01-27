@@ -1,0 +1,65 @@
+[
+  {
+    "model": "profile.membertypes",
+    "pk": 1,
+    "fields": {
+      "name": "Default",
+      "conditions": "Default",
+      "cost": 30
+    }
+  },
+  {
+    "model": "profile.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$180000$6azCvvM37oqR$ckGP/a3vTRCiScYZIDzq6m13+q5PCr/PIUesuPRH5Iw=",
+      "last_login": "2000-01-01T00:00:00.000Z",
+      "is_superuser": true,
+      "email": "default@example.com",
+      "password_reset_key": null,
+      "password_reset_expire": null,
+      "staff": true,
+      "admin": true,
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "profile.profile",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "created": "2000-01-01T00:00:00.000Z",
+      "modified": "2000-01-01T00:00:00.000Z",
+      "screen_name": "the_admin",
+      "first_name": "Default",
+      "last_name": "Admin",
+      "state": "active",
+      "member_type": 1,
+      "rfid": null,
+      "memberbucks_balance": 0.0,
+      "last_memberbucks_purchase": "2000-01-01T00:00:00.000Z",
+      "must_update_profile": false,
+      "last_seen": "2000-01-01T00:00:00.000Z",
+      "last_invoice": null,
+      "stripe_customer_id": "",
+      "stripe_card_expiry": "",
+      "stripe_card_last_digits": "",
+      "xero_account_id": "",
+      "xero_account_number": "",
+      "groups": [],
+      "doors": [],
+      "interlocks": [],
+      "can_manage_access": true,
+      "can_disable_members": true,
+      "can_see_members_personal_details": true,
+      "can_see_members_memberbucks": true,
+      "can_see_members_logs": true,
+      "can_manage_doors": true,
+      "can_manage_interlocks": true,
+      "can_manage_groups": true,
+      "can_add_group": true,
+      "can_generate_invoice": true
+    }
+  }
+]

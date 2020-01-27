@@ -116,3 +116,4 @@ venv.bak/
 *.pem
 
 env.list
+/memberportal/docker_dev/
