@@ -12,7 +12,7 @@ xero_rsa = os.environ.get("PORTAL_XERO_RSA_FILE", "/usr/src/data/xerkey.pem")
 def get_xero_contact(user):
     """
     Returns an object with the xero contact details or None if it
-     doesn"t exist.
+     doesn't exist.
     :return:
     """
 
@@ -254,7 +254,7 @@ def create_membership_invoice(user, email_invoice=False):
             invoice_reference = result[0]["Reference"]
             invoice_link = xero.invoices.get_onlineinvoice(invoice_id)["OnlineInvoices"][0]["OnlineInvoiceUrl"]
 
-            # if we"re successful and email == True send it
+            # if we're successful and email == True send it
             if email_invoice:
                 user.email_invoice(user.profile.first_name, user.profile.member_type.cost, invoice_number,
                                    next_month_date.strftime("%d-%m-%Y"), invoice_reference, invoice_link)

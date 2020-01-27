@@ -121,7 +121,7 @@ def edit_group(request, group_id):
             return render(request, "edit_group.html", {"form": form})
 
     else:
-        # if it"s not a form submission, return an empty form
+        # if it's not a form submission, return an empty form
         form = CauseForm(instance=Group.objects.get(pk=group_id))
         return render(request, "edit_group.html", {"form": form})
 

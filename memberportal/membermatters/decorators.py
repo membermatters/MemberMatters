@@ -8,7 +8,7 @@ def admin_required(view):
         if request.user.is_staff:
             return view(request, *args, **kwargs)
         else:
-            # if the user isn"t authorised let them know
+            # if the user isn't authorised let them know
             return HttpResponseForbidden("403 Access Forbidden")
 
     return wrap
@@ -18,7 +18,7 @@ def no_noobs(view):
     def wrap(request, *args, **kwargs):
         # do some logic here
         if request.user.profile.state == "noob":
-            # if the user isn"t authorised let them know
+            # if the user isn't authorised let them know
             return HttpResponseForbidden("403 Access Forbidden")
         else:
             return view(request, *args, **kwargs)
@@ -39,7 +39,7 @@ def api_auth(view):
                 print(True)
                 return view(request, *args, **kwargs)
 
-        # if the user isn"t authorised let them know
+        # if the user isn't authorised let them know
         return HttpResponseForbidden("403 Access Forbidden")
 
     return wrap

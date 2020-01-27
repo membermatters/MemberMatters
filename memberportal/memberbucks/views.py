@@ -82,7 +82,7 @@ def add_memberbucks(request, amount=None):
                     subject = f"You just added {config.MEMBERBUCKS_NAME} to your {config.SITE_OWNER} account."
                     request.user.email_notification(subject, subject, subject, f"We just charged you card for ${amount} and "
                                                                                f"added this to your {config.MEMBERBUCKS_NAME} balance."
-                                                                               "If this wasn"t you, please let us know "
+                                                                               "If this wasn't you, please let us know "
                                                                                "immediately.")
 
                     return JsonResponse({"success": True})
@@ -92,7 +92,7 @@ def add_memberbucks(request, amount=None):
                     subject = f"Failed to add {config.MEMBERBUCKS_NAME} to your {config.SITE_OWNER} account."
                     request.user.email_notification(subject, subject, subject, "We just tried to charge your card for"
                                                                                f"${amount} for {config.MEMBERBUCKS_NAME} but were not "
-                                                                               "successful. If this wasn"t you, please "
+                                                                               "successful. If this wasn't you, please "
                                                                                "let us know immediately.")
                     return JsonResponse({"success": False})
             else:
@@ -115,7 +115,7 @@ def add_memberbucks_payment_info(request):
             stripe.default_http_client = stripe.http_client.RequestsClient()
 
         else:
-            return HttpResponseServerError("Can"t find stripe API details.")
+            return HttpResponseServerError("Can't find stripe API details.")
 
         try:
             log_user_event(request.user,
@@ -137,13 +137,13 @@ def add_memberbucks_payment_info(request):
                     request.user.profile.get_full_name()), "stripe")
 
             subject = f"You just added a payment card to your {config.SITE_OWNER} account."
-            request.user.email_notification(subject, subject, subject, "Don"t worry, your card details are stored safe "
+            request.user.email_notification(subject, subject, subject, "Don't worry, your card details are stored safe "
                                                                        "with Stripe and are not on our servers. You "
                                                                        "can remove this card at any time via the "
                                                                        f"{config.SITE_NAME}.")
 
         except stripe.error.CardError as e:
-            # Since it"s a decline, stripe.error.CardError will be caught
+            # Since it's a decline, stripe.error.CardError will be caught
             body = e.json_body
             err = body.get("error", {})
 
@@ -168,7 +168,7 @@ def add_memberbucks_payment_info(request):
                            "message": "There was an error with the request details."})
 
         except stripe.error.AuthenticationError as e:
-            log_user_event(request.user, "Can"t authenticate with stripe while saving payment details.", "stripe")
+            log_user_event(request.user, "Can't authenticate with stripe while saving payment details.", "stripe")
             return render(request, "add_memberbucks.html",
                           {"PORTAL_STRIPE_PUBLIC_KEY": os.environ["PORTAL_STRIPE_PUBLIC_KEY"], "success": False,
                            "message": "Our server was unable to authenticate with the Stripe server."})
@@ -208,7 +208,7 @@ def delete_memberbucks_payment_info(request):
         stripe.default_http_client = stripe.http_client.RequestsClient()
 
     else:
-        return HttpResponseServerError("Can"t find stripe API details.")
+        return HttpResponseServerError("Can't find stripe API details.")
 
     profile = request.user.profile
 
@@ -217,7 +217,7 @@ def delete_memberbucks_payment_info(request):
         customer.sources.retrieve(customer["default_source"]).delete()
 
     except stripe.error.InvalidRequestError as e:
-        # this ignores the error that happens when a user doesn"t have saved details, sometimes needed.
+        # this ignores the error that happens when a user doesn't have saved details, sometimes needed.
         pass
 
     profile.stripe_card_last_digits = ""
@@ -225,7 +225,7 @@ def delete_memberbucks_payment_info(request):
     profile.save()
 
     subject = f"You just removed a saved card from your {config.SITE_OWNER} account."
-    request.user.email_notification(subject, subject, subject, "If this wasn"t you, please let us know immediately.")
+    request.user.email_notification(subject, subject, subject, "If this wasn't you, please let us know immediately.")
 
     return render(
         request, "add_memberbucks.html",
@@ -253,7 +253,7 @@ def memberbucks_debit(request, amount=None, description="No Description", rfid=N
 
     elif request.method == "POST":
         details = json.loads(request.body)
-        amount = abs(details["amount"] / 100)  # the abs() stops us accidentally crediting an account if it"s negative
+        amount = abs(details["amount"] / 100)  # the abs() stops us accidentally crediting an account if it's negative
         description = details["description"]
         profile = Profile.objects.get(rfid=details["rfid_code"])
 
@@ -276,7 +276,7 @@ def memberbucks_debit(request, amount=None, description="No Description", rfid=N
             profile.save()
 
             subject = f"You just made a ${amount} {config.MEMBERBUCKS_NAME} purchase."
-            message = "Description: {}. Balance Remaining: ${}. If this wasn"t you, or you believe there has been an " \
+            message = "Description: {}. Balance Remaining: ${}. If this wasn't you, or you believe there has been an " \
                       "error, please let us know.".format(transaction.description, profile.memberbucks_balance)
             User.objects.get(profile=profile).email_notification(subject, subject, subject, message)
 
@@ -295,9 +295,8 @@ def memberbucks_debit(request, amount=None, description="No Description", rfid=N
     subject = f"Failed to make a ${amount} {config.MEMBERBUCKS_NAME} purchase."
     User.objects.get(profile=profile).email_notification(subject, subject, subject,
                                                          f"We just tried to debit ${amount} from your {config.MEMBERBUCKS_NAME} balance but were not successful. "
-                                                         f"You currently have ${profile.memberbucks_balance}. If this wasn"t you, please let us know "
-                                                         "immediately."
-                                                         )
+                                                         f"You currently have ${profile.memberbucks_balance}. If this wasn't you, please let us know "
+                                                         "immediately.")
 
     return JsonResponse({"success": False, "balance": round(profile.memberbucks_balance, 2)})
 

@@ -167,7 +167,7 @@ def reset_password(request, reset_token=None):
                     return render(
                         request, "reset_password_form.html",
                         {"form": ResetPasswordForm(),
-                         "error": "Passwords don"t match."})
+                         "error": "Passwords don't match."})
 
         else:
             if utc.localize(datetime.now()) < user.password_reset_expire:
@@ -317,12 +317,12 @@ def admin_edit_member(request, member_id):
     form_valid = False
 
     if request.method == "POST":
-        # if it"s a form submission pass it to the form
+        # if it's a form submission pass it to the form
         profile_form = AdminEditProfileForm(request.POST, instance=profile)
         user_form = AdminEditUserForm(request.POST, instance=profile.user)
 
         if profile_form.is_valid() and user_form.is_valid():
-            # if it"s a valid form submission then save and log it
+            # if it's a valid form submission then save and log it
             try:
                 profile_form.save()
                 user_form.save()
@@ -387,7 +387,7 @@ def edit_profile(request):
             return HttpResponseRedirect("%s" % (reverse("profile")))
 
     else:
-        # if it"s not a form submission, return an empty form
+        # if it's not a form submission, return an empty form
         user_form = EditUserForm(instance=request.user)
         profile_form = EditProfileForm(instance=request.user.profile)
 
@@ -448,7 +448,7 @@ def set_state(request, member_id, state):
                 return JsonResponse({"success": False, "message": invoice})
 
             elif email is False:
-                return JsonResponse({"success": False, "message": "Error, couldn"t send welcome email."})
+                return JsonResponse({"success": False, "message": "Error, couldn't send welcome email."})
 
             else:
                 return JsonResponse({"success": False, "message": "Unknown error while making into member."})
@@ -527,7 +527,7 @@ def edit_theme_song(request):
             return HttpResponseRedirect("%s" % (reverse("edit_theme_song")))
 
     else:
-        # if it"s not a form submission, return an empty form
+        # if it"'s not a form submission, return an empty form
         theme_form = ThemeForm(instance=request.user.profile)
 
     return render(
@@ -546,7 +546,7 @@ def resend_welcome_email(request, member_id):
 
     else:
         return JsonResponse(
-            {"message": "Couldn"t email member, unknown error."})
+            {"message": "Couldn't email member, unknown error."})
 
 
 @login_required
@@ -561,7 +561,7 @@ def sync_xero_accounts(request):
 
     else:
         return JsonResponse(
-            {"message": "Couldn"t sync xero accounts, unknown error."})
+            {"message": "Couldn't sync xero accounts, unknown error."})
 
 
 @login_required

@@ -76,7 +76,7 @@ def edit_door(request, door_id):
             return render(request, "edit_door.html", {"form": form})
 
     else:
-        # if it"s not a form submission, return an empty form
+        # if it's not a form submission, return an empty form
         form = DoorForm(instance=Doors.objects.get(pk=door_id))
         return render(request, "edit_door.html", {"form": form})
 
@@ -282,7 +282,7 @@ def check_door_access(request, rfid_code, door_id=None):
 
                 return JsonResponse({"access": True, "name": user.profile.first_name})
 
-    # if the are inactive or don"t have access
+    # if the are inactive or don't have access
     user.profile.update_last_seen()
     post_door_swipe_to_discord(user.profile.get_full_name(), door.name, False)
     return JsonResponse({"access": False, "name": user.profile.first_name})
@@ -578,7 +578,7 @@ def edit_interlock(request, interlock_id):
             return render(request, "edit_interlock.html", {"form": form})
 
     else:
-        # if it"s not a form submission, return an empty form
+        # if it's not a form submission, return an empty form
         form = InterlockForm(instance=Interlock.objects.get(pk=interlock_id))
         return render(request, "edit_interlock.html", {"form": form})
 
@@ -704,7 +704,7 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
                 return JsonResponse({"access": True, "session_id": session.id, "timestamp": round(time.time()),
                                      "name": user.profile.first_name})
 
-    # if they are inactive or don"t have access
+    # if they are inactive or don't have access
     user.profile.update_last_seen()
     post_interlock_swipe_to_discord(user.profile.get_full_name(), interlock.name, "rejected")
     return JsonResponse({"access": False, "name": user.profile.first_name})
