@@ -155,7 +155,9 @@ CONSTANCE_CONFIG = {
     "SITE_MAIL_ADDRESS": ("123 Example St, Nowhere", "This address is used in the footer of all emails for anti spam."),
     "SITE_NAME": ("MemberMatters Portal", "The title shown at the top of the page and as the tab title."),
     "SITE_OWNER": ("MemberMatters", "The name of the legal entity/association/club that is running this site."),
+    "ENTITY_TYPE": ("Association", "This is the type of group you are such as an association, club, etc."),
     "SITE_URL": ("https://membermatters.org", "The publicly accessible URL of your MemberMatters instance."),
     "MEMBERBUCKS_NAME": ("Memberbucks", "You can customise the name of the portals currency."),
     "GROUP_NAME": ("Group", "You can customise what the portal calls a group."),
+    "ADMIN_NAME": ("Administrators", "You can specify a different name for your admin group like exec or leaders.")
 }

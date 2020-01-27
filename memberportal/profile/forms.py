@@ -121,10 +121,3 @@ class ResetPasswordForm(forms.Form):
 
     class Meta:
         fields = ['password1', 'password2']
-
-
-class StarvingHackerForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ('studying_fulltime', 'centrelink', 'healthcare_card', 'income_bracket', 'special_consideration',
-                  'special_consideration_note')

@@ -40,7 +40,8 @@
     <div class="nav-wrapper container">
         <a id="logo-container" href="/" class="brand-logo">
             <img id="logo" class="left" src="{% static '/img/logo/logo_small.png' %}" class="brand-logo">
-{#            <div class="hide-on-small-only">{{config.SITE_NAME}}</div>#}
+            {#  TODO: allow logo and/or text name. #}
+            {#            <div class="hide-on-small-only">{{config.SITE_NAME}}</div>#}
         </a>
         <ul class="right hide-on-med-and-down">
             {% if not user.is_authenticated %}

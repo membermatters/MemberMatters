@@ -6,7 +6,8 @@
     <div class="admin-container row small-row center">
         <h3 class="header center text">Your Member Profile</h3>
 
-        <a class="btn waves-effect waves-light" style="margin: 0 auto;" href="{% url 'digital_id' %}">View Digital ID</a><br><br>
+        <a class="btn waves-effect waves-light" style="margin: 0 auto;" href="{% url 'digital_id' %}">View Digital
+            ID</a><br><br>
 
         <table id="profileTable" class="center striped">
             <tbody>
@@ -53,7 +54,7 @@
             {% if user.profile.state == "noob" %}
             {% else %}
                 <tr>
-                    <td><b>{{config.MEMBERBUCKS_NAME}}:</b></td>
+                    <td><b>{{ config.MEMBERBUCKS_NAME }}:</b></td>
                     <td>Current balance is: ${{ user.profile.memberbucks_balance|floatformat:2 }} (<a
                             href="{% url 'manage_memberbucks' %}">manage</a>)
                     </td>
@@ -63,14 +64,15 @@
             </tbody>
         </table>
         <div id='account-info' style="width: 100%;" class="left">
-{#            <p>To apply for the starving hacker discount, <a href="{% url 'starving_hacker_form' %}">click here</a>.</p>#}
-            <p>To change your membership type, <a href="mailto:executive@hsbne.org">email the exec</a>.</p>
+            <p>To change your membership type, <a href="mailto:{{ config.EMAIL_ADMIN }}">email
+                the {{ config.ADMIN_NAME }}</a>.</p>
             <p id='last-login'>You last logged in on {{ user.last_login }}</p>
 
             <a class="btn waves-effect waves-light right" href="{% url 'edit_profile' %}">Edit Profile</a><br><br>
             <a class="btn waves-effect waves-light right" href="{% url 'change_password' %}">Change Password</a><br><br>
-{#            Does not work yet!!#}
-{#            <a class="btn waves-effect waves-light right" href="{% url 'edit_theme_song' %}">Change My Theme</a>#}
+            {#            TODO: Implement this!! #}
+            {#            Does not work yet!!#}
+            {#            <a class="btn waves-effect waves-light right" href="{% url 'edit_theme_song' %}">Change My Theme</a>#}
         </div>
     </div>
 {% endblock %}

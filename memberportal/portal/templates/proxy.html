@@ -8,10 +8,10 @@
             <div class="center-block center" style="max-width: 600px;">
                 <h3 class="header center text">Submit a Proxy</h3>
                 <p>If you can't make it to a meeting, please submit a proxy. If your full legal name is not shown or
-                    your {{config.GROUP_NAME | lower}}s are incorrect, then you need to
-                    <a target="_blank" href="/profile/edit/">update your profile</a>
-                    and refresh this page. If the date you select is not the date of
-                    the meeting, your proxy vote will not be valid.
+                    your {{ config.GROUP_NAME | lower }}s are incorrect, then you need to
+                    <a target="_blank" href="/profile/edit/">update your profile</a> and refresh this page. If the date
+                    you select is not the date of the meeting, your proxy vote will not be valid. Check with your proxy
+                    nominee before submitting this form.
                 </p>
                 {% if message %}
                     <p class="green-text">{{ message }}</p>
@@ -51,7 +51,7 @@
                             <option value="General">General Meeting</option>
                             <option value="Annual General">Annual General Meeting</option>
                         </optgroup>
-                        <optgroup label="Cause Meeting">
+                        <optgroup label="{{ config.GROUP_NAME }} Meeting">
                             {% for group in groups %}
                                 <option value="{{ group.name }}">{{ group.name }}</option>
                             {% endfor %}
@@ -62,14 +62,15 @@
 
                 <div class="input-field">
                     <i class="material-icons prefix">date_range</i>
-                    <input id="proxy-meetingdate-input" name="proxy-meetingdate" type="text" class="datepicker" required>
+                    <input id="proxy-meetingdate-input" name="proxy-meetingdate" type="text" class="datepicker"
+                           required>
                     <label for="proxy-meetingdate-input">Meeting Date</label>
                 </div>
             </div>
 
             <div class="col s12 m6">
                 <p id="proxy-preview">
-                    To {{config.SITE_OWNER}}: <br><br>
+                    To {{ config.SITE_OWNER }}: <br><br>
 
                     I, <span class="proxy-input">{{ request.user.profile.get_full_name }}</span>, of
                     <span id="proxy-memberaddress" class="proxy-input">__________</span>, being a member of the
@@ -85,7 +86,8 @@
                     on this day of <span id="proxy-todaysdate" class="proxy-input">{% now "jS F Y" %}</span>.
                 </p>
                 <p>
-                    Click the submit button below to email your proxy to the secretary. If your proxy is not available
+                    Click the submit button below to email your proxy to the administrators. If your proxy is not
+                    available
                     or doesn't turn up, your proxy vote will not be counted.
                 </p>
                 <a class="btn-flat right" onclick="window.history.back();">Cancel</a>
@@ -146,10 +148,8 @@
             <h3 class="header center text">Submit a Proxy</h3>
             <p>
                 Sorry, but you are not currently an active member. You must be an active member to have voting rights
-                within
-                the
-                association. If you believe this is in error, please email the executive at
-                <a href="mailto:exec@hsbne.org">exec@hsbne.org</a>.
+                within the {{config.ENTITY_TYPE}}. If you believe this is in error, please email the {{config.ADMIN_NAME}} at
+                <a href="mailto:{{config.ADMIN_EMAIL}}">{{config.ADMIN_EMAIL}}</a>.
             </p>
         </div>
     {% endif %}
