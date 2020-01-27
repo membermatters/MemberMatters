@@ -12,7 +12,7 @@ def send_group_email(user, emails, subject, title, message):
     message = escape(message)
     message = message.replace("~br~", "<br>")
     email_vars = {"preheader": "", "title": title, "message": message}
-    email_string = render_to_string('email_without_button.html', {'email': email_vars})
+    email_string = render_to_string('email_without_button.html', {'email': email_vars, "config": config})
     emails.append(config.EMAIL_ADMIN)
 
     if "PORTAL_SENDGRID_API_KEY" in os.environ:
@@ -51,7 +51,7 @@ def send_single_email(user, email, subject, title, message):
     message = escape(message)
     message = message.replace("~br~", "<br>")
     email_vars = {"preheader": "", "title": title, "message": message}
-    email_string = render_to_string('email_without_button.html', {'email': email_vars})
+    email_string = render_to_string('email_without_button.html', {'email': email_vars, "config": config})
 
     if "PORTAL_SENDGRID_API_KEY" in os.environ:
         sg = sendgrid.SendGridAPIClient(os.environ.get('PORTAL_SENDGRID_API_KEY'))

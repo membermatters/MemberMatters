@@ -88,8 +88,8 @@
             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;" >
                 <tr>
                     <td align="center" valign="top" style="padding: 40px 10px 40px 10px;">
-                        <a href="https://portal.hsbne.org" target="_blank">
-                            <img alt="Logo" src="https://portal.hsbne.org/static/img/logo.png" width="60" height="60" style="display: block; width: 60px; max-width: 60px; min-width: 60px; font-family: 'Lato', Helvetica, Arial, sans-serif; color: #ffffff; font-size: 18px;" border="0">
+                        <a href="{{config.SITE_URL}}" target="_blank">
+                            <img alt="Logo" src="{{config.SITE_URL}}/static/img/logo.png" width="60" height="60" style="display: block; width: 60px; max-width: 60px; min-width: 60px; font-family: 'Lato', Helvetica, Arial, sans-serif; color: #ffffff; font-size: 18px;" border="0">
                         </a>
                     </td>
                 </tr>
@@ -178,7 +178,7 @@
               <!-- ADDRESS -->
               <tr>
                 <td bgcolor="#f4f4f4" align="left" style="padding: 0px 30px 30px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;" >
-                  <p style="margin: 0;">Sent by {{config.SITE_NAME}} on behalf of {{config.SITE_OWNER}} at {{config.SITE_MAIL_ADDRESS}}.</p>
+                    <p style="margin: 0;">Sent by <a href="{{config.SITE_URL}}">{{config.SITE_NAME}}</a> on behalf of {{config.SITE_OWNER}} at {{config.SITE_MAIL_ADDRESS}}.</p>
                 </td>
               </tr>
             </table>

@@ -257,7 +257,8 @@ def admin_memberbucks_transactions(request, member_id):
     context = {
         "transactions": transactions,
         "balance": user.profile.memberbucks_balance,
-        "member": user
+        "member": user,
+        "config": config
     }
     rendered = render_to_string('partial_admin_member_memberbucks.html', context)
 
@@ -336,7 +337,7 @@ def admin_edit_member(request, member_id):
     data['html_form'] = render_to_string(
         'partial_admin_edit_member.html',
         {'profile_form': profile_form, 'user_form': user_form,
-         'member_id': member_id, "profile": profile}, request=request)
+         'member_id': member_id, "profile": profile, "config": config}, request=request)
     return JsonResponse(data)
 
 
@@ -357,7 +358,7 @@ def admin_member_logs(request, member_id):
 
     # render the form and return it
     data['html_form'] = render_to_string(
-        'partial_admin_member_logs.html', {'logs': member.profile.get_logs()},
+        'partial_admin_member_logs.html', {'logs': member.profile.get_logs(), "config": config},
         request=request)
     return JsonResponse(data)
 
@@ -477,7 +478,7 @@ def admin_edit_access(request, member_id):
     data['html_form'] = render_to_string(
         'partial_admin_edit_access.html',
         {'member': member, 'member_id': member_id, 'doors': doors,
-         'interlocks': interlocks}, request=request)
+         'interlocks': interlocks, "config": config}, request=request)
     return JsonResponse(data)
 
 

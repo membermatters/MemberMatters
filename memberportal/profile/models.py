@@ -161,14 +161,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         email_vars = {"preheader": preheader,
                       "title": title, "message": message}
         email_string = render_to_string(
-            'email_without_button.html', {'email': email_vars})
+            'email_without_button.html', {'email': email_vars, "config": config})
 
         if self.__send_email(subject, email_string):
             return True
 
     def email_password_reset(self, link):
         email_vars = {"link": link}
-        email_string = render_to_string('email_password_reset.html', {'email': email_vars})
+        email_string = render_to_string('email_password_reset.html', {'email': email_vars, "config": config})
 
         if self.__send_email(f"Reset your {config.SITE_OWNER} password", email_string):
             return True
@@ -180,7 +180,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                       "link": link,
                       "btn_text": btn_text}
         email_string = render_to_string(
-            'email_with_button.html', {'email': email_vars})
+            'email_with_button.html', {'email': email_vars, "config": config, "config": config})
 
         if self.__send_email(subject, email_string):
             return True
@@ -197,7 +197,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             "url": url,
         }
         email_string = render_to_string(
-            'email_invoice.html', {'invoice': invoice})
+            'email_invoice.html', {'invoice': invoice, "config": config})
 
         if self.__send_email(f"You have a new invoice from {config.SITE_OWNER} ({number})", email_string):
             return True
@@ -205,7 +205,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return False
 
     def email_welcome(self):
-        email_string = render_to_string('email_welcome.html')
+        email_string = render_to_string('email_welcome.html', {"config": config})
 
         if self.__send_email(f"Welcome to {config.SITE_OWNER}", email_string):
             return "Successfully sent welcome email to user. ✉"
@@ -218,7 +218,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 "Your access has been disabled.",
                 f"Your {config.SITE_OWNER} site access has been disabled.",
                 f"Your access to {config.SITE_OWNER} has been disabled. This could be due to overdue membership fees, a"
-                "ban being issued or your membership ending. If this is because of a ban, you are not allowed back on "
+                " ban being issued or your membership ending. If this is because of a ban, you are not allowed back on "
                 "site until your ban has ended and your membership has been reactivated."):
             return True
 
@@ -348,7 +348,7 @@ class Profile(models.Model):
         message = f"{self.get_full_name()} has just signed up. Their membership level is {self.member_type} and their selected {config.GROUP_NAME} are {groups_string}. " \
                   f"Their email is {self.user.email}."
         email_vars = {"preheader": "", "title": "New member signup", "message": message}
-        email_string = render_to_string('email_without_button.html', {'email': email_vars})
+        email_string = render_to_string('email_without_button.html', {'email': email_vars, "config": config})
         subject = "A new member signed up! ({})".format(self.get_full_name())
 
         if "PORTAL_SENDGRID_API_KEY" in os.environ:
