@@ -13,8 +13,6 @@ class SpaceBucks(models.Model):
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    fund = models.ForeignKey(
-        "group.CauseFund", null=True, blank=True, on_delete=models.SET_NULL)
     amount = models.FloatField("Amount")
     transaction_type = models.CharField(
         "Transaction Type", max_length=10, choices=TRANSACTION_TYPES)
@@ -30,6 +28,3 @@ class SpaceBucks(models.Model):
             user=self.user).aggregate(Sum('amount'))['amount__sum']
         self.user.profile.memberbucks_balance = round(balance, 2)
         self.user.profile.save()
-        if self.fund:
-            self.fund.balance += self.amount * -1.0
-            self.fund.save()

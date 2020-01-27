@@ -40,11 +40,6 @@
                        data-tooltip="Delete Cause">
                         <i class="material-icons">delete</i>
                     </a>
-                    <a href="{% url "manage_group_funds" group_id=group.id %}"
-                       class="group-button waves-effect waves-light btn-small edit-button tooltipped" disabled
-                       data-position="top" data-tooltip="Manage Funds">
-                        <i class="material-icons">attach_money</i>
-                    </a>
                     <a href="{% url "email_group_members" group_id=group.id %}"
                        class="group-button waves-effect waves-light btn-small edit-button tooltipped"
                        data-position="top"
