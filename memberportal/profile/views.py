@@ -12,7 +12,7 @@ from membermatters.decorators import no_noobs, admin_required, api_auth
 from membermatters.helpers import log_user_event
 from .models import Profile, User, MemberTypes
 from access.models import Doors, Interlock, DoorLog, InterlockLog
-from spacebucks.models import SpaceBucks
+from memberbucks.models import MemberBucks
 from .emailhelpers import send_single_email, send_group_email
 from django.conf import settings
 from .forms import *
@@ -101,7 +101,7 @@ def signup(request):
                 "fledged member is to book in for an induction. During this "
                 "induction we will go over the basic safety and operational "
                 f"aspects of {config.SITE_OWNER}. To book in, click the link below.",
-                "https://hsbnemembership.eventbrite.com.au",
+                f"{config.INDUCTION_URL}",
                 "Register for Induction")
 
             # for convenience, we should now log the user in
@@ -253,7 +253,7 @@ def admin_memberbucks_transactions(request, member_id):
         return HttpResponseForbidden(permission_message)
 
     user = User.objects.get(pk=member_id)
-    transactions = SpaceBucks.objects.filter(user_id=member_id)
+    transactions = MemberBucks.objects.filter(user_id=member_id)
     context = {
         "transactions": transactions,
         "balance": user.profile.memberbucks_balance,
@@ -280,7 +280,7 @@ def admin_add_memberbucks(request, member_id, amount):
         if amount > 50:
             return HttpResponseBadRequest("Invalid amount.")
 
-        transaction = SpaceBucks()
+        transaction = MemberBucks()
         transaction.amount = amount
         transaction.user = user
         transaction.description = "Manually added by administrator."

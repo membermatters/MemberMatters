@@ -12,17 +12,17 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RenameField(
             model_name='profile',
-            old_name='last_spacebucks_purchase',
+            old_name='last_memberbucks_purchase',
             new_name='last_memberbucks_purchase',
         ),
         migrations.RenameField(
             model_name='profile',
-            old_name='spacebucks_balance',
+            old_name='memberbucks_balance',
             new_name='memberbucks_balance',
         ),
         migrations.RemoveField(
             model_name='profile',
-            name='can_see_members_spacebucks',
+            name='can_see_members_memberbucks',
         ),
         migrations.AddField(
             model_name='profile',

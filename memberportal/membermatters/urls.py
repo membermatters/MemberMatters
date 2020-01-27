@@ -23,7 +23,7 @@ urlpatterns = [
     path('', include('access.urls')),
     path('', include('group.urls')),
     path('', include('profile.urls')),
-    path('', include('spacebucks.urls')),
+    path('', include('memberbucks.urls')),
     path('', include('spacedirectory.urls')),
     path('admin/', admin.site.urls),
 ]

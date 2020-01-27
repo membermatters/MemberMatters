@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='profile',
-            name='can_see_members_spacebucks',
-            field=models.BooleanField(default=False, verbose_name='Can see member spacebucks details'),
+            name='can_see_members_memberbucks',
+            field=models.BooleanField(default=False, verbose_name='Can see member memberbucks details'),
         ),
     ]

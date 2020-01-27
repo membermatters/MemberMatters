@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     "portal",
     "access",
     "group",
-    "spacebucks",
+    "memberbucks",
     "spacedirectory",
     "constance",
 ]
@@ -157,6 +157,7 @@ CONSTANCE_CONFIG = {
     "SITE_OWNER": ("MemberMatters", "The name of the legal entity/association/club that is running this site."),
     "ENTITY_TYPE": ("Association", "This is the type of group you are such as an association, club, etc."),
     "SITE_URL": ("https://membermatters.org", "The publicly accessible URL of your MemberMatters instance."),
+    "INDUCTION_URL": ("https://eventbrite.com.au", "The URL members should visit to book in for a site induction."),
     "MEMBERBUCKS_NAME": ("Memberbucks", "You can customise the name of the portals currency."),
     "GROUP_NAME": ("Group", "You can customise what the portal calls a group."),
     "ADMIN_NAME": ("Administrators", "You can specify a different name for your admin group like exec or leaders.")

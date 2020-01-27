@@ -3,7 +3,7 @@ from django.conf import settings
 from django.db.models import Sum
 
 
-class SpaceBucks(models.Model):
+class MemberBucks(models.Model):
     TRANSACTION_TYPES = (
         ('stripe', 'Stripe Payment'),
         ('bank', 'Bank Transfer'),
@@ -23,8 +23,8 @@ class SpaceBucks(models.Model):
         "Detailed logging info from stripe.", blank=True)
 
     def save(self, *args, **kwargs):
-        super(SpaceBucks, self).save(*args, **kwargs)
-        balance = SpaceBucks.objects.filter(
+        super(MemberBucks, self).save(*args, **kwargs)
+        balance = MemberBucks.objects.filter(
             user=self.user).aggregate(Sum('amount'))['amount__sum']
         self.user.profile.memberbucks_balance = round(balance, 2)
         self.user.profile.save()

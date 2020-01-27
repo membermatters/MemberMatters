@@ -716,7 +716,7 @@ def memberbucks_device_checkin(request, device_id=None):
 
     if device_id is not None:
         try:
-            device = SpacebucksDevice.objects.get(pk=device_id)
+            device = MemberbucksDevice.objects.get(pk=device_id)
             device.checkin()
             return JsonResponse({"success": True, "timestamp": round(time.time())})
 
@@ -728,7 +728,7 @@ def memberbucks_device_checkin(request, device_id=None):
     else:
         try:
             device_ip = request.META.get('HTTP_X_REAL_IP')
-            device = SpacebucksDevice.objects.get(ip_address=device_ip)
+            device = MemberbucksDevice.objects.get(ip_address=device_ip)
             device.checkin()
             return JsonResponse({"success": True, "timestamp": round(time.time())})
 

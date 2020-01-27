@@ -35,7 +35,7 @@ class AccessControlledDevice(models.Model):
         return self.name
 
 
-class SpacebucksDevice(AccessControlledDevice):
+class MemberbucksDevice(AccessControlledDevice):
     # These three things aren't used/relevant
     all_members = False
 

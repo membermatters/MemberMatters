@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 from membermatters.decorators import no_noobs, api_auth
 from membermatters.helpers import log_user_event
-from .models import SpaceBucks
+from .models import MemberBucks
 from profile.models import Profile, User
 from group.models import Group
 from profile.xerohelpers import create_group_donation_invoice
@@ -23,7 +23,7 @@ utc = pytz.UTC
 @login_required
 @no_noobs
 def manage_memberbucks(request):
-    memberbucks_transactions = SpaceBucks.objects.filter(user=request.user)
+    memberbucks_transactions = MemberBucks.objects.filter(user=request.user)
 
     return render(
         request, 'manage_memberbucks.html',
@@ -69,7 +69,7 @@ def add_memberbucks(request, amount=None):
                 )
 
                 if charge.paid:
-                    transaction = SpaceBucks()
+                    transaction = MemberBucks()
                     transaction.amount = amount
                     transaction.user = request.user
                     transaction.description = f"Added {config.MEMBERBUCKS_NAME} via Stripe"
@@ -265,7 +265,7 @@ def memberbucks_debit(request, amount=None, description="No Description", rfid=N
         print(time_dif)
 
         if time_dif > 5:
-            transaction = SpaceBucks()
+            transaction = MemberBucks()
             transaction.amount = amount * -1.0
             transaction.user = profile.user
             transaction.description = description.replace("+", " ")
@@ -335,7 +335,7 @@ def memberbucks_group_donation(request, rfid=None, group_id=None, amount=None):
             print(time_dif)
 
             if time_dif > 10:
-                transaction = SpaceBucks()
+                transaction = MemberBucks()
                 transaction.amount = amount * -1.0
                 transaction.user = profile.user
                 transaction.description = "Donation to {}.".format(group.name)
