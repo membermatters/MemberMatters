@@ -170,7 +170,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         email_vars = {"link": link}
         email_string = render_to_string('email_password_reset.html', {'email': email_vars})
 
-        if self.__send_email("Reset your HSBNE password", email_string):
+        if self.__send_email(f"Reset your {config.SITE_OWNER} password", email_string):
             return True
 
     def email_link(self, subject, title, preheader, message, link, btn_text):
@@ -199,7 +199,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         email_string = render_to_string(
             'email_invoice.html', {'invoice': invoice})
 
-        if self.__send_email("You have a new invoice from HSBNE ({})".format(number), email_string):
+        if self.__send_email(f"You have a new invoice from {config.SITE_OWNER} ({number})", email_string):
             return True
 
         return False
@@ -207,29 +207,29 @@ class User(AbstractBaseUser, PermissionsMixin):
     def email_welcome(self):
         email_string = render_to_string('email_welcome.html')
 
-        if self.__send_email("Welcome to HSBNE", email_string):
+        if self.__send_email(f"Welcome to {config.SITE_OWNER}", email_string):
             return "Successfully sent welcome email to user. ✉"
 
         return False
 
     def email_disable_member(self):
         if self.email_notification(
-                "Your HSBNE site access has been disabled.",
+                f"Your {config.SITE_OWNER} site access has been disabled.",
                 "Your access has been disabled.",
-                "Your HSBNE site access has been disabled.",
-                "Your access to HSBNE has been disabled. This could be due to overdue membership fees, a ban being "
-                "issued or your membership ending. If this is because of a ban, you are not allowed back on site until "
-                "your ban has ended and your membership has been reactivated."):
+                f"Your {config.SITE_OWNER} site access has been disabled.",
+                f"Your access to {config.SITE_OWNER} has been disabled. This could be due to overdue membership fees, a"
+                "ban being issued or your membership ending. If this is because of a ban, you are not allowed back on "
+                "site until your ban has ended and your membership has been reactivated."):
             return True
 
         return False
 
     def email_enable_member(self):
         if self.email_notification(
-                "Your HSBNE site access has been enabled.",
+                f"Your {config.SITE_OWNER} site access has been enabled.",
                 "Your access has been enabled.",
-                "Your HSBNE site access has been enabled.",
-                "Great news! Your access to HSBNE has been enabled."):
+                f"Your {config.SITE_OWNER} site access has been enabled.",
+                f"Great news! Your access to {config.SITE_OWNER} has been enabled."):
             return True
 
         return False
@@ -239,7 +239,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.password_reset_key = uuid.uuid4()
         self.password_reset_expire = timezone.now() + timedelta(hours=24)
         self.save()
-        self.email_password_reset("https://portal.hsbne.org" + reverse('reset_password', kwargs={'reset_token': self.password_reset_key}))
+        self.email_password_reset(
+            "https://portal.hsbne.org" + reverse('reset_password', kwargs={'reset_token': self.password_reset_key}))
 
         return True
 
@@ -287,7 +288,7 @@ class Profile(models.Model):
     last_seen = models.DateTimeField(default=None, blank=True, null=True)
     last_invoice = models.DateTimeField(default=None, blank=True, null=True)
     last_induction = models.DateTimeField(default=None, blank=True, null=True)
-    
+
     stripe_customer_id = models.CharField(max_length=100, blank=True, null=True, default="")
     stripe_card_expiry = models.CharField(max_length=10, blank=True, null=True, default="")
     stripe_card_last_digits = models.CharField(max_length=4, blank=True, null=True, default="")
@@ -390,10 +391,12 @@ class Profile(models.Model):
             response = sg.send(mail)
 
             if response.status_code == 202:
-                log_user_event(self.user, "Sent email with subject: " + subject, "email", "Email content: " + email_string)
+                log_user_event(self.user, "Sent email with subject: " + subject, "email",
+                               "Email content: " + email_string)
                 return True
 
-        log_user_event(self.user, "Failed to send email with subject: " + subject, "email", "Email content: " + email_string)
+        log_user_event(self.user, "Failed to send email with subject: " + subject, "email",
+                       "Email content: " + email_string)
         return False
 
     def get_logs(self):

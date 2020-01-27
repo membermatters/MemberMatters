@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}HSBNE Digital ID{% endblock %}
+{% block title %}{{config.SITE_OWNER}} Digital ID{% endblock %}
 
 {% block content %}
     <div class="admin-container row small-row center-align">
-        <h3 class="header center text">HSBNE Digital ID</h3>
+        <h3 class="header center text">{{config.SITE_OWNER}} Digital ID</h3>
 
         <h4><i class="material-icons">perm_contact_calendar</i></h4>
         <h5>{{ user.profile.first_name }} {{ user.profile.last_name }}</h5>
@@ -18,7 +18,7 @@
         <h5>Member ID: {{ user.id }}</h5>
         <h5>Signup Date: {{ user.profile.created|date:"d/m/y" }}</h5>
         <br>
-        <p>This is an official HSBNE Inc digital ID. Ensure the URL of this page is <b>portal.hsbne.org/profile/id</b>
+        <p>This is an official {{config.SITE_OWNER}} digital ID. Ensure the URL of this page is <b>{{config.SITE_URL}}/profile/id</b>
             and refresh this page to check validity.</p>
     </div>
 {% endblock %}

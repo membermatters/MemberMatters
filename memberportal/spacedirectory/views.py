@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from constance import config
 import pytz
 
 utc = pytz.UTC
@@ -20,8 +21,8 @@ def spacedirectory_status(request):
             "lat": -27.4432052,
             "lon": 153.0770233
         },
-        "space": "HSBNE",
-        "logo": "https://hsbne.org/assets/img/headerlogo.png",
+        "space": f"{config.SITE_OWNER}",
+        "logo": "",
         "url": "https://hsbne.org/",
 
         "spacefed": {"spacenet": False, "spacesaml": False, "spacephone": False},

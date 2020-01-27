@@ -190,7 +190,7 @@ def create_membership_invoice(user, email_invoice=False):
 
     line_items = [
         {
-            "Description": "HSBNE Membership: " + user.profile.member_type.name,
+            "Description": f"{config.SITE_OWNER} Membership: " + user.profile.member_type.name,
             "Quantity": "1",
             "ItemCode": user.profile.member_type.name,
             "UnitAmount": round(user.profile.member_type.cost * 0.7, 2),

@@ -53,6 +53,6 @@ bugs or add new things open an issue for discussion.
 [Coming soon once the frontend rewrite is done]
 
 ### Special Note
-This software used to be called "hsbne portal". It was written by Jaimyn (@jabelone) and used by HSBNE
+This software used to be called "hsbneportal". It was written by Jaimyn (@jabelone) and used by HSBNE
 to manage their membership. It has since been rewritten to be organisation agnostic so others can use it too.
-If you find references to HSBNE or HSBNE Inc. this is why. :)
+If you find references to HSBNE, HSBNE Inc, or Space. this is why. :)

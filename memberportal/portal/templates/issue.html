@@ -4,8 +4,8 @@
 
 {% block content %}
     <div class="admin-container center row small-row">
-        <h3 class="header center text">Report A Spacebug</h3>
-        <p>Report a broken door, leaky pipe or some other issue around HSBNE.</p>
+        <h3 class="header center text">Report Issue</h3>
+        <p>Report a broken door, leaky pipe or some other issue you can't fix.</p>
 
         {% if message %}
             <p class="form-message">{{ message }}</p>
@@ -15,7 +15,7 @@
             <p class="red-text">{{ error }}</p>
         {% endif %}
 
-        <form method="POST" action="{% url 'report_spacebug' %}"/>
+        <form method="POST" action="{% url 'report_issue' %}"/>
         {% csrf_token %}
 
         <div class="input-field">

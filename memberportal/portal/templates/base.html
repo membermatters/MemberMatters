@@ -114,7 +114,7 @@
                     <div class="divider"></div>
                 </li>
                 <li><a class="subheader">Member Tools</a></li>
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'report_spacebug' %}">Report
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'report_issue' %}">Report
                     Issue</a></li>
                 {% if not user.profile.state|stringformat:"s" == "noob" %}
                     <li><a class="waves-effect waves-light" href="{% url 'list_groups' %}">{{config.GROUP_NAME}}
@@ -152,7 +152,7 @@
     </ul>
 
     <ul id="member-dropdown" class="dropdown-content">
-        <li><a class="waves-effect waves-light" href="{% url 'report_spacebug' %}">Report Issue</a></li>
+        <li><a class="waves-effect waves-light" href="{% url 'report_issue' %}">Report Issue</a></li>
         {% if not user.profile.state|stringformat:"s" == "noob" %}
             <li><a class="waves-effect waves-light" href="{% url 'list_groups' %}">{{config.GROUP_NAME}} Members</a>
             </li>
@@ -192,12 +192,12 @@
     <div class="modal-content">
         <h4>About MemberMatters</h4>
         <p>This is an open source, full featured membership portal. It is designed for
-            <a href="https://hsbne.org/">HSBNE</a> (Hackerspace Brisbane). It was created by
-            <a href="https://jaimyn.com.au">Jaimyn Mayer</a>, with a little help from some HSBNE
+            <a target="_blank" href="https://hsbne.org/">HSBNE</a> (Hackerspace Brisbane). It was created by
+            <a target="_blank" href="https://github.com/jabelone">Jaimyn Mayer</a>, with a little help from some HSBNE
             members.</p>
         <p>It can manage membership, access permissions, {{config.MEMBERBUCKS_NAME}}, doors, interlocks and more!
             For more information please see the GitHub repo <a target="_blank"
-                                                               href="https://github.com/HSBNE/hsbneportal/">here</a>.
+                                                               href="https://github.com/jabelone/MemberMatters">here</a>.
         </p>
     </div>
     <div class="modal-footer">

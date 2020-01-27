@@ -79,7 +79,7 @@ def add_memberbucks(request, amount=None):
                     log_user_event(request.user, "Successfully charged {} for ${}.".format(
                         request.user.profile.get_full_name(), amount),
                                    "stripe")
-                    subject = f"You just added {config.MEMBERBUCKS_NAME} to your HSBNE account."
+                    subject = f"You just added {config.MEMBERBUCKS_NAME} to your {config.SITE_OWNER} account."
                     request.user.email_notification(subject, subject, subject, f"We just charged you card for ${amount} and "
                                                                                f"added this to your {config.MEMBERBUCKS_NAME} balance."
                                                                                "If this wasn't you, please let us know "
@@ -89,7 +89,7 @@ def add_memberbucks(request, amount=None):
                 else:
                     log_user_event(request.user, "Problem charging {}.".format(request.user.profile.get_full_name()),
                                    "stripe")
-                    subject = "Failed to add {config.MEMBERBUCKS_NAME} to your HSBNE account."
+                    subject = f"Failed to add {config.MEMBERBUCKS_NAME} to your {config.SITE_OWNER} account."
                     request.user.email_notification(subject, subject, subject, "We just tried to charge your card for"
                                                                                f"${amount} for {config.MEMBERBUCKS_NAME} but were not "
                                                                                "successful. If this wasn't you, please "
@@ -136,11 +136,11 @@ def add_memberbucks_payment_info(request):
                 request.user, "Created stripe customer.".format(
                     request.user.profile.get_full_name()), "stripe")
 
-            subject = "You just added a payment card to your HSBNE account."
+            subject = f"You just added a payment card to your {config.SITE_OWNER} account."
             request.user.email_notification(subject, subject, subject, "Don't worry, your card details are stored safe "
                                                                        "with Stripe and are not on our servers. You "
                                                                        "can remove this card at any time via the "
-                                                                       "HSBNE portal.")
+                                                                       f"{config.SITE_NAME}.")
 
         except stripe.error.CardError as e:
             # Since it's a decline, stripe.error.CardError will be caught
@@ -224,7 +224,7 @@ def delete_memberbucks_payment_info(request):
     profile.stripe_card_expiry = ""
     profile.save()
 
-    subject = "You just removed a saved card from your HSBNE account."
+    subject = f"You just removed a saved card from your {config.SITE_OWNER} account."
     request.user.email_notification(subject, subject, subject, "If this wasn't you, please let us know immediately.")
 
     return render(

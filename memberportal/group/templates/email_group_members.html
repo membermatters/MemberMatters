@@ -5,10 +5,10 @@
 {% block content %}
     <div class="medium-width center row small-row">
         <h3 class="header center text">Email {{ group.name }} Members</h3>
-        <p> If you need to send emails longer than this form allows, you will have to ask the executive to send it on
-            your behalf. This form is <i>only</i> allowed to be used for announcing meetings and important reminders.
+        <p> If you need to send emails longer than this form allows, you will have to ask the administrators to send it
+            on your behalf. This form is <i>only</i> allowed to be used for announcing meetings and important reminders.
             All HTML is stripped for security reasons. Any person misusing this form will have their access removed
-            without notice and may be issued a ban from HSBNE. All emails sent here are forwarded to the exec.
+            without notice and may be punished. All emails sent here are forwarded to the administrators.
         </p>
 
         {% if success %}
@@ -24,7 +24,7 @@
             <input hidden name="group" id="group" value="{{ group.id }}">
 
             <div class="input-field col s12">
-                <div class="left col"><p class="right">HSBNE {{ group.name }} - </p></div>
+                <div class="left col"><p class="right">{{config.}} {{ group.name }} - </p></div>
                 <input class="col s6" placeholder="announcement title" id="subject" name="subject" type="text"
                        maxlength="50" data-length="50">
                 <label for="subject">Subject</label>

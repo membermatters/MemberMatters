@@ -93,15 +93,14 @@ def signup(request):
             profile.email_profile_to("contact@hsbne.org")
 
             new_user.email_link(
-                "HSBNE New Member Signup - Action Required",
+                f"{config.SITE_OWNER} New Member Signup - Action Required",
                 "Next Step: Register for an Induction",
                 "Important. Please read this email for details on how to "
                 "register for an induction.",
-                "Hi {}, thanks for signing up! The next step to becoming a fully "
+                "Hi {profile.first_name}, thanks for signing up! The next step to becoming a fully "
                 "fledged member is to book in for an induction. During this "
                 "induction we will go over the basic safety and operational "
-                "aspects of HSBNE. To book in, click the link below.".format(
-                    profile.first_name),
+                f"aspects of {config.SITE_OWNER}. To book in, click the link below.",
                 "https://hsbnemembership.eventbrite.com.au",
                 "Register for Induction")
 
@@ -155,9 +154,9 @@ def reset_password(request, reset_token=None):
                     user.save()
 
                     user.email_notification(
-                        "Your HSBNE password has changed.",
+                        f"Your {config.SITE_OWNER} password has changed.",
                         "Your password has changed.", "",
-                        "Your HSBNE password has been successfully changed.")
+                        f"Your {config.SITE_OWNER} password has been successfully changed.")
 
                     return render(
                         request, 'reset_password_form.html',

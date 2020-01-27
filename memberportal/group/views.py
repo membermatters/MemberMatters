@@ -74,7 +74,7 @@ def email_group_members(request, group_id):
         if not len(message):
             return render(request, 'email_group_members.html', {"group": group, "error": "No message specified."})
 
-        subject = escape("HSBNE {} - {}".format(group.name, title))  # format our subject
+        subject = escape(f"{config.SITE_OWNER} {group.name} - {title}")  # format our subject
 
         # make the list of our recipients
         emails = list()
