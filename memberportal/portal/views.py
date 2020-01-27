@@ -13,6 +13,7 @@ from xero import Xero
 from xero.auth import PrivateCredentials
 import datetime
 from sendgrid.helpers.mail import To
+import json
 
 import sendgrid
 from multiprocessing.dummy import Pool as ThreadPool
@@ -43,7 +44,9 @@ def home(request):
     :param request:
     :return:
     """
-    return render(request, "home.html")
+    cards = json.loads(config.HOME_PAGE_CARDS)
+
+    return render(request, "home.html", {"cards": cards})
 
 
 def webcams(request):

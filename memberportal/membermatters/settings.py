@@ -167,7 +167,7 @@ CONSTANCE_CONFIG = {
     "ADMIN_NAME": ("Administrators", "You can specify a different name for your admin group like exec or leaders."),
     "HOME_PAGE_CARDS": (
         "[{\"title\": \"Example\", \"description\": \"Example\", \"icon\": \"forum\", \"url\": \"https://membermatters.org/\", \"btn_text\": \"Click Here\"}]",
-        "You can specify cards that go on the home page. See https://github.com/jabelone/MemberMatters/blob/master/GETTING_STARTED.md."),
+        "You can specify cards that go on the home page with JSON. See https://github.com/jabelone/MemberMatters/blob/master/GETTING_STARTED.md."),
     "WELCOME_EMAIL_CARDS": ("", "Same syntax as HOME_PAGE_CARDS. If nothing is specified we will use HOME_PAGE_CARDS.")
 }
 
