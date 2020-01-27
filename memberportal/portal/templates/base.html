@@ -29,7 +29,7 @@
     <link href="{% static '/css/materialize.css' %}" type="text/css" rel="stylesheet" media="screen,projection"/>
     <link href="{% static '/css/main.css' %}" type="text/css" rel="stylesheet" media="screen,projection"/>
 
-    <link rel="shortcut icon" type="image/png" href="{% static '/img/logo.png' %}"/>
+    <link rel="shortcut icon" type="image/png" href="{% static '/img/logo/logo_square_small.png' %}"/>
 </head>
 
 {% block body_tag %}
@@ -39,8 +39,8 @@
 <nav class="portal-dark-background" role="navigation">
     <div class="nav-wrapper container">
         <a id="logo-container" href="/" class="brand-logo">
-            <img id="logo" class="left" src="{% static '/img/logo.png' %}" class="brand-logo">
-            <div class="hide-on-small-only">{{config.SITE_NAME}}</div>
+            <img id="logo" class="left" src="{% static '/img/logo/logo_small.png' %}" class="brand-logo">
+{#            <div class="hide-on-small-only">{{config.SITE_NAME}}</div>#}
         </a>
         <ul class="right hide-on-med-and-down">
             {% if not user.is_authenticated %}

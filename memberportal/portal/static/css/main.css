@@ -140,7 +140,6 @@ body > div.fullwidth-container > div.modal-overlay {
     /* make the logo same height as navbar but with padding around it */
     #logo {
         height: 60px;
-        padding: 10px;
     }
 
     /* Make all the columns on the home page equal height when they're next to each other on desktop */

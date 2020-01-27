@@ -151,7 +151,7 @@ CONSTANCE_CONFIG = {
     "EMAIL_SYSADMIN": ("example@example.com", "The default sysadmin email that should receive errors etc."),
     "EMAIL_ADMIN": ("example@example.com", "The default admin email that should receive administrative notifications."),
     "EMAIL_DEFAULT_FROM": (
-        "\"MemberMatters Portal\" <treasurer@hsbne.org>", "The default email that outbound messages are sent from."),
+        "\"MemberMatters Portal\" <example@example.org>", "The default email that outbound messages are sent from."),
     "SITE_MAIL_ADDRESS": ("123 Example St, Nowhere", "This address is used in the footer of all emails for anti spam."),
     "SITE_NAME": ("MemberMatters Portal", "The title shown at the top of the page and as the tab title."),
     "SITE_OWNER": ("MemberMatters", "The name of the legal entity/association/club that is running this site."),
