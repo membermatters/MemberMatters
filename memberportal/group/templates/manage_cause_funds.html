@@ -6,8 +6,8 @@
 {% block content %}
     <div class="row">
         <div class="col s12 m8">
-            <h4>Current {{ cause }} Funds</h4>
-             <a href="{% url "manage_causes" %}"
+            <h4>Current {{ group }} Funds</h4>
+             <a href="{% url "manage_groups" %}"
                class="waves-effect waves-light btn-small edit-button tooltipped right" data-position="top" data-tooltip="Back">
                 <i class="material-icons">arrow_back</i>
             </a>
@@ -28,11 +28,11 @@
                         <td>{{ fund.description }}</td>
                         <td>${{ fund.balance }}</td>
                         <td>
-                            <a href="{% url "edit_cause_fund" fund_id=fund.id %}"
+                            <a href="{% url "edit_group_fund" fund_id=fund.id %}"
                                class="waves-effect waves-light btn-small edit-button tooltipped" data-position="top" data-tooltip="Edit Fund">
                                 <i class="material-icons">edit</i>
                             </a>
-                            <a data-url="{% url "delete_cause_fund" fund_id=fund.id %}" onclick="deleteCause(this)"
+                            <a data-url="{% url "delete_group_fund" fund_id=fund.id %}" onclick="deleteCause(this)"
                                class="waves-effect waves-light btn-small delete-button tooltipped" data-position="top" data-tooltip="Delete Fund">
                                 <i class="material-icons">delete</i>
                             </a>

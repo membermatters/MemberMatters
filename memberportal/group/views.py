@@ -16,8 +16,8 @@ utc = pytz.UTC
 
 @login_required
 @admin_required
-def manage_causes(request):
-    if not request.user.profile.can_manage_causes:
+def manage_groups(request):
+    if not request.user.profile.can_manage_groups:
         return HttpResponseForbidden("You do not have permission to access that.")
 
     # if we want to add a group
@@ -29,172 +29,172 @@ def manage_causes(request):
                 request.user,
                 f"Created {form.cleaned_data.get('name')} {config.GROUP_NAME}.",
                 "admin", form)
-            return HttpResponseRedirect(reverse("manage_causes"))
+            return HttpResponseRedirect(reverse("manage_groups"))
 
     else:
         form = CauseForm()
 
-    causes = Group.objects.all()
+    groups = Group.objects.all()
 
-    return render(request, 'manage_causes.html', {"form": form, "causes": causes})
+    return render(request, 'manage_groups.html', {"form": form, "groups": groups})
 
 
 @login_required
 @no_noobs
-def list_causes(request):
-    causes = Group.objects.all()
+def list_groups(request):
+    groups = Group.objects.all()
 
     return render(
         request,
-        'list_causes.html', {"causes": causes, })
+        'list_groups.html', {"groups": groups, })
 
 
 @login_required
 @admin_required
-def email_cause_members(request, cause_id):
-    cause = get_object_or_404(Group, pk=cause_id)
+def email_group_members(request, group_id):
+    group = get_object_or_404(Group, pk=group_id)
 
-    if not request.user.profile.can_manage_causes or cause not in request.user.profile.can_manage_cause.all():
+    if not request.user.profile.can_manage_groups or group not in request.user.profile.can_manage_group.all():
         return HttpResponseForbidden("You do not have permission to access that.")
 
     if request.method == 'POST':
         # check all our params exist
-        for x in ("email_content", "subject", "cause"):
+        for x in ("email_content", "subject", "group"):
             if x not in request.POST:
                 return HttpResponseBadRequest("Invalid Request.")
 
-        # get the cause, email message and subject
+        # get the group, email message and subject
         message = request.POST.get("email_content", "no message")
         title = request.POST.get("subject", "no subject")
 
         # handle no message/subject specified
         if not len(title):
-            return render(request, 'email_cause_members.html', {"cause": cause, "error": "No subject specified."})
+            return render(request, 'email_group_members.html', {"group": group, "error": "No subject specified."})
 
         if not len(message):
-            return render(request, 'email_cause_members.html', {"cause": cause, "error": "No message specified."})
+            return render(request, 'email_group_members.html', {"group": group, "error": "No message specified."})
 
-        subject = escape("HSBNE {} - {}".format(cause.name, title))  # format our subject
+        subject = escape("HSBNE {} - {}".format(group.name, title))  # format our subject
 
         # make the list of our recipients
         emails = list()
-        for member in cause.get_active_set():
+        for member in group.get_active_set():
             emails.append(member.user.email)
 
         if request.user.email not in emails:
             emails.append(request.user.email)
 
         response = send_group_email(request.user, emails, subject, title, message)
-        return render(request, 'email_cause_members.html', {"cause": cause, "success": response})
+        return render(request, 'email_group_members.html', {"group": group, "success": response})
 
     else:
-        cause = Group.objects.get(pk=cause_id)
-        return render(request, 'email_cause_members.html', {"cause": cause})
+        group = Group.objects.get(pk=group_id)
+        return render(request, 'email_group_members.html', {"group": group})
 
 
 @login_required
 @admin_required
-def edit_cause(request, cause_id):
+def edit_group(request, group_id):
     """
-    The edit cause (admin) view.
+    The edit group (admin) view.
     :param request:
-    :param cause_id: cause id to edit
+    :param group_id: group id to edit
     :return:
     """
-    cause = get_object_or_404(Group, pk=cause_id)
+    group = get_object_or_404(Group, pk=group_id)
 
-    if not request.user.profile.can_manage_causes or cause not in request.user.profile.can_manage_cause.all():
+    if not request.user.profile.can_manage_groups or group not in request.user.profile.can_manage_group.all():
         return HttpResponseForbidden("You do not have permission to access that.")
 
     if request.method == 'POST':
-        form = CauseForm(request.POST, instance=cause)
+        form = CauseForm(request.POST, instance=group)
         if form.is_valid():
             # if it was a form submission save it
             form.save()
             log_user_event(
                 request.user,
-                "Edited {} cause.".format(cause.name),
+                f"Edited {group.name} {config.GROUP_NAME}.",
                 "admin", form)
-            return HttpResponseRedirect('%s' % (reverse('manage_causes')))
+            return HttpResponseRedirect('%s' % (reverse('manage_groups')))
         else:
             # otherwise return form with errors
-            return render(request, 'edit_cause.html', {'form': form})
+            return render(request, 'edit_group.html', {'form': form})
 
     else:
         # if it's not a form submission, return an empty form
-        form = CauseForm(instance=Group.objects.get(pk=cause_id))
-        return render(request, 'edit_cause.html', {'form': form})
+        form = CauseForm(instance=Group.objects.get(pk=group_id))
+        return render(request, 'edit_group.html', {'form': form})
 
 
 @login_required
 @admin_required
-def delete_cause(request, cause_id):
-    cause = get_object_or_404(Group, pk=cause_id)
+def delete_group(request, group_id):
+    group = get_object_or_404(Group, pk=group_id)
 
-    if not request.user.profile.can_manage_causes or cause not in request.user.profile.can_manage_cause.all():
+    if not request.user.profile.can_manage_groups or group not in request.user.profile.can_manage_group.all():
         return HttpResponseForbidden("You do not have permission to access that.")
 
-    cause.delete()
-    log_user_event(request.user, "Deleted {} cause.".format(cause.name), "admin")
+    group.delete()
+    log_user_event(request.user, "Deleted {} group.".format(group.name), "admin")
 
-    return HttpResponseRedirect(reverse("manage_causes"))
+    return HttpResponseRedirect(reverse("manage_groups"))
 
 
 @login_required
 @admin_required
-def manage_cause_funds(request, cause_id):
-    cause = get_object_or_404(Group, pk=cause_id)
+def manage_group_funds(request, group_id):
+    group = get_object_or_404(Group, pk=group_id)
 
-    if not request.user.profile.can_manage_causes or cause not in request.user.profile.can_manage_cause.all():
+    if not request.user.profile.can_manage_groups or group not in request.user.profile.can_manage_group.all():
         return HttpResponseForbidden("You do not have permission to access that.")
 
-    # if we want to add a cause
+    # if we want to add a group
     if request.method == 'POST':
         form = CauseFundForm(request.POST)
         if form.is_valid():
             fund = form.save(commit=False)
-            fund.cause = cause
+            fund.group = group
             fund.save()
             log_user_event(
                 request.user,
-                "Created {} cause.".format(form.cleaned_data.get('name')),
+                f"Created {form.cleaned_data.get('name')} {config.GROUP_NAME}.",
                 "admin", form)
             return HttpResponseRedirect(
-                reverse("manage_cause_funds", kwargs={'cause_id': cause.pk, }))
+                reverse("manage_group_funds", kwargs={'group_id': group.pk, }))
 
     else:
         form = CauseFundForm()
 
-    funds = CauseFund.objects.filter(cause=cause)
+    funds = CauseFund.objects.filter(group=group)
 
     return render(
-        request, 'manage_cause_funds.html',
-        {"form": form, "cause": cause, "funds": funds})
+        request, 'manage_group_funds.html',
+        {"form": form, "group": group, "funds": funds})
 
 
 @login_required
 @no_noobs
-def list_cause_funds(request):
-    if not request.user.profile.can_manage_causes:
+def list_group_funds(request):
+    if not request.user.profile.can_manage_groups:
         return HttpResponseForbidden("You do not have permission to access that.")
 
-    causes = Group.objects.all()
+    groups = Group.objects.all()
 
     return render(
         request,
-        'list_causes.html', {"causes": causes, })
+        'list_groups.html', {"groups": groups, })
 
 
 @login_required
 @admin_required
-def edit_cause_fund(request, fund_id):
+def edit_group_fund(request, fund_id):
     """
-    The edit cause (admin) view.
+    The edit group (admin) view.
     :param request:
-    :param cause_id: cause id to edit
+    :param group_id: group id to edit
     :return:
     """
-    if not request.user.profile.can_manage_causes:
+    if not request.user.profile.can_manage_groups:
         return HttpResponseForbidden("You do not have permission to access that.")
 
     fund = get_object_or_404(CauseFund, pk=fund_id)
@@ -205,30 +205,30 @@ def edit_cause_fund(request, fund_id):
             form.save()
             log_user_event(
                 request.user,
-                "Edited {} cause fund".format(fund.name),
+                f"Edited {fund.name} {config.GROUP_NAME} fund",
                 "admin", form)
             return HttpResponseRedirect(
-                reverse('manage_cause_funds',
-                        kwargs={'cause_id': fund.cause.pk, }))
+                reverse('manage_group_funds',
+                        kwargs={'group_id': fund.group.pk, }))
         else:
             # otherwise return form with errors
-            return render(request, 'edit_cause_fund.html', {'form': form})
+            return render(request, 'edit_group_fund.html', {'form': form})
 
     else:
         # if it's not a form submission, return an empty form
         form = CauseFundForm(instance=CauseFund.objects.get(pk=fund_id))
-        return render(request, 'edit_cause_fund.html', {'form': form})
+        return render(request, 'edit_group_fund.html', {'form': form})
 
 
 @login_required
 @admin_required
-def delete_cause_fund(request, fund_id):
-    if not request.user.profile.can_manage_causes:
+def delete_group_fund(request, fund_id):
+    if not request.user.profile.can_manage_groups:
         return HttpResponseForbidden("You do not have permission to access that.")
 
     fund = get_object_or_404(CauseFund, pk=fund_id)
     fund.delete()
     log_user_event(
-        request.user, "Deleted {} cause fund.".format(fund.name), "admin")
+        request.user, "Deleted {} group fund.".format(fund.name), "admin")
 
     return HttpResponse("Success")

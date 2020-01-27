@@ -58,7 +58,7 @@ depends on core.js for utility functions like removeChildren or quickElement
             var todayYear = today.getFullYear();
             var todayClass = '';
 
-            // Use UTC functions here because the date field does not contain time
+            // Use UTC functions here begroup the date field does not contain time
             // and using the UTC function variants prevent the local time offset
             // from altering the date, specifically the day field.  For example:
             //

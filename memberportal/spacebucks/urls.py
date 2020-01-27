@@ -12,8 +12,8 @@ urlpatterns = [
     path('api/spacebucks/debit/', views.spacebucks_debit, name="spacebucks_debit"),
     path('api/spacebucks/debit/<int:rfid>/<int:amount>/', views.spacebucks_debit, name="spacebucks_debit"),
     path('api/spacebucks/balance/<int:rfid>/', views.spacebucks_balance, name="spacebucks_balance"),
-    path('api/spacebucks/causedonation/<int:rfid>/<int:cause_id>/<int:amount>/', views.spacebucks_cause_donation,
-         name="spacebucks_cause_donation"),
+    path('api/spacebucks/groupdonation/<int:rfid>/<int:group_id>/<int:amount>/', views.spacebucks_group_donation,
+         name="spacebucks_group_donation"),
     path('api/spacebucks/debit/<int:rfid>/<int:amount>/<str:description>', views.spacebucks_debit,
          name="spacebucks_debit"),
 ]

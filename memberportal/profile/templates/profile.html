@@ -46,8 +46,8 @@
             {% endif %}
             <tr>
                 <td><b>Group:</b></td>
-                <td>{% for cause in user.profile.causes.all %}
-                    {{ cause }}{% if not forloop.last %},{% endif %}
+                <td>{% for group in user.profile.groups.all %}
+                    {{ group }}{% if not forloop.last %},{% endif %}
                 {% endfor %}</td>
             </tr>
             {% if user.profile.state == "noob" %}
@@ -63,7 +63,7 @@
             </tbody>
         </table>
         <div id='account-info' style="width: 100%;" class="left">
-            <p>To apply for the starving hacker discount, <a href="{% url 'starving_hacker_form' %}">click here</a>.</p>
+{#            <p>To apply for the starving hacker discount, <a href="{% url 'starving_hacker_form' %}">click here</a>.</p>#}
             <p>To change your membership type, <a href="mailto:executive@hsbne.org">email the exec</a>.</p>
             <p id='last-login'>You last logged in on {{ user.last_login }}</p>
 

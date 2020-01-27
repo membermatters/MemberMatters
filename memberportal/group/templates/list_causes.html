@@ -8,15 +8,15 @@
         <p>If you think you are in the wrong {{config.GROUP_NAME|lower}} please update your {{config.GROUP_NAME|lower}} membership by <a
                 href="{% url 'edit_profile' %}">clicking here</a>. If your access has been disabled you will not show up on this list.</p>
         <ul class="collapsible">
-            {% for cause in causes %}
+            {% for group in groups %}
                 <li>
-                    <div class="collapsible-header"><b>{{ cause.name }} ({{ cause.get_active_count }} members, {{ cause.get_quorum }} quorum)</b>&nbsp;- {{ cause.description }}
+                    <div class="collapsible-header"><b>{{ group.name }} ({{ group.get_active_count }} members, {{ group.get_quorum }} quorum)</b>&nbsp;- {{ group.description }}
                     </div>
                     <div class="collapsible-body left-align">
                         <span class="larger-text">List of members:</span>
                     <br>
                         <span>
-                            {% for member in cause.get_active_set %}
+                            {% for member in group.get_active_set %}
                                 {{ member.user.profile.get_full_name }} ({{ member.user.profile.screen_name }})<br>
                             {% endfor %}
                         </span>

@@ -93,8 +93,8 @@
                     <li><a class="subheader">Admin Tools</a></li>
                     <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a>
                     </li>
-                    {% if request.user.profile.can_manage_causes %}
-                        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage
+                    {% if request.user.profile.can_manage_groups %}
+                        <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_groups' %}">Manage
                             Group</a>
                         </li>
                     {% endif %}
@@ -117,7 +117,7 @@
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'report_spacebug' %}">Report
                     Issue</a></li>
                 {% if not user.profile.state|stringformat:"s" == "noob" %}
-                    <li><a class="waves-effect waves-light" href="{% url 'list_causes' %}">{{config.GROUP_NAME}}
+                    <li><a class="waves-effect waves-light" href="{% url 'list_groups' %}">{{config.GROUP_NAME}}
                         Members</a></li>
                     <li><a class="waves-effect waves-light" href="{% url 'recent_swipes' %}">Recent
                         Swipes</a>
@@ -154,7 +154,7 @@
     <ul id="member-dropdown" class="dropdown-content">
         <li><a class="waves-effect waves-light" href="{% url 'report_spacebug' %}">Report Issue</a></li>
         {% if not user.profile.state|stringformat:"s" == "noob" %}
-            <li><a class="waves-effect waves-light" href="{% url 'list_causes' %}">{{config.GROUP_NAME}} Members</a>
+            <li><a class="waves-effect waves-light" href="{% url 'list_groups' %}">{{config.GROUP_NAME}} Members</a>
             </li>
 
             <li><a class="waves-effect waves-light" href="{% url 'recent_swipes' %}">Recent Swipes</a>
@@ -168,8 +168,8 @@
     {% if user.is_staff %}
         <ul id="admin-dropdown" class="dropdown-content">
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a></li>
-            {% if request.user.profile.can_manage_causes %}
-                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_causes' %}">Manage
+            {% if request.user.profile.can_manage_groups %}
+                <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_groups' %}">Manage
                     {{config.GROUP_NAME}}</a>
                 </li>
             {% endif %}

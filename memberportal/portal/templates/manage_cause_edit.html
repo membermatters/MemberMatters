@@ -6,7 +6,7 @@
 {% block content %}
     <div class="admin-container center row small-row">
         <h3 class="header center text">Edit {{config.GROUP_NAME}} Info</h3>
-            <form method="POST" action="{% url 'manage_causes' %}"/>
+            <form method="POST" action="{% url 'manage_groups' %}"/>
             {% csrf_token %}
             {{ form.as_p }}
 

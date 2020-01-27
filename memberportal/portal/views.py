@@ -219,9 +219,9 @@ def spacebug(request):
 
 @login_required
 def proxy(request):
-    causes = request.user.profile.causes.all()
+    groups = request.user.profile.groups.all()
 
-    context = {"causes": causes}
+    context = {"groups": groups}
 
     # Handle submission.
     if request.method == 'POST':

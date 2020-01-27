@@ -275,7 +275,7 @@ class Profile(models.Model):
     state = models.CharField(max_length=8, default='noob', choices=STATES)
 
     member_type = models.ForeignKey(MemberTypes, on_delete=models.PROTECT, related_name='member_type')
-    causes = models.ManyToManyField('group.Group')
+    groups = models.ManyToManyField('group.Group')
 
     rfid = models.CharField("RFID Tag", max_length=20, unique=True, null=True, blank=True)
     doors = models.ManyToManyField('access.Doors', blank=True)
@@ -302,9 +302,9 @@ class Profile(models.Model):
     can_see_members_logs = models.BooleanField("Can see member logs", default=False)
     can_manage_doors = models.BooleanField("Can manage doors", default=False)
     can_manage_interlocks = models.BooleanField("Can manage interlocks", default=False)
-    can_manage_causes = models.BooleanField(f"Can manage {config.GROUP_NAME}", default=False)
-    can_add_cause = models.BooleanField(f"Can add a {config.GROUP_NAME}", default=False)
-    can_manage_cause = models.ManyToManyField("group.Group", blank=True, related_name="can_manage_cause")
+    can_manage_groups = models.BooleanField(f"Can manage {config.GROUP_NAME}", default=False)
+    can_add_group = models.BooleanField(f"Can add a {config.GROUP_NAME}", default=False)
+    can_manage_group = models.ManyToManyField("group.Group", blank=True, related_name="can_manage_group")
     can_generate_invoice = models.BooleanField("Can generate & email invoice", default=False)
 
     BRACKETS = (
@@ -363,18 +363,18 @@ class Profile(models.Model):
         return True
 
     def email_profile_to(self, to_email):
-        causes = self.causes.all()
-        causes_string = "none :("
+        groups = self.groups.all()
+        groups_string = "none :("
 
-        if causes.count() == 3:
-            causes_string = "{}, {} and {}".format(causes[0], causes[1], causes[2])
-        elif causes.count() == 2:
-            causes_string = "{} and {}".format(causes[0], causes[1])
-        elif causes.count() == 1:
-            causes_string = causes[0]
+        if groups.count() == 3:
+            groups_string = "{}, {} and {}".format(groups[0], groups[1], groups[2])
+        elif groups.count() == 2:
+            groups_string = "{} and {}".format(groups[0], groups[1])
+        elif groups.count() == 1:
+            groups_string = groups[0]
 
-        message = "{} has just signed up. Their membership level is {} and their selected causes are {}. " \
-                  "Their email is {}.".format(self.get_full_name(), self.member_type, causes_string, self.user.email)
+        message = f"{self.get_full_name()} has just signed up. Their membership level is {self.member_type} and their selected {config.GROUP_NAME} are {groups_string}. " \
+                  f"Their email is {self.user.email}."
         email_vars = {"preheader": "", "title": "New member signup", "message": message}
         email_string = render_to_string('email_without_button.html', {'email': email_vars})
         subject = "A new member signed up! ({})".format(self.get_full_name())

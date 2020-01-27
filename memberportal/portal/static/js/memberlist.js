@@ -14,14 +14,14 @@ let add_to_xero_url;
 let generate_invoice_url;
 let xero_account_id;
 
-let can_send_cause_emails = false;
+let can_send_group_emails = false;
 let can_manage_access = false;
 let can_disable_members = false;
 let can_see_members_personal_details = false;
 let can_see_members_spacebucks = false;
 let can_see_members_logs = false;
 let can_manage_access_devices = false;
-let can_manage_causes = false;
+let can_manage_groups = false;
 let can_generate_invoice = false;
 
 function resendWelcome() {

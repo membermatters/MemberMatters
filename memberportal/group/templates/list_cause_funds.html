@@ -6,15 +6,15 @@
     <div class="medium-width center row small-row">
         <h3 class="header center text">{{config.GROUP_NAME}} Funds</h3>
         <ul class="collapsible">
-            {% for cause in causes %}
+            {% for group in groups %}
                 <li>
-                    <div class="collapsible-header"><b>{{ cause.name }}</b>&nbsp;- {{ cause.description }}
+                    <div class="collapsible-header"><b>{{ group.name }}</b>&nbsp;- {{ group.description }}
                     </div>
                     <div class="collapsible-body left-align">
                         <span class="larger-text">List of funds:</span>
                     <br>
                         <span>
-                            {% for fund in cause.get_funds_set %}
+                            {% for fund in group.get_funds_set %}
                                 {{ fund.name }} - {{ fund-description }}<br>
                             {% endfor %}
                         </span>

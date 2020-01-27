@@ -58,7 +58,7 @@
       "stripe_card_last_digits": "",
       "xero_account_id": "",
       "xero_account_number": "",
-      "causes": [],
+      "groups": [],
       "doors": [],
       "interlocks": []
     }

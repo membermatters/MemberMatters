@@ -52,8 +52,8 @@
                             <option value="Annual General">Annual General Meeting</option>
                         </optgroup>
                         <optgroup label="Cause Meeting">
-                            {% for cause in causes %}
-                                <option value="{{ cause.name }}">{{ cause.name }}</option>
+                            {% for group in groups %}
+                                <option value="{{ group.name }}">{{ group.name }}</option>
                             {% endfor %}
                         </optgroup>
                     </select>

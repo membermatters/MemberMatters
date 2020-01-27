@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.forms.widgets import ClearableFileInput
+from constance import config
 
 User = get_user_model()
 
@@ -43,12 +44,12 @@ class AddProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('first_name', 'last_name', 'phone', 'screen_name',
-                  'member_type', 'causes')
+                  'member_type', 'groups')
 
     def clean(self):
-        causes = self.cleaned_data.get('causes')
-        if causes and causes.count() > 3:
-            raise ValidationError('Sorry, only three causes are allowed.')
+        groups = self.cleaned_data.get('groups')
+        if groups and groups.count() > 3:
+            raise ValidationError(f'Sorry, only three {config.GROUP_NAME} are allowed.')
 
         return self.cleaned_data
 
@@ -56,12 +57,12 @@ class AddProfileForm(forms.ModelForm):
 class EditProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('first_name', 'last_name', 'phone', 'screen_name', 'causes')
+        fields = ('first_name', 'last_name', 'phone', 'screen_name', 'groups')
 
     def clean(self):
-        causes = self.cleaned_data.get('causes')
-        if causes and causes.count() > 3:
-            raise ValidationError('Sorry, only three causes are allowed.')
+        groups = self.cleaned_data.get('groups')
+        if groups and groups.count() > 3:
+            raise ValidationError(f'Sorry, only three {config.GROUP_NAME} are allowed.')
 
         return self.cleaned_data
 
@@ -69,14 +70,14 @@ class EditProfileForm(forms.ModelForm):
 class AdminEditProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('rfid', 'first_name', 'last_name', 'phone', 'member_type', 'screen_name', 'causes', 'last_induction')
+        fields = ('rfid', 'first_name', 'last_name', 'phone', 'member_type', 'screen_name', 'groups', 'last_induction')
         widgets = {
             'last_induction': DateInput()
         }
     def clean(self):
-        causes = self.cleaned_data.get('causes')
-        if causes and causes.count() > 3:
-            raise ValidationError('Sorry, only three causes are allowed.')
+        groups = self.cleaned_data.get('groups')
+        if groups and groups.count() > 3:
+            raise ValidationError(f'Sorry, only three {config.GROUP_NAME} are allowed.')
 
         return self.cleaned_data
 

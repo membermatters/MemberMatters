@@ -31,8 +31,8 @@
                     <td>{{ member.profile.last_name }}</td>
                     <td>{{ member.profile.member_type.name }}</td>
                     <td>
-                        {% for cause in member.profile.causes.all %}
-                            {{ cause }}{% if not forloop.last %},{% endif %}
+                        {% for group in member.profile.groups.all %}
+                            {{ group }}{% if not forloop.last %},{% endif %}
                         {% endfor %}
                     </td>
                     <td>{{ member.profile.get_state_display }}</td>

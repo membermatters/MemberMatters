@@ -199,18 +199,18 @@ def create_membership_invoice(user, email_invoice=False):
         }
     ]
 
-    causes = user.profile.causes.all()
-    length = causes.count()
+    groups = user.profile.groups.all()
+    length = groups.count()
 
     if length:
-        for cause in causes:
+        for group in groups:
             item = {
-                "Description": f"{config.GROUP_NAME} Membership: " + cause.name,
+                "Description": f"{config.GROUP_NAME} Membership: " + group.name,
                 "Quantity": "1",
-                "ItemCode": cause.item_code,
+                "ItemCode": group.item_code,
                 "UnitAmount": round(user.profile.member_type.cost * (0.3 / length), 2),
                 "TaxType": tax_type,
-                "AccountCode": cause.account_code
+                "AccountCode": group.account_code
             }
             line_items.append(item)
 
@@ -278,7 +278,7 @@ def create_membership_invoice(user, email_invoice=False):
         return "Error created invoice in Xero. No Xero API details."
 
 
-def create_cause_donation_invoice(user, cause, amount):
+def create_group_donation_invoice(user, group, amount):
     tax_type = os.environ.get("INVOICE_TAX_TYPE", "EXEMPTOUTPUT")
 
     line_items = [
@@ -291,12 +291,12 @@ def create_cause_donation_invoice(user, cause, amount):
             "AccountCode": "264"  # SpaceBucks account
         },
         {
-            "Description": "Credit funds to {}.".format(cause.name),
+            "Description": "Credit funds to {}.".format(group.name),
             "Quantity": "1",
-            "ItemCode": cause.item_code,
+            "ItemCode": group.item_code,
             "UnitAmount": amount,
             "TaxType": tax_type,
-            "AccountCode": cause.account_code
+            "AccountCode": group.account_code
         }
     ]
 
@@ -326,7 +326,7 @@ def create_cause_donation_invoice(user, cause, amount):
             result = xero.invoices.put(payload)
             invoice_number = result[0]['InvoiceNumber']
 
-            log_user_event(user, "Created invoice for donation to {}.".format(cause.name), "xero")
+            log_user_event(user, "Created invoice for donation to {}.".format(group.name), "xero")
 
         except XeroBadRequest as e:
             log_user_event(user, "Error creating invoice for $" + str(user.profile.member_type.cost), "xero")

@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}Email {{ cause.name }} Members{% endblock %}
+{% block title %}Email {{ group.name }} Members{% endblock %}
 
 {% block content %}
     <div class="medium-width center row small-row">
-        <h3 class="header center text">Email {{ cause.name }} Members</h3>
+        <h3 class="header center text">Email {{ group.name }} Members</h3>
         <p> If you need to send emails longer than this form allows, you will have to ask the executive to send it on
             your behalf. This form is <i>only</i> allowed to be used for announcing meetings and important reminders.
             All HTML is stripped for security reasons. Any person misusing this form will have their access removed
@@ -21,10 +21,10 @@
 
         <form method="post">
             {% csrf_token %}
-            <input hidden name="cause" id="cause" value="{{ cause.id }}">
+            <input hidden name="group" id="group" value="{{ group.id }}">
 
             <div class="input-field col s12">
-                <div class="left col"><p class="right">HSBNE {{ cause.name }} - </p></div>
+                <div class="left col"><p class="right">HSBNE {{ group.name }} - </p></div>
                 <input class="col s6" placeholder="announcement title" id="subject" name="subject" type="text"
                        maxlength="50" data-length="50">
                 <label for="subject">Subject</label>
@@ -35,14 +35,14 @@
                           class="materialize-textarea"></textarea>
                 <label for="email_content">Enter message. No HTML supported. Use ~br~ for line break.</label>
             </div>
-            <a href="{% url 'manage_causes' %}" class="btn-flat right">Cancel</a>
+            <a href="{% url 'manage_groups' %}" class="btn-flat right">Cancel</a>
             <button type="submit" class="waves-effect waves-light btn right s12 hide-on-small-only">
                 <i class="material-icons right">send</i>
-                Send to {{ cause.get_active_set|length }} {{ cause.name }} members
+                Send to {{ group.get_active_set|length }} {{ group.name }} members
             </button>
             <button type="submit" class="waves-effect waves-light btn s12 hide-on-med-and-up">
                 <i class="material-icons right">send</i>
-                Send to {{ cause.get_active_set|length }} members
+                Send to {{ group.get_active_set|length }} members
             </button>
         </form>
     </div>

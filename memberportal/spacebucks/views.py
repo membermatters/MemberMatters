@@ -10,7 +10,7 @@ from membermatters.helpers import log_user_event
 from .models import SpaceBucks
 from profile.models import Profile, User
 from group.models import Group
-from profile.xerohelpers import create_cause_donation_invoice
+from profile.xerohelpers import create_group_donation_invoice
 from constance import config
 import stripe
 import json
@@ -317,12 +317,12 @@ def spacebucks_balance(request, rfid=None):
 
 
 @api_auth
-def spacebucks_cause_donation(request, rfid=None, cause_id=None, amount=None):
-    if cause_id is None or rfid is None or amount is None:
+def spacebucks_group_donation(request, rfid=None, group_id=None, amount=None):
+    if group_id is None or rfid is None or amount is None:
         return HttpResponseBadRequest("400 Invalid request.")
 
     try:
-        cause = Group.objects.get(pk=cause_id)
+        group = Group.objects.get(pk=group_id)
 
     except ObjectDoesNotExist:
         return HttpResponseBadRequest(f"400 Invalid request. {config.GROUP_NAME} does not exist.")
@@ -330,7 +330,7 @@ def spacebucks_cause_donation(request, rfid=None, cause_id=None, amount=None):
     try:
         amount = amount / 100  # convert to dollars
         profile = Profile.objects.get(rfid=rfid)
-        result = create_cause_donation_invoice(profile.user, cause, amount)
+        result = create_group_donation_invoice(profile.user, group, amount)
         if "Error" not in result:
             time_dif = (timezone.now() - profile.last_spacebucks_purchase).total_seconds()
             print(time_dif)
@@ -339,7 +339,7 @@ def spacebucks_cause_donation(request, rfid=None, cause_id=None, amount=None):
                 transaction = SpaceBucks()
                 transaction.amount = amount * -1.0
                 transaction.user = profile.user
-                transaction.description = "Donation to {}.".format(cause.name)
+                transaction.description = "Donation to {}.".format(group.name)
                 transaction.transaction_type = "card"
                 transaction.save()
 
