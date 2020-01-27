@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('causes', '0003_causefund'),
+        ('group', '0003_causefund'),
         ('profile', '0005_auto_20181204_0224'),
     ]
 
@@ -18,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='profile',
             name='can_email_causes',
-            field=models.ManyToManyField(blank=True, related_name='can_email_causes', to='causes.Causes'),
+            field=models.ManyToManyField(blank=True, related_name='can_email_causes', to='group.Group'),
         ),
     ]

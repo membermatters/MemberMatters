@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     "profile",
     "portal",
     "access",
-    "causes",
+    "group",
     "spacebucks",
     "spacedirectory",
     "constance",

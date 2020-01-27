@@ -6,27 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('causes', '0005_causes_hidden'),
+        ('group', '0005_causes_hidden'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='causes',
+            model_name='group',
             name='account_code',
             field=models.IntegerField(verbose_name='Xero Account Code'),
         ),
         migrations.AlterField(
-            model_name='causes',
+            model_name='group',
             name='description',
             field=models.CharField(max_length=100, verbose_name='Group Description'),
         ),
         migrations.AlterField(
-            model_name='causes',
+            model_name='group',
             name='item_code',
             field=models.CharField(max_length=50, verbose_name='Xero Item Code'),
         ),
         migrations.AlterField(
-            model_name='causes',
+            model_name='group',
             name='name',
             field=models.CharField(max_length=20, unique=True, verbose_name='Group Name'),
         ),

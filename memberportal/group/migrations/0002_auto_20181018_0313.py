@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('causes', '0001_initial'),
+        ('group', '0001_initial'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='causes',
+            model_name='group',
             name='account_code',
             field=models.IntegerField(default=200, verbose_name='Account Code'),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='causes',
+            model_name='group',
             name='item_code',
             field=models.CharField(default="set_me", max_length=50, verbose_name='Item Code'),
             preserve_default=False,

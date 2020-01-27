@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='profile',
             name='can_manage_cause',
-            field=models.ManyToManyField(blank=True, related_name='can_manage_cause', to='causes.Causes'),
+            field=models.ManyToManyField(blank=True, related_name='can_manage_cause', to='group.Group'),
         ),
     ]

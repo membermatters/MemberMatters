@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('causes', '0003_causefund'),
+        ('group', '0003_causefund'),
         ('spacebucks', '0001_initial'),
     ]
 

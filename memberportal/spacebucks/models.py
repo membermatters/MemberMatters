@@ -14,7 +14,7 @@ class SpaceBucks(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     fund = models.ForeignKey(
-        "causes.CauseFund", null=True, blank=True, on_delete=models.SET_NULL)
+        "group.CauseFund", null=True, blank=True, on_delete=models.SET_NULL)
     amount = models.FloatField("Amount")
     transaction_type = models.CharField(
         "Transaction Type", max_length=10, choices=TRANSACTION_TYPES)

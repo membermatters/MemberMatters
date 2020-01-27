@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('auth', '0009_alter_user_last_name_max_length'),
         ('access', '0001_initial'),
-        ('causes', '0001_initial'),
+        ('group', '0001_initial'),
     ]
 
     operations = [
@@ -77,7 +77,7 @@ class Migration(migrations.Migration):
                 ('stripe_card_last_digits', models.CharField(blank=True, default='', max_length=4, null=True)),
                 ('xero_account_id', models.CharField(blank=True, default='', max_length=100, null=True)),
                 ('xero_account_number', models.CharField(blank=True, default='', max_length=6, null=True)),
-                ('causes', models.ManyToManyField(to='causes.Causes')),
+                ('group', models.ManyToManyField(to='group.Group')),
                 ('doors', models.ManyToManyField(blank=True, to='access.Doors')),
                 ('interlocks', models.ManyToManyField(blank=True, to='access.Interlock')),
                 ('member_type', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='member_type', to='profile.MemberTypes')),

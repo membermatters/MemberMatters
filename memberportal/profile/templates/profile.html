@@ -45,7 +45,7 @@
                 </tr>
             {% endif %}
             <tr>
-                <td><b>Causes:</b></td>
+                <td><b>Group:</b></td>
                 <td>{% for cause in user.profile.causes.all %}
                     {{ cause }}{% if not forloop.last %},{% endif %}
                 {% endfor %}</td>

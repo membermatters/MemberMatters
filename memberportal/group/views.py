@@ -5,7 +5,7 @@ from django.utils.html import escape
 from django.urls import reverse
 from membermatters.helpers import log_user_event
 from .forms import CauseForm, CauseFundForm
-from .models import Causes, CauseFund
+from .models import Group, CauseFund
 from membermatters.decorators import admin_required, no_noobs
 from profile.emailhelpers import send_group_email
 from constance import config
@@ -34,7 +34,7 @@ def manage_causes(request):
     else:
         form = CauseForm()
 
-    causes = Causes.objects.all()
+    causes = Group.objects.all()
 
     return render(request, 'manage_causes.html', {"form": form, "causes": causes})
 
@@ -42,7 +42,7 @@ def manage_causes(request):
 @login_required
 @no_noobs
 def list_causes(request):
-    causes = Causes.objects.all()
+    causes = Group.objects.all()
 
     return render(
         request,
@@ -52,7 +52,7 @@ def list_causes(request):
 @login_required
 @admin_required
 def email_cause_members(request, cause_id):
-    cause = get_object_or_404(Causes, pk=cause_id)
+    cause = get_object_or_404(Group, pk=cause_id)
 
     if not request.user.profile.can_manage_causes or cause not in request.user.profile.can_manage_cause.all():
         return HttpResponseForbidden("You do not have permission to access that.")
@@ -88,7 +88,7 @@ def email_cause_members(request, cause_id):
         return render(request, 'email_cause_members.html', {"cause": cause, "success": response})
 
     else:
-        cause = Causes.objects.get(pk=cause_id)
+        cause = Group.objects.get(pk=cause_id)
         return render(request, 'email_cause_members.html', {"cause": cause})
 
 
@@ -101,7 +101,7 @@ def edit_cause(request, cause_id):
     :param cause_id: cause id to edit
     :return:
     """
-    cause = get_object_or_404(Causes, pk=cause_id)
+    cause = get_object_or_404(Group, pk=cause_id)
 
     if not request.user.profile.can_manage_causes or cause not in request.user.profile.can_manage_cause.all():
         return HttpResponseForbidden("You do not have permission to access that.")
@@ -122,14 +122,14 @@ def edit_cause(request, cause_id):
 
     else:
         # if it's not a form submission, return an empty form
-        form = CauseForm(instance=Causes.objects.get(pk=cause_id))
+        form = CauseForm(instance=Group.objects.get(pk=cause_id))
         return render(request, 'edit_cause.html', {'form': form})
 
 
 @login_required
 @admin_required
 def delete_cause(request, cause_id):
-    cause = get_object_or_404(Causes, pk=cause_id)
+    cause = get_object_or_404(Group, pk=cause_id)
 
     if not request.user.profile.can_manage_causes or cause not in request.user.profile.can_manage_cause.all():
         return HttpResponseForbidden("You do not have permission to access that.")
@@ -143,7 +143,7 @@ def delete_cause(request, cause_id):
 @login_required
 @admin_required
 def manage_cause_funds(request, cause_id):
-    cause = get_object_or_404(Causes, pk=cause_id)
+    cause = get_object_or_404(Group, pk=cause_id)
 
     if not request.user.profile.can_manage_causes or cause not in request.user.profile.can_manage_cause.all():
         return HttpResponseForbidden("You do not have permission to access that.")
@@ -178,7 +178,7 @@ def list_cause_funds(request):
     if not request.user.profile.can_manage_causes:
         return HttpResponseForbidden("You do not have permission to access that.")
 
-    causes = Causes.objects.all()
+    causes = Group.objects.all()
 
     return render(
         request,

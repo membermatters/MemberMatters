@@ -21,7 +21,7 @@ from django.urls import include, path
 urlpatterns = [
     path('', include('portal.urls')),
     path('', include('access.urls')),
-    path('', include('causes.urls')),
+    path('', include('group.urls')),
     path('', include('profile.urls')),
     path('', include('spacebucks.urls')),
     path('', include('spacedirectory.urls')),

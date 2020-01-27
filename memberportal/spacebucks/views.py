@@ -9,7 +9,7 @@ from membermatters.decorators import no_noobs, api_auth
 from membermatters.helpers import log_user_event
 from .models import SpaceBucks
 from profile.models import Profile, User
-from causes.models import Causes
+from group.models import Group
 from profile.xerohelpers import create_cause_donation_invoice
 from constance import config
 import stripe
@@ -322,7 +322,7 @@ def spacebucks_cause_donation(request, rfid=None, cause_id=None, amount=None):
         return HttpResponseBadRequest("400 Invalid request.")
 
     try:
-        cause = Causes.objects.get(pk=cause_id)
+        cause = Group.objects.get(pk=cause_id)
 
     except ObjectDoesNotExist:
         return HttpResponseBadRequest(f"400 Invalid request. {config.GROUP_NAME} does not exist.")

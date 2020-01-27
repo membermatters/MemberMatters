@@ -9,7 +9,7 @@
             {% csrf_token %}
             {{ user_form.as_p }}
             {{ profile_form.as_p }}
-            <label>You can be a member of up to 3 causes.</label>
+            <label>You can be a member of up to 3 {{config.GROUP_NAME | lower}}.</label>
             <br><br>
 
             <a class="btn-flat right" onclick="window.history.back();">Cancel</a>

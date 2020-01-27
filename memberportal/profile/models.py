@@ -275,7 +275,7 @@ class Profile(models.Model):
     state = models.CharField(max_length=8, default='noob', choices=STATES)
 
     member_type = models.ForeignKey(MemberTypes, on_delete=models.PROTECT, related_name='member_type')
-    causes = models.ManyToManyField('causes.Causes')
+    causes = models.ManyToManyField('group.Group')
 
     rfid = models.CharField("RFID Tag", max_length=20, unique=True, null=True, blank=True)
     doors = models.ManyToManyField('access.Doors', blank=True)
@@ -302,9 +302,9 @@ class Profile(models.Model):
     can_see_members_logs = models.BooleanField("Can see member logs", default=False)
     can_manage_doors = models.BooleanField("Can manage doors", default=False)
     can_manage_interlocks = models.BooleanField("Can manage interlocks", default=False)
-    can_manage_causes = models.BooleanField("Can manage causes", default=False)
-    can_add_cause = models.BooleanField("Can add a cause", default=False)
-    can_manage_cause = models.ManyToManyField("causes.Causes", blank=True, related_name="can_manage_cause")
+    can_manage_causes = models.BooleanField(f"Can manage {config.GROUP_NAME}", default=False)
+    can_add_cause = models.BooleanField(f"Can add a {config.GROUP_NAME}", default=False)
+    can_manage_cause = models.ManyToManyField("group.Group", blank=True, related_name="can_manage_cause")
     can_generate_invoice = models.BooleanField("Can generate & email invoice", default=False)
 
     BRACKETS = (

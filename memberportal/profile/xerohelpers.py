@@ -2,6 +2,7 @@ from django.utils import timezone
 from xero import Xero
 from xero.auth import PrivateCredentials
 from xero.exceptions import XeroBadRequest
+from constance import config
 import datetime
 import os
 
@@ -204,7 +205,7 @@ def create_membership_invoice(user, email_invoice=False):
     if length:
         for cause in causes:
             item = {
-                "Description": "Cause Membership: " + cause.name,
+                "Description": f"{config.GROUP_NAME} Membership: " + cause.name,
                 "Quantity": "1",
                 "ItemCode": cause.item_code,
                 "UnitAmount": round(user.profile.member_type.cost * (0.3 / length), 2),

@@ -9,7 +9,7 @@
     }
   },
   {
-    "model": "causes.causes",
+    "model": "group.group",
     "pk": 1,
     "fields": {
       "name": "Default Cause",

@@ -5,7 +5,7 @@ import math
 def divround_down(value, step):
     return value//step*step
 
-class Causes(models.Model):
+class Group(models.Model):
     name = models.CharField(f"{config.GROUP_NAME} Name", max_length=20, unique=True)
     description = models.CharField(f"{config.GROUP_NAME} Description", max_length=100)
     leaders = models.ManyToManyField("profile.User")
@@ -32,7 +32,7 @@ class Causes(models.Model):
 
 
 class CauseFund(models.Model):
-    cause = models.ForeignKey('Causes', on_delete=models.CASCADE)
+    cause = models.ForeignKey('Group', on_delete=models.CASCADE)
     name = models.CharField("Fund Name", max_length=20, unique=True)
     description = models.CharField(
         "Description of Fund", max_length=100)

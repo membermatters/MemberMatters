@@ -1,10 +1,10 @@
 from django import forms
-from .models import Causes, CauseFund
+from .models import Group, CauseFund
 
 
 class CauseForm(forms.ModelForm):
     class Meta:
-        model = Causes
+        model = Group
         fields = ['name', 'description', "item_code", "account_code"]
 
 
