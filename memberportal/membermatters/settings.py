@@ -168,7 +168,7 @@ CONSTANCE_CONFIG = {
     "HOME_PAGE_CARDS": (
         "[{\"title\": \"Example\", \"description\": \"Example\", \"icon\": \"forum\", \"url\": \"https://membermatters.org/\", \"btn_text\": \"Click Here\"}]",
         "You can specify cards that go on the home page with JSON. See https://github.com/jabelone/MemberMatters/blob/master/GETTING_STARTED.md."),
-    "WELCOME_EMAIL_CARDS": ("", "Same syntax as HOME_PAGE_CARDS. If nothing is specified we will use HOME_PAGE_CARDS.")
+    "WELCOME_EMAIL_CARDS": ("", "Same syntax as HOME_PAGE_CARDS but icons are ignored. If nothing is specified we will use HOME_PAGE_CARDS.")
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict([

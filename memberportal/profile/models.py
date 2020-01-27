@@ -14,6 +14,7 @@ from django.conf import settings
 from profile.xerohelpers import get_xero_contact, create_membership_invoice
 from profile.xerohelpers import add_to_xero
 from constance import config
+import json
 
 utc = pytz.UTC
 
@@ -205,7 +206,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         return False
 
     def email_welcome(self):
-        email_string = render_to_string("email_welcome.html", {"config": config})
+        cards = config.WELCOME_EMAIL_CARDS if config.WELCOME_EMAIL_CARDS else config.HOME_PAGE_CARDS
+        cards = json.loads(cards)
+
+        email_string = render_to_string("email_welcome.html", {"config": config, "cards": cards})
 
         if self.__send_email(f"Welcome to {config.SITE_OWNER}", email_string):
             return "Successfully sent welcome email to user. ✉"
