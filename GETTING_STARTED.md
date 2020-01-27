@@ -50,7 +50,7 @@ The first thing you should do is change the email address and password of the de
 by navigating to `http://<instance_url>/admin/profile/user` and clicking on the user on that list.
 
 Once you've done all this, your MemberMatters instance is ready for use. Read on below for tips on customising 
-and deploying it it.
+and deploying it.
 
 ### Deployment Tips
 * MemberMatters runs on port 8000 by default. You should run a reverse proxy in front of it
