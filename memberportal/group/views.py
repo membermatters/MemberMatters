@@ -27,7 +27,7 @@ def manage_groups(request):
             form.save()
             log_user_event(
                 request.user,
-                f"Created {form.cleaned_data.get("name")} {config.GROUP_NAME}.",
+                f"Created {form.cleaned_data.get('name')} {config.GROUP_NAME}.",
                 "admin", form)
             return HttpResponseRedirect(reverse("manage_groups"))
 

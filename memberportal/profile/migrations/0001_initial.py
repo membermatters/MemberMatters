@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
                 ("screen_name", models.CharField(max_length=30, verbose_name="Screen Name")),
                 ("first_name", models.CharField(max_length=30, verbose_name="First Name")),
                 ("last_name", models.CharField(max_length=30, verbose_name="Last Name")),
-                ("phone", models.CharField(blank=True, max_length=12, validators=[django.core.validators.RegexValidator(message="Phone number must be entered in the format: "0417123456". Up to 12 characters allowed.", regex="^\\+?1?\\d{9,15}$")])),
+                ("phone", models.CharField(blank=True, max_length=12, validators=[django.core.validators.RegexValidator(message="Phone number must be entered in the format: '0417123456'. Up to 12 characters allowed.", regex="^\\+?1?\\d{9,15}$")])),
                 ("state", models.CharField(choices=[("noob", "New Member"), ("active", "Active Member"), ("inactive", "Inactive Member")], default="noob", max_length=8)),
                 ("rfid", models.CharField(blank=True, max_length=20, null=True, unique=True, verbose_name="RFID Tag")),
                 ("memberbucks_balance", models.FloatField(default=0.0)),

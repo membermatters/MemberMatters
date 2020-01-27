@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from collections import OrderedDict
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get("PORTAL_SECRET_KEY", "l)#t68rzepzp)0l#x=9mntciapun$whl+$j&=_@nl^zl1xm3j*")
@@ -148,22 +149,31 @@ REQUEST_TIMEOUT = 0.05
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
 
 CONSTANCE_CONFIG = {
-    "EMAIL_SYSADMIN": ("example@example.com", "The default sysadmin email that should receive errors etc."),
+    "SITE_NAME": ("MemberMatters Portal", "The title shown at the top of the page and as the tab title."),
+    "SITE_OWNER": ("MemberMatters", "The name of the legal entity/association/club that is running this site."),
+    "ENTITY_TYPE": ("Association", "This is the type of group you are such as an association, club, etc."),
+
+    "EMAIL_SYSADMIN": ("example@example.com", "The default sysadmin email that should receive technical errors etc."),
     "EMAIL_ADMIN": ("example@example.com", "The default admin email that should receive administrative notifications."),
     "EMAIL_DEFAULT_FROM": (
         "\"MemberMatters Portal\" <example@example.org>", "The default email that outbound messages are sent from."),
     "SITE_MAIL_ADDRESS": ("123 Example St, Nowhere", "This address is used in the footer of all emails for anti spam."),
-    "SITE_NAME": ("MemberMatters Portal", "The title shown at the top of the page and as the tab title."),
-    "SITE_OWNER": ("MemberMatters", "The name of the legal entity/association/club that is running this site."),
-    "ENTITY_TYPE": ("Association", "This is the type of group you are such as an association, club, etc."),
+
     "SITE_URL": ("https://membermatters.org", "The publicly accessible URL of your MemberMatters instance."),
     "INDUCTION_URL": ("https://eventbrite.com.au", "The URL members should visit to book in for a site induction."),
+
     "MEMBERBUCKS_NAME": ("Memberbucks", "You can customise the name of the portals currency."),
     "GROUP_NAME": ("Group", "You can customise what the portal calls a group."),
-    "ADMIN_NAME": ("Administrators", "You can specify a different name for your admin group like exec or leaders.")
+    "ADMIN_NAME": ("Administrators", "You can specify a different name for your admin group like exec or leaders."),
+    "HOME_PAGE_CARDS": (
+        "[{\"title\": \"Example\", \"description\": \"Example\", \"icon\": \"forum\", \"url\": \"https://membermatters.org/\", \"btn_text\": \"Click Here\"}]",
+        "You can specify cards that go on the home page. See https://github.com/jabelone/MemberMatters/blob/master/GETTING_STARTED.md."),
+    "WELCOME_EMAIL_CARDS": ("", "Same syntax as HOME_PAGE_CARDS. If nothing is specified we will use HOME_PAGE_CARDS.")
 }
 
-CONSTANCE_CONFIG_FIELDSETS = {
-    "Site Specific Names": ("GROUP_NAME", "ADMIN_NAME", "MEMBERBUCKS_NAME"),
-    "Email": ("THEME",),
-}
+CONSTANCE_CONFIG_FIELDSETS = OrderedDict([
+    ("General", ("SITE_NAME", "SITE_OWNER", "ENTITY_TYPE",)),
+    ("Contact Information", ("EMAIL_SYSADMIN", "EMAIL_ADMIN", "EMAIL_DEFAULT_FROM", "SITE_MAIL_ADDRESS")),
+    ("URLs", ("SITE_URL", "INDUCTION_URL")),
+    ("Group Localisation", ("MEMBERBUCKS_NAME", "GROUP_NAME", "ADMIN_NAME", "HOME_PAGE_CARDS", "WELCOME_EMAIL_CARDS"))
+])
