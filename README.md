@@ -4,8 +4,6 @@ The MemberMatters portal is an open source membership and access management solu
 ### Features
 * Member registration system (signup, login etc)
 * Profile - members can update all their info in one place
-    * Personal details like name, email, group membership
-    * Members can see their current access restrictions
 * Issue reporting tool
 * Access system built in
     * Activate new members & enable/disable existing members
@@ -13,30 +11,25 @@ The MemberMatters portal is an open source membership and access management solu
     * API so readers/interlocks can check access
     * Swipe statistics (last seen and recent swipes)
 * Member overview for admins
-    * Search for members and sort by name, status, etc
-    * Change a member's profile
-* Groups
-    * List of all groups
-    * List of members in each group and quorum
+* Groups / Causes / Areas
 * Admin Interface
-    * View, add and edit the following:
-        * Groups, doors and interlocks
 * Webcam integration with Unifi Video
 * Full "Memberbucks" Support
     * Debit API for vending machines etc. 
     * Members can see a transaction history (credits & debits) and current balance
     * Stripe integration
-        * Members can add/remove a card to their profile
-        * Can charge card to add memberbucks to profile
 * Automatically create a xero contact and create invoice when a new person is made into a member
-
  
  ### Coming Soon
- * Manage recurring membership fees via Stripe
+ * Manage recurring membership payments via Stripe
  * Edit member swipe in theme
  
- ### Getting Started
+ ### Getting Started (Running MemberMatters)
  See the [GETTING_STARTED.md](/GETTING_STARTED.md) file in this repo
+ for instructions on how to get started running the MemberMatters software for your organisation.
+ 
+ ### Getting Started (Development)
+ See the [GETTING_STARTED_DEV.md](/GETTING_STARTED_DEV.md) file in this repo
  for instructions on how to setup your development environment and run the MemberMatters software.
  
  ### Contributing Guidelines
