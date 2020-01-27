@@ -12,7 +12,7 @@
         {% endif %}
 
         <p class="larger-text">Your current {{config.MEMBERBUCKS_NAME}} balance is
-            ${{ user.profile.spacebucks_balance|floatformat:2 }}</p>
+            ${{ user.profile.memberbucks_balance|floatformat:2 }}</p>
 
         {% if not user.profile.stripe_card_last_digits == "" %}
             <div class="row">
@@ -25,7 +25,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <a href="{% url 'delete_spacebucks_payment_info' %}" class="btn waves-effect waves-light">Remove
+                        <a href="{% url 'delete_memberbucks_payment_info' %}" class="btn waves-effect waves-light">Remove
                             Card</a>
                     </div>
                 </div>
@@ -44,22 +44,22 @@
 
                     <div class="row">
                         <div class="col s4">
-                            <button class="btn waves-effect waves-light add-spacebucks" type="submit"
-                                    data-url="{% url 'add_spacebucks' amount=10 %}" name="action">$10
+                            <button class="btn waves-effect waves-light add-memberbucks" type="submit"
+                                    data-url="{% url 'add_memberbucks' amount=10 %}" name="action">$10
                             </button>
                         </div>
                         <div class="col s4">
-                            <button class="btn waves-effect waves-light add-spacebucks" type="submit"
-                                    data-url="{% url 'add_spacebucks' amount=20 %}" name="action">$20
+                            <button class="btn waves-effect waves-light add-memberbucks" type="submit"
+                                    data-url="{% url 'add_memberbucks' amount=20 %}" name="action">$20
                             </button>
                         </div>
                         <div class="col s4">
-                            <button class="btn waves-effect waves-light add-spacebucks" type="submit"
-                                    data-url="{% url 'add_spacebucks' amount=30 %}" name="action">$30
+                            <button class="btn waves-effect waves-light add-memberbucks" type="submit"
+                                    data-url="{% url 'add_memberbucks' amount=30 %}" name="action">$30
                             </button>
                         </div>
                     </div>
-                    <div id="spacebucks-progress-bar">
+                    <div id="memberbucks-progress-bar">
                         <div class="indeterminate"></div>
                     </div>
                 </div>
@@ -68,7 +68,7 @@
         {% else %}
             <p>We currently have no card details on record. Please add one below. The process of adding a card
                 <b>will not charge it</b>. Funds added to {{config.MEMBERBUCKS_NAME}} are not refundable.</p>
-            <form action="{% url 'add_spacebucks_payment_info' %}" method="POST">
+            <form action="{% url 'add_memberbucks_payment_info' %}" method="POST">
                 <script
                         src="https://checkout.stripe.com/checkout.js" class="stripe-button"
                         data-key="{{ PORTAL_STRIPE_PUBLIC_KEY }}"

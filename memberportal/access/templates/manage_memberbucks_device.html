@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}Manage Spacebucks Device{% endblock %}
+{% block title %}Manage {{config.MEMBERBUCKS_NAME}} Device{% endblock %}
 
 {% block content %}
     <div class="row center">
         <div class="col s12">
-            <h4>Current Spacebucks Device</h4>
-            <a href="{% url "add_spacebucks_device" %}" class="waves-effect waves-light btn edit-button">
-                Add Spacebucks Device
+            <h4>Current {{config.MEMBERBUCKS_NAME}} Device</h4>
+            <a href="{% url "add_memberbucks_device" %}" class="waves-effect waves-light btn edit-button">
+                Add {{config.MEMBERBUCKS_NAME}} Device
             </a>
             <table class="striped responsive-table">
                 <thead>
@@ -20,7 +20,7 @@
                 </thead>
 
                 <tbody>
-                {% for device in spacebucks_device%}
+                {% for device in memberbucks_device%}
                     <tr>
                         <td>{{ device.name }}</td>
                         <td>{{ device.ip_address }}</td>
@@ -32,11 +32,11 @@
                             <td class="light-green-text">{{ device.last_seen|timesince }} ago</td>
                         {% endif %}
                         <td>
-                            <a href="{% url "edit_spacebucks_device" device_id=device.id %}"
+                            <a href="{% url "edit_memberbucks_device" device_id=device.id %}"
                                class="waves-effect waves-light btn-small edit-button">
                                 <i class="material-icons">edit</i>
                             </a>
-                            <a href="{% url "delete_spacebucks_device" device_id=device.id %}"
+                            <a href="{% url "delete_memberbucks_device" device_id=device.id %}"
                                class="waves-effect waves-light btn-small delete-button">
                                 <i class="material-icons">delete</i>
                             </a>

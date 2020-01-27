@@ -57,7 +57,7 @@ python3 manage.py migrate
 After running that you should see something like this:
 ```bash
 Operations to perform:
-  Apply all migrations: access, admin, auth, causes, contenttypes, profile, sessions, spacebucks
+  Apply all migrations: access, admin, auth, causes, contenttypes, profile, sessions, memberbucks
 Running migrations:
   Applying causes.0001_initial... OK
   Applying auth.0001_initial... OK

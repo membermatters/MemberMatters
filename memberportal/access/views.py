@@ -11,6 +11,7 @@ from .forms import *
 from .models import *
 from profile.models import Profile
 from django.db.models import *
+from constance import config
 import pytz
 import time
 import requests
@@ -710,7 +711,7 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
 
 
 @api_auth
-def spacebucks_device_checkin(request, device_id=None):
+def memberbucks_device_checkin(request, device_id=None):
     device_ip = None
 
     if device_id is not None:
@@ -720,9 +721,9 @@ def spacebucks_device_checkin(request, device_id=None):
             return JsonResponse({"success": True, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
-            log_event("Tried to check access for non existent spacebucks device.", "error", request)
+            log_event(f"Tried to check access for non existent {config.MEMBERBUCKS_NAME} device.", "error", request)
             return JsonResponse(
-                {"success": False, "error": "Error spacebucks device does not exist.", "timestamp": round(time.time())})
+                {"success": False, "error": f"Error {config.MEMBERBUCKS_NAME} device does not exist.", "timestamp": round(time.time())})
 
     else:
         try:
@@ -732,8 +733,8 @@ def spacebucks_device_checkin(request, device_id=None):
             return JsonResponse({"success": True, "timestamp": round(time.time())})
 
         except ObjectDoesNotExist:
-            log_event("Tried to check access for {} spacebucks device but none found.".format(device_ip), "error", request)
-            return JsonResponse({"success": False, "error": "spacebucks device does not exist..",
+            log_event(f"Tried to check access for {device_ip} {config.MEMBERBUCKS_NAME} device but none found.", "error", request)
+            return JsonResponse({"success": False, "error": f"{config.MEMBERBUCKS_NAME} device does not exist..",
                                  "timestamp": round(time.time())})
 
 

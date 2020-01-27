@@ -283,12 +283,12 @@ def create_group_donation_invoice(user, group, amount):
 
     line_items = [
         {
-            "Description": "Debit funds from Spacebucks account code.",
+            "Description": f"Debit funds from {config.MEMBERBUCKS_NAME} account code.",
             "Quantity": "1",
-            "ItemCode": "Spacebucks Cause Donation",
+            "ItemCode": f"{config.MEMBERBUCKS_NAME} Cause Donation",
             "UnitAmount": amount * -1,
             "TaxType": tax_type,
-            "AccountCode": "264"  # SpaceBucks account
+            "AccountCode": "264"  # Memberbucks account in Xero
         },
         {
             "Description": "Credit funds to {}.".format(group.name),

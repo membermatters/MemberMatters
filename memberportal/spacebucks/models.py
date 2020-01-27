@@ -28,7 +28,7 @@ class SpaceBucks(models.Model):
         super(SpaceBucks, self).save(*args, **kwargs)
         balance = SpaceBucks.objects.filter(
             user=self.user).aggregate(Sum('amount'))['amount__sum']
-        self.user.profile.spacebucks_balance = round(balance, 2)
+        self.user.profile.memberbucks_balance = round(balance, 2)
         self.user.profile.save()
         if self.fund:
             self.fund.balance += self.amount * -1.0

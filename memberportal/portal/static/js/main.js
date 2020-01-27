@@ -33,9 +33,9 @@ document.addEventListener('DOMContentLoaded', function () {
     M.Tooltip.init(document.querySelectorAll('.tooltipped'), {});
 
     // Add memberbucks buttons
-    let spacebucksButtons = document.getElementsByClassName("add-spacebucks");
-    for (var i = 0; i < spacebucksButtons.length; i++) {
-        spacebucksButtons[i].addEventListener('click', chargeCardForSpacebucks);
+    let memberbucksButtons = document.getElementsByClassName("add-memberbucks");
+    for (var i = 0; i < memberbucksButtons.length; i++) {
+        memberbucksButtons[i].addEventListener('click', chargeCardForMemberbucks);
     }
 });
 
@@ -69,13 +69,13 @@ function bumpDoor(thing) {
     });
 }
 
-function chargeCardForSpacebucks() {
+function chargeCardForMemberbucks() {
     if (confirm('Are you sure you want to add to your account?') === false) {
         M.toast({html: "Cancelled :("});
         return false
     }
 
-    document.getElementById("spacebucks-progress-bar").classList.add("progress");
+    document.getElementById("memberbucks-progress-bar").classList.add("progress");
 
     $.ajax({
         url: this.getAttribute("data-url"),
@@ -85,7 +85,7 @@ function chargeCardForSpacebucks() {
             if (response.success) {
                 M.toast({html: "Successfuly charged your card."});
                 setTimeout(() => {
-                    location = "/profile/spacebucks/manage/";
+                    location = "/profile/memberbucks/manage/";
                 }, 2000)
             }
             else {
@@ -93,7 +93,7 @@ function chargeCardForSpacebucks() {
             }
         },
         error: function () {
-            document.getElementById("spacebucks-progress-bar").classList.remove("progress");
+            document.getElementById("memberbucks-progress-bar").classList.remove("progress");
             M.toast({html: "Unknown error while trying to charge your card :( "});
         }
     });

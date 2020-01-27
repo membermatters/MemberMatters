@@ -52,7 +52,7 @@
                            data-resend_welcome_url="{% url 'resend_welcome_email' member_id=member.id %}"
                            data-get_logs_url="{% url 'admin_member_logs' member_id=member.id %}"
                            data-add_to_xero_url="{% url 'add_to_xero' member_id=member.id %}"
-                           data-get_spacebucks_url="{% url 'admin_spacebucks_transactions' member_id=member.id %}"
+                           data-get_memberbucks_url="{% url 'admin_memberbucks_transactions' member_id=member.id %}"
                            data-generate_invoice_url="{% url 'create_invoice' member_id=member.id %}"
                            data-xero_account_id="{{ member.profile.xero_account_id }}"
                            class="waves-effect waves-light btn" href="#">Manage</a>
@@ -104,8 +104,8 @@
                     {% if user.profile.can_manage_access %}
                         <li class="tab col s3"><a href="#manage-access">Access</a></li>
                     {% endif %}
-                    {% if user.profile.can_see_members_spacebucks %}
-                        <li class="tab col s3"><a href="#spacebucks">Spacebucks</a></li>
+                    {% if user.profile.can_see_members_memberbucks %}
+                        <li class="tab col s3"><a href="#memberbucks">{{config.MEMBERBUCKS_NAME}}</a></li>
                     {% endif %}
                     {% if user.profile.can_see_members_logs %}
                         <li class="tab col s3"><a href="#access-history">Log</a></li>
@@ -125,9 +125,9 @@
                 </div>
             {% endif %}
 
-            {% if user.profile.can_see_members_spacebucks %}
-                <div id="spacebucks" class="col s12">
-                    <div id="admin-edit-member-spacebucks"></div>
+            {% if user.profile.can_see_members_memberbucks %}
+                <div id="memberbucks" class="col s12">
+                    <div id="admin-edit-member-memberbucks"></div>
                 </div>
             {% endif %}
 
@@ -160,8 +160,8 @@
             can_see_members_personal_details = true;
         {% endif %}
 
-        {% if user.profile.can_see_members_spacebucks %}
-            can_see_members_spacebucks = true;
+        {% if user.profile.can_see_members_memberbucks %}
+            can_see_members_memberbucks = true;
         {% endif %}
 
         {% if user.profile.can_see_members_logs %}

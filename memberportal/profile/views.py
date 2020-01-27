@@ -249,26 +249,26 @@ def access_permissions(request):
 
 @login_required
 @admin_required
-def admin_spacebucks_transactions(request, member_id):
-    if not request.user.profile.can_see_members_spacebucks:
+def admin_memberbucks_transactions(request, member_id):
+    if not request.user.profile.can_see_members_memberbucks:
         return HttpResponseForbidden(permission_message)
 
     user = User.objects.get(pk=member_id)
     transactions = SpaceBucks.objects.filter(user_id=member_id)
     context = {
         "transactions": transactions,
-        "balance": user.profile.spacebucks_balance,
+        "balance": user.profile.memberbucks_balance,
         "member": user
     }
-    rendered = render_to_string('partial_admin_member_spacebucks.html', context)
+    rendered = render_to_string('partial_admin_member_memberbucks.html', context)
 
     return JsonResponse({"body": rendered})
 
 
 @login_required
 @admin_required
-def admin_add_spacebucks(request, member_id, amount):
-    if not request.user.profile.can_see_members_spacebucks:
+def admin_add_memberbucks(request, member_id, amount):
+    if not request.user.profile.can_see_members_memberbucks:
         return HttpResponseForbidden(permission_message)
 
     if request.method == 'GET':
@@ -288,7 +288,7 @@ def admin_add_spacebucks(request, member_id, amount):
         transaction.logging_info = ""
         transaction.save()
         log_user_event(request.user, "Manually added ${} to {}.".format(amount, user.profile.get_full_name()),
-                       "spacebucks")
+                       "memberbucks")
         log_user_event(user, "{} manually added ${} to {}.".format(request.user.profile.get_full_name(), amount,
                                                                    user.profile.get_full_name()), "stripe")
 

@@ -23,9 +23,9 @@ urlpatterns = [
     path('api/member/<int:member_id>/xero/add/', views.add_to_xero, name='add_to_xero'),
     path('api/member/<int:member_id>/xero/create_invoice/', views.create_invoice, name='create_invoice'),
     path('api/member/<int:member_id>/xero/create_invoice/<str:option>/', views.create_invoice, name='create_invoice'),
-    path('api/member/<int:member_id>/spacebucks/transactions/', views.admin_spacebucks_transactions, name="admin_spacebucks_transactions"),
-    path('api/member/<int:member_id>/spacebucks/add/<int:amount>', views.admin_add_spacebucks, name='admin_add_spacebucks_amount'),
-    path('api/member/<int:member_id>/spacebucks/add/', views.admin_add_spacebucks, name='admin_add_spacebucks'),
+    path('api/member/<int:member_id>/memberbucks/transactions/', views.admin_memberbucks_transactions, name="admin_memberbucks_transactions"),
+    path('api/member/<int:member_id>/memberbucks/add/<int:amount>', views.admin_add_memberbucks, name='admin_add_memberbucks_amount'),
+    path('api/member/<int:member_id>/memberbucks/add/', views.admin_add_memberbucks, name='admin_add_memberbucks'),
     path('api/member/create', views.create_account_api, name='create_account_api'),
     path('api/members/xero/sync', views.sync_xero_accounts, name='sync_xero_accounts'),
 ]

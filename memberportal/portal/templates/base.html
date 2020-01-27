@@ -78,7 +78,7 @@
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Profile</a>
                 </li>
                 {% if not user.profile.state|stringformat:"s" == "noob" %}
-                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_spacebucks' %}">{{config.MEMBERBUCKS_NAME}}</a>
+                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_memberbucks' %}">{{config.MEMBERBUCKS_NAME}}</a>
                     </li>
                     <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">My
                         Access
@@ -143,7 +143,7 @@
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Profile</a></li>
 
         {% if not user.profile.state|stringformat:"s" == "noob" %}
-            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_spacebucks' %}">{{config.MEMBERBUCKS_NAME}}</a>
+            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_memberbucks' %}">{{config.MEMBERBUCKS_NAME}}</a>
             </li>
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">Access
                 Permissions</a></li>

@@ -9,7 +9,7 @@ let active_url;
 let member_state;
 let resend_welcome_url;
 let get_logs_url;
-let get_spacebucks_url;
+let get_memberbucks_url;
 let add_to_xero_url;
 let generate_invoice_url;
 let xero_account_id;
@@ -18,7 +18,7 @@ let can_send_group_emails = false;
 let can_manage_access = false;
 let can_disable_members = false;
 let can_see_members_personal_details = false;
-let can_see_members_spacebucks = false;
+let can_see_members_memberbucks = false;
 let can_see_members_logs = false;
 let can_manage_access_devices = false;
 let can_manage_groups = false;
@@ -192,7 +192,7 @@ function openMemberActionsModal(e) {
     generate_invoice_url = e.getAttribute("data-generate_invoice_url");
     get_logs_url = e.getAttribute("data-get_logs_url");
     add_to_xero_url = e.getAttribute("data-add_to_xero_url");
-    get_spacebucks_url = e.getAttribute("data-get_spacebucks_url");
+    get_memberbucks_url = e.getAttribute("data-get_memberbucks_url");
     xero_account_id = e.getAttribute("data-xero_account_id");
 
     document.getElementById('admin-member-modal-name').innerHTML = name;
@@ -281,24 +281,24 @@ function openMemberActionsModal(e) {
         });
     }
 
-    if (can_see_members_spacebucks) {
-        // get the member spacebucks transactions
+    if (can_see_members_memberbucks) {
+        // get the member memberbucks transactions
         $.ajax({
-            url: get_spacebucks_url,
+            url: get_memberbucks_url,
             type: 'get',
             dataType: 'json',
             success: function (data) {
-                let elem = document.getElementById("admin-edit-member-spacebucks");
+                let elem = document.getElementById("admin-edit-member-memberbucks");
                 elem.innerHTML = data.body;
 
                 // init the table
-                let table = $('#spacebucksTable').DataTable({});
+                let table = $('#memberbucksTable').DataTable({});
                 table.order([2, 'desc']).draw();
             },
             error: function () {
-                M.toast({html: "unknown error while getting spacebucks data :( "});
+                M.toast({html: "unknown error while getting memberbucks data :( "});
 
-                let elem = document.getElementById("admin-edit-member-spacebucks");
+                let elem = document.getElementById("admin-edit-member-memberbucks");
                 elem.innerHTML = "";
             }
         });
@@ -389,9 +389,9 @@ $("#member-actions-modal").on("submit", ".member-edit-form", function () {
     }
 });
 
-function addSpacebucks(url) {
-    if (can_see_members_spacebucks) {
-        if (confirm('Are you sure you want to add Spacebucks?') === false) {
+function addMemberbucks(url) {
+    if (can_see_members_memberbucks) {
+        if (confirm('Are you sure you want to add this amount?') === false) {
             M.toast({html: "Cancelled :o"});
             return false
         }
@@ -404,13 +404,13 @@ function addSpacebucks(url) {
             dataType: 'json',
             success: function (response) {
                 if (response.success) {
-                    M.toast({html: "Successfuly added spacebucks."});
+                    M.toast({html: "Successfuly added memberbucks."});
                 } else {
-                    M.toast({html: "Failed to add spacebucks :("});
+                    M.toast({html: "Failed to add memberbucks :("});
                 }
             },
             error: function () {
-                M.toast({html: "Unknown error while trying to add spacebucks :( "});
+                M.toast({html: "Unknown error while trying to add memberbucks :( "});
             }
         });
     }

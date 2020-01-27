@@ -53,9 +53,9 @@
             {% if user.profile.state == "noob" %}
             {% else %}
                 <tr>
-                    <td><b>Spacebucks:</b></td>
-                    <td>Current balance is: ${{ user.profile.spacebucks_balance|floatformat:2 }} (<a
-                            href="{% url 'manage_spacebucks' %}">manage</a>)
+                    <td><b>{{config.MEMBERBUCKS_NAME}}:</b></td>
+                    <td>Current balance is: ${{ user.profile.memberbucks_balance|floatformat:2 }} (<a
+                            href="{% url 'manage_memberbucks' %}">manage</a>)
                     </td>
                 </tr>
             {% endif %}
