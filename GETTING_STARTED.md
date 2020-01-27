@@ -1,5 +1,5 @@
  ### Getting Started
- This documentation is in progress and is missing some sections so please read with caution.
+ This documentation is in progress and may be missing some sections so please read with caution.
  MemberMatters runs in a docker container and is designed to be easy to deploy and customise.
  
  > Note: MemberMatters only supports running in Docker on Linux. Installing Docker is outside the scope of this guide, 
@@ -10,9 +10,34 @@
 docker pull jabelone/membermatters
 ```
 
-Once you've downloaded the docker image, you'll need to create a container:
+Create a file to contain all of your environment variables. This file contains sensitive information so treat it like a 
+password! Place it somewhere you won't forget like `/usr/app/env.list`. This file is where Docker gets the environment 
+variables from.
+```
+PORTAL_DOMAIN=https://demo.membermatters.org
+PORTAL_ENV=Production
+
+PORTAL_LOG_LOCATION=[optional - remove line if not used]
+PORTAL_DB_LOCATION=[optional - remove line if not used]
+
+PORTAL_SENDGRID_API_KEY=sg.xxxx
+
+PORTAL_XERO_CONSUMER_KEY=
+PORTAL_XERO_RSA_FILE=/path/to/xerkey.pem
+
+PORTAL_STRIPE_SECRET_KEY=<stripe>
+PORTAL_STRIPE_PUBLIC_KEY=<stripe>
+
+PORTAL_TRELLO_API_KEY=<trello>
+PORTAL_TRELLO_API_TOKEN=<trello>
+
+PORTAL_DISCORD_INTERLOCK_WEBHOOK=https://discordapp.com/api/webhooks/xxxx/xxxxxx
+PORTAL_DISCORD_DOOR_WEBHOOK=https://discordapp.com/api/webhooks/xxxx/xxxxxx
+```
+
+Once you've downloaded the docker image and configured your environment variables, you'll need to create a container:
 ```bash
-docker create ...
+docker create -p 8000:8000 --name membermatters --restart always --detach --env-file /usr/app/env.list -v /usr/app/:/usr/src/data jabelone/membermatters
 ```
 
 Once your container is running, you will be able to login with the default admin account details:
@@ -24,14 +49,42 @@ Password: MemberMatters!
 The first thing you should do is change the email address and password of the default admin account. You can do that 
 by navigating to `http://<instance_url>/admin/profile/user` and clicking on the user on that list.
 
-Once you've done this, your MemberMatters instance is ready for use. Read on below for instructions on customising it.
- 
+Once you've done all this, your MemberMatters instance is ready for use. Read on below for tips on customising 
+and deploying it it.
+
+### Deployment Tips
+* MemberMatters runs on port 8000 by default. You should run a reverse proxy in front of it
+so you can protect all traffic with HTTPS. Please consult your favourite search engine on how to setup a reverse proxy. 
+We recommend that you use nginx with let's encrypt.
+* MemberMatters is designed to run on site if you have any door, interlock or memberbucks devices. However, some parts
+need reliable networking and internet to function. Please keep this in mind and make sure you perform thorough
+testing before relying on it.
+
+
+### Updating your instance
+Docker containers are meant to be disposable, so you'll need to delete it and make a fresh one from the latest image. 
+We suggest writing a bash script like the one below:
+
+```bash
+echo "checking for new docker image"
+docker pull jabelone/membermatters
+echo "Stopping the docker container"
+docker stop membermatters
+echo "Removing the old docker container"
+docker rm membermatters
+echo "Creating new docker container"
+docker create -p 8000:8000 --name membermatters --restart always --detach --env-file /usr/app/env.list -v /usr/app/:/usr/src/data jabelone/membermatters
+echo "Running new docker container"
+docker start membermatters
+``` 
+
 ### Customisation
 The primary way to customise MemberMatters is via the database settings. Once your instance is up and running, 
 navigate to `http://<instance_url>/admin` and login with an admin account. Then click on "Config" under "Constance". 
 On this page you'll see a variety of settings. You should customise these settings with your own details.
 
 A summary of the most important settings is included below with the default in brackets:
+
 `EMAIL_SYSADMIN` (`example@example.com`) - The default sysadmin email that should receive errors etc.
 
 `EMAIL_ADMIN` (`example@example.com`) - The default admin email that should receive administrative notifications.
