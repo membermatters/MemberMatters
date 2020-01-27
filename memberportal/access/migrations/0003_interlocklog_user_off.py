@@ -9,13 +9,13 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('access', '0002_auto_20181006_1453'),
+        ("access", "0002_auto_20181006_1453"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='interlocklog',
-            name='user_off',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='user_off', to=settings.AUTH_USER_MODEL),
+            model_name="interlocklog",
+            name="user_off",
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name="user_off", to=settings.AUTH_USER_MODEL),
         ),
     ]

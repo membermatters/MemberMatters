@@ -15,15 +15,15 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Memberbucks',
+            name="Memberbucks",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amount', models.FloatField(verbose_name='Amount')),
-                ('transaction_type', models.CharField(choices=[('stripe', 'Stripe Payment'), ('bank', 'Bank Transfer'), ('card', 'Membership Card')], max_length=10, verbose_name='Transaction Type')),
-                ('description', models.CharField(max_length=100, verbose_name='Description of Transaction')),
-                ('date', models.DateTimeField(auto_now_add=True)),
-                ('logging_info', models.TextField(blank=True, verbose_name='Detailed logging info from stripe.')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("amount", models.FloatField(verbose_name="Amount")),
+                ("transaction_type", models.CharField(choices=[("stripe", "Stripe Payment"), ("bank", "Bank Transfer"), ("card", "Membership Card")], max_length=10, verbose_name="Transaction Type")),
+                ("description", models.CharField(max_length=100, verbose_name="Description of Transaction")),
+                ("date", models.DateTimeField(auto_now_add=True)),
+                ("logging_info", models.TextField(blank=True, verbose_name="Detailed logging info from stripe.")),
+                ("user", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

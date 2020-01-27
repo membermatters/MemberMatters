@@ -29,7 +29,7 @@ permission_message = "You are not authorised to do that."
 @csrf_exempt
 @api_auth
 def create_account_api(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         try:
             details = json.loads(request.body)
         except:
@@ -42,7 +42,7 @@ def create_account_api(request):
 
         # Create a new instance of the profile model and fill it with data
         profile = Profile()
-        created_date = datetime.strptime(details["created"], '%Y-%m-%d %H:%M:%S')
+        created_date = datetime.strptime(details["created"], "%Y-%m-%d %H:%M:%S")
         profile.screen_name = details["screen_name"]
         profile.first_name = details["first_name"]
         profile.last_name = details["last_name"]
@@ -74,7 +74,7 @@ def signup(request):
     """
 
     # if the user has submitted a form process it
-    if request.method == 'POST':
+    if request.method == "POST":
         # make a new instance of both forms
         user_form = SignUpForm(request.POST)
         profile_form = AddProfileForm(request.POST)
@@ -107,32 +107,32 @@ def signup(request):
             # for convenience, we should now log the user in
             login(request, new_user)
 
-            return redirect('/')
+            return redirect("/")
 
     else:
         # make a new instance for both forms and render the template
         user_form = SignUpForm()
         profile_form = AddProfileForm()
 
-    return render(request, 'signup.html',
-                  {'user_form': user_form, 'profile_form': profile_form})
+    return render(request, "signup.html",
+                  {"user_form": user_form, "profile_form": profile_form})
 
 
 @login_required
 def change_password(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)
             log_user_event(request.user, "User password changed.", "profile")
-            return redirect('profile')
+            return redirect("profile")
         else:
-            return render(request, 'change_password.html', {'form': form})
+            return render(request, "change_password.html", {"form": form})
     else:
         form = PasswordChangeForm(request.user)
 
-    return render(request, 'change_password.html', {'form': form})
+    return render(request, "change_password.html", {"form": form})
 
 
 def reset_password(request, reset_token=None):
@@ -141,14 +141,14 @@ def reset_password(request, reset_token=None):
             user = User.objects.get(password_reset_key=reset_token)
 
         except ObjectDoesNotExist:
-            return render(request, 'reset_password_form.html', {"error": "Invalid link."})
+            return render(request, "reset_password_form.html", {"error": "Invalid link."})
 
         if request.method == "POST":
             form = ResetPasswordForm(request.POST)
 
             if form.is_valid():
-                if form.cleaned_data['password1'] == form.cleaned_data['password2']:
-                    user.password = make_password(form.cleaned_data['password1'])
+                if form.cleaned_data["password1"] == form.cleaned_data["password2"]:
+                    user.password = make_password(form.cleaned_data["password1"])
                     user.password_reset_expire = None
                     user.password_reset_key = None
                     user.save()
@@ -159,24 +159,24 @@ def reset_password(request, reset_token=None):
                         f"Your {config.SITE_OWNER} password has been successfully changed.")
 
                     return render(
-                        request, 'reset_password_form.html',
-                        {'form': ResetPasswordForm(),
+                        request, "reset_password_form.html",
+                        {"form": ResetPasswordForm(),
                          "message": "Password changed successfully. Please use the login link in the menu."})
 
                 else:
                     return render(
-                        request, 'reset_password_form.html',
-                        {'form': ResetPasswordForm(),
-                         "error": "Passwords don't match."})
+                        request, "reset_password_form.html",
+                        {"form": ResetPasswordForm(),
+                         "error": "Passwords don"t match."})
 
         else:
             if utc.localize(datetime.now()) < user.password_reset_expire:
-                return render(request, 'reset_password_form.html',
-                              {'form': ResetPasswordForm()})
+                return render(request, "reset_password_form.html",
+                              {"form": ResetPasswordForm()})
 
             else:
-                return render(request, 'reset_password_form.html',
-                              {'form': ResetPasswordForm(),
+                return render(request, "reset_password_form.html",
+                              {"form": ResetPasswordForm(),
                                "error": "Error. Link expired."})
 
     elif request.method == "POST":
@@ -184,30 +184,30 @@ def reset_password(request, reset_token=None):
 
         if form.is_valid():
             try:
-                user = User.objects.get(email=form.cleaned_data['email'])
+                user = User.objects.get(email=form.cleaned_data["email"])
                 user.reset_password()
                 return render(
-                    request, 'reset_password.html',
-                    {'form': ResetPasswordRequestForm(),
+                    request, "reset_password.html",
+                    {"form": ResetPasswordRequestForm(),
                      "message": "Check your email for a link."})
 
             except ObjectDoesNotExist:
                 return render(
-                    request, 'reset_password.html',
-                    {'form': ResetPasswordRequestForm(),
+                    request, "reset_password.html",
+                    {"form": ResetPasswordRequestForm(),
                      "error": "No user with that email."})
 
         else:
             return render(
-                request, 'reset_password.html',
-                {'form': ResetPasswordRequestForm(),
+                request, "reset_password.html",
+                {"form": ResetPasswordRequestForm(),
                  "error": "invalid email"})
 
     else:
 
         return render(
-            request, 'reset_password.html',
-            {'form': ResetPasswordRequestForm()})
+            request, "reset_password.html",
+            {"form": ResetPasswordRequestForm()})
 
 
 @login_required
@@ -217,7 +217,7 @@ def profile(request, extra_context=None):
     :param request:
     :return:
     """
-    return render(request, 'profile.html', context=extra_context)
+    return render(request, "profile.html", context=extra_context)
 
 
 @login_required
@@ -232,7 +232,7 @@ def member_list(request):
     # probably will need to add some server side pagination...
     members = User.objects.all()
 
-    return render(request, 'memberlist.html', {'members': members})
+    return render(request, "memberlist.html", {"members": members})
 
 
 @login_required
@@ -242,7 +242,7 @@ def access_permissions(request):
     interlocks = Interlock.objects.all()
 
     return render(
-        request, 'access_permissions.html',
+        request, "access_permissions.html",
         {"doors": doors, "interlocks": interlocks, "member_id": request.user.id})
 
 
@@ -260,7 +260,7 @@ def admin_memberbucks_transactions(request, member_id):
         "member": user,
         "config": config
     }
-    rendered = render_to_string('partial_admin_member_memberbucks.html', context)
+    rendered = render_to_string("partial_admin_member_memberbucks.html", context)
 
     return JsonResponse({"body": rendered})
 
@@ -271,7 +271,7 @@ def admin_add_memberbucks(request, member_id, amount):
     if not request.user.profile.can_see_members_memberbucks:
         return HttpResponseForbidden(permission_message)
 
-    if request.method == 'GET':
+    if request.method == "GET":
         user = User.objects.get(pk=member_id)
 
         # Convert from cents
@@ -316,13 +316,13 @@ def admin_edit_member(request, member_id):
     user_form = AdminEditUserForm(instance=profile.user)
     form_valid = False
 
-    if request.method == 'POST':
-        # if it's a form submission pass it to the form
+    if request.method == "POST":
+        # if it"s a form submission pass it to the form
         profile_form = AdminEditProfileForm(request.POST, instance=profile)
         user_form = AdminEditUserForm(request.POST, instance=profile.user)
 
         if profile_form.is_valid() and user_form.is_valid():
-            # if it's a valid form submission then save and log it
+            # if it"s a valid form submission then save and log it
             try:
                 profile_form.save()
                 user_form.save()
@@ -334,10 +334,10 @@ def admin_edit_member(request, member_id):
 
     # render the form and return it
     data["form_is_valid"] = form_valid
-    data['html_form'] = render_to_string(
-        'partial_admin_edit_member.html',
-        {'profile_form': profile_form, 'user_form': user_form,
-         'member_id': member_id, "profile": profile, "config": config}, request=request)
+    data["html_form"] = render_to_string(
+        "partial_admin_edit_member.html",
+        {"profile_form": profile_form, "user_form": user_form,
+         "member_id": member_id, "profile": profile, "config": config}, request=request)
     return JsonResponse(data)
 
 
@@ -357,8 +357,8 @@ def admin_member_logs(request, member_id):
     member = User.objects.get(pk=member_id)
 
     # render the form and return it
-    data['html_form'] = render_to_string(
-        'partial_admin_member_logs.html', {'logs': member.profile.get_logs(), "config": config},
+    data["html_form"] = render_to_string(
+        "partial_admin_member_logs.html", {"logs": member.profile.get_logs(), "config": config},
         request=request)
     return JsonResponse(data)
 
@@ -371,7 +371,7 @@ def edit_profile(request):
     :return:
     """
 
-    if request.method == 'POST':
+    if request.method == "POST":
         user_form = EditUserForm(request.POST, instance=request.user)
         profile_form = EditProfileForm(
             request.POST, instance=request.user.profile)
@@ -384,16 +384,16 @@ def edit_profile(request):
                 request.user.profile.must_update_profile = False
                 request.user.profile.save()
             log_user_event(request.user, "User profile edited.", "profile")
-            return HttpResponseRedirect('%s' % (reverse('profile')))
+            return HttpResponseRedirect("%s" % (reverse("profile")))
 
     else:
-        # if it's not a form submission, return an empty form
+        # if it"s not a form submission, return an empty form
         user_form = EditUserForm(instance=request.user)
         profile_form = EditProfileForm(instance=request.user.profile)
 
     return render(
-        request, 'edit_profile.html',
-        {'user_form': user_form, "profile_form": profile_form})
+        request, "edit_profile.html",
+        {"user_form": user_form, "profile_form": profile_form})
 
 
 @login_required
@@ -404,7 +404,7 @@ def digital_id(request):
     :return:
     """
 
-    return render(request, 'digital_id.html')
+    return render(request, "digital_id.html")
 
 
 @login_required
@@ -422,7 +422,7 @@ def set_state(request, member_id, state):
 
     user = User.objects.get(id=member_id)
 
-    if state == 'active':
+    if state == "active":
         if user.profile.state == "noob":
             # give default door access
             for door in Doors.objects.filter(all_members=True):
@@ -448,7 +448,7 @@ def set_state(request, member_id, state):
                 return JsonResponse({"success": False, "message": invoice})
 
             elif email is False:
-                return JsonResponse({"success": False, "message": "Error, couldn't send welcome email."})
+                return JsonResponse({"success": False, "message": "Error, couldn"t send welcome email."})
 
             else:
                 return JsonResponse({"success": False, "message": "Unknown error while making into member."})
@@ -475,22 +475,22 @@ def admin_edit_access(request, member_id):
     data = dict()
 
     # render the form and return it
-    data['html_form'] = render_to_string(
-        'partial_admin_edit_access.html',
-        {'member': member, 'member_id': member_id, 'doors': doors,
-         'interlocks': interlocks, "config": config}, request=request)
+    data["html_form"] = render_to_string(
+        "partial_admin_edit_access.html",
+        {"member": member, "member_id": member_id, "doors": doors,
+         "interlocks": interlocks, "config": config}, request=request)
     return JsonResponse(data)
 
 
 @login_required
 @no_noobs
 def recent_swipes(request):
-    doors = DoorLog.objects.all().order_by('date')[::-1][:50]
+    doors = DoorLog.objects.all().order_by("date")[::-1][:50]
     interlocks = InterlockLog.objects.all().order_by(
-        'last_heartbeat')[::-1][:50]
+        "last_heartbeat")[::-1][:50]
 
     return render(
-        request, 'recent_swipes.html',
+        request, "recent_swipes.html",
         {"doors": doors, "interlocks": interlocks})
 
 
@@ -509,29 +509,29 @@ def last_seen(request):
         else:
             last_seens.append({"user": member, "never": True})
 
-    return render(request, 'last_seen.html', {"last_seens": last_seens})
+    return render(request, "last_seen.html", {"last_seens": last_seens})
 
 
 @login_required
 @no_noobs
 def edit_theme_song(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         theme_form = ThemeForm(request.POST, request.FILES,
                                instance=request.user.profile)
 
         if theme_form.is_valid():
             # todo: pass the uploaded file (or removal request) to asterisk
-            # handle_uploaded_file(request.FILES['theme'])
+            # handle_uploaded_file(request.FILES["theme"])
             theme_form.save()
             log_user_event(request.user, "User theme updated.", "profile")
-            return HttpResponseRedirect('%s' % (reverse('edit_theme_song')))
+            return HttpResponseRedirect("%s" % (reverse("edit_theme_song")))
 
     else:
-        # if it's not a form submission, return an empty form
+        # if it"s not a form submission, return an empty form
         theme_form = ThemeForm(instance=request.user.profile)
 
     return render(
-        request, 'edit_theme_song.html',
+        request, "edit_theme_song.html",
         {"theme_form": theme_form}, )
 
 
@@ -546,7 +546,7 @@ def resend_welcome_email(request, member_id):
 
     else:
         return JsonResponse(
-            {"message": "Couldn't email member, unknown error."})
+            {"message": "Couldn"t email member, unknown error."})
 
 
 @login_required
@@ -561,7 +561,7 @@ def sync_xero_accounts(request):
 
     else:
         return JsonResponse(
-            {"message": "Couldn't sync xero accounts, unknown error."})
+            {"message": "Couldn"t sync xero accounts, unknown error."})
 
 
 @login_required

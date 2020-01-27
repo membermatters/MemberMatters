@@ -6,13 +6,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('profile', '0007_profile_can_add_cause'),
+        ("profile", "0007_profile_can_add_cause"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='profile',
-            old_name='can_email_causes',
-            new_name='can_manage_cause',
+            model_name="profile",
+            old_name="can_email_causes",
+            new_name="can_manage_cause",
         ),
     ]

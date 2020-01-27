@@ -18,18 +18,18 @@ from constance import config
 utc = pytz.UTC
 
 LOG_TYPES = (
-    ('generic', 'Generic log entry'),
-    ('usage', 'Generic usage access'),
-    ('stripe', 'Stripe related event'),
-    ('memberbucks', 'Memberbucks related event'),
-    ('spacebucks', 'Spacebucks related event'),
-    ('profile', 'Member profile edited'),
-    ('interlock', 'Interlock related event'),
-    ('door', 'Door related event'),
-    ('email', 'Email send event'),
-    ('admin', 'Generic admin event'),
-    ('error', 'Some event that causes an error'),
-    ('xero', 'Generic xero log entry'),
+    ("generic", "Generic log entry"),
+    ("usage", "Generic usage access"),
+    ("stripe", "Stripe related event"),
+    ("memberbucks", "Memberbucks related event"),
+    ("spacebucks", "Spacebucks related event"),
+    ("profile", "Member profile edited"),
+    ("interlock", "Interlock related event"),
+    ("door", "Door related event"),
+    ("email", "Email send event"),
+    ("admin", "Generic admin event"),
+    ("error", "Some event that causes an error"),
+    ("xero", "Generic xero log entry"),
 )
 
 
@@ -60,7 +60,7 @@ class UserManager(BaseUserManager):
         Creates and saves a User with the given email and password.
         """
         if not email:
-            raise ValueError('Users must have an email address')
+            raise ValueError("Users must have an email address")
 
         user = self.model(email=self.normalize_email(email))
 
@@ -98,7 +98,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
-        verbose_name='email address',
+        verbose_name="email address",
         max_length=255,
         unique=True,
     )
@@ -107,7 +107,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     staff = models.BooleanField(default=False)  # an admin user for the portal
     admin = models.BooleanField(default=False)  # a superuser
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []  # Email & Password are required by default.
 
     objects = UserManager()
@@ -137,12 +137,12 @@ class User(AbstractBaseUser, PermissionsMixin):
             return username
         raise forms.ValidationError(
             "Sorry, that email has already been used.",
-            code='duplicate_username',
+            code="duplicate_username",
         )
 
     def __send_email(self, subject, body):
         if "PORTAL_SENDGRID_API_KEY" in os.environ:
-            sg = sendgrid.SendGridAPIClient(os.environ.get('PORTAL_SENDGRID_API_KEY'))
+            sg = sendgrid.SendGridAPIClient(os.environ.get("PORTAL_SENDGRID_API_KEY"))
             from_email = From(config.EMAIL_DEFAULT_FROM)
             to_email = To(self.email)
             subject = subject
@@ -161,14 +161,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         email_vars = {"preheader": preheader,
                       "title": title, "message": message}
         email_string = render_to_string(
-            'email_without_button.html', {'email': email_vars, "config": config})
+            "email_without_button.html", {"email": email_vars, "config": config})
 
         if self.__send_email(subject, email_string):
             return True
 
     def email_password_reset(self, link):
         email_vars = {"link": link}
-        email_string = render_to_string('email_password_reset.html', {'email': email_vars, "config": config})
+        email_string = render_to_string("email_password_reset.html", {"email": email_vars, "config": config})
 
         if self.__send_email(f"Reset your {config.SITE_OWNER} password", email_string):
             return True
@@ -180,7 +180,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                       "link": link,
                       "btn_text": btn_text}
         email_string = render_to_string(
-            'email_with_button.html', {'email': email_vars, "config": config, "config": config})
+            "email_with_button.html", {"email": email_vars, "config": config, "config": config})
 
         if self.__send_email(subject, email_string):
             return True
@@ -197,7 +197,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             "url": url,
         }
         email_string = render_to_string(
-            'email_invoice.html', {'invoice': invoice, "config": config})
+            "email_invoice.html", {"invoice": invoice, "config": config})
 
         if self.__send_email(f"You have a new invoice from {config.SITE_OWNER} ({number})", email_string):
             return True
@@ -205,7 +205,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return False
 
     def email_welcome(self):
-        email_string = render_to_string('email_welcome.html', {"config": config})
+        email_string = render_to_string("email_welcome.html", {"config": config})
 
         if self.__send_email(f"Welcome to {config.SITE_OWNER}", email_string):
             return "Successfully sent welcome email to user. ✉"
@@ -240,7 +240,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.password_reset_expire = timezone.now() + timedelta(hours=24)
         self.save()
         self.email_password_reset(
-            "https://portal.hsbne.org" + reverse('reset_password', kwargs={'reset_token': self.password_reset_key}))
+            "https://portal.hsbne.org" + reverse("reset_password", kwargs={"reset_token": self.password_reset_key}))
 
         return True
 
@@ -257,30 +257,30 @@ class MemberTypes(models.Model):
 
 class Profile(models.Model):
     STATES = (
-        ('noob', 'New Member'),
-        ('active', 'Active Member'),
-        ('inactive', 'Inactive Member'),
+        ("noob", "New Member"),
+        ("active", "Active Member"),
+        ("inactive", "Inactive Member"),
     )
 
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     created = models.DateTimeField(editable=False)
     modified = models.DateTimeField()
     screen_name = models.CharField("Screen Name", max_length=30)
     first_name = models.CharField("First Name", max_length=30)
     last_name = models.CharField("Last Name", max_length=30)
     phone_regex = RegexValidator(
-        regex=r'^\+?1?\d{9,15}$',
-        message="Phone number must be entered in the format: '0417123456'. "
+        regex=r"^\+?1?\d{9,15}$",
+        message="Phone number must be entered in the format: "0417123456". "
                 "Up to 12 characters allowed.")
     phone = models.CharField(validators=[phone_regex], max_length=12, blank=True)
-    state = models.CharField(max_length=8, default='noob', choices=STATES)
+    state = models.CharField(max_length=8, default="noob", choices=STATES)
 
-    member_type = models.ForeignKey(MemberTypes, on_delete=models.PROTECT, related_name='member_type')
-    groups = models.ManyToManyField('group.Group')
+    member_type = models.ForeignKey(MemberTypes, on_delete=models.PROTECT, related_name="member_type")
+    groups = models.ManyToManyField("group.Group")
 
     rfid = models.CharField("RFID Tag", max_length=20, unique=True, null=True, blank=True)
-    doors = models.ManyToManyField('access.Doors', blank=True)
-    interlocks = models.ManyToManyField('access.Interlock', blank=True)
+    doors = models.ManyToManyField("access.Doors", blank=True)
+    interlocks = models.ManyToManyField("access.Interlock", blank=True)
     memberbucks_balance = models.FloatField(default=0.0)
     last_memberbucks_purchase = models.DateTimeField(default=timezone.now)
     must_update_profile = models.BooleanField(default=False)
@@ -309,9 +309,9 @@ class Profile(models.Model):
     can_generate_invoice = models.BooleanField("Can generate & email invoice", default=False)
 
     BRACKETS = (
-        ('low', '$0/wk to $550/wk'),
-        ('medium', '$550/wk to $950/wk'),
-        ('high', '$950/wk or more'),
+        ("low", "$0/wk to $550/wk"),
+        ("medium", "$550/wk to $950/wk"),
+        ("high", "$950/wk or more"),
     )
 
     updated_starving_details = models.DateTimeField(null=True)
@@ -348,12 +348,12 @@ class Profile(models.Model):
         message = f"{self.get_full_name()} has just signed up. Their membership level is {self.member_type} and their selected {config.GROUP_NAME} are {groups_string}. " \
                   f"Their email is {self.user.email}."
         email_vars = {"preheader": "", "title": "New member signup", "message": message}
-        email_string = render_to_string('email_without_button.html', {'email': email_vars, "config": config})
+        email_string = render_to_string("email_without_button.html", {"email": email_vars, "config": config})
         subject = "A new member signed up! ({})".format(self.get_full_name())
 
         if "PORTAL_SENDGRID_API_KEY" in os.environ:
             sg = sendgrid.SendGridAPIClient(
-                os.environ.get('PORTAL_SENDGRID_API_KEY'))
+                os.environ.get("PORTAL_SENDGRID_API_KEY"))
 
             from_email = From(config.EMAIL_DEFAULT_FROM)
             to_email = To(to_email)
@@ -398,7 +398,7 @@ class Profile(models.Model):
         return create_membership_invoice(self.user, email_invoice)
 
     def save(self, *args, **kwargs):
-        ''' On save, update timestamps '''
+        """ On save, update timestamps """
         if not self.id:
             self.created = timezone.now()
         self.modified = timezone.now()

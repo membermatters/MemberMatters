@@ -34,7 +34,7 @@ def loggedout(request):
     :param request:
     :return:
     """
-    return render(request, 'loggedout.html')
+    return render(request, "loggedout.html")
 
 
 def home(request):
@@ -43,25 +43,25 @@ def home(request):
     :param request:
     :return:
     """
-    return render(request, 'home.html')
+    return render(request, "home.html")
 
 
 def webcams(request):
-    return render(request, 'webcams.html')
+    return render(request, "webcams.html")
 
 
 @login_required
 def issue(request):
     # Handle submission.
-    if request.method == 'POST':
+    if request.method == "POST":
         print(request.POST.get("title"))
         if request.POST.get("title") and request.POST.get("description"):
             if "PORTAL_TRELLO_API_KEY" in os.environ and "PORTAL_TRELLO_API_TOKEN" in os.environ:
-                issue = request.POST.get('title', '')
-                details = request.POST.get('description', '')
+                issue = request.POST.get("title", "")
+                details = request.POST.get("description", "")
                 url = "https://api.trello.com/1/cards"
-                trelloKey = os.environ.get('PORTAL_TRELLO_API_KEY')
-                trelloToken = os.environ.get('PORTAL_TRELLO_API_TOKEN')
+                trelloKey = os.environ.get("PORTAL_TRELLO_API_KEY")
+                trelloToken = os.environ.get("PORTAL_TRELLO_API_TOKEN")
 
                 querystring = {"name": issue, "desc": details, "pos": "top", "idList": "5529dd886d658fdace75c830",
                                "keepFromSource": "all", "key": trelloKey, "token": trelloToken}
@@ -71,19 +71,19 @@ def issue(request):
                 if response.status_code == 200:
                     log_user_event(request.user, "Submitted issue: " + issue + " Content: " + details, "generic")
 
-                    return render(request, 'issue.html', {'message': "Submission Successful!"})
+                    return render(request, "issue.html", {"message": "Submission Successful!"})
                 else:
-                    return render(request, 'issue.html',
-                                  {'error': "Sorry but there was a server side error."})
+                    return render(request, "issue.html",
+                                  {"error": "Sorry but there was a server side error."})
 
             else:
-                return render(request, 'issue.html',
-                              {'error': "Sorry but there was a server side error: Trello API is not configured."})
+                return render(request, "issue.html",
+                              {"error": "Sorry but there was a server side error: Trello API is not configured."})
 
-        return render(request, 'issue.html', {'error': "Invalid form submission..."})
+        return render(request, "issue.html", {"error": "Invalid form submission..."})
 
     # render template normally
-    return render(request, 'issue.html')
+    return render(request, "issue.html")
 
 
 @login_required
@@ -93,7 +93,7 @@ def proxy(request):
     context = {"groups": groups}
 
     # Handle submission.
-    if request.method == 'POST':
+    if request.method == "POST":
         params = {}
         required_aprams = ["proxy-memberaddress", "proxy-proxyname", "proxy-proxyaddress", "proxy-type",
                            "proxy-meetingdate"]
@@ -125,4 +125,4 @@ def proxy(request):
         context["message"] = "Successfully submitted proxy. A copy has been emailed to you for your records."
 
     # render template normally
-    return render(request, 'proxy.html', context)
+    return render(request, "proxy.html", context)

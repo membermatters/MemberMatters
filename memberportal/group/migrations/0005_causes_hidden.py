@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('group', '0004_causes_leaders'),
+        ("group", "0004_causes_leaders"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='group',
-            name='hidden',
+            model_name="group",
+            name="hidden",
             field=models.BooleanField(default=False),
         ),
     ]

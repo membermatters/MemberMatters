@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('access', '0005_accesscontrolleddevice_play_theme'),
+        ("access", "0005_accesscontrolleddevice_play_theme"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='accesscontrolleddevice',
-            name='locked_out',
-            field=models.BooleanField(default=False, verbose_name='Maintenance lockout enabled'),
+            model_name="accesscontrolleddevice",
+            name="locked_out",
+            field=models.BooleanField(default=False, verbose_name="Maintenance lockout enabled"),
         ),
     ]

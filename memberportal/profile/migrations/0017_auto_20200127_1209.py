@@ -6,41 +6,41 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('group', '0007_auto_20200127_1209'),
-        ('profile', '0016_auto_20200127_1112'),
+        ("group", "0007_auto_20200127_1209"),
+        ("profile", "0016_auto_20200127_1112"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='profile',
-            old_name='group',
-            new_name='groups',
+            model_name="profile",
+            old_name="group",
+            new_name="groups",
         ),
         migrations.RemoveField(
-            model_name='profile',
-            name='can_add_cause',
+            model_name="profile",
+            name="can_add_cause",
         ),
         migrations.RemoveField(
-            model_name='profile',
-            name='can_manage_cause',
+            model_name="profile",
+            name="can_manage_cause",
         ),
         migrations.RemoveField(
-            model_name='profile',
-            name='can_manage_causes',
+            model_name="profile",
+            name="can_manage_causes",
         ),
         migrations.AddField(
-            model_name='profile',
-            name='can_add_group',
-            field=models.BooleanField(default=False, verbose_name='Can add a Group'),
+            model_name="profile",
+            name="can_add_group",
+            field=models.BooleanField(default=False, verbose_name="Can add a Group"),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='can_manage_group',
-            field=models.ManyToManyField(blank=True, related_name='can_manage_group', to='group.Group'),
+            model_name="profile",
+            name="can_manage_group",
+            field=models.ManyToManyField(blank=True, related_name="can_manage_group", to="group.Group"),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='can_manage_groups',
-            field=models.BooleanField(default=False, verbose_name='Can manage Group'),
+            model_name="profile",
+            name="can_manage_groups",
+            field=models.BooleanField(default=False, verbose_name="Can manage Group"),
         ),
     ]

@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('profile', '0006_auto_20181204_0256'),
+        ("profile", "0006_auto_20181204_0256"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='can_add_cause',
-            field=models.BooleanField(default=False, verbose_name='Can add a cause'),
+            model_name="profile",
+            name="can_add_cause",
+            field=models.BooleanField(default=False, verbose_name="Can add a cause"),
         ),
     ]

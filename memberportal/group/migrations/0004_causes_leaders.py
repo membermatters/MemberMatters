@@ -8,13 +8,13 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('group', '0003_causefund'),
+        ("group", "0003_causefund"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='group',
-            name='leaders',
+            model_name="group",
+            name="leaders",
             field=models.ManyToManyField(to=settings.AUTH_USER_MODEL),
         ),
     ]

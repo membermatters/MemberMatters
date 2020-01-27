@@ -6,32 +6,32 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('profile', '0004_auto_20181204_0115'),
+        ("profile", "0004_auto_20181204_0115"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='profile',
-            name='can_manage_access_devices',
+            model_name="profile",
+            name="can_manage_access_devices",
         ),
         migrations.AddField(
-            model_name='profile',
-            name='can_manage_doors',
-            field=models.BooleanField(default=False, verbose_name='Can manage doors'),
+            model_name="profile",
+            name="can_manage_doors",
+            field=models.BooleanField(default=False, verbose_name="Can manage doors"),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='can_manage_interlocks',
-            field=models.BooleanField(default=False, verbose_name='Can manage interlocks'),
+            model_name="profile",
+            name="can_manage_interlocks",
+            field=models.BooleanField(default=False, verbose_name="Can manage interlocks"),
         ),
         migrations.AlterField(
-            model_name='profile',
-            name='can_see_members_logs',
-            field=models.BooleanField(default=False, verbose_name='Can see member logs'),
+            model_name="profile",
+            name="can_see_members_logs",
+            field=models.BooleanField(default=False, verbose_name="Can see member logs"),
         ),
         migrations.AlterField(
-            model_name='profile',
-            name='can_see_members_memberbucks',
-            field=models.BooleanField(default=False, verbose_name='Can see member memberbucks details'),
+            model_name="profile",
+            name="can_see_members_memberbucks",
+            field=models.BooleanField(default=False, verbose_name="Can see member memberbucks details"),
         ),
     ]

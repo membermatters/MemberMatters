@@ -5,10 +5,10 @@ from django.db.models import Sum
 
 class MemberBucks(models.Model):
     TRANSACTION_TYPES = (
-        ('stripe', 'Stripe Payment'),
-        ('bank', 'Bank Transfer'),
-        ('card', 'Membership Card'),
-        ('web', 'Internal Web Payment')
+        ("stripe", "Stripe Payment"),
+        ("bank", "Bank Transfer"),
+        ("card", "Membership Card"),
+        ("web", "Internal Web Payment")
     )
 
     user = models.ForeignKey(
@@ -25,6 +25,6 @@ class MemberBucks(models.Model):
     def save(self, *args, **kwargs):
         super(MemberBucks, self).save(*args, **kwargs)
         balance = MemberBucks.objects.filter(
-            user=self.user).aggregate(Sum('amount'))['amount__sum']
+            user=self.user).aggregate(Sum("amount"))["amount__sum"]
         self.user.profile.memberbucks_balance = round(balance, 2)
         self.user.profile.save()

@@ -6,38 +6,38 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('profile', '0002_profile_must_update_profile'),
+        ("profile", "0002_profile_must_update_profile"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='can_disable_members',
-            field=models.BooleanField(default=False, verbose_name='Can disable members'),
+            model_name="profile",
+            name="can_disable_members",
+            field=models.BooleanField(default=False, verbose_name="Can disable members"),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='can_manage_access',
-            field=models.BooleanField(default=False, verbose_name='Can manage access'),
+            model_name="profile",
+            name="can_manage_access",
+            field=models.BooleanField(default=False, verbose_name="Can manage access"),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='can_manage_access_devices',
-            field=models.BooleanField(default=False, verbose_name='Can manage access devices'),
+            model_name="profile",
+            name="can_manage_access_devices",
+            field=models.BooleanField(default=False, verbose_name="Can manage access devices"),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='can_manage_causes',
-            field=models.BooleanField(default=False, verbose_name='Can manage causes'),
+            model_name="profile",
+            name="can_manage_causes",
+            field=models.BooleanField(default=False, verbose_name="Can manage causes"),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='can_see_members_personal_details',
-            field=models.BooleanField(default=False, verbose_name='Can see member personal details'),
+            model_name="profile",
+            name="can_see_members_personal_details",
+            field=models.BooleanField(default=False, verbose_name="Can see member personal details"),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='can_send_cause_emails',
-            field=models.BooleanField(default=False, verbose_name='Can send cause emails'),
+            model_name="profile",
+            name="can_send_cause_emails",
+            field=models.BooleanField(default=False, verbose_name="Can send cause emails"),
         ),
     ]

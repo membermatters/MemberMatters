@@ -7,19 +7,19 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('group', '0003_causefund'),
-        ('memberbucks', '0001_initial'),
+        ("group", "0003_causefund"),
+        ("memberbucks", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='memberbucks',
-            name='fund',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='group.CauseFund'),
+            model_name="memberbucks",
+            name="fund",
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to="group.CauseFund"),
         ),
         migrations.AlterField(
-            model_name='memberbucks',
-            name='transaction_type',
-            field=models.CharField(choices=[('stripe', 'Stripe Payment'), ('bank', 'Bank Transfer'), ('card', 'Membership Card'), ('web', 'Internal Web Payment')], max_length=10, verbose_name='Transaction Type'),
+            model_name="memberbucks",
+            name="transaction_type",
+            field=models.CharField(choices=[("stripe", "Stripe Payment"), ("bank", "Bank Transfer"), ("card", "Membership Card"), ("web", "Internal Web Payment")], max_length=10, verbose_name="Transaction Type"),
         ),
     ]

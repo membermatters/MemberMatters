@@ -36,7 +36,6 @@ class AccessControlledDevice(models.Model):
 
 
 class MemberbucksDevice(AccessControlledDevice):
-    # These three things aren't used/relevant
     all_members = False
 
     def lock(self):
@@ -49,7 +48,7 @@ class MemberbucksDevice(AccessControlledDevice):
 class Doors(AccessControlledDevice):
     def bump(self):
         import requests
-        r = requests.get('http://{}/bump'.format(self.ip_address))
+        r = requests.get("http://{}/bump".format(self.ip_address))
         if r.status_code == 200:
             log_event(self.name + " bumped from admin interface.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
             return True
@@ -64,7 +63,7 @@ class Doors(AccessControlledDevice):
 class Interlock(AccessControlledDevice):
     def lock(self):
         import requests
-        r = requests.get('http://{}/end'.format(self.ip_address))
+        r = requests.get("http://{}/end".format(self.ip_address))
         if r.status_code == 200:
             log_event(self.name + " locked from admin interface.", "interlock", "Status: {}. Content: {}".format(r.status_code, r.content))
             return True
@@ -81,7 +80,7 @@ class Interlock(AccessControlledDevice):
         return False
 
     def get_last_active(self):
-        interlocklog = InterlockLog.objects.filter(interlock=self).latest('last_heartbeat')
+        interlocklog = InterlockLog.objects.filter(interlock=self).latest("last_heartbeat")
         return interlocklog.last_heartbeat
 
 

@@ -21,13 +21,13 @@ def manage_groups(request):
         return HttpResponseForbidden("You do not have permission to access that.")
 
     # if we want to add a group
-    if request.method == 'POST':
+    if request.method == "POST":
         form = CauseForm(request.POST)
         if form.is_valid():
             form.save()
             log_user_event(
                 request.user,
-                f"Created {form.cleaned_data.get('name')} {config.GROUP_NAME}.",
+                f"Created {form.cleaned_data.get("name")} {config.GROUP_NAME}.",
                 "admin", form)
             return HttpResponseRedirect(reverse("manage_groups"))
 
@@ -36,7 +36,7 @@ def manage_groups(request):
 
     groups = Group.objects.all()
 
-    return render(request, 'manage_groups.html', {"form": form, "groups": groups})
+    return render(request, "manage_groups.html", {"form": form, "groups": groups})
 
 
 @login_required
@@ -46,7 +46,7 @@ def list_groups(request):
 
     return render(
         request,
-        'list_groups.html', {"groups": groups, })
+        "list_groups.html", {"groups": groups, })
 
 
 @login_required
@@ -57,7 +57,7 @@ def email_group_members(request, group_id):
     if not request.user.profile.can_manage_groups or group not in request.user.profile.can_manage_group.all():
         return HttpResponseForbidden("You do not have permission to access that.")
 
-    if request.method == 'POST':
+    if request.method == "POST":
         # check all our params exist
         for x in ("email_content", "subject", "group"):
             if x not in request.POST:
@@ -69,10 +69,10 @@ def email_group_members(request, group_id):
 
         # handle no message/subject specified
         if not len(title):
-            return render(request, 'email_group_members.html', {"group": group, "error": "No subject specified."})
+            return render(request, "email_group_members.html", {"group": group, "error": "No subject specified."})
 
         if not len(message):
-            return render(request, 'email_group_members.html', {"group": group, "error": "No message specified."})
+            return render(request, "email_group_members.html", {"group": group, "error": "No message specified."})
 
         subject = escape(f"{config.SITE_OWNER} {group.name} - {title}")  # format our subject
 
@@ -85,11 +85,11 @@ def email_group_members(request, group_id):
             emails.append(request.user.email)
 
         response = send_group_email(request.user, emails, subject, title, message)
-        return render(request, 'email_group_members.html', {"group": group, "success": response})
+        return render(request, "email_group_members.html", {"group": group, "success": response})
 
     else:
         group = Group.objects.get(pk=group_id)
-        return render(request, 'email_group_members.html', {"group": group})
+        return render(request, "email_group_members.html", {"group": group})
 
 
 @login_required
@@ -106,7 +106,7 @@ def edit_group(request, group_id):
     if not request.user.profile.can_manage_groups or group not in request.user.profile.can_manage_group.all():
         return HttpResponseForbidden("You do not have permission to access that.")
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = CauseForm(request.POST, instance=group)
         if form.is_valid():
             # if it was a form submission save it
@@ -115,15 +115,15 @@ def edit_group(request, group_id):
                 request.user,
                 f"Edited {group.name} {config.GROUP_NAME}.",
                 "admin", form)
-            return HttpResponseRedirect('%s' % (reverse('manage_groups')))
+            return HttpResponseRedirect("%s" % (reverse("manage_groups")))
         else:
             # otherwise return form with errors
-            return render(request, 'edit_group.html', {'form': form})
+            return render(request, "edit_group.html", {"form": form})
 
     else:
-        # if it's not a form submission, return an empty form
+        # if it"s not a form submission, return an empty form
         form = CauseForm(instance=Group.objects.get(pk=group_id))
-        return render(request, 'edit_group.html', {'form': form})
+        return render(request, "edit_group.html", {"form": form})
 
 
 @login_required

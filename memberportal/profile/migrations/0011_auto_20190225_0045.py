@@ -6,38 +6,38 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('profile', '0010_profile_can_generate_invoice'),
+        ("profile", "0010_profile_can_generate_invoice"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='centrelink',
+            model_name="profile",
+            name="centrelink",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='healthcare_card',
+            model_name="profile",
+            name="healthcare_card",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='income_bracket',
-            field=models.CharField(choices=[('low', '< $30k/yr ($550/wk)'), ('medium', '$30k/yr to $50k/yr ($950/wk)'), ('high', '> $50k/yr ($950/wk)')], default='high', max_length=10),
+            model_name="profile",
+            name="income_bracket",
+            field=models.CharField(choices=[("low", "< $30k/yr ($550/wk)"), ("medium", "$30k/yr to $50k/yr ($950/wk)"), ("high", "> $50k/yr ($950/wk)")], default="high", max_length=10),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='starving_override',
+            model_name="profile",
+            name="starving_override",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='studying_fulltime',
+            model_name="profile",
+            name="studying_fulltime",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='updated_starving_details',
+            model_name="profile",
+            name="updated_starving_details",
             field=models.DateTimeField(null=True),
         ),
     ]

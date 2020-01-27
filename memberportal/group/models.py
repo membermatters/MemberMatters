@@ -32,7 +32,7 @@ class Group(models.Model):
 
 
 class CauseFund(models.Model):
-    group = models.ForeignKey('Group', on_delete=models.CASCADE)
+    group = models.ForeignKey("Group", on_delete=models.CASCADE)
     name = models.CharField("Fund Name", max_length=20, unique=True)
     description = models.CharField(
         "Description of Fund", max_length=100)

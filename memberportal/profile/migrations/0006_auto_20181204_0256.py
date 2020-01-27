@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('group', '0003_causefund'),
-        ('profile', '0005_auto_20181204_0224'),
+        ("group", "0003_causefund"),
+        ("profile", "0005_auto_20181204_0224"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='profile',
-            name='can_send_cause_emails',
+            model_name="profile",
+            name="can_send_cause_emails",
         ),
         migrations.AddField(
-            model_name='profile',
-            name='can_email_causes',
-            field=models.ManyToManyField(blank=True, related_name='can_email_causes', to='group.Group'),
+            model_name="profile",
+            name="can_email_causes",
+            field=models.ManyToManyField(blank=True, related_name="can_email_causes", to="group.Group"),
         ),
     ]

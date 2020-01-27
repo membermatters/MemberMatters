@@ -33,7 +33,7 @@ def manage_doors(request):
         return HttpResponseForbidden("You do not have permission to access that.")
 
     doors = Doors.objects.all()
-    return render(request, 'manage_doors.html', {"doors": doors})
+    return render(request, "manage_doors.html", {"doors": doors})
 
 
 @login_required
@@ -42,17 +42,17 @@ def add_door(request):
     if not request.user.profile.can_manage_doors:
         return HttpResponseForbidden("You do not have permission to access that.")
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = DoorForm(request.POST)
         if form.is_valid():
             form.save()
-            log_user_event(request.user, "Created {} door.".format(form.cleaned_data['name']), "admin", form)
+            log_user_event(request.user, "Created {} door.".format(form.cleaned_data["name"]), "admin", form)
             return HttpResponseRedirect(reverse("manage_doors"))
 
     else:
         form = DoorForm()
 
-    return render(request, 'add_door.html', {"form": form})
+    return render(request, "add_door.html", {"form": form})
 
 
 @login_required
@@ -61,7 +61,7 @@ def edit_door(request, door_id):
     if not request.user.profile.can_manage_doors:
         return HttpResponseForbidden("You do not have permission to access that.")
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = DoorForm(request.POST, instance=Doors.objects.get(pk=door_id))
         if form.is_valid():
             # if it was a form submission save it
@@ -70,15 +70,15 @@ def edit_door(request, door_id):
                 request.user,
                 "Edited {} door.".format(Doors.objects.get(pk=door_id).name),
                 "admin", form)
-            return HttpResponseRedirect('%s' % (reverse('manage_doors')))
+            return HttpResponseRedirect("%s" % (reverse("manage_doors")))
         else:
             # otherwise return form with errors
-            return render(request, 'edit_door.html', {'form': form})
+            return render(request, "edit_door.html", {"form": form})
 
     else:
-        # if it's not a form submission, return an empty form
+        # if it"s not a form submission, return an empty form
         form = DoorForm(instance=Doors.objects.get(pk=door_id))
-        return render(request, 'edit_door.html', {'form': form})
+        return render(request, "edit_door.html", {"form": form})
 
 
 @login_required
@@ -90,7 +90,7 @@ def delete_door(request, door_id):
     door = Doors.objects.get(pk=door_id)
     log_user_event(request.user, "Deleted {} door.".format(door.name), "admin")
     door.delete()
-    return HttpResponseRedirect('%s' % (reverse('manage_doors')))
+    return HttpResponseRedirect("%s" % (reverse("manage_doors")))
 
 
 @login_required
@@ -149,7 +149,7 @@ def play_theme_song(user):
 
 def post_door_swipe_to_discord(name, door, successful):
     if "PORTAL_DISCORD_DOOR_WEBHOOK" in os.environ:
-        url = os.environ.get('PORTAL_DISCORD_DOOR_WEBHOOK')
+        url = os.environ.get("PORTAL_DISCORD_DOOR_WEBHOOK")
 
         json_message = {
             "description": "",
@@ -157,13 +157,13 @@ def post_door_swipe_to_discord(name, door, successful):
         }
 
         if successful:
-            json_message['embeds'].append({
+            json_message["embeds"].append({
                 "description": ":unlock: {} just **successfully** swiped at {} door.".format(name, door),
                 "color": 5025616
             })
 
         else:
-            json_message['embeds'].append({
+            json_message["embeds"].append({
                 "description": "{} just swiped at {} door but was **rejected**. You can check your access [here](https://portal.hsbne.org/profile/access/view/).".format(
                     name, door),
                 "color": 16007990
@@ -179,7 +179,7 @@ def post_door_swipe_to_discord(name, door, successful):
 
 def post_interlock_swipe_to_discord(name, interlock, type, time=None):
     if "PORTAL_DISCORD_INTERLOCK_WEBHOOK" in os.environ:
-        url = os.environ.get('PORTAL_DISCORD_INTERLOCK_WEBHOOK')
+        url = os.environ.get("PORTAL_DISCORD_INTERLOCK_WEBHOOK")
 
         json_message = {
             "description": "",
@@ -187,32 +187,32 @@ def post_interlock_swipe_to_discord(name, interlock, type, time=None):
         }
 
         if type == "activated":
-            json_message['embeds'].append({
+            json_message["embeds"].append({
                 "description": ":unlock: {} just **activated** the {}.".format(name, interlock),
                 "color": 5025616
             })
 
         elif type == "rejected":
-            json_message['embeds'].append({
+            json_message["embeds"].append({
                 "description": "{} tried to activate the {} but was **rejected**. You can check your access [here](https://portal.hsbne.org/profile/access/view/).".format(
                     name, interlock),
                 "color": 16007990
             })
 
         elif type == "left_on":
-            json_message['embeds'].append({
+            json_message["embeds"].append({
                 "description": ":lock: The {} was just turned off by the access system because it timed out (last used by {}). It was on for {}.".format(interlock, name, time),
                 "color": 16750592
             })
 
         elif type == "deactivated":
-            json_message['embeds'].append({
+            json_message["embeds"].append({
                 "description": ":lock: {} just **deactivated** the {}. It was on for {}.".format(name, interlock, time),
                 "color": 5025616
             })
 
         elif type == "maintenance_lock_out":
-            json_message['embeds'].append({
+            json_message["embeds"].append({
                 "description": "{} tried to access the {} but it is currently under a maintenance lockout".format(name, interlock),
                 "color": 16007990
             })
@@ -250,7 +250,7 @@ def check_door_access(request, rfid_code, door_id=None):
                                  "timestamp": round(time.time())})
 
     else:
-        door_ip = request.META.get('HTTP_X_REAL_IP')
+        door_ip = request.META.get("HTTP_X_REAL_IP")
 
         try:
             door = Doors.objects.get(ip_address=door_ip)
@@ -282,7 +282,7 @@ def check_door_access(request, rfid_code, door_id=None):
 
                 return JsonResponse({"access": True, "name": user.profile.first_name})
 
-    # if the are inactive or don't have access
+    # if the are inactive or don"t have access
     user.profile.update_last_seen()
     post_door_swipe_to_discord(user.profile.get_full_name(), door.name, False)
     return JsonResponse({"access": False, "name": user.profile.first_name})
@@ -335,7 +335,7 @@ def get_door_tags(door, return_hash=False):
                 authorised_tags.append(profile.rfid)
 
     if return_hash:
-        return hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
+        return hashlib.md5(str(authorised_tags).encode("utf-8")).hexdigest()
 
     else:
         return authorised_tags
@@ -364,7 +364,7 @@ def get_interlock_tags(interlock, return_hash=False):
                 authorised_tags.append(profile.rfid)
 
     if return_hash:
-        return hashlib.md5(str(authorised_tags).encode('utf-8')).hexdigest()
+        return hashlib.md5(str(authorised_tags).encode("utf-8")).hexdigest()
 
     else:
         return authorised_tags
@@ -383,7 +383,7 @@ def interlock_checkin(request, interlock=None):
             return JsonResponse({"success": False, "error": "Error interlock does not exist.", "timestamp": round(time.time())})
 
     else:
-        ip = request.META.get('HTTP_X_REAL_IP')
+        ip = request.META.get("HTTP_X_REAL_IP")
         authorised_tags = get_interlock_tags(ip, True)
 
         if authorised_tags:
@@ -407,7 +407,7 @@ def door_checkin(request, door=None):
             return JsonResponse({"success": False, "error": "Error door does not exist.", "timestamp": round(time.time())})
 
     else:
-        ip = request.META.get('HTTP_X_REAL_IP')
+        ip = request.META.get("HTTP_X_REAL_IP")
         authorised_tags = get_door_tags(ip, True)
 
         if authorised_tags:
@@ -424,7 +424,7 @@ def authorised_door_tags(request, door=None):
         tags = get_door_tags(door)
 
         if tags:
-            tags_hash = hashlib.md5(str(tags).encode('utf-8')).hexdigest()
+            tags_hash = hashlib.md5(str(tags).encode("utf-8")).hexdigest()
 
             return JsonResponse({"authorised_tags": tags, "authorised_tags_hash": tags_hash})
 
@@ -435,11 +435,11 @@ def authorised_door_tags(request, door=None):
                                  "timestamp": round(time.time())})
 
     else:
-        ip = request.META.get('HTTP_X_REAL_IP')
+        ip = request.META.get("HTTP_X_REAL_IP")
         tags = get_door_tags(ip)
 
         if tags:
-            tags_hash = hashlib.md5(str(tags).encode('utf-8')).hexdigest()
+            tags_hash = hashlib.md5(str(tags).encode("utf-8")).hexdigest()
 
             return JsonResponse({"authorised_tags": tags, "authorised_tags_hash": tags_hash})
 
@@ -455,7 +455,7 @@ def authorised_interlock_tags(request, interlock=None):
     if interlock is not None:
         tags = get_interlock_tags(interlock)
         if tags:
-            tags_hash = hashlib.md5(str(tags).encode('utf-8')).hexdigest()
+            tags_hash = hashlib.md5(str(tags).encode("utf-8")).hexdigest()
 
             return JsonResponse({"authorised_tags": tags, "authorised_tags_hash": tags_hash})
 
@@ -466,11 +466,11 @@ def authorised_interlock_tags(request, interlock=None):
                                  "timestamp": round(time.time())})
 
     else:
-        ip = request.META.get('HTTP_X_REAL_IP')
+        ip = request.META.get("HTTP_X_REAL_IP")
         tags = get_interlock_tags(ip)
 
         if tags:
-            tags_hash = hashlib.md5(str(tags).encode('utf-8')).hexdigest()
+            tags_hash = hashlib.md5(str(tags).encode("utf-8")).hexdigest()
             return JsonResponse({"authorised_tags": tags, "authorised_tags_hash": tags_hash})
 
         else:
@@ -487,7 +487,7 @@ def manage_interlocks(request):
         return HttpResponseForbidden("You do not have permission to access that.")
 
     interlocks = Interlock.objects.all()
-    return render(request, 'manage_interlocks.html', {"interlocks": interlocks})
+    return render(request, "manage_interlocks.html", {"interlocks": interlocks})
 
 
 @login_required
@@ -515,7 +515,7 @@ def view_interlock_sessions(request):
         }
         interlock_sessions.append(session)
 
-    return render(request, 'view_interlock_sessions.html', {"sessions": interlock_sessions})
+    return render(request, "view_interlock_sessions.html", {"sessions": interlock_sessions})
 
 @login_required
 @admin_required
@@ -524,14 +524,14 @@ def view_interlock_statistics(request):
         return HttpResponseForbidden("You do not have permission to access that.")
 
     InterlockLog.objects.annotate(
-    duration = Func(F('last_heartbeat'), F('first_heartbeat'), function='age')
+    duration = Func(F("last_heartbeat"), F("first_heartbeat"), function="age")
     )
 
 #    for obj in objects:
 #        print obj.id, obj.duration, obj.duration.seconds
 
 
-    return render(request, 'view_interlock_statistics.html', {"sessions": duration})
+    return render(request, "view_interlock_statistics.html", {"sessions": duration})
 
 
 
@@ -541,20 +541,20 @@ def add_interlock(request):
     if not request.user.profile.can_manage_interlocks:
         return HttpResponseForbidden("You do not have permission to access that.")
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = InterlockForm(request.POST)
         if form.is_valid():
             form.save()
             log_user_event(
                 request.user,
-                "Created {} interlock.".format(form.cleaned_data['name']),
+                "Created {} interlock.".format(form.cleaned_data["name"]),
                 "admin", form)
             return HttpResponseRedirect(reverse("manage_interlocks"))
 
     else:
         form = InterlockForm()
 
-    return render(request, 'add_interlock.html', {"form": form})
+    return render(request, "add_interlock.html", {"form": form})
 
 
 @login_required
@@ -563,7 +563,7 @@ def edit_interlock(request, interlock_id):
     if not request.user.profile.can_manage_interlocks:
         return HttpResponseForbidden("You do not have permission to access that.")
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = InterlockForm(request.POST, instance=Interlock.objects.get(pk=interlock_id))
         if form.is_valid():
             # if it was a form submission save it
@@ -572,15 +572,15 @@ def edit_interlock(request, interlock_id):
                 request.user,
                 "Edited {} interlock.".format(Interlock.objects.get(pk=interlock_id).name),
                 "admin", form)
-            return HttpResponseRedirect('%s' % (reverse('manage_interlocks')))
+            return HttpResponseRedirect("%s" % (reverse("manage_interlocks")))
         else:
             # otherwise return form with errors
-            return render(request, 'edit_interlock.html', {'form': form})
+            return render(request, "edit_interlock.html", {"form": form})
 
     else:
-        # if it's not a form submission, return an empty form
+        # if it"s not a form submission, return an empty form
         form = InterlockForm(instance=Interlock.objects.get(pk=interlock_id))
-        return render(request, 'edit_interlock.html', {'form': form})
+        return render(request, "edit_interlock.html", {"form": form})
 
 
 @login_required
@@ -592,7 +592,7 @@ def delete_interlock(request, interlock_id):
     interlock = Interlock.objects.get(pk=interlock_id)
     log_user_event(request.user, "Deleted {} interlock.".format(interlock.name), "admin")
     interlock.delete()
-    return HttpResponseRedirect('%s' % (reverse('manage_interlocks')))
+    return HttpResponseRedirect("%s" % (reverse("manage_interlocks")))
 
 
 @login_required
@@ -672,7 +672,7 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
                                  "timestamp": round(time.time())})
 
     else:
-        interlock_ip = request.META.get('HTTP_X_REAL_IP')
+        interlock_ip = request.META.get("HTTP_X_REAL_IP")
 
         try:
             interlock = Interlock.objects.get(ip_address=interlock_ip)
@@ -704,7 +704,7 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
                 return JsonResponse({"access": True, "session_id": session.id, "timestamp": round(time.time()),
                                      "name": user.profile.first_name})
 
-    # if they are inactive or don't have access
+    # if they are inactive or don"t have access
     user.profile.update_last_seen()
     post_interlock_swipe_to_discord(user.profile.get_full_name(), interlock.name, "rejected")
     return JsonResponse({"access": False, "name": user.profile.first_name})
@@ -727,7 +727,7 @@ def memberbucks_device_checkin(request, device_id=None):
 
     else:
         try:
-            device_ip = request.META.get('HTTP_X_REAL_IP')
+            device_ip = request.META.get("HTTP_X_REAL_IP")
             device = MemberbucksDevice.objects.get(ip_address=device_ip)
             device.checkin()
             return JsonResponse({"success": True, "timestamp": round(time.time())})
