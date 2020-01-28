@@ -7,7 +7,7 @@
  
  To get started, download the latest version from docker hub using the following command:
  ```bash
-docker pull jabelone/membermatters
+docker pull jaimynmayer/membermatters
 ```
 
 Create a file to contain all of your environment variables. This file contains sensitive information so treat it like a 
@@ -37,7 +37,7 @@ PORTAL_DISCORD_DOOR_WEBHOOK=https://discordapp.com/api/webhooks/xxxx/xxxxxx
 
 Once you've downloaded the docker image and configured your environment variables, you'll need to create a container:
 ```bash
-docker create -p 8000:8000 --name membermatters --restart always --detach --env-file /usr/app/env.list -v /usr/app/:/usr/src/data jabelone/membermatters
+docker create -p 8000:8000 --name membermatters --restart always --detach --env-file /usr/app/env.list -v /usr/app/:/usr/src/data jaimynmayer/membermatters
 ```
 
 Once your container is running, you will be able to login with the default admin account details:
