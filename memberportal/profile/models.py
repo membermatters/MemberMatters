@@ -244,7 +244,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.password_reset_expire = timezone.now() + timedelta(hours=24)
         self.save()
         self.email_password_reset(
-            "https://portal.hsbne.org" + reverse("reset_password", kwargs={"reset_token": self.password_reset_key}))
+            config.SITE_URL + reverse("reset_password", kwargs={"reset_token": self.password_reset_key}))
 
         return True
 

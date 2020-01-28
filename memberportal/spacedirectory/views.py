@@ -23,14 +23,14 @@ def spacedirectory_status(request):
         },
         "space": f"{config.SITE_OWNER}",
         "logo": "",
-        "url": "https://hsbne.org/",
+        "url": config.MAIN_SITE_URL,
 
         "spacefed": {"spacenet": False, "spacesaml": False, "spacephone": False},
 
         "cam": ["https://portal.hsbne.org/webcamsnapshots/greenroom.jpg", "https://portal.hsbne.org/webcamsnapshots/quad.jpg"],
 
         "contact": {
-            "email": "contact@hsbne.org",
+            "email": config.EMAIL_ADMIN,
             "twitter": "@HSBNE"
         },
 
