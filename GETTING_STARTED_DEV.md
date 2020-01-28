@@ -84,7 +84,7 @@ Starting development server at http://127.0.0.1:8000/
 
 Take note of the IP and port. In this case, open your favourite browser and go to `http://127.0.0.1:8000/`. You should 
 be presented with the home page of the web app. You can login with the username "default@example.com" and password 
-"hsbne123". You should create a new account, then use the default account to give your new account admin rights. You 
+"MemberMatters!". You should create a new account, then use the default account to give your new account admin rights. You 
 should change the password of the default admin account.
 
 ##### Notes for HSBNE infrastructure maintainers

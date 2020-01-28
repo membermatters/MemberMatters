@@ -68,16 +68,16 @@
                 Welcome to the {{ config.SITE_NAME }}!
             </h5>
             <span>
-                Please note this is not our main website. This is the membership portal for HSBNE members or those who
-                wish to join.
+                Please note this is not our main website. This is the membership portal for {{config.SITE_OWNER}}
+                members or those who wish to join.
             </span>
-            <span class="center light home-text-columns">Our main website has more information about HSBNE. All
+            <span class="center light home-text-columns">Our main website has more information about {{config.SITE_OWNER}}. All
                 sponsorship, media and other general enquiries should be directed there.</span>
             <br><br>
             <div class="row">
                 <div class="col s12 m4">
-                    <a href="https://hsbne.org" target="_blank" id="go-to-website" class="btn-large cn-green center">About
-                        HSBNE</a><br><br>
+                    <a href="{{config.MAIN_SITE_URL}}" target="_blank" id="go-to-website" class="btn-large cn-green center">About
+                        {{config.SITE_OWNER}}</a><br><br>
                 </div>
                 <div class="col s12 m4">
                     <a href="{% url 'signup' %}" id="go-to-signup" class="btn-large cn-green center">Member Sign

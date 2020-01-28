@@ -160,6 +160,7 @@ CONSTANCE_CONFIG = {
     "SITE_MAIL_ADDRESS": ("123 Example St, Nowhere", "This address is used in the footer of all emails for anti spam."),
 
     "SITE_URL": ("https://membermatters.org", "The publicly accessible URL of your MemberMatters instance."),
+    "MAIN_SITE_URL": ("https://membermatters.org", "The URL of your main website."),
     "INDUCTION_URL": ("https://eventbrite.com.au", "The URL members should visit to book in for a site induction."),
 
     "MEMBERBUCKS_NAME": ("Memberbucks", "You can customise the name of the portals currency."),
