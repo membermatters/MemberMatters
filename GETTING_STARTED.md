@@ -1,7 +1,4 @@
  ### Getting Started
- This documentation is in progress and may be missing some sections so please read with caution.
- MemberMatters runs in a docker container and is designed to be easy to deploy and customise.
- 
  > Note: MemberMatters only supports running in Docker on Linux. Installing Docker is outside the scope of this guide, 
 >please consult your favourite search engine for tips.
  
