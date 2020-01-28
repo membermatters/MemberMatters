@@ -64,13 +64,13 @@ We suggest writing a bash script like the one below:
 
 ```bash
 echo "checking for new docker image"
-docker pull jabelone/membermatters
+docker pull jaimynmayer/membermatters
 echo "Stopping the docker container"
 docker stop membermatters
 echo "Removing the old docker container"
 docker rm membermatters
 echo "Creating new docker container"
-docker create -p 8000:8000 --name membermatters --restart always --detach --env-file /usr/app/env.list -v /usr/app/:/usr/src/data jabelone/membermatters
+docker create -p 8000:8000 --name membermatters --restart always --detach --env-file /usr/app/env.list -v /usr/app/:/usr/src/data jaimynmayer/membermatters
 echo "Running new docker container"
 docker start membermatters
 ``` 
