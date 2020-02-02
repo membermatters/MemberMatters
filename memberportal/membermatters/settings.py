@@ -168,8 +168,8 @@ CONSTANCE_CONFIG = {
     "MAIN_SITE_URL": ("https://membermatters.org", "The URL of your main website."),
     "INDUCTION_URL": ("https://eventbrite.com.au", "The URL members should visit to book in for a site induction."),
 
-    'SITE_LOGO': ('logo.png', 'Site logo (rectangular)', 'image_field'),
-    'SITE_FAVICON': ('logo_square.png', 'Site favicon (square)', 'image_field'),
+    'SITE_LOGO': ('img/logo/logo_small.png', 'Site logo (rectangular)', 'image_field'),
+    'SITE_FAVICON': ('img/logo/logo_square_small.png', 'Site favicon (square)', 'image_field'),
 
     "MEMBERBUCKS_NAME": ("Memberbucks", "You can customise the name of the portals currency."),
     "GROUP_NAME": ("Group", "You can customise what the portal calls a group."),
