@@ -57,7 +57,7 @@ class AddProfileForm(forms.ModelForm):
 class EditProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ("first_name", "last_name", "phone", "screen_name", "groups")
+        fields = ("first_name", "last_name", "phone", "screen_name", "groups", "picture")
 
     def clean(self):
         groups = self.cleaned_data.get("groups")
