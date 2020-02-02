@@ -15,6 +15,7 @@ from profile.xerohelpers import get_xero_contact, create_membership_invoice
 from profile.xerohelpers import add_to_xero
 from constance import config
 import json
+import uuid
 
 utc = pytz.UTC
 
@@ -260,6 +261,13 @@ class MemberTypes(models.Model):
 
 
 class Profile(models.Model):
+    def path_and_rename(self, filename):
+        ext = filename.split('.')[-1]
+        # set filename as random string
+        filename = f'profile_pics/{str(uuid.uuid4())}.{ext}'
+        # return the new path to the file
+        return os.path.join(filename)
+
     STATES = (
         ("noob", "New Member"),
         ("active", "Active Member"),
@@ -278,6 +286,8 @@ class Profile(models.Model):
                 "Up to 12 characters allowed.")
     phone = models.CharField(validators=[phone_regex], max_length=12, blank=True)
     state = models.CharField(max_length=8, default="noob", choices=STATES)
+
+    picture = models.ImageField(upload_to=path_and_rename, null=True, blank=True)
 
     member_type = models.ForeignKey(MemberTypes, on_delete=models.PROTECT, related_name="member_type")
     groups = models.ManyToManyField("group.Group")
