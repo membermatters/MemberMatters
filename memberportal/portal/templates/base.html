@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     {% load static %}
+    {% get_media_prefix as MEDIA_URL %}
+
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-129685827-1"></script>
     <script>
@@ -29,7 +31,7 @@
     <link href="{% static '/css/materialize.css' %}" type="text/css" rel="stylesheet" media="screen,projection"/>
     <link href="{% static '/css/main.css' %}" type="text/css" rel="stylesheet" media="screen,projection"/>
 
-    <link rel="shortcut icon" type="image/png" href="{% static '/img/logo/logo_square_small.png' %}"/>
+    <link rel="shortcut icon" type="image/png" href="{{ MEDIA_URL }}{{ config.SITE_FAVICON }}"/>
 </head>
 
 {% block body_tag %}
@@ -39,7 +41,7 @@
 <nav class="portal-dark-background" role="navigation">
     <div class="nav-wrapper container">
         <a id="logo-container" href="/" class="brand-logo">
-            <img id="logo" class="left" src="{% static '/img/logo/logo_small.png' %}" class="brand-logo">
+            <img id="logo" class="left" src="{{ MEDIA_URL }}{{ config.SITE_LOGO }}" class="brand-logo">
             {#  TODO: allow logo and/or text name. #}
             {#            <div class="hide-on-small-only">{{config.SITE_NAME}}</div>#}
         </a>
@@ -96,7 +98,7 @@
                     </li>
                     {% if request.user.profile.can_manage_groups %}
                         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_groups' %}">Manage
-                            Group</a>
+                            {{config.GROUP_NAME}}s</a>
                         </li>
                     {% endif %}
                     {% if request.user.profile.can_manage_doors %}

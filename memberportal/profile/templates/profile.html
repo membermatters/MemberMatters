@@ -46,7 +46,7 @@
                 </tr>
             {% endif %}
             <tr>
-                <td><b>Group:</b></td>
+                <td><b>{{config.GROUP_NAME}}:</b></td>
                 <td>{% for group in user.profile.groups.all %}
                     {{ group }}{% if not forloop.last %},{% endif %}
                 {% endfor %}</td>

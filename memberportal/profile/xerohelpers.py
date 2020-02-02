@@ -224,7 +224,7 @@ def create_membership_invoice(user, email_invoice=False):
         "LineItems": line_items,
         "Status": "AUTHORISED",
         "Reference": user.profile.xero_account_number,
-        "Url": "https://portal.hsbne.org",
+        "Url": config.SITE_URL,
     }
 
     if "PORTAL_XERO_CONSUMER_KEY" in os.environ:

@@ -164,8 +164,7 @@ def post_door_swipe_to_discord(name, door, successful):
 
         else:
             json_message["embeds"].append({
-                "description": "{} just swiped at {} door but was **rejected**. You can check your access [here](https://portal.hsbne.org/profile/access/view/).".format(
-                    name, door),
+                "description": f"{name} just swiped at {door} door but was **rejected**. You can check your access [here]({config.SITE_URL}/profile/access/view/).",
                 "color": 16007990
             })
 
@@ -194,8 +193,7 @@ def post_interlock_swipe_to_discord(name, interlock, type, time=None):
 
         elif type == "rejected":
             json_message["embeds"].append({
-                "description": "{} tried to activate the {} but was **rejected**. You can check your access [here](https://portal.hsbne.org/profile/access/view/).".format(
-                    name, interlock),
+                "description": f"{name} tried to activate the {interlock} but was **rejected**. You can check your access [here]({config.SITE_URL}/profile/access/view/).",
                 "color": 16007990
             })
 

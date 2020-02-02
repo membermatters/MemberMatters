@@ -140,6 +140,7 @@ STATIC_URL = "/static/"
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/signin"
 MEDIA_URL = "/media/"
+MEDIA_ROOT = os.environ.get("PORTAL_MEDIA_LOCATION", "/usr/src/data/media/")
 
 AUTH_USER_MODEL = "profile.User"
 
@@ -147,6 +148,10 @@ REQUEST_TIMEOUT = 0.05
 
 # Django constance configuration
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
+
+CONSTANCE_ADDITIONAL_FIELDS = {
+    'image_field': ['django.forms.ImageField', {}]
+}
 
 CONSTANCE_CONFIG = {
     "SITE_NAME": ("MemberMatters Portal", "The title shown at the top of the page and as the tab title."),
@@ -160,7 +165,11 @@ CONSTANCE_CONFIG = {
     "SITE_MAIL_ADDRESS": ("123 Example St, Nowhere", "This address is used in the footer of all emails for anti spam."),
 
     "SITE_URL": ("https://membermatters.org", "The publicly accessible URL of your MemberMatters instance."),
+    "MAIN_SITE_URL": ("https://membermatters.org", "The URL of your main website."),
     "INDUCTION_URL": ("https://eventbrite.com.au", "The URL members should visit to book in for a site induction."),
+
+    'SITE_LOGO': ('logo.png', 'Site logo (rectangular)', 'image_field'),
+    'SITE_FAVICON': ('logo_square.png', 'Site favicon (square)', 'image_field'),
 
     "MEMBERBUCKS_NAME": ("Memberbucks", "You can customise the name of the portals currency."),
     "GROUP_NAME": ("Group", "You can customise what the portal calls a group."),
@@ -174,6 +183,7 @@ CONSTANCE_CONFIG = {
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict([
     ("General", ("SITE_NAME", "SITE_OWNER", "ENTITY_TYPE",)),
     ("Contact Information", ("EMAIL_SYSADMIN", "EMAIL_ADMIN", "EMAIL_DEFAULT_FROM", "SITE_MAIL_ADDRESS")),
-    ("URLs", ("SITE_URL", "INDUCTION_URL")),
+    ("URLs", ("SITE_URL", "MAIN_SITE_URL", "INDUCTION_URL")),
+    ("Images", ("SITE_LOGO", "SITE_FAVICON")),
     ("Group Localisation", ("MEMBERBUCKS_NAME", "GROUP_NAME", "ADMIN_NAME", "HOME_PAGE_CARDS", "WELCOME_EMAIL_CARDS"))
 ])

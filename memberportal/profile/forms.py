@@ -49,7 +49,7 @@ class AddProfileForm(forms.ModelForm):
     def clean(self):
         groups = self.cleaned_data.get("groups")
         if groups and groups.count() > 3:
-            raise ValidationError(f"Sorry, only three {config.GROUP_NAME} are allowed.")
+            raise ValidationError(f"Sorry, only three {config.GROUP_NAME}s are allowed.")
 
         return self.cleaned_data
 
@@ -62,7 +62,7 @@ class EditProfileForm(forms.ModelForm):
     def clean(self):
         groups = self.cleaned_data.get("groups")
         if groups and groups.count() > 3:
-            raise ValidationError(f"Sorry, only three {config.GROUP_NAME} are allowed.")
+            raise ValidationError(f"Sorry, only three {config.GROUP_NAME}s are allowed.")
 
         return self.cleaned_data
 
@@ -77,7 +77,7 @@ class AdminEditProfileForm(forms.ModelForm):
     def clean(self):
         groups = self.cleaned_data.get("groups")
         if groups and groups.count() > 3:
-            raise ValidationError(f"Sorry, only three {config.GROUP_NAME} are allowed.")
+            raise ValidationError(f"Sorry, only three {config.GROUP_NAME}s are allowed.")
 
         return self.cleaned_data
 

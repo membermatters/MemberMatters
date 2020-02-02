@@ -90,7 +90,7 @@ def signup(request):
             profile.save()
             profile_form.save_m2m()
 
-            profile.email_profile_to("contact@hsbne.org")
+            profile.email_profile_to(config.EMAIL_ADMIN)
 
             new_user.email_link(
                 f"{config.SITE_OWNER} New Member Signup - Action Required",

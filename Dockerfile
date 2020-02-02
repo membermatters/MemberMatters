@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y nginx
 # Copy our requirements across and install dependencies
 # Splitting this and copying the full code means we take advantage of the docker cache layers and don't have to
 # reinstall everything when the code changes
-RUN mkdir /usr/src/app && mkdir /usr/src/logs && mkdir /usr/src/data
+RUN mkdir /usr/src/app && mkdir /usr/src/logs && mkdir /usr/src/data && mkdir /usr/src/data/media
 ADD ./requirements.txt /usr/src/app
 WORKDIR /usr/src/app
 RUN pip install --no-cache-dir -r requirements.txt
