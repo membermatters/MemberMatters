@@ -20,7 +20,7 @@
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
-    <title>{% block title %}{{config.SITE_NAME}}{% endblock %} - {{config.SITE_NAME}}</title>
+    <title>{% block title %}{{ config.SITE_NAME }}{% endblock %} - {{ config.SITE_NAME }}</title>
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -31,7 +31,11 @@
     <link href="{% static '/css/materialize.css' %}" type="text/css" rel="stylesheet" media="screen,projection"/>
     <link href="{% static '/css/main.css' %}" type="text/css" rel="stylesheet" media="screen,projection"/>
 
-    <link rel="shortcut icon" type="image/png" href="{{ MEDIA_URL }}{{ config.SITE_FAVICON }}"/>
+    {% if config.SITE_FAVICON == "img/logo/logo_square_small.png" %}
+        <link rel="shortcut icon" type="image/png" href="{% static "img/logo/logo_square_small.png" %}"/>
+    {% else %}
+        <link rel="shortcut icon" type="image/png" href="{{ MEDIA_URL }}{{ config.SITE_FAVICON }}"/>
+    {% endif %}
 </head>
 
 {% block body_tag %}
@@ -41,7 +45,12 @@
 <nav class="portal-dark-background" role="navigation">
     <div class="nav-wrapper container">
         <a id="logo-container" href="/" class="brand-logo">
-            <img id="logo" class="left" src="{{ MEDIA_URL }}{{ config.SITE_LOGO }}" class="brand-logo">
+            {% if config.SITE_LOGO == "img/logo/logo_small.png" %}
+                <img id="logo" class="left" src="{% static "img/logo/logo_small.png" %}" class="brand-logo">
+            {% else %}
+                <img id="logo" class="left" src="{{ MEDIA_URL }}{{ config.SITE_LOGO }}" class="brand-logo">
+            {% endif %}
+
             {#  TODO: allow logo and/or text name. #}
             {#            <div class="hide-on-small-only">{{config.SITE_NAME}}</div>#}
         </a>
@@ -81,7 +90,8 @@
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Profile</a>
                 </li>
                 {% if not user.profile.state|stringformat:"s" == "noob" %}
-                    <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_memberbucks' %}">{{config.MEMBERBUCKS_NAME}}</a>
+                    <li><a class="waves-effect waves-light modal-trigger"
+                           href="{% url 'manage_memberbucks' %}">{{ config.MEMBERBUCKS_NAME }}</a>
                     </li>
                     <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">My
                         Access
@@ -98,7 +108,7 @@
                     </li>
                     {% if request.user.profile.can_manage_groups %}
                         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_groups' %}">Manage
-                            {{config.GROUP_NAME}}s</a>
+                            {{ config.GROUP_NAME }}s</a>
                         </li>
                     {% endif %}
                     {% if request.user.profile.can_manage_doors %}
@@ -120,7 +130,7 @@
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'report_issue' %}">Report
                     Issue</a></li>
                 {% if not user.profile.state|stringformat:"s" == "noob" %}
-                    <li><a class="waves-effect waves-light" href="{% url 'list_groups' %}">{{config.GROUP_NAME}}
+                    <li><a class="waves-effect waves-light" href="{% url 'list_groups' %}">{{ config.GROUP_NAME }}
                         Members</a></li>
                     <li><a class="waves-effect waves-light" href="{% url 'recent_swipes' %}">Recent
                         Swipes</a>
@@ -146,7 +156,8 @@
         <li><a class="waves-effect waves-light modal-trigger" href="{% url 'profile' %}">Profile</a></li>
 
         {% if not user.profile.state|stringformat:"s" == "noob" %}
-            <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_memberbucks' %}">{{config.MEMBERBUCKS_NAME}}</a>
+            <li><a class="waves-effect waves-light modal-trigger"
+                   href="{% url 'manage_memberbucks' %}">{{ config.MEMBERBUCKS_NAME }}</a>
             </li>
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'access_permissions' %}">Access
                 Permissions</a></li>
@@ -157,13 +168,13 @@
     <ul id="member-dropdown" class="dropdown-content">
         <li><a class="waves-effect waves-light" href="{% url 'report_issue' %}">Report Issue</a></li>
         {% if not user.profile.state|stringformat:"s" == "noob" %}
-            <li><a class="waves-effect waves-light" href="{% url 'list_groups' %}">{{config.GROUP_NAME}} Members</a>
+            <li><a class="waves-effect waves-light" href="{% url 'list_groups' %}">{{ config.GROUP_NAME }} Members</a>
             </li>
 
             <li><a class="waves-effect waves-light" href="{% url 'recent_swipes' %}">Recent Swipes</a>
             </li>
             <li><a class="waves-effect waves-light" href="{% url 'last_seen' %}">Last Seen</a></li>
-             <li><a class="waves-effect waves-light" href="{% url 'submit_proxy' %}">Submit Proxy</a>
+            <li><a class="waves-effect waves-light" href="{% url 'submit_proxy' %}">Submit Proxy</a>
         {% endif %}
         <li><a class="waves-effect waves-light" href="{% url 'webcams' %}">Public Webcams</a></li>
     </ul>
@@ -173,7 +184,7 @@
             <li><a class="waves-effect waves-light modal-trigger" href="{% url 'member_list' %}">Member List</a></li>
             {% if request.user.profile.can_manage_groups %}
                 <li><a class="waves-effect waves-light modal-trigger" href="{% url 'manage_groups' %}">Manage
-                    {{config.GROUP_NAME}}</a>
+                    {{ config.GROUP_NAME }}</a>
                 </li>
             {% endif %}
             {% if request.user.profile.can_manage_doors %}
@@ -198,7 +209,7 @@
             <a target="_blank" href="https://hsbne.org/">HSBNE</a> (Hackerspace Brisbane). It was created by
             <a target="_blank" href="https://github.com/jabelone">Jaimyn Mayer</a>, with a little help from some HSBNE
             members.</p>
-        <p>It can manage membership, access permissions, {{config.MEMBERBUCKS_NAME}}, doors, interlocks and more!
+        <p>It can manage membership, access permissions, {{ config.MEMBERBUCKS_NAME }}, doors, interlocks and more!
             For more information please see the GitHub repo <a target="_blank"
                                                                href="https://github.com/jabelone/MemberMatters">here</a>.
         </p>
