@@ -24,13 +24,17 @@ The MemberMatters portal is an open source membership and access management solu
  * Manage recurring membership payments via Stripe
  * Edit member swipe in theme
  
- ### Getting Started (Running MemberMatters)
- See the [GETTING_STARTED.md](/GETTING_STARTED.md) file in this repo
- for instructions on how to get started running the MemberMatters software for your organisation.
+ ### Getting Started
+ See [getting started](/GETTING_STARTED.md) for instructions on how to run the MemberMatters software for your 
+ organisation.
  
- ### Getting Started (Development)
- See the [GETTING_STARTED_DEV.md](/GETTING_STARTED_DEV.md) file in this repo
- for instructions on how to setup your development environment and run the MemberMatters software.
+ See [getting started (for developers)](/GETTING_STARTED_DEV.md) for instructions on how to setup your development 
+ environment for the MemberMatters software.
+ 
+ 
+ ## Screenshots
+
+[Coming soon once the frontend rewrite is done]
  
  ### Contributing Guidelines
 Please use best practices while contributing. This includes writing clean code (messy/hacky 
@@ -40,10 +44,12 @@ variable names that make sense and avoid weird tricks that not everyone will und
 Please work on existing issues (use comments to clarify/discuss things). If you want to fix undocumented 
 bugs or add new things open an issue for discussion.
 
+Once you are happy with your changes, please open a pull request to merge them into dev. Your changes will be reviewed 
+and accepted/rejected.
 
-## Screenshots
-
-[Coming soon once the frontend rewrite is done]
+Note to collaborators with push permission: Do not push directly to master. You should push all changes to a feature 
+branch first (`feature/<feature_name>`). When you are happy with it submit a pull request for merging into dev. The 
+`mater` should only contain the latest stable release.
 
 ### Special Note
 This software used to be called "hsbneportal". It was written by Jaimyn (@jabelone) and used by HSBNE
