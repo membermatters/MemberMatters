@@ -1,41 +1,43 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseNotFound
+from django.conf import settings
 from constance import config
-import pytz
-
-utc = pytz.UTC
+import json
 
 
 def spacedirectory_status(request):
-    return JsonResponse({
-        "state": {
-            "open": True,
-            "message": "Open Tuesday nights to the public. All other times membership is required.",
-            "icon": {
-                "open": "https://hsbne.org/assets/img/headerlogo.png",
-                "closed": "https://hsbne.org/assets/img/headerlogo.png"
-            }
-        },
-        "api": "0.13",
-        "location": {
-            "address": "221C Macarthur Avenue, Eagle Farm QLD 4009",
-            "lat": -27.4432052,
-            "lon": 153.0770233
-        },
-        "space": f"{config.SITE_OWNER}",
-        "logo": "",
-        "url": config.MAIN_SITE_URL,
+    if not config.SPACE_DIRECTORY_ENABLED:
+        return HttpResponseNotFound("Space Directory is not enabled on this server.")
 
-        "spacefed": {"spacenet": False, "spacesaml": False, "spacephone": False},
+    else:
+        return JsonResponse({
+            "state": {
+                "open": config.SPACE_DIRECTORY_OPEN,
+                "message": config.SPACE_DIRECTORY_MESSAGE,
+                "icon": {
+                    "open": config.SPACE_DIRECTORY_ICON_OPEN,
+                    "closed": config.SPACE_DIRECTORY_ICON_CLOSED
+                }
+            },
+            "api": "0.13",
+            "location": {
+                "address": config.SPACE_DIRECTORY_LOCATION_ADDRESS,
+                "lat": config.SPACE_DIRECTORY_LOCATION_LAT,
+                "lon": config.SPACE_DIRECTORY_LOCATION_LON
+            },
+            "space": config.SITE_OWNER,
+            "logo": config.SITE_URL + settings.MEDIA_URL + config.SITE_LOGO,
+            "url": config.MAIN_SITE_URL,
+            "spacefed": {"spacenet": config.SPACE_DIRECTORY_FED_SPACENET, "spacesaml": config.SPACE_DIRECTORY_FED_SPACESAML},
+            "cam": json.loads(config.SPACE_DIRECTORY_CAMS),
+            "contact": {
+                "email": config.SPACE_DIRECTORY_CONTACT_EMAIL,
+                "twitter": config.SPACE_DIRECTORY_CONTACT_TWITTER,
+                "phone": config.SPACE_DIRECTORY_CONTACT_PHONE,
+                "facebook": config.SPACE_DIRECTORY_CONTACT_FACEBOOK
+            },
+            "projects": json.loads(config.SPACE_DIRECTORY_PROJECTS),
+            "issue_report_channels": [
+                "email"
+            ]
 
-        "cam": ["https://portal.hsbne.org/webcamsnapshots/greenroom.jpg", "https://portal.hsbne.org/webcamsnapshots/quad.jpg"],
-
-        "contact": {
-            "email": config.EMAIL_ADMIN,
-            "twitter": "@HSBNE"
-        },
-
-        "issue_report_channels": [
-            "email"
-        ]
-
-    })
+        })
