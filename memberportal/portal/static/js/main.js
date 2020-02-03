@@ -69,6 +69,44 @@ function bumpDoor(thing) {
     });
 }
 
+function rebootDoor(thing) {
+    $.ajax({
+        url: thing.getAttribute("data-url"),
+        type: 'get',
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                M.toast({html: "Door rebooted successfully."});
+            }
+            else {
+                M.toast({html: "Error: " + response.message});
+            }
+        },
+        error: function () {
+            M.toast({html: "Unknown server error while trying to reboot door :( "});
+        }
+    });
+}
+
+function rebootInterlock(thing) {
+    $.ajax({
+        url: thing.getAttribute("data-url"),
+        type: 'get',
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                M.toast({html: "Interlock rebooted successfully."});
+            }
+            else {
+                M.toast({html: "Error: " + response.message});
+            }
+        },
+        error: function () {
+            M.toast({html: "Unknown server error while trying to reboot interlock :( "});
+        }
+    });
+}
+
 function chargeCardForMemberbucks() {
     if (confirm('Are you sure you want to add to your account?') === false) {
         M.toast({html: "Cancelled :("});
