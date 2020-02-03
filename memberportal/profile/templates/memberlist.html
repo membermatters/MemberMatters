@@ -5,6 +5,17 @@
 {% block fullwidth-content %}
     <div class="memberlist-container row small-row">
         <h3 class="header center text">Member List</h3>
+            <div class="row center">
+            <a href="{% url "member_list" %}" class="delete-button waves-effect waves-light btn-small edit-button">
+                <i class="material-icons">person</i>   Active
+            </a>
+            <a href="{% url "member_list_inactive" %}" class="delete-button waves-effect waves-light btn-small edit-button">
+                <i class="material-icons">block</i>   Inactive
+            </a>
+            <a href="{% url "member_list_new" %}" class="delete-button waves-effect waves-light btn-small edit-button">
+                <i class="material-icons">person_add</i>   New
+            </a>
+            </div>
         <table id="memberList" class="data-table striped responsive-table">
             <thead>
             <tr style="max-width: 120px;">
