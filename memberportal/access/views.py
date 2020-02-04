@@ -306,7 +306,7 @@ def reboot_door(request, door_id):
     if not request.user.profile.can_manage_doors:
         return HttpResponseForbidden("You do not have permission to access that.")
 
-    door = Interlock.objects.get(pk=door_id)
+    door = Doors.objects.get(pk=door_id)
     log_user_event(request.user, "Rebooted {} door via API.".format(door.name), "interlock")
     return JsonResponse({"success": door.reboot()})
 
