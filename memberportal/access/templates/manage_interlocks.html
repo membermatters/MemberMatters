@@ -76,6 +76,11 @@
                                data-position="top" data-tooltip="Lock Interlock">
                                 <i class="material-icons">lock</i>
                             </a>
+                            <a data-url="{% url "reboot_interlock" interlock_id=interlock.id %}" onclick="rebootInterlock(this);"
+                               class="waves-effect waves-light btn-small delete-button tooltipped"
+                               data-position="top" data-tooltip="Reboot interlock.">
+                                <i class="material-icons">power_off</i>
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}

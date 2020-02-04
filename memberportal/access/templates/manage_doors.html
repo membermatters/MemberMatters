@@ -61,6 +61,11 @@
                                data-position="top" data-tooltip="Bump door open">
                                 <i class="material-icons">lock_open</i>
                             </a>
+                            <a data-url="{% url "reboot_door" door_id=door.id %}" onclick="rebootDoor(this);"
+                               class="waves-effect waves-light btn-small delete-button tooltipped"
+                               data-position="top" data-tooltip="Reboot door controller">
+                                <i class="material-icons">power_off</i>
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}

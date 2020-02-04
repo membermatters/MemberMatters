@@ -230,9 +230,38 @@ def member_list(request):
     """
     # extract the values we need for each member
     # probably will need to add some server side pagination...
-    members = User.objects.all()
+    members = User.objects.all().filter(profile__state="active")
 
     return render(request, "memberlist.html", {"members": members})
+
+@login_required
+@admin_required
+def member_list_new(request):
+    """
+    The list all members view. Used to manage all members.
+    :param request:
+    :return:
+    """
+    # extract the values we need for each member
+    # probably will need to add some server side pagination...
+    members = User.objects.all().filter(profile__state="noob")
+
+    return render(request, "memberlist.html", {"members": members})
+
+@login_required
+@admin_required
+def member_list_inactive(request):
+    """
+    The list all members view. Used to manage all members.
+    :param request:
+    :return:
+    """
+    # extract the values we need for each member
+    # probably will need to add some server side pagination...
+    members = User.objects.all().filter(profile__state="inactive")
+
+    return render(request, "memberlist.html", {"members": members})
+
 
 
 @login_required
