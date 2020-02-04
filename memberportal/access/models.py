@@ -31,6 +31,8 @@ class AccessControlledDevice(models.Model):
 
         return False
 
+
+
     def __str__(self):
         return self.name
 
@@ -44,6 +46,16 @@ class MemberbucksDevice(AccessControlledDevice):
     def unlock(self):
         return False
 
+    def reboot(self):
+        import requests
+        r = requests.get("http://{}/reboot".format(self.ip_address))
+        if r.status_code == 200:
+            log_event(self.name + " rebooted from admin interface.", "memberbucks", "Status: {}. Content: {}".format(r.status_code, r.content))
+            return True
+        else:
+            log_event(self.name + " rebooted from admin interface failed.", "memberbucks", "Status: {}. Content: {}".format(r.status_code, r.content))
+            return False
+
 
 class Doors(AccessControlledDevice):
     def bump(self):
@@ -54,6 +66,16 @@ class Doors(AccessControlledDevice):
             return True
         else:
             log_event(self.name + " bumped from admin interface failed.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
+            return False
+
+    def reboot(self):
+        import requests
+        r = requests.get("http://{}/reboot".format(self.ip_address))
+        if r.status_code == 200:
+            log_event(self.name + " rebooted from admin interface.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
+            return True
+        else:
+            log_event(self.name + " rebooted from admin interface failed.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
             return False
 
     def log_access(self, member_id):
@@ -83,6 +105,15 @@ class Interlock(AccessControlledDevice):
         interlocklog = InterlockLog.objects.filter(interlock=self).latest("last_heartbeat")
         return interlocklog.last_heartbeat
 
+    def reboot(self):
+        import requests
+        r = requests.get("http://{}/reboot".format(self.ip_address))
+        if r.status_code == 200:
+            log_event(self.name + " rebooted from admin interface.", "interlock", "Status: {}. Content: {}".format(r.status_code, r.content))
+            return True
+        else:
+            log_event(self.name + " rebooted from admin interface failed.", "interlock", "Status: {}. Content: {}".format(r.status_code, r.content))
+            return False
 
 class DoorLog(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

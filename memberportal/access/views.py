@@ -302,12 +302,30 @@ def bump_door(request, door_id):
 
 @login_required
 @admin_required
+def reboot_door(request, door_id):
+    if not request.user.profile.can_manage_doors:
+        return HttpResponseForbidden("You do not have permission to access that.")
+        door = Interlock.objects.get(pk=door_id)
+        log_user_event(request.user, "Rebooted {} door via API.".format(door.name), "interlock")
+        return JsonResponse({"success": door.reboot()})
+
+@login_required
+@admin_required
 def lock_interlock(request, interlock_id):
     if not request.user.profile.can_manage_interlocks:
         return HttpResponseForbidden("You do not have permission to access that.")
         interlock = Interlock.objects.get(pk=interlock_id)
         log_user_event(request.user, "Locked {} interlock via API.".format(interlock.name), "interlock")
         return JsonResponse({"success": interlock.lock()})
+
+@login_required
+@admin_required
+def reboot_interlock(request, interlock_id):
+    if not request.user.profile.can_manage_interlocks:
+        return HttpResponseForbidden("You do not have permission to access that.")
+        interlock = Interlock.objects.get(pk=interlock_id)
+        log_user_event(request.user, "Rebooted {} interlock via API.".format(interlock.name), "interlock")
+        return JsonResponse({"success": interlock.reboot()})
 
 
 def get_door_tags(door, return_hash=False):
