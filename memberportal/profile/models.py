@@ -332,15 +332,15 @@ class Profile(models.Model):
     starving_override = models.BooleanField(default=False)  # override requirements and grant them starving status
 
 
-    def deactivate(self):
-        log_user_event(self.user, "Deactivated member", "profile")
+    def deactivate(self,request):
+        log_user_event(self.user, request.user.profile.get_full_name() + " deactivated member", "profile")
         self.user.email_disable_member()
         self.state = "inactive"
         self.save()
         return True
 
-    def activate(self):
-        log_user_event(self.user, "Activated member", "profile")
+    def activate(self,request):
+        log_user_event(self.user, request.user.profile.get_full_name() + " activated member", "profile")
         if self.state is not "noob":
             self.user.email_enable_member()
 

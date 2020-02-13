@@ -483,11 +483,11 @@ def set_state(request, member_id, state):
                 return JsonResponse({"success": False, "message": "Unknown error while making into member."})
 
         else:
-            user.profile.activate()
+            user.profile.activate(request)
             return JsonResponse({"success": True, "message": "Successfully enabled user. ✅"})
 
     else:
-        user.profile.deactivate()
+        user.profile.deactivate(request)
         return JsonResponse(
             {"success": True, "message": "Successfully disabled user. ⛔"})
 
