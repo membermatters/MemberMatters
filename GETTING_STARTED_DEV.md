@@ -103,7 +103,7 @@ and accepted/rejected.
 
 Note to collaborators with push permission: Do not push directly to master. You should push all changes to a feature 
 branch first (`feature/<feature_name>`). When you are happy with it submit a pull request for merging into dev. The 
-`mater` should only contain the latest stable release.
+`master` should only contain the latest stable release.
 
 We use eslint, prettier and black for code linting and formatting. These are setup as precommit hooks. These are a requirement and anything that fails these rules will not be accepted. If you would like to suggest changes to the eslint config please open an issue. If you have a specific use case, you may disable eslint rules on a line by line basis. Any global disables will be rejected.
 
