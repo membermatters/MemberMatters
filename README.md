@@ -37,19 +37,7 @@ The MemberMatters portal is an open source membership and access management solu
 [Coming soon once the frontend rewrite is done]
  
  ### Contributing Guidelines
-Please use best practices while contributing. This includes writing clean code (messy/hacky 
-code will be rejected) and making sure it's well commented. Try to think of the next person who comes along so use 
-variable names that make sense and avoid weird tricks that not everyone will understand.
-
-Please work on existing issues (use comments to clarify/discuss things). If you want to fix undocumented 
-bugs or add new things open an issue for discussion.
-
-Once you are happy with your changes, please open a pull request to merge them into dev. Your changes will be reviewed 
-and accepted/rejected.
-
-Note to collaborators with push permission: Do not push directly to master. You should push all changes to a feature 
-branch first (`feature/<feature_name>`). When you are happy with it submit a pull request for merging into dev. The 
-`mater` should only contain the latest stable release.
+ See [getting started (for developers)](/GETTING_STARTED_DEV.md) for guidelines.
 
 ### Special Note
 This software used to be called "hsbneportal". It was written by Jaimyn (@jabelone) and used by HSBNE
