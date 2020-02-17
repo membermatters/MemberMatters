@@ -14,6 +14,7 @@ urlpatterns = [
     path("profile/access/view/", views.access_permissions, name="access_permissions"),
     path("profile/theme/edit/", views.edit_theme_song, name="edit_theme_song"),
     path("members/list/", views.member_list, name="member_list"),
+    path("members/list/export", views.member_export, name="member_export"),    
     path("members/list/new", views.member_list_new, name="member_list_new"),
     path("members/list/inactive", views.member_list_inactive, name="member_list_inactive"),
     path("members/recent/", views.recent_swipes, name="recent_swipes"),
