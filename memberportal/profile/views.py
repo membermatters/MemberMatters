@@ -265,6 +265,21 @@ def member_list_inactive(request):
 
 @login_required
 @admin_required
+def member_list_all(request):
+    """
+    The list all members view. Used to manage all members.
+    :param request:
+    :return:
+    """
+    # extract the values we need for each member
+    # probably will need to add some server side pagination...
+    members = User.objects.all()
+
+    return render(request, "memberlist.html", {"members": members})
+
+
+@login_required
+@admin_required
 def member_export(request):
     # Create the HttpResponse object with the appropriate CSV header.
     response = HttpResponse(content_type='text/csv')
