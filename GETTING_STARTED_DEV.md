@@ -17,7 +17,7 @@ sudo dnf install python3 python3-pip
 sudo -H pip3 install -r requirements.txt
 ```
  
- #### Mac (Tested by nog3 w/python 3.7)
+ #### Mac
  You will need to install and use virtualenv on Mac in order to get your environment correct as there are conflicts with built in python on OSX.
  
 ```bash
@@ -44,7 +44,7 @@ Please follow the instructions below to setup dev environment in Windows (tested
 * You're all set up. Follow the instructions below to start the dev server.
  
 ### Running the dev server
-In production, we have an apache reverse proxy setup. For development however, it's useful to use the built in 
+In production, we have an nginx reverse proxy setup. For development however, it's useful to use the built in 
 development server. Navigate to the memberportal folder. (`cd memberportal` on bash or cmd) First we need to make 
 sure we have a local sqlite database with the correct migrations applied, and default database. 
 
@@ -89,6 +89,23 @@ should change the password of the default admin account.
 
 ##### Notes for HSBNE infrastructure maintainers
 On porthack01 you can find the mapped volumes at `/usr/app` and there's an update script at `/usr/app/update_portal.sh`. You will need to rebuild and push to docker hub the docker image.
+
+### Contributing Guidelines
+Please use best practices while contributing. This includes writing clean code (messy/hacky 
+code will be rejected) and making sure it's well commented. Try to think of the next person who comes along so use 
+variable names that make sense and avoid weird tricks that not everyone will understand.
+
+Please work on existing issues (use comments to clarify/discuss things). If you want to fix undocumented 
+bugs or add new things open an issue for discussion.
+
+Once you are happy with your changes, please open a pull request to merge them into dev. Your changes will be reviewed 
+and accepted/rejected.
+
+Note to collaborators with push permission: Do not push directly to master. You should push all changes to a feature 
+branch first (`feature/<feature_name>`). When you are happy with it submit a pull request for merging into dev. The 
+`master` should only contain the latest stable release.
+
+We use eslint, prettier and black for code linting and formatting. These are setup as precommit hooks. These are a requirement and anything that fails these rules will not be accepted. If you would like to suggest changes to the eslint config please open an issue. If you have a specific use case, you may disable eslint rules on a line by line basis. Any global disables will be rejected.
 
 ##### NOTE
 You will need to re-run the database migration every time the db models change. You may see random database related errors such as column does not exist if you forget to do this. You can do that by running:

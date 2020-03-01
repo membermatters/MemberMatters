@@ -326,9 +326,9 @@ def lock_interlock(request, interlock_id):
 def reboot_interlock(request, interlock_id):
     if not request.user.profile.can_manage_interlocks:
         return HttpResponseForbidden("You do not have permission to access that.")
-        interlock = Interlock.objects.get(pk=interlock_id)
-        log_user_event(request.user, "Rebooted {} interlock via API.".format(interlock.name), "interlock")
-        return JsonResponse({"success": interlock.reboot()})
+    interlock = Interlock.objects.get(pk=interlock_id)
+    log_user_event(request.user, "Rebooted {} interlock via API.".format(interlock.name), "interlock")
+    return JsonResponse({"success": interlock.reboot()})
 
 
 def get_door_tags(door, return_hash=False):

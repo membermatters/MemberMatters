@@ -1,5 +1,5 @@
 from django.contrib.auth import login, update_session_auth_hash
-from django.http import HttpResponseRedirect, JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
@@ -20,6 +20,7 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 import json
 import pytz
+import csv
 
 utc = pytz.UTC
 
@@ -262,6 +263,36 @@ def member_list_inactive(request):
 
     return render(request, "memberlist.html", {"members": members})
 
+@login_required
+@admin_required
+def member_list_all(request):
+    """
+    The list all members view. Used to manage all members.
+    :param request:
+    :return:
+    """
+    # extract the values we need for each member
+    # probably will need to add some server side pagination...
+    members = User.objects.all()
+
+    return render(request, "memberlist.html", {"members": members})
+
+
+@login_required
+@admin_required
+def member_export(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="memberlist.csv"'
+    members = Profile.objects.prefetch_related('user')
+
+    writer = csv.writer(response)
+    writer.writerow(['first_name', 'last_name', 'email', 'status'])
+
+    for member in members:
+        writer.writerow([member.first_name, member.last_name, member, member.state ])
+
+    return response
 
 
 @login_required
@@ -483,11 +514,11 @@ def set_state(request, member_id, state):
                 return JsonResponse({"success": False, "message": "Unknown error while making into member."})
 
         else:
-            user.profile.activate()
+            user.profile.activate(request)
             return JsonResponse({"success": True, "message": "Successfully enabled user. ✅"})
 
     else:
-        user.profile.deactivate()
+        user.profile.deactivate(request)
         return JsonResponse(
             {"success": True, "message": "Successfully disabled user. ⛔"})
 
