@@ -117,3 +117,6 @@ venv.bak/
 
 env.list
 /memberportal/docker_dev/
+
+node_modules
+webpack-stats.json
