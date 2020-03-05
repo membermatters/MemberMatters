@@ -6,7 +6,7 @@
           flat
           dense
           round
-          icon="fas fa-bars"
+          icon="fal fa-bars"
           aria-label="Menu"
           @click="mainMenuOpen = !mainMenuOpen"
         />
