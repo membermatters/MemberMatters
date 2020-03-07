@@ -21,19 +21,32 @@
       v-model="mainMenuOpen"
       bordered
       content-class="bg-grey-1"
+      class="column"
     >
-      <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px">
-        <div class="absolute-bottom bg-transparent">
-          <q-avatar size="56px" class="q-mb-sm">
-            <img src="https://cdn.quasar.dev/img/boy-avatar.png">
-          </q-avatar>
-          <div class="text-weight-bold">Jaimyn Mayer</div>
-          <div>@jabelone</div>
-        </div>
-      </q-img>
+      <router-link :to="{ name: 'profile' }">
+        <q-img
+          spinner-color="white"
+          class="absolute-top"
+          src="https://cdn.quasar.dev/img/material.png"
+          style="height: 150px"
+        >
+          <div class="absolute-bottom bg-transparent">
+            <q-avatar
+              size="56px"
+              class="q-mb-sm"
+            >
+              <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+            </q-avatar>
+            <div class="text-weight-bold">
+              Jaimyn Mayer
+            </div>
+            <div>@jabelone</div>
+          </div>
+        </q-img>
+      </router-link>
 
       <q-scroll-area
-        style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd"
+        style="height: calc(100% - 200px); margin-top: 150px; border-right: 1px solid #ddd"
       >
         <q-list>
           <EssentialLink
@@ -43,6 +56,15 @@
           />
         </q-list>
       </q-scroll-area>
+
+      <q-space />
+
+      <p
+        class="content-end q-mb-none q-pa-md"
+        style="height: 50px; text-align: center;"
+      >
+        About MemberMatters
+      </p>
     </q-drawer>
 
     <q-page-container>
@@ -64,7 +86,7 @@ export default {
   },
   data() {
     return {
-      mainMenuOpen: false,
+      mainMenuOpen: true,
       essentialLinks: MainMenu,
     };
   },

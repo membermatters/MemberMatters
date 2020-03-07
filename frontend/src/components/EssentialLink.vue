@@ -2,9 +2,7 @@
   <span v-if="!children">
     <q-item
       clickable
-      tag="a"
-      target="_blank"
-      :to="to"
+      :to="{ name: name }"
     >
       <q-item-section
         v-if="icon"
@@ -24,6 +22,7 @@
 
   <span v-else>
     <q-expansion-item
+      group="mainMenuGroup"
       expand-separator
       :icon="icon"
       :label="title"
@@ -31,28 +30,26 @@
       <q-item
         v-for="child in children"
         clickable
-        tag="a"
-        target="_blank"
         :inset-level="1"
-        :to="child.to"
-        :key="child.to"
+        :to="{ name: child.name }"
+        :key="child.name"
       >
-      <q-item-section
-        v-if="child.icon"
-        avatar
-      >
-        <q-icon :name="child.icon" />
-      </q-item-section>
+        <q-item-section
+          v-if="child.icon"
+          avatar
+        >
+          <q-icon :name="child.icon" />
+        </q-item-section>
 
-      <q-item-section>
-        <q-item-label>{{ child.title }}</q-item-label>
-        <q-item-label caption>
-          {{ child.caption }}
-        </q-item-label>
-      </q-item-section>
-    </q-item>
+        <q-item-section>
+          <q-item-label>{{ child.title }}</q-item-label>
+          <q-item-label caption>
+            {{ child.caption }}
+          </q-item-label>
+        </q-item-section>
+      </q-item>
 
-        </q-expansion-item>
+    </q-expansion-item>
   </span>
 </template>
 
@@ -70,9 +67,9 @@ export default {
       default: '',
     },
 
-    to: {
-      type: Object,
-      default: () => ({ name: 'index' }),
+    name: {
+      type: [String, Object],
+      default: '/',
     },
 
     icon: {
@@ -81,7 +78,7 @@ export default {
     },
 
     children: {
-      type: Object,
+      type: Array,
       default: null,
     },
   },
