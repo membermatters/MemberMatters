@@ -1,19 +1,22 @@
-const PageAndRoutConfig = [
+const PageAndRouteConfig = [
   {
     title: 'Dashboard',
     icon: 'fad fa-columns',
     to: '/dashboard',
     name: 'dashboard',
+    component: () => import('pages/Dashboard.vue'),
   },
   {
     title: 'Public Webcams',
     icon: 'fad fa-webcam',
     to: '/webcams',
     name: 'webcams',
+    component: () => import('pages/Webcams.vue'),
   },
   {
     title: 'Member Tools',
     icon: 'fad fa-tools',
+    name: 'memberTools',
     children: [
       {
         title: 'Report Issue',
@@ -44,6 +47,7 @@ const PageAndRoutConfig = [
   {
     title: 'Membership',
     icon: 'fad fa-user',
+    name: 'membership',
     children: [
       {
         title: 'Profile',
@@ -52,7 +56,7 @@ const PageAndRoutConfig = [
         name: 'profile',
       },
       {
-        title: 'Access',
+        title: 'Check Access',
         icon: 'fad fa-user-lock',
         to: '/account/access',
         name: 'checkAccess',
@@ -73,4 +77,4 @@ const PageAndRoutConfig = [
   },
 ];
 
-export default PageAndRoutConfig;
+export default PageAndRouteConfig;

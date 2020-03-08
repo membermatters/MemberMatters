@@ -19,7 +19,13 @@ export default {
   error: {
     404: ' Sorry, that page could not be found. (Error 404)',
   },
-  about: 'About MemberMatters',
+  about: {
+    title: 'About MemberMatters',
+    description: 'This is an open source, full featured membership portal. It is designed for '
+    + 'HSBNE (Hackerspace Brisbane). It was created by Jaimyn Mayer, with a little help from some '
+    + 'HSBNE members.',
+    linkText: 'on GitHub',
+  },
   failed: 'Action failed',
   success: 'Action was successful',
 };

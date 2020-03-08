@@ -35,11 +35,11 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
+      ...menuRoutes,
       {
         path: '*',
         component: () => import('pages/Error404.vue'),
       },
-      ...menuRoutes,
     ],
   },
 ];

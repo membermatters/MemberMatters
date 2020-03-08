@@ -33,6 +33,9 @@ module.exports = function (ctx) {
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
+      config: {
+        dark: 'auto', // or Boolean true/false
+      },
       iconSet: 'fontawesome-v5-pro', // Quasar icon set
       lang: 'en-us', // Quasar language pack
 
@@ -75,7 +78,9 @@ module.exports = function (ctx) {
           loader: 'eslint-loader',
           exclude: /node_modules/,
           options: {
-            formatter: require('eslint').CLIEngine.getFormatter('stylish'),
+            formatter: require('eslint')
+              .CLIEngine
+              .getFormatter('stylish'),
           },
         });
       },

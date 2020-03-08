@@ -20,7 +20,6 @@
     <q-drawer
       v-model="mainMenuOpen"
       bordered
-      content-class="bg-grey-1"
       class="column"
     >
       <router-link :to="{ name: 'profile' }">
@@ -46,7 +45,7 @@
       </router-link>
 
       <q-scroll-area
-        style="height: calc(100% - 200px); margin-top: 150px; border-right: 1px solid #ddd"
+        style="height: calc(100% - 250px); margin-top: 150px; border-right: 1px solid #ddd"
       >
         <q-list>
           <EssentialLink
@@ -59,13 +58,19 @@
 
       <q-space />
 
-      <p
-        class="content-end q-mb-none q-pa-md"
-        style="height: 50px; text-align: center; text-decoration: underline; cursor: pointer;"
-        @click="aboutMemberMatters = true"
-      >
-        {{ $t('about') }}
-      </p>
+      <div class="footer">
+        <q-toggle
+          label="Dark Mode"
+          v-model="darkMode"
+        />
+        <p
+          class="content-end q-mb-none q-pa-md"
+          style="text-decoration: underline; cursor: pointer;"
+          @click="aboutMemberMatters = true"
+        >
+          {{ $t('about.title') }}
+        </p>
+      </div>
     </q-drawer>
 
     <q-page-container>
@@ -76,12 +81,22 @@
       <q-card>
         <q-card-section>
           <div class="text-h6">
-            {{ $t('about') }}
+            {{ $t('about.title') }}
           </div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus
+          {{ $t('about.description') }}
+          <br><br>
+          <a
+            href="https://github.com/membermatters/MemberMatters"
+            target="_blank"
+          >MemberMatters {{ $t('about.linkText') }}</a>
+          <br>
+          <a
+            href="https://github.com/jabelone"
+            target="_blank"
+          >Jaimyn Mayer {{ $t('about.linkText') }}</a>
         </q-card-section>
 
         <q-card-actions align="right">
@@ -110,6 +125,7 @@ export default {
   },
   data() {
     return {
+      darkMode: this.$q.dark.isActive,
       mainMenuOpen: true,
       essentialLinks: MainMenu,
       aboutMemberMatters: false,
@@ -122,10 +138,20 @@ export default {
     setMenuState() {
       localStorage.setItem('menuState', this.mainMenuOpen);
     },
+    getDarkState() {
+      return localStorage.getItem('darkMode');
+    },
+    setDarkState() {
+      localStorage.setItem('darkMode', this.darkMode);
+    },
   },
   watch: {
     mainMenuOpen() {
       this.setMenuState();
+    },
+    darkMode(value) {
+      this.$q.dark.set(value);
+      this.setDarkState();
     },
   },
   computed: {
@@ -135,6 +161,16 @@ export default {
   },
   mounted() {
     this.mainMenuOpen = this.getMenuState() === 'true';
+    this.darkMode = this.getDarkState() === 'true';
   },
 };
 </script>
+
+<style scoped>
+  .footer {
+    height: 100px;
+    text-align: center;
+  }
+  p {
+  }
+</style>
