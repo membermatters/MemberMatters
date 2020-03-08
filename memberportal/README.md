@@ -1,24 +1,24 @@
- ### Getting Started
- First step is to grab a copy of this repository. You will need to make sure you have python installed, preferably
- 3.6 or newer as that's the only version it has been tested on. Make sure you also install pip so that you can install
- all of the dependencies.
+### Getting started (Django backend)
+First step is to grab a copy of this repository. You will need to make sure you have python installed,
+3.7 or newer as that's the only version it has been tested on. Make sure you also install pip so that you can install
+all of the dependencies.
+
+To install python 3/pip and the requirements run these commands from within this folder:
+#### Linux (Ubuntu)
  
- To install python 3/pip and the requirements run these commands from within this folder:
- #### Linux (Ubuntu)
- 
- ```bash
- sudo apt install python3 python3-pip
- sudo -H pip3 install -r requirements.txt
+```bash
+sudo apt install python3 python3-pip
+sudo -H pip3 install -r requirements.txt
  ```
  
- #### Linux (Fedora)
+#### Linux (Fedora)
 ```
 sudo dnf install python3 python3-pip
 sudo -H pip3 install -r requirements.txt
 ```
  
- #### Mac
- You will need to install and use virtualenv on Mac in order to get your environment correct as there are conflicts with built in python on OSX.
+#### Mac
+You will need to install and use virtualenv on Mac in order to get your environment correct as there are conflicts with built in python on OSX.
  
 ```bash
 brew install python3

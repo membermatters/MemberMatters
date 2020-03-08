@@ -1,5 +1,5 @@
-# MemberMatters Portal
-The MemberMatters portal is an open source membership and access management solution.
+# MemberMatters
+MemberMatters is an open source membership and access management solution.
 
 ### Features
 * Member registration system (signup, login etc)
@@ -20,26 +20,36 @@ The MemberMatters portal is an open source membership and access management solu
     * Stripe integration
 * Automatically create a xero contact and create invoice when a new person is made into a member
  
- ### Coming Soon
- * Manage recurring membership payments via Stripe
- * Edit member swipe in theme
- 
- ### Getting Started
- See [getting started](/GETTING_STARTED.md) for instructions on how to run the MemberMatters software for your 
- organisation.
- 
- See [getting started (for developers)](/GETTING_STARTED_DEV.md) for instructions on how to setup your development 
- environment for the MemberMatters software.
- 
- 
- ## Screenshots
+### Coming soon
+* Manage recurring membership payments via Stripe
+* Edit member swipe in theme
 
-[Coming soon once the frontend rewrite is done]
- 
- ### Contributing Guidelines
- See [getting started (for developers)](/GETTING_STARTED_DEV.md) for guidelines.
+## Getting started using MemberMatters
+See the [getting started](/GETTING_STARTED.md) instructions for how to run the MemberMatters software for your 
+organisation.
 
-### Special Note
-This software used to be called "hsbneportal". It was written by Jaimyn (@jabelone) and used by HSBNE
-to manage their membership. It has since been rewritten to be organisation agnostic so others can use it too.
+## Getting started (developers)
+### Vue.js frontend 
+Please see the [readme](https://github.com/membermatters/MemberMatters/blob/master/frontend/README.md) file inside the `frontend` folder. This folder contains all of the source
+code and other assets needed by the frontend.
+
+### Django backend
+Please see the [readme](https://github.com/membermatters/MemberMatters/blob/master/memberportal/README.md) file inside the `memberportal` folder. This folder contains all of the source
+code and other assets needed by the backend.
+ 
+ 
+## Screenshots
+[ Coming soon once the frontend rewrite is done ]
+
+### Contributing guidelines
+By contributing any code, asset or any other resource to this repository to you agree to license it
+under the license in use by the project (currently MIT). Please use good coding practices, comment 
+your code well and ensure compliance with any code formatting or linting that's in place. Also 
+avoid "weird tricks" and optimisations that don't read easily - this is a web app not a high 
+performance algorithm. Your contributions *will* be rejected if you do not follow these guidelines.
+
+### Special note
+This software used to be called "hsbneportal". It was written by 
+[Jaimyn (@jabelone)](https://github.com/jabelone) and used by [HSBNE](https://hsbne.org) to manage 
+their membership. It has since been rewritten to be organisation agnostic so others can use it too. 
 If you find references to HSBNE, HSBNE Inc, or Space. this is why. :)
