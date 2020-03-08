@@ -9,3 +9,4 @@ django-constance~=2.6.0
 django-picklefield~=2.1.1
 gunicorn~=20.0.4
 pillow~=7.0.0
+django-cors-headers

@@ -20,13 +20,20 @@ SECRET_KEY = os.environ.get("PORTAL_SECRET_KEY", "l)#t68rzepzp)0l#x=9mntciapun$w
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
+# this allows the frontend dev server to talk to the dev server
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+]
+
 if os.environ.get("PORTAL_ENV") == "Production":
     ENVIRONMENT = "Production"
     DEBUG = False
     ALLOWED_HOSTS = [os.environ.get("PORTAL_DOMAIN", "portal.example.org")]
+    CORS_ORIGIN_WHITELIST = []
 
     # Slightly hacky, but allows a direct IP while on the local network.
-    # These may be required for the interlocks, doors, etc.
+    # These may or may not be required for the interlocks, doors, etc. depending on your setup
     for x in range(1, 255):
         ALLOWED_HOSTS.append("10.0.0." + str(x))
         ALLOWED_HOSTS.append("10.0.1." + str(x))
@@ -49,11 +56,13 @@ INSTALLED_APPS = [
     "memberbucks",
     "spacedirectory",
     "constance",
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
