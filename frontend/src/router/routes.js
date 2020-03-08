@@ -1,4 +1,4 @@
-import mainMenu from '../layouts/MainMenu.conf';
+import mainMenu from 'pages/pageAndRouteConfig';
 
 const menuRoutes = mainMenu.map((menuItem) => {
   if (menuItem.children) {

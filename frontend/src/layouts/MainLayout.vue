@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          MemberMatters
+          {{ this.toolbarTitle }}
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -61,21 +61,45 @@
 
       <p
         class="content-end q-mb-none q-pa-md"
-        style="height: 50px; text-align: center;"
+        style="height: 50px; text-align: center; text-decoration: underline; cursor: pointer;"
+        @click="aboutMemberMatters = true"
       >
-        About MemberMatters
+        {{ $t('about') }}
       </p>
     </q-drawer>
 
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <q-dialog v-model="aboutMemberMatters">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">
+            {{ $t('about') }}
+          </div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            label="OK"
+            color="primary"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-layout>
 </template>
 
 <script>
 import EssentialLink from 'components/EssentialLink';
-import MainMenu from './MainMenu.conf';
+import MainMenu from '../pages/pageAndRouteConfig';
 import mainMixin from '../mixins/mainMixin';
 
 export default {
@@ -88,6 +112,7 @@ export default {
     return {
       mainMenuOpen: true,
       essentialLinks: MainMenu,
+      aboutMemberMatters: false,
     };
   },
   methods: {
@@ -101,6 +126,11 @@ export default {
   watch: {
     mainMenuOpen() {
       this.setMenuState();
+    },
+  },
+  computed: {
+    toolbarTitle() {
+      return this.$route.meta.title ? this.$route.meta.title : 'MemberMatters';
     },
   },
   mounted() {

@@ -7,7 +7,7 @@
       >
     </p>
     <p class="text-faded">
-      Sorry, that page could not be found. <strong>(Error 404)</strong>
+      {{ $t('error.404') }}
     </p>
     <q-btn
       color="secondary"

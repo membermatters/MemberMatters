@@ -1,4 +1,4 @@
-const MainMenuConf = [
+const PageAndRoutConfig = [
   {
     title: 'Dashboard',
     icon: 'fad fa-columns',
@@ -73,4 +73,4 @@ const MainMenuConf = [
   },
 ];
 
-export default MainMenuConf;
+export default PageAndRoutConfig;

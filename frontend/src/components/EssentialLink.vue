@@ -12,10 +12,7 @@
       </q-item-section>
 
       <q-item-section>
-        <q-item-label>{{ title }}</q-item-label>
-        <q-item-label caption>
-          {{ caption }}
-        </q-item-label>
+        <q-item-label>{{ $t(`menuLink.${name}`) }}</q-item-label>
       </q-item-section>
     </q-item>
   </span>
@@ -25,7 +22,7 @@
       group="mainMenuGroup"
       expand-separator
       :icon="icon"
-      :label="title"
+      :label="$t(`menuLink.${name}`)"
     >
       <q-item
         v-for="child in children"
@@ -42,10 +39,7 @@
         </q-item-section>
 
         <q-item-section>
-          <q-item-label>{{ child.title }}</q-item-label>
-          <q-item-label caption>
-            {{ child.caption }}
-          </q-item-label>
+          <q-item-label>{{ $t(`menuLink.${child.name}`) }}</q-item-label>
         </q-item-section>
       </q-item>
 
