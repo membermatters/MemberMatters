@@ -29,6 +29,7 @@ export default {
     500: ' Sorry, there was a server error. Please try again later. (Error 500)',
   },
   info: {
+    webcamPageDescription: 'This page shows our public webcams, updated every minute for your convenience.',
     loginSuccess: 'Login successful, loading dashboard.',
     logoutSuccess: 'Logout successful.',
     registerHere: 'Register Here',

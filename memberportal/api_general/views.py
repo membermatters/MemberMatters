@@ -28,7 +28,8 @@ def api_get_config(request):
             "siteLogo": config.SITE_LOGO,
             "siteFavicon": config.SITE_FAVICON,
         },
-        "homepageCards": json.loads(config.HOME_PAGE_CARDS)
+        "homepageCards": json.loads(config.HOME_PAGE_CARDS),
+        "webcamLinks": json.loads(config.WEBCAM_PAGE_URLS),
     }
     return JsonResponse(response)
 

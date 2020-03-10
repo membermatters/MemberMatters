@@ -2,13 +2,13 @@ export default {
   namespaced: true,
   state: {
     siteName: 'MemberMatters Portal',
-    siteOwner: 'MemberMatters',
-    entityType: 'Association',
     homepageCards: {},
+    webcamLinks: {},
   },
   getters: {
     siteName: (state) => state.siteName,
     homepageCards: (state) => state.homepageCards,
+    webcamLinks: (state) => state.webcamLinks,
   },
   mutations: {
     setSiteName(state, payload) {
@@ -16,6 +16,9 @@ export default {
     },
     setHomepageCards(state, payload) {
       state.homepageCards = payload;
+    },
+    setWebcamLinks(state, payload) {
+      state.webcamLinks = payload;
     },
   },
 };

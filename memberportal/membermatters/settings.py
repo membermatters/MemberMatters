@@ -193,6 +193,7 @@ CONSTANCE_CONFIG = {
     "MEMBERBUCKS_NAME": ("Memberbucks", "You can customise the name of the portals currency."),
     "GROUP_NAME": ("Group", "You can customise what the portal calls a group."),
     "ADMIN_NAME": ("Administrators", "You can specify a different name for your admin group like exec or leaders."),
+    "WEBCAM_PAGE_URLS": ("", "A JSON serialised array of URLs to pull webcam images from."),
     "HOME_PAGE_CARDS": (
         "[{\"title\": \"Example\", \"description\": \"Example\", \"icon\": \"forum\", \"url\": \"https://membermatters.org/\", \"btn_text\": \"Click Here\"}]",
         "You can specify cards that go on the home page with JSON. See https://github.com/jabelone/MemberMatters/blob/master/GETTING_STARTED.md."),
@@ -226,7 +227,8 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict([
     ("Contact Information", ("EMAIL_SYSADMIN", "EMAIL_ADMIN", "EMAIL_DEFAULT_FROM", "SITE_MAIL_ADDRESS")),
     ("URLs", ("SITE_URL", "MAIN_SITE_URL", "INDUCTION_URL")),
     ("Images", ("SITE_LOGO", "SITE_FAVICON")),
-    ("Group Localisation", ("MEMBERBUCKS_NAME", "GROUP_NAME", "ADMIN_NAME", "HOME_PAGE_CARDS", "WELCOME_EMAIL_CARDS")),
+    ("Group Localisation", ("MEMBERBUCKS_NAME", "GROUP_NAME", "ADMIN_NAME", "WEBCAM_PAGE_URLS",
+                            "HOME_PAGE_CARDS", "WELCOME_EMAIL_CARDS")),
     ("Space Directory", (
         "SPACE_DIRECTORY_ENABLED", "SPACE_DIRECTORY_OPEN", "SPACE_DIRECTORY_MESSAGE", "SPACE_DIRECTORY_ICON_OPEN",
         "SPACE_DIRECTORY_ICON_CLOSED", "SPACE_DIRECTORY_LOCATION_ADDRESS", "SPACE_DIRECTORY_LOCATION_LAT",
