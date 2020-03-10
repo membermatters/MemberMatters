@@ -1,14 +1,21 @@
 export default {
   namespaced: true,
   state: {
-    loggedIn: false,
+    siteName: 'MemberMatters Portal',
+    siteOwner: 'MemberMatters',
+    entityType: 'Association',
+    homepageCards: {},
   },
   getters: {
-    loggedIn: (state) => state.loggedIn,
+    siteName: (state) => state.siteName,
+    homepageCards: (state) => state.homepageCards,
   },
   mutations: {
-    loggedIn(state, payload) {
-      state.usersTeams = payload;
+    setSiteName(state, payload) {
+      state.siteName = payload;
+    },
+    setHomepageCards(state, payload) {
+      state.homepageCards = payload;
     },
   },
 };

@@ -6,7 +6,9 @@
 
 <script>
 import axios from 'axios';
+import { mapGetters, mapMutations } from 'vuex';
 import store from './store/index';
+
 
 export default {
   name: 'App',
@@ -16,6 +18,7 @@ export default {
       portalConfig: {
         general: { siteName: 'MemberMatters Portal', siteOwner: 'MemberMatters' },
         images: { siteLogo: '/media/logo.png', siteFavicon: '/media/favicon.png' },
+        homepageCards: {},
       },
     };
   },
@@ -25,15 +28,18 @@ export default {
     },
   },
   methods: {
+    ...mapMutations('config', ['setSiteName', 'setHomepageCards']),
     updatePageTitle() {
       const pageTitle = this.$route.meta.title;
       const nameKey = pageTitle ? `menuLink.${pageTitle}` : 'error.pageNotFound';
-      document.title = `${this.$t(nameKey)} | ${this.portalConfig.general.siteName}`;
+      document.title = `${this.$t(nameKey)} | ${this.siteName}`;
     },
     getPortalConfig() {
       axios.get('/api/config')
         .then((result) => {
           this.portalConfig = result.data;
+          this.setSiteName(this.portalConfig.general.siteName);
+          this.setHomepageCards(this.portalConfig.homepageCards);
           this.updatePageTitle();
         })
         .catch((error) => {
@@ -50,6 +56,9 @@ export default {
     }
 
     this.getPortalConfig();
+  },
+  computed: {
+    ...mapGetters('config', ['siteName']),
   },
 };
 </script>

@@ -5,7 +5,9 @@ export default {
   menuLink: {
     dashboard: 'Dashboard',
     webcams: 'Webcams',
+    login: 'Login',
     logout: 'Logout',
+    register: 'Register',
     memberTools: 'Member Tools',
     reportIssue: 'Report Issue',
     submitProxy: 'Submit Proxy Vote',
@@ -17,6 +19,7 @@ export default {
     manageMemberbucks: 'Spacebucks',
   },
   error: {
+    pageNotFound: 'Page not found',
     400: ' Sorry, there was an error with your request. (Error 400)',
     401: ' Sorry, you need to be logged in to access this page. (Error 401)',
     403: ' Sorry, you don\'t have permission to access this page. (Error 403)',
