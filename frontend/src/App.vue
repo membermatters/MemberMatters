@@ -29,6 +29,7 @@ export default {
   },
   methods: {
     ...mapMutations('config', ['setSiteName', 'setHomepageCards']),
+    ...mapMutations('profile', ['setLoggedIn']),
     updatePageTitle() {
       const pageTitle = this.$route.meta.title;
       const nameKey = pageTitle ? `menuLink.${pageTitle}` : 'error.pageNotFound';
@@ -40,6 +41,7 @@ export default {
           this.portalConfig = result.data;
           this.setSiteName(this.portalConfig.general.siteName);
           this.setHomepageCards(this.portalConfig.homepageCards);
+          this.setLoggedIn(this.portalConfig.loggedIn);
           this.updatePageTitle();
         })
         .catch((error) => {
@@ -48,6 +50,10 @@ export default {
     },
   },
   mounted() {
+    // This tells axios where to find the CSRF token
+    axios.defaults.xsrfCookieName = 'csrftoken';
+    axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
+
     // This sets the default axios base URL to the django dev server if we're on the dev server
     // eslint-disable-next-line no-restricted-globals
     if (location.port === '8080') {
@@ -59,6 +65,7 @@ export default {
   },
   computed: {
     ...mapGetters('config', ['siteName']),
+    ...mapGetters('profile', ['loggedIn']),
   },
 };
 </script>

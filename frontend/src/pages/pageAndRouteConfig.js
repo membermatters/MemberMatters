@@ -10,6 +10,7 @@ const PageAndRouteConfig = [
     icon: 'fad fa-webcam',
     to: '/webcams',
     name: 'webcams',
+    loggedIn: true,
     component: () => import('pages/Webcams.vue'),
   },
   {
@@ -66,15 +67,17 @@ const PageAndRouteConfig = [
     to: '/logout',
     name: 'logout',
     loggedIn: true,
+    component: () => import('pages/Logout.vue'),
   },
   {
     icon: 'fad fa-sign-in',
     to: '/login',
     name: 'login',
     loggedIn: false,
+    component: () => import('pages/Login.vue'),
   },
   {
-    icon: 'fad fa-sign-up',
+    icon: 'fad fa-user-plus',
     to: '/register',
     name: 'register',
     loggedIn: false,

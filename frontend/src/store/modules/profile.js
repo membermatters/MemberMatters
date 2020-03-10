@@ -7,8 +7,8 @@ export default {
     loggedIn: (state) => state.loggedIn,
   },
   mutations: {
-    loggedIn(state, payload) {
-      state.usersTeams = payload;
+    setLoggedIn(state, payload) {
+      state.loggedIn = payload;
     },
   },
 };

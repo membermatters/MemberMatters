@@ -1,13 +1,13 @@
 <template>
   <q-page class="flex flex-start">
-    <div>
+    <div v-if="loggedIn">
       <h5 class="q-ma-md">
         Useful Resources
       </h5>
       <div class="row">
         <dashboard-card
           v-for="card in homepageCards"
-          :key="card.linkLocation"
+          :key="card.title"
           class="col-12 col-sm-4"
           :title="card.title"
           :icon="card.icon"
@@ -18,6 +18,7 @@
         />
       </div>
     </div>
+    <div v-else />
   </q-page>
 </template>
 
@@ -30,6 +31,7 @@ export default {
   components: { DashboardCard },
   computed: {
     ...mapGetters('config', ['homepageCards']),
+    ...mapGetters('profile', ['loggedIn']),
   },
 };
 </script>

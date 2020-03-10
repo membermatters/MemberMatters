@@ -48,11 +48,16 @@
         style="height: calc(100% - 250px); margin-top: 150px; border-right: 1px solid #ddd"
       >
         <q-list>
-          <EssentialLink
+          <template
             v-for="link in essentialLinks"
-            :key="link.title"
-            v-bind="link"
-          />
+          >
+            <template v-if="link.loggedIn === loggedIn">
+              <EssentialLink
+                :key="link.title"
+                v-bind="link"
+              />
+            </template>
+          </template>
         </q-list>
       </q-scroll-area>
 
@@ -114,6 +119,7 @@
 
 <script>
 import EssentialLink from 'components/EssentialLink';
+import { mapGetters } from 'vuex';
 import MainMenu from '../pages/pageAndRouteConfig';
 import mainMixin from '../mixins/mainMixin';
 
@@ -155,6 +161,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters('profile', ['loggedIn']),
     toolbarTitle() {
       const nameKey = `menuLink.${this.$route.meta.title}`;
       const name = `${this.$t(nameKey)}`;
@@ -173,6 +180,7 @@ export default {
     height: 100px;
     text-align: center;
   }
+
   p {
   }
 </style>

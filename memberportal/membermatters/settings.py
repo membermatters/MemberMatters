@@ -19,11 +19,14 @@ SECRET_KEY = os.environ.get("PORTAL_SECRET_KEY", "l)#t68rzepzp)0l#x=9mntciapun$w
 # Default config is for dev environments and is overwritten in prod
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
+SESSION_COOKIE_SAMESITE = None
 
 # this allows the frontend dev server to talk to the dev server
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:8080",
     "http://127.0.0.1:8080",
+    "http://localhost",
+    "http://127.0.0.1",
 ]
 
 if os.environ.get("PORTAL_ENV") == "Production":
@@ -69,6 +72,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "membermatters.middleware.ForceCsrfCookieMiddleware"
 ]
 
 ROOT_URLCONF = "membermatters.urls"
