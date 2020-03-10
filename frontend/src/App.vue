@@ -26,9 +26,12 @@ export default {
     $route() {
       this.updatePageTitle();
     },
+    loggedIn(value) {
+      if (!value) this.$router.push({ name: 'login' });
+    },
   },
   methods: {
-    ...mapMutations('config', ['setSiteName', 'setHomepageCards']),
+    ...mapMutations('config', ['setSiteName', 'setHomepageCards', 'setWebcamLinks']),
     ...mapMutations('profile', ['setLoggedIn']),
     updatePageTitle() {
       const pageTitle = this.$route.meta.title;
@@ -42,6 +45,7 @@ export default {
           this.setSiteName(this.portalConfig.general.siteName);
           this.setHomepageCards(this.portalConfig.homepageCards);
           this.setLoggedIn(this.portalConfig.loggedIn);
+          this.setWebcamLinks(this.portalConfig.webcamLinks);
           this.updatePageTitle();
         })
         .catch((error) => {
@@ -61,7 +65,13 @@ export default {
       axios.defaults.baseURL = `http://${location.hostname}:8000`;
     }
 
+    // Get initial portal configuration data
     this.getPortalConfig();
+
+    // Every 60 seconds check for new config data. This also checks that we're logged in.
+    setInterval(() => {
+      this.getPortalConfig();
+    }, 60000);
   },
   computed: {
     ...mapGetters('config', ['siteName']),
