@@ -18,6 +18,7 @@
     "@fortawesome/fontawesome-pro": "^5.12.1",
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.1",
+    "http-proxy": "^1.18.0",
     "quasar": "^1.0.0",
     "vue-i18n": "^8.0.0"
   },
