@@ -95,7 +95,8 @@ export default {
   methods: {
     ...mapMutations('profile', ['setLoggedIn']),
     reditectLoggedIn() {
-      this.$router.push({ name: 'dashboard' });
+      if (this.$route.query.redirect) this.$router.push(this.$route.query.redirect);
+      else { this.$router.push({ name: 'dashboard' }); }
     },
     onReset() {
       this.email = null;
