@@ -8,14 +8,14 @@ const menuRoutes = mainMenu.map((menuItem) => {
         ? menuItem.component
         : () => import('pages/Error404.vue'),
       name: menuItem.name ? menuItem.name : null,
-      meta: { title: menuItem.title },
+      meta: { title: menuItem.name, loggedIn: menuItem.loggedIn },
       children: menuItem.children.map((subMenuItem) => ({
         path: subMenuItem.to,
         component: subMenuItem.component
           ? subMenuItem.component
           : () => import('pages/Error404.vue'),
         name: subMenuItem.name ? subMenuItem.name : null,
-        meta: { title: subMenuItem.title },
+        meta: { title: subMenuItem.name, loggedIn: menuItem.loggedIn },
       })),
     };
   }
@@ -26,7 +26,7 @@ const menuRoutes = mainMenu.map((menuItem) => {
       ? menuItem.component
       : () => import('pages/Error404.vue'),
     name: menuItem.name ? menuItem.name : null,
-    meta: { title: menuItem.title },
+    meta: { title: menuItem.name, loggedIn: menuItem.loggedIn },
   };
 });
 

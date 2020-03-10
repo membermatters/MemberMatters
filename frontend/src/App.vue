@@ -6,12 +6,39 @@
 
 <script>
 import axios from 'axios';
+import store from './store/index';
 
 export default {
   name: 'App',
+  store,
+  data() {
+    return {
+      portalConfig: {
+        general: { siteName: 'MemberMatters Portal', siteOwner: 'MemberMatters' },
+        images: { siteLogo: '/media/logo.png', siteFavicon: '/media/favicon.png' },
+      },
+    };
+  },
   watch: {
-    $route(to) {
-      document.title = `${to.meta.title || 'MemberMatters'} | MemberMatters`;
+    $route() {
+      this.updatePageTitle();
+    },
+  },
+  methods: {
+    updatePageTitle() {
+      const pageTitle = this.$route.meta.title;
+      const nameKey = pageTitle ? `menuLink.${pageTitle}` : 'error.pageNotFound';
+      document.title = `${this.$t(nameKey)} | ${this.portalConfig.general.siteName}`;
+    },
+    getPortalConfig() {
+      axios.get('/api/config')
+        .then((result) => {
+          this.portalConfig = result.data;
+          this.updatePageTitle();
+        })
+        .catch((error) => {
+          throw error;
+        });
     },
   },
   mounted() {
@@ -21,6 +48,8 @@ export default {
       // eslint-disable-next-line no-restricted-globals
       axios.defaults.baseURL = `http://${location.hostname}:8000`;
     }
+
+    this.getPortalConfig();
   },
 };
 </script>

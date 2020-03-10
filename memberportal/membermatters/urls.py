@@ -25,6 +25,7 @@ urlpatterns = [
     path("", include("profile.urls")),
     path("", include("memberbucks.urls")),
     path("", include("spacedirectory.urls")),
+    path("", include("api_general.urls")),
     path("admin/", admin.site.urls),
 ]
 

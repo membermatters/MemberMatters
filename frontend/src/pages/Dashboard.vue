@@ -1,17 +1,22 @@
 <template>
   <q-page class="flex flex-center">
-    <q-parallax
-      src="https://cdn.quasar.dev/img/parallax2.jpg"
-    >
-      <h1 class="text-white">
-        Test
-      </h1>
-    </q-parallax>
+    <div class="row">
+      <dashboard-card
+        class="col-12 col-sm-4"
+        title="HSBNE Wiki"
+        description="Our wiki is like the rule book for HSBNE. It contains all the information abt."
+        link-text="Read Wiki"
+        link-location="https://wiki.hsbne.org/"
+      />
+    </div>
   </q-page>
 </template>
 
 <script>
+import DashboardCard from '../components/DashboardCard';
+
 export default {
   name: 'DashboardPage',
+  components: { DashboardCard },
 };
 </script>

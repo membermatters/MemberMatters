@@ -156,7 +156,9 @@ export default {
   },
   computed: {
     toolbarTitle() {
-      return this.$route.meta.title ? this.$route.meta.title : 'MemberMatters';
+      const nameKey = `menuLink.${this.$route.meta.title}`;
+      const name = `${this.$t(nameKey)}`;
+      return this.$route.meta.title ? name : this.$t('error.pageNotFound');
     },
   },
   mounted() {

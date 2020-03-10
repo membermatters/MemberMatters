@@ -1,9 +1,9 @@
- ### Getting Started
- > Note: MemberMatters only supports running in Docker on Linux. Installing Docker is outside the scope of this guide, 
+### Getting Started
+> Note: MemberMatters only supports running in Docker on Linux. Installing Docker is outside the scope of this guide, 
 >please consult your favourite search engine for tips.
  
- To get started, download the latest version from docker hub using the following command:
- ```bash
+To get started, download the latest version from docker hub using the following command:
+```bash
 docker pull jaimynmayer/membermatters
 ```
 

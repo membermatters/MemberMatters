@@ -48,14 +48,11 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'EssentialLink',
   props: {
-    title: {
-      type: String,
-      required: true,
-    },
-
     caption: {
       type: String,
       default: '',
@@ -75,6 +72,9 @@ export default {
       type: Array,
       default: null,
     },
+  },
+  computed: {
+    ...mapGetters('profile', ['loggedIn']),
   },
 };
 </script>
