@@ -1,7 +1,21 @@
 import mainMenu from 'pages/pageAndRouteConfig';
 
+const childRoutes = [];
+
 const menuRoutes = mainMenu.map((menuItem) => {
   if (menuItem.children) {
+    // eslint-disable-next-line array-callback-return
+    menuItem.children.map((child) => {
+      childRoutes.push({
+        path: child.to ? child.to : '/no-route', // this means we didn't get a path and shouldn't route there
+        component: child.component
+          ? child.component
+          : () => import('pages/Error404.vue'),
+        name: child.name ? child.name : null,
+        meta: { title: child.name, loggedIn: child.loggedIn },
+      });
+    });
+
     return {
       path: menuItem.to ? menuItem.to : '/no-route', // this means we didn't get a path and shouldn't route there
       component: menuItem.component
@@ -9,14 +23,6 @@ const menuRoutes = mainMenu.map((menuItem) => {
         : () => import('pages/Error404.vue'),
       name: menuItem.name ? menuItem.name : null,
       meta: { title: menuItem.name, loggedIn: menuItem.loggedIn },
-      children: menuItem.children.map((subMenuItem) => ({
-        path: subMenuItem.to,
-        component: subMenuItem.component
-          ? subMenuItem.component
-          : () => import('pages/Error404.vue'),
-        name: subMenuItem.name ? subMenuItem.name : null,
-        meta: { title: subMenuItem.name, loggedIn: menuItem.loggedIn },
-      })),
     };
   }
 
@@ -36,6 +42,7 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       ...menuRoutes,
+      ...childRoutes,
       {
         path: '*',
         component: () => import('pages/Error404.vue'),

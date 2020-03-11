@@ -79,3 +79,10 @@ export default {
   },
 };
 </script>
+
+<style>
+  .q-page {
+    max-width: 1000px;
+    margin: auto;
+  }
+</style>

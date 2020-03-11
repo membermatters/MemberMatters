@@ -62,6 +62,7 @@ const PageAndRouteConfig = [
         icon: 'fad fa-user-lock',
         to: '/account/access',
         name: 'checkAccess',
+        component: () => import('pages/CheckAccess.vue'),
       },
       {
         icon: 'fad fa-wallet',

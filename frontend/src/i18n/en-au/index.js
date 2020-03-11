@@ -53,6 +53,17 @@ export default {
     invalidEmail: 'Please type a valid email.',
     invalidPassword: 'Please type a valid password.',
   },
+  access: {
+    pageDescription: 'Your access permissions for doors and interlocks are shown below. Please '
+      + 'contact the management committee if you believe you should have access to something that '
+      + 'you don\'t.',
+    authorised: 'Authorised',
+    unauthorised: 'Unauthorised',
+    door: 'Door',
+    doors: 'Doors',
+    interlock: 'Interlock',
+    interlocks: 'Interlocks',
+  },
   entityType: 'Association',
   failed: 'Action failed',
   success: 'Action was successful',

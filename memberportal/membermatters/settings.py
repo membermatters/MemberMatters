@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "memberbucks",
     "spacedirectory",
     "api_general",
+    "api_access",
     "constance",
     'corsheaders',
 ]

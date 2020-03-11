@@ -79,7 +79,9 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <fade-transition>
+        <router-view />
+      </fade-transition>
     </q-page-container>
 
     <q-dialog v-model="aboutMemberMatters">
@@ -120,14 +122,20 @@
 <script>
 import EssentialLink from 'components/EssentialLink';
 import { mapGetters } from 'vuex';
+import Transitions, { FadeTransition } from 'vue2-transitions';
+import Vue from 'vue';
 import MainMenu from '../pages/pageAndRouteConfig';
 import mainMixin from '../mixins/mainMixin';
+
+
+Vue.use(Transitions);
 
 export default {
   name: 'MainLayout',
   mixins: [mainMixin],
   components: {
     EssentialLink,
+    FadeTransition,
   },
   data() {
     return {
@@ -182,5 +190,14 @@ export default {
   }
 
   p {
+  }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .3s;
+  }
+
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
+  {
+    opacity: 0;
   }
 </style>
