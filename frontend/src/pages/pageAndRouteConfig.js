@@ -1,5 +1,13 @@
 const PageAndRouteConfig = [
   {
+    icon: 'fad fa-sign-in',
+    to: '/',
+    name: 'rootIndex',
+    loggedIn: false,
+    hiddenMenu: true,
+    component: () => import('pages/Login.vue'),
+  },
+  {
     icon: 'fad fa-columns',
     to: '/dashboard',
     name: 'dashboard',

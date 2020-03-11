@@ -1,16 +1,13 @@
 <template>
   <div class="fixed-center text-center">
     <p>
-      <img
-        src="~assets/sad.svg"
-        style="width:30vw;max-width:150px;"
-      >
+      <sad-face />
     </p>
     <p class="text-faded">
       {{ $t('error.404') }}
     </p>
     <q-btn
-      color="secondary"
+      color="primary"
       style="width:200px;"
       to="/"
       label="Go Home"
@@ -19,7 +16,10 @@
 </template>
 
 <script>
+import SadFace from '../components/SadFace';
+
 export default {
   name: 'Error404',
+  components: { SadFace },
 };
 </script>

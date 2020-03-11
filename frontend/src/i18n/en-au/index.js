@@ -3,6 +3,7 @@
 
 export default {
   menuLink: {
+    rootIndex: 'Dashboard',
     dashboard: 'Dashboard',
     webcams: 'Webcams',
     login: 'Login',
@@ -42,6 +43,15 @@ export default {
     + 'HSBNE (Hackerspace Brisbane). It was created by Jaimyn Mayer, with a little help from some '
     + 'HSBNE members.',
     linkText: 'on GitHub',
+  },
+  button: {
+    submit: 'Submit',
+    reset: 'Reset',
+    cancel: 'Reset',
+  },
+  validation: {
+    invalidEmail: 'Please type a valid email.',
+    invalidPassword: 'Please type a valid password.',
   },
   entityType: 'Association',
   failed: 'Action failed',

@@ -17,7 +17,7 @@
             v-model="email"
             label="Your email"
             lazy-rules
-            :rules="[ val => validateEmail(val) || 'Please type a valid email']"
+            :rules="[ val => validateEmail(val) || $t('validation.invalidEmail')]"
           />
 
           <q-input
@@ -27,7 +27,7 @@
             label="Your password"
             lazy-rules
             :rules="[
-              val => validateNotEmpty(val) || 'Please type your password',
+              val => validateNotEmpty(val) || $t('validation.invalidPassword'),
             ]"
           />
 
@@ -56,14 +56,14 @@
           <div class="row">
             <q-space />
             <q-btn
-              label="Reset"
+              :label="$t('button.reset')"
               type="reset"
               color="primary"
               flat
               class="q-ml-sm"
             />
             <q-btn
-              label="Submit"
+              :label="$t('button.submit')"
               type="submit"
               color="primary"
             />
