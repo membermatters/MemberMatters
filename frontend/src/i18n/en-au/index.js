@@ -64,6 +64,9 @@ export default {
     interlock: 'Interlock',
     interlocks: 'Interlocks',
   },
+  lastseen: {
+    pageDescription: 'Here is a list of when each member last tapped their card.',
+  },
   entityType: 'Association',
   failed: 'Action failed',
   success: 'Action was successful',

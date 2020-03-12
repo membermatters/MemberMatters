@@ -1,13 +1,22 @@
 <template>
-  <q-icon
-    color="primary"
-    name="fad fa-frown"
-    style="font-size: 800%;"
-  />
+  <div>
+    <q-icon
+      color="primary"
+      :name="icons.sadFace"
+      style="font-size: 800%;"
+    />
+  </div>
 </template>
 
 <script>
+import icons from '../icons';
+
 export default {
   name: 'SadFace',
+  computed: {
+    icons() {
+      return icons;
+    },
+  },
 };
 </script>

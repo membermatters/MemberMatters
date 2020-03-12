@@ -31,11 +31,9 @@ organisation.
 ## Getting started (developers)
 ### Development tip (dev server proxy)
 The Vue.js (Quasar) frontend and Django backend run different dev servers on different ports. Due to
-this you will run into issues with sharing cookies etc across the different URIs. You can run the 
-dev server proxy (`node devServer.js`) and access `http://localhost:5555`. The dev server proxy
-will automatically route requests containing `/api/` to port `8000` for the Django dev server and 
-all other requests to port `8080` for the Vue.js dev server. You should run the proxy server from 
-inside the `frontend` directory after you've run `npm install`.
+this you will run into issues with sharing cookies etc across the different URIs. To get around 
+this, the webpack dev server has been setup to proxy all requests to `/api` to `localhost:8000` so 
+you'll need to make sure the django dev server is running there.
 
 ### Vue.js frontend 
 Please see the [readme](https://github.com/membermatters/MemberMatters/blob/master/frontend/README.md) file inside the `frontend` folder. This folder contains all of the source

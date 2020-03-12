@@ -6,7 +6,7 @@
       </p>
       <div
         v-for="link in webcamLinks"
-        class="col-6 q-pa-sm"
+        class="col-xs-12 col-sm-6 q-pa-sm"
         :key="link[1]"
       >
         <q-img

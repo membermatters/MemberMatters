@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
+from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 from membermatters.decorators import login_required_401
 from access.models import Doors, Interlock

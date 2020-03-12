@@ -6,22 +6,13 @@
 
 <script>
 import axios from 'axios';
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 import store from './store/index';
 
 
 export default {
   name: 'App',
   store,
-  data() {
-    return {
-      portalConfig: {
-        general: { siteName: 'MemberMatters Portal', siteOwner: 'MemberMatters' },
-        images: { siteLogo: '/media/logo.png', siteFavicon: '/media/favicon.png' },
-        homepageCards: {},
-      },
-    };
-  },
   watch: {
     $route() {
       this.updatePageTitle();
@@ -32,6 +23,7 @@ export default {
   },
   methods: {
     ...mapMutations('config', ['setSiteName', 'setHomepageCards', 'setWebcamLinks']),
+    ...mapActions('config', ['getSiteConfig']),
     ...mapMutations('profile', ['setLoggedIn']),
     updatePageTitle() {
       const pageTitle = this.$route.meta.title;
@@ -39,13 +31,8 @@ export default {
       document.title = `${this.$t(nameKey)} | ${this.siteName}`;
     },
     getPortalConfig() {
-      axios.get('/api/config')
-        .then((result) => {
-          this.portalConfig = result.data;
-          this.setSiteName(this.portalConfig.general.siteName);
-          this.setHomepageCards(this.portalConfig.homepageCards);
-          this.setLoggedIn(this.portalConfig.loggedIn);
-          this.setWebcamLinks(this.portalConfig.webcamLinks);
+      this.getSiteConfig()
+        .then(() => {
           this.updatePageTitle();
         })
         .catch((error) => {
@@ -57,13 +44,6 @@ export default {
     // This tells axios where to find the CSRF token
     axios.defaults.xsrfCookieName = 'csrftoken';
     axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
-
-    // This sets the default axios base URL to the django dev server if we're on the dev server
-    // eslint-disable-next-line no-restricted-globals
-    if (location.port === '8080') {
-      // eslint-disable-next-line no-restricted-globals
-      axios.defaults.baseURL = `http://${location.hostname}:8000`;
-    }
 
     // Get initial portal configuration data
     this.getPortalConfig();

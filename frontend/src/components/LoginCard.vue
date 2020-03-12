@@ -66,6 +66,7 @@
               :label="$t('button.submit')"
               type="submit"
               color="primary"
+              :loading="buttonLoading"
             />
           </div>
         </q-form>
@@ -87,6 +88,7 @@ export default {
       email: '',
       password: '',
       loginFailed: false,
+      buttonLoading: false,
     };
   },
   mounted() {
@@ -106,7 +108,8 @@ export default {
       this.login();
     },
     login() {
-      this.loginError = false;
+      this.loginFailed = false;
+      this.buttonLoading = true;
       axios.post('/api/login/', {
         email: this.email,
         password: this.password,
@@ -122,6 +125,9 @@ export default {
         })
         .catch((error) => {
           throw error;
+        })
+        .finally(() => {
+          this.buttonLoading = false;
         });
     },
   },

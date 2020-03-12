@@ -546,8 +546,7 @@ def admin_edit_access(request, member_id):
 @no_noobs
 def recent_swipes(request):
     doors = DoorLog.objects.all().order_by("date")[::-1][:50]
-    interlocks = InterlockLog.objects.all().order_by(
-        "last_heartbeat")[::-1][:50]
+    interlocks = InterlockLog.objects.all().order_by("last_heartbeat")[::-1][:50]
 
     return render(
         request, "recent_swipes.html",

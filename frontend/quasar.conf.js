@@ -1,6 +1,7 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 
+// eslint-disable-next-line func-names,no-unused-vars
 module.exports = function (ctx) {
   return {
     // app boot file (/src/boot)
@@ -61,6 +62,11 @@ module.exports = function (ctx) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
+      env: {
+        // Set this to false to disable fontawesome pro icons
+        proIcons: true,
+      },
+
       vueRouterMode: 'history', // available values: 'hash', 'history'
 
       showProgress: false,
@@ -79,6 +85,7 @@ module.exports = function (ctx) {
           loader: 'eslint-loader',
           exclude: /node_modules/,
           options: {
+            // eslint-disable-next-line global-require
             formatter: require('eslint')
               .CLIEngine
               .getFormatter('stylish'),
@@ -91,7 +98,15 @@ module.exports = function (ctx) {
     devServer: {
       https: false,
       port: 8080,
+      host: '0.0.0.0',
       open: false, // opens browser window automatically
+      proxy: {
+        // proxy all requests starting with /api to
+        '/api': {
+          target: 'http://localhost:8000',
+          changeOrigin: false,
+        },
+      },
     },
 
     // animations: 'all', // --- includes all animations
@@ -182,6 +197,7 @@ module.exports = function (ctx) {
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
       nodeIntegration: true,
 
+      // eslint-disable-next-line no-unused-vars
       extendWebpack(cfg) {
         // do something with Electron main process Webpack cfg
         // chainWebpack also available besides this extendWebpack

@@ -9,7 +9,7 @@ export default ({ router, store }) => {
     }
 
     // If we're already logged in and try to hit the login page go to dashboard
-    if (to.path === '/login' && store.getters['profile/loggedIn'] === true) {
+    if ((to.path === '/login' || to.path === '/') && store.getters['profile/loggedIn'] === true) {
       next({ name: 'dashboard' });
     }
     next();
