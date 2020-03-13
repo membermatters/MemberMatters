@@ -67,6 +67,11 @@ export default {
   lastseen: {
     pageDescription: 'Here is a list of when each member last tapped their card.',
   },
+  recentSwipes: {
+    pageDescription: 'Here is a list of the last 50 swipes from doors and interlocks.',
+    inProgress: 'In Progress',
+    timedOut: 'TIMED OUT',
+  },
   entityType: 'Association',
   failed: 'Action failed',
   success: 'Action was successful',

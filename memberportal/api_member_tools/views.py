@@ -16,7 +16,28 @@ def api_get_swipes(request):
     recent_doors = DoorLog.objects.all().order_by("date")[::-1][:50]
     recent_interlocks = InterlockLog.objects.all().order_by("last_heartbeat")[::-1][:50]
 
-    return JsonResponse({"doors": recent_doors, "interlocks": recent_interlocks})
+    doors = []
+    interlocks = []
+
+    for door in recent_doors:
+        doors.append({"name": door.door.name, "date": door.date, "user": door.user.profile.get_full_name()})
+
+    for interlock in recent_interlocks:
+        user_off = None
+
+        if interlock.user_off:
+            user_off = interlock.user_off.profile.get_full_name()
+
+        interlocks.append({
+            "name": interlock.interlock.name,
+            "sessionStart": interlock.first_heartbeat,
+            "sessionEnd": interlock.last_heartbeat,
+            "sessionComplete": interlock.session_complete,
+            "userOn": interlock.user.profile.get_full_name(),
+            "userOff": user_off,
+        })
+
+    return JsonResponse({"doors": doors, "interlocks": interlocks}, safe=False)
 
 
 @require_GET

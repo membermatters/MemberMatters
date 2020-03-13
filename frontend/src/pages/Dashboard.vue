@@ -12,8 +12,8 @@
           :title="card.title"
           :icon="card.icon"
           :description="card.description"
-          :link-text="card.linkText"
-          :link-location="card.linkLocation"
+          :link-text="card.btn_text"
+          :link-location="card.url"
           :router-link="card.routerLink ? card.routerLink : false"
         />
       </div>

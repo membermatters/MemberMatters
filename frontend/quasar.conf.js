@@ -63,7 +63,8 @@ module.exports = function (ctx) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       env: {
-        // Set this to false to disable fontawesome pro icons
+        // Set this to false to disable fontawesome pro icons. You need to configure your .npmrc
+        // file as per the font awesome pro instructions to download and use FA pro icons.
         proIcons: true,
       },
 

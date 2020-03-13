@@ -28,5 +28,14 @@ export default {
           throw error;
         });
     },
+    getRecentSwipes({ commit }) {
+      axios.get('/api/tools/swipes/')
+        .then((result) => {
+          commit('setRecentSwipes', result.data);
+        })
+        .catch((error) => {
+          throw error;
+        });
+    },
   },
 };

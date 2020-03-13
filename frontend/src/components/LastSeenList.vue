@@ -7,10 +7,11 @@
       row-key="user"
       :filter="filter"
       :pagination.sync="pagination"
+      :grid="$q.screen.xs"
     >
       <template v-slot:top-right>
         <q-input
-          borderless
+          outlined
           dense
           debounce="300"
           v-model="filter"
@@ -58,7 +59,7 @@ export default {
     },
     humanLastSeen() {
       return this.lastSeen.map((value) => {
-        const humanReadable = Moment(value.date).format('Do MMM YYYY, h:mm:ss a');
+        const humanReadable = Moment.utc(value.date).local().format('Do MMM YYYY, h:mm a');
         return { user: value.user, date: humanReadable, never: value.never };
       });
     },
