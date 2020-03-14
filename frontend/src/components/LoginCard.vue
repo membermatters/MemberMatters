@@ -2,7 +2,7 @@
   <div class="q-pa-md">
     <q-card class="login-card">
       <h6 class="q-ma-none q-pa-md">
-        {{ $t('info.loginToContinue') }}
+        {{ $t('loginCard.loginToContinue') }}
       </h6>
 
       <q-card-section>
@@ -36,34 +36,35 @@
             v-if="this.loggedIn"
             class="bg-green text-white"
           >
-            {{ $t('info.loginSuccess') }}
+            {{ $t('loginCard.loginSuccess') }}
           </q-banner>
 
           <q-banner
             v-if="loginFailed"
             class="bg-red text-white"
           >
-            {{ $t('error.loginFailed') }}
+            {{ $t('loginCard.loginFailed') }}
           </q-banner>
 
           <p class="text-caption">
-            {{ $t('info.notAMember') }}
+            {{ $t('loginCard.notAMember') }}
             <router-link :to="{ name: 'register' }">
-              {{ $t('info.registerHere') }}
+              {{ $t('loginCard.registerHere') }}
             </router-link>
           </p>
 
           <div class="row">
             <q-space />
             <q-btn
-              :label="$t('button.reset')"
+              :label="$t('loginCard.resetPassword')"
               type="reset"
               color="primary"
               flat
               class="q-ml-sm"
+              @click="resetPasswordPrompt = true"
             />
             <q-btn
-              :label="$t('button.submit')"
+              :label="$t('loginCard.login')"
               type="submit"
               color="primary"
               :loading="buttonLoading"
@@ -72,6 +73,47 @@
         </q-form>
       </q-card-section>
     </q-card>
+
+    <q-dialog
+      v-model="resetPasswordPrompt"
+      persistent
+    >
+      <q-card style="max-width: 350px">
+        <q-card-section>
+          <div class="text-h6">
+            {{ $t('loginCard.forgottenPassword') }}
+          </div>
+          <div>
+            {{ $t('loginCard.forgottenPasswordDescription') }}
+          </div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input
+            :label="$t('loginCard.emailLabel')"
+            v-model="email"
+            autofocus
+            @keyup.enter="resetPasswordPrompt = false"
+          />
+        </q-card-section>
+
+        <q-card-actions
+          align="right"
+          class="text-primary"
+        >
+          <q-btn
+            flat
+            :label="$t('button.cancel')"
+            v-close-popup
+          />
+          <q-btn
+            flat
+            :label="$t('button.submit')"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -89,6 +131,7 @@ export default {
       password: '',
       loginFailed: false,
       buttonLoading: false,
+      resetPasswordPrompt: false,
     };
   },
   mounted() {

@@ -7,7 +7,7 @@
       row-key="user"
       :filter="filter"
       :pagination.sync="pagination"
-      :grid="$q.screen.xs"
+      :loading="loading"
     >
       <template v-slot:top-right>
         <q-input
@@ -36,10 +36,12 @@ export default {
   data() {
     return {
       filter: '',
+      loading: false,
+      updateInterval: null,
       pagination: {
         sortBy: 'desc',
         descending: false,
-        rowsPerPage: 10,
+        rowsPerPage: this.$q.screen.xs ? 4 : 8,
       },
     };
   },
@@ -47,10 +49,17 @@ export default {
     ...mapActions('tools', ['getLastSeen']),
   },
   mounted() {
-    this.getLastSeen();
-    setInterval(() => {
+    this.loading = true;
+    this.getLastSeen()
+      .then(() => {
+        this.loading = false;
+      });
+    this.updateInterval = setInterval(() => {
       this.getLastSeen();
     }, 30000);
+  },
+  destroyed() {
+    clearInterval(this.updateInterval);
   },
   computed: {
     ...mapGetters('tools', ['lastSeen']),

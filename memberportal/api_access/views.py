@@ -15,6 +15,7 @@ def api_get_access_permissions(request):
     doors = []
     interlocks = []
     user = request.user
+    status = user.profile.state
 
     user_active = not (user.profile.state == "inactive" or user.profile.state == "noob")
 
@@ -32,4 +33,4 @@ def api_get_access_permissions(request):
         else:
             interlocks.append({"name": interlock.name, "access": False})
 
-    return JsonResponse({"doors": doors, "interlocks": interlocks})
+    return JsonResponse({"doors": doors, "interlocks": interlocks, "memberStatus": status})

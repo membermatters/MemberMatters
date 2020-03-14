@@ -29,4 +29,5 @@ export default {
   register: pro ? 'fad fa-user-plus' : 'fal fa-user-plus',
 
   search: pro ? 'fad fa-search' : 'fal fa-search',
+  warning: pro ? 'fad fa-exclamation-triangle' : 'fal fa-exclamation-triangle',
 };

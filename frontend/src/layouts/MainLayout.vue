@@ -26,7 +26,7 @@
         <q-img
           spinner-color="white"
           class="absolute-top"
-          src="https://cdn.quasar.dev/img/material.png"
+          src="../assets/img/menu-bg/menu-bg.jpg"
           style="height: 150px"
         >
           <div class="absolute-bottom bg-transparent">
@@ -34,7 +34,7 @@
               size="56px"
               class="q-mb-sm"
             >
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+              <q-icon :name="icons.profile" />
             </q-avatar>
             <div class="text-weight-bold">
               Jaimyn Mayer
@@ -124,6 +124,7 @@ import EssentialLink from 'components/EssentialLink';
 import { mapGetters } from 'vuex';
 import Transitions, { FadeTransition } from 'vue2-transitions';
 import Vue from 'vue';
+import icons from '../icons';
 import MainMenu from '../pages/pageAndRouteConfig';
 import mainMixin from '../mixins/mainMixin';
 
@@ -170,6 +171,9 @@ export default {
   },
   computed: {
     ...mapGetters('profile', ['loggedIn']),
+    icons() {
+      return icons;
+    },
     toolbarTitle() {
       const nameKey = `menuLink.${this.$route.meta.title}`;
       const name = `${this.$t(nameKey)}`;

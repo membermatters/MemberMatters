@@ -1,5 +1,5 @@
 <template>
-  <q-page class="flex content-start">
+  <q-page class="row flex content-start justify-center">
     <div style="width: 100%;">
       <div
         class="row"

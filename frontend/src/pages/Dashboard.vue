@@ -1,5 +1,5 @@
 <template>
-  <q-page class="flex flex-start">
+  <q-page class="row flex content-start justify-center">
     <div v-if="loggedIn">
       <h5 class="q-ma-md">
         Useful Resources

@@ -20,22 +20,30 @@ export default {
   },
   actions: {
     getLastSeen({ commit }) {
-      axios.get('/api/tools/lastseen/')
-        .then((result) => {
-          commit('setLastSeen', result.data);
-        })
-        .catch((error) => {
-          throw error;
-        });
+      return new Promise((resolve, reject) => {
+        axios.get('/api/tools/lastseen/')
+          .then((result) => {
+            commit('setLastSeen', result.data);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
     },
     getRecentSwipes({ commit }) {
-      axios.get('/api/tools/swipes/')
-        .then((result) => {
-          commit('setRecentSwipes', result.data);
-        })
-        .catch((error) => {
-          throw error;
-        });
+      return new Promise((resolve, reject) => {
+        axios.get('/api/tools/swipes/')
+          .then((result) => {
+            commit('setRecentSwipes', result.data);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
     },
   },
 };

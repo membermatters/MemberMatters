@@ -29,13 +29,8 @@ export default {
     404: ' Sorry, that page could not be found. (Error 404)',
     500: ' Sorry, there was a server error. Please try again later. (Error 500)',
   },
-  info: {
-    webcamPageDescription: 'This page shows our public webcams, updated every minute for your convenience.',
-    loginSuccess: 'Login successful, loading dashboard.',
-    logoutSuccess: 'Logout successful.',
-    registerHere: 'Register Here',
-    notAMember: 'Not a member? ',
-    loginToContinue: 'Please login to continue',
+  webcams: {
+    pageDescription: 'This page shows our public webcams, updated every minute for your convenience.',
   },
   about: {
     title: 'About MemberMatters',
@@ -47,7 +42,20 @@ export default {
   button: {
     submit: 'Submit',
     reset: 'Reset',
-    cancel: 'Reset',
+    cancel: 'Cancel',
+  },
+  loginCard: {
+    login: 'Login',
+    resetPassword: 'Reset Password',
+    loginSuccess: 'Login successful, loading dashboard.',
+    logoutSuccess: 'Logout successful.',
+    registerHere: 'Register Here',
+    notAMember: 'Not a member? ',
+    loginToContinue: 'Please login to continue',
+    forgottenPassword: 'Forgot your password?',
+    forgottenPasswordDescription: 'Please enter your email address and click submit. You will '
+      + 'receive an email with further instructions.',
+    emailLabel: 'Email address',
   },
   validation: {
     invalidEmail: 'Please type a valid email.',
@@ -57,6 +65,7 @@ export default {
     pageDescription: 'Your access permissions for doors and interlocks are shown below. Please '
       + 'contact the management committee if you believe you should have access to something that '
       + 'you don\'t.',
+    inactive: 'Your membership is currently inactive. This may affect your access.',
     authorised: 'Authorised',
     unauthorised: 'Unauthorised',
     door: 'Door',

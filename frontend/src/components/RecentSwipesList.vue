@@ -27,36 +27,39 @@
       animated
     >
       <q-tab-panel name="doors">
-        <q-table
-          :data="humanRecentDoorSwipes"
-          :columns="[{ name: 'user', label: 'User', field: 'user', sortable: true },
-                     { name: 'door', label: 'Door', field: 'name', sortable: true },
-                     { name: 'swipedAt', label: 'Swiped At', field: 'date', sortable: true },]"
-          row-key="key"
-          :filter="filter"
-          :pagination.sync="doorPagination"
-          :dense="$q.screen.lt.md"
-          :grid="$q.screen.xs"
-          style="max-width: 500px;"
-        >
-          <template v-slot:top-right>
-            <q-input
-              outlined
-              dense
-              debounce="300"
-              v-model="filter"
-              placeholder="Search"
-            >
-              <template v-slot:append>
-                <q-icon :name="icons.search" />
-              </template>
-            </q-input>
-          </template>
-        </q-table>
+        <div class="row flex content-start justify-center">
+          <q-table
+            :data="humanRecentDoorSwipes"
+            :columns="[{ name: 'user', label: 'User', field: 'user', sortable: true },
+                       { name: 'door', label: 'Door', field: 'name', sortable: true },
+                       { name: 'swipedAt', label: 'Swiped At', field: 'date', sortable: true },]"
+            row-key="key"
+            :filter="filter"
+            :pagination.sync="doorPagination"
+            :dense="$q.screen.lt.md"
+            :grid="$q.screen.xs"
+            style="max-width: 500px;"
+            :loading="loading"
+          >
+            <template v-slot:top-right>
+              <q-input
+                outlined
+                dense
+                debounce="300"
+                v-model="filter"
+                placeholder="Search"
+              >
+                <template v-slot:append>
+                  <q-icon :name="icons.search" />
+                </template>
+              </q-input>
+            </template>
+          </q-table>
+        </div>
       </q-tab-panel>
 
       <q-tab-panel name="interlocks">
-        <div class="q-pa-md">
+        <div class="row flex content-start justify-center">
           <q-table
             :data="humanRecentInterlockSwipes"
             :columns="[{ name: 'userOn', label: 'Turned On By', field: 'userOn', sortable: true },
@@ -81,6 +84,7 @@
             :pagination.sync="interlockPagination"
             :dense="$q.screen.lt.md"
             :grid="$q.screen.xs"
+            :loading="loading"
           >
             <template v-slot:top-right>
               <q-input
@@ -112,6 +116,8 @@ export default {
   data() {
     return {
       tab: 'doors',
+      loading: false,
+      updateInterval: null,
       filter: '',
       doorPagination: {
         sortBy: 'desc',
@@ -129,10 +135,17 @@ export default {
     ...mapActions('tools', ['getRecentSwipes']),
   },
   mounted() {
-    this.getRecentSwipes();
-    setInterval(() => {
+    this.loading = true;
+    this.getRecentSwipes()
+      .then(() => {
+        this.loading = false;
+      });
+    this.updateInterval = setInterval(() => {
       this.getRecentSwipes();
     }, 30000);
+  },
+  destroyed() {
+    clearInterval(this.updateInterval);
   },
   computed: {
     ...mapGetters('tools', ['recentSwipes']),

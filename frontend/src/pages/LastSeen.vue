@@ -1,10 +1,7 @@
 <template>
-  <q-page class="flex content-start">
+  <q-page class="row flex content-start justify-center">
     <div>
-      <div
-        class="row"
-        style="width: 100%;"
-      >
+      <div>
         <p class="q-pl-lg q-pt-lg q-pr-lg">
           {{ $t('lastseen.pageDescription') }}
         </p>

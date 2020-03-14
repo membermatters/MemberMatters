@@ -1,5 +1,5 @@
 <template>
-  <q-page class="flex flex-center">
+  <q-page class="row flex content-start justify-center q-pt-xl">
     <login-card />
   </q-page>
 </template>

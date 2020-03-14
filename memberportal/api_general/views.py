@@ -4,9 +4,11 @@ from django.contrib.auth import (
     login,
     logout,
 )
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.http import require_GET, require_POST
 from membermatters.decorators import login_required_401
 from constance import config
+from profile.models import User
 import json
 
 
@@ -69,3 +71,14 @@ def api_logout(request):
     logout(request)
 
     return JsonResponse({"success": True})
+
+
+@require_POST
+def api_reset_password(request):
+    try:
+        user = User.objects.get(email=json.loads(request.body).get('email'))
+        user.reset_password()
+        return JsonResponse({'success': True})
+
+    except ObjectDoesNotExist:
+        return JsonResponse({'success': False})

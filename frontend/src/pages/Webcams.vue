@@ -1,8 +1,8 @@
 <template>
-  <q-page class="q-mt-md">
+  <q-page class="row flex content-start justify-center q-mt-md">
     <div class="row flex flex-center">
       <p class="col-12 text-center q-pt-md">
-        {{ $t('info.webcamPageDescription') }}
+        {{ $t('webcams.pageDescription') }}
       </p>
       <div
         v-for="link in webcamLinks"
@@ -46,6 +46,6 @@ export default {
 <style scoped>
   .row {
     width: 100%;
-    max-width: 1200px;
+    max-width: 100vw;
   }
 </style>

@@ -94,7 +94,7 @@
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
-  name: 'DoorAccessList',
+  name: 'AccessList',
   methods: {
     ...mapActions('profile', ['getAccess']),
   },
