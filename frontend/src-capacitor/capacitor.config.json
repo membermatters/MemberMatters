@@ -1,0 +1,7 @@
+{
+  "appId": "org.membermatters.app",
+  "appName": "MemberMatters",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www"
+}

@@ -29,6 +29,7 @@ export default {
     ...mapMutations('config', ['setSiteName', 'setHomepageCards', 'setWebcamLinks']),
     ...mapMutations('profile', ['setLoggedIn']),
     ...mapActions('config', ['getSiteConfig']),
+    ...mapActions('profile', ['getProfile']),
     updatePageTitle() {
       const pageTitle = this.$route.meta.title;
       const nameKey = pageTitle ? `menuLink.${pageTitle}` : 'error.pageNotFound';

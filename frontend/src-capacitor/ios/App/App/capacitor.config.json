@@ -1,0 +1,10 @@
+{
+  "appId": "org.membermatters.app",
+  "appName": "MemberMatters",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "server": {
+    "url": "https://192.168.0.185:8080"
+  }
+}

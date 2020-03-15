@@ -19,7 +19,11 @@
             :rules="[
               val => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
             ]"
-          />
+          >
+            <template v-slot:prepend>
+              <q-icon :name="icons.warning" />
+            </template>
+          </q-input>
 
           <q-input
             filled
@@ -31,8 +35,11 @@
             :rules="[
               val => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
             ]"
-          />
-
+          >
+            <template v-slot:prepend>
+              <q-icon :name="icons.comment" />
+            </template>
+          </q-input>
 
           <q-banner
             v-if="submitSuccess"
@@ -71,6 +78,7 @@
 <script>
 import axios from 'axios';
 import formMixin from '../mixins/formMixin';
+import icons from '../icons';
 
 export default {
   name: 'LoginCard',
@@ -118,6 +126,11 @@ export default {
         .finally(() => {
           this.buttonLoading = false;
         });
+    },
+  },
+  computed: {
+    icons() {
+      return icons;
     },
   },
 };
