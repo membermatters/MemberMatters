@@ -82,3 +82,16 @@ def api_reset_password(request):
 
     except ObjectDoesNotExist:
         return JsonResponse({'success': False})
+
+
+@require_GET
+@login_required_401
+def api_get_profile(request):
+    user = request.user
+
+    profile = {
+        "fullName": user.profile.get_full_name(),
+        "screenName": user.profile.screen_name,
+    }
+
+    return JsonResponse(profile)

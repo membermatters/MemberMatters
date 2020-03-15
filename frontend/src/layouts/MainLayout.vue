@@ -37,9 +37,11 @@
               <q-icon :name="icons.profile" />
             </q-avatar>
             <div class="text-weight-bold">
-              Jaimyn Mayer
+              {{ profile.fullName }}
             </div>
-            <div>@jabelone</div>
+            <div>
+              ({{ profile.screenName }})
+            </div>
           </div>
         </q-img>
       </router-link>
@@ -121,7 +123,7 @@
 
 <script>
 import EssentialLink from 'components/EssentialLink';
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import Transitions, { FadeTransition } from 'vue2-transitions';
 import Vue from 'vue';
 import icons from '../icons';
@@ -147,6 +149,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions('profile', ['getProfile']),
     getMenuState() {
       return localStorage.getItem('menuState');
     },
@@ -170,7 +173,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('profile', ['loggedIn']),
+    ...mapGetters('profile', ['loggedIn', 'profile']),
     icons() {
       return icons;
     },
@@ -181,6 +184,7 @@ export default {
     },
   },
   mounted() {
+    if (this.loggedIn) this.getProfile();
     this.mainMenuOpen = this.getMenuState() === 'true';
     this.darkMode = this.getDarkState() === 'true';
   },

@@ -5,12 +5,14 @@ export default {
   state: {
     loggedIn: false,
     memberStatus: 'Unknown',
+    profile: {},
     doorAccess: [],
     interlockAccess: [],
   },
   getters: {
     loggedIn: (state) => state.loggedIn,
     memberStatus: (state) => state.memberStatus,
+    profile: (state) => state.profile,
     doorAccess: (state) => state.doorAccess,
     interlockAccess: (state) => state.interlockAccess,
   },
@@ -20,6 +22,9 @@ export default {
     },
     setMemberStatus(state, payload) {
       state.memberStatus = payload;
+    },
+    setProfile(state, payload) {
+      state.profile = payload;
     },
     setDoorAccess(state, payload) {
       state.doorAccess = payload;
@@ -36,6 +41,19 @@ export default {
             commit('setDoorAccess', response.data.doors);
             commit('setInterlockAccess', response.data.interlocks);
             commit('setMemberStatus', response.data.memberStatus);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getProfile({ commit }) {
+      return new Promise((resolve, reject) => {
+        axios.get('/api/profile/')
+          .then((response) => {
+            commit('setProfile', response.data);
             resolve();
           })
           .catch((error) => {

@@ -19,12 +19,13 @@ export default {
     },
     loggedIn(value) {
       if (!value) this.$router.push({ name: 'login' });
+      if (value) this.getProfile();
     },
   },
   methods: {
     ...mapMutations('config', ['setSiteName', 'setHomepageCards', 'setWebcamLinks']),
-    ...mapActions('config', ['getSiteConfig']),
     ...mapMutations('profile', ['setLoggedIn']),
+    ...mapActions('config', ['getSiteConfig']),
     updatePageTitle() {
       const pageTitle = this.$route.meta.title;
       const nameKey = pageTitle ? `menuLink.${pageTitle}` : 'error.pageNotFound';
