@@ -33,6 +33,7 @@ const PageAndRouteConfig = [
         to: '/tools/issue',
         name: 'reportIssue',
         loggedIn: true,
+        component: () => import('pages/ReportIssue.vue'),
       },
       {
         icon: icons.submitProxy,

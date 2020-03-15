@@ -47,7 +47,7 @@ def send_group_email(user, emails, subject, title, message):
         raise RuntimeError("No SendGrid API key found in environment variables.")
 
 
-def send_single_email(user, email, subject, title, message):
+def send_single_email(user: object, email: object, subject: object, title: object, message: object) -> object:
     message = escape(message)
     message = message.replace("~br~", "<br>")
     email_vars = {"preheader": "", "title": title, "message": message}

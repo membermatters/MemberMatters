@@ -10,7 +10,7 @@
     </div>
     <div class="column flex content-start justify-center">
       <q-banner
-        v-if="memberStatus !== 'active'"
+        v-if="profile.memberStatus !== 'active'"
         inline-actions
         rounded
         class="bg-orange text-white q-ma-md"
@@ -37,7 +37,7 @@ export default {
   name: 'CheckAccessPage',
   components: { DoorAccessList },
   computed: {
-    ...mapGetters('profile', ['memberStatus']),
+    ...mapGetters('profile', ['profile']),
     icons() {
       return icons;
     },

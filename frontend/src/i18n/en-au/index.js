@@ -60,6 +60,7 @@ export default {
   validation: {
     invalidEmail: 'Please type a valid email.',
     invalidPassword: 'Please type a valid password.',
+    cannotBeEmpty: 'This field cannot be empty.',
   },
   access: {
     pageDescription: 'Your access permissions for doors and interlocks are shown below. Please '
@@ -80,6 +81,11 @@ export default {
     pageDescription: 'Here is a list of the last 50 swipes from doors and interlocks.',
     inProgress: 'In Progress',
     timedOut: 'TIMED OUT',
+  },
+  reportIssue: {
+    pageDescription: 'Report an issue',
+    success: 'Your issue was reported succesfully.',
+    fail: 'There was a problem reporting your issue.',
   },
   entityType: 'Association',
   failed: 'Action failed',

@@ -7,7 +7,10 @@
 <script>
 import axios from 'axios';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
+import { colors } from 'quasar';
 import store from './store/index';
+
+colors.setBrand('dark', '#313131');
 
 
 export default {
@@ -65,5 +68,9 @@ export default {
   .q-page {
     max-width: 1000px;
     margin: auto;
+  }
+
+  body.body--dark, .q-tab-panels--dark {
+    background: #1f1f1f;
   }
 </style>

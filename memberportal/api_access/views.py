@@ -33,4 +33,4 @@ def api_get_access_permissions(request):
         else:
             interlocks.append({"name": interlock.name, "access": False})
 
-    return JsonResponse({"doors": doors, "interlocks": interlocks, "memberStatus": status})
+    return JsonResponse({"doors": doors, "interlocks": interlocks})

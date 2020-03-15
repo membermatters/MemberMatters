@@ -4,14 +4,12 @@ export default {
   namespaced: true,
   state: {
     loggedIn: false,
-    memberStatus: 'Unknown',
     profile: {},
     doorAccess: [],
     interlockAccess: [],
   },
   getters: {
     loggedIn: (state) => state.loggedIn,
-    memberStatus: (state) => state.memberStatus,
     profile: (state) => state.profile,
     doorAccess: (state) => state.doorAccess,
     interlockAccess: (state) => state.interlockAccess,
@@ -19,9 +17,6 @@ export default {
   mutations: {
     setLoggedIn(state, payload) {
       state.loggedIn = payload;
-    },
-    setMemberStatus(state, payload) {
-      state.memberStatus = payload;
     },
     setProfile(state, payload) {
       state.profile = payload;
@@ -40,7 +35,6 @@ export default {
           .then((response) => {
             commit('setDoorAccess', response.data.doors);
             commit('setInterlockAccess', response.data.interlocks);
-            commit('setMemberStatus', response.data.memberStatus);
             resolve();
           })
           .catch((error) => {

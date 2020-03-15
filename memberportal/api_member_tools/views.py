@@ -1,8 +1,13 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_GET, require_POST
 from membermatters.decorators import login_required_401
 from access.models import DoorLog, InterlockLog
 from profile.models import User
+from constance import config
+from membermatters.helpers import log_user_event
+from profile.emailhelpers import send_single_email
+import requests
+import json
 
 
 @require_GET
@@ -66,3 +71,51 @@ def api_get_lastseen(request):
             last_seen.append({"user": member.profile.get_full_name(), "never": True})
 
     return JsonResponse(last_seen, safe=False)
+
+
+@require_POST
+# @login_required_401
+def api_submit_issue(request):
+    body = json.loads(request.body)
+    title = body["title"]
+    description = request.user.profile.get_full_name() + ": " + body["description"]
+
+    if not (title and description):
+        return HttpResponseBadRequest()
+
+    use_trello = config.ENABLE_TRELLO_INTEGRATION
+    trello_key = config.TRELLO_API_KEY
+    trello_token = config.TRELLO_API_TOKEN
+    trello_id_list = config.TRELLO_ID_LIST
+
+    if use_trello:
+        url = "https://api.trello.com/1/cards"
+
+        querystring = {"name": title, "desc": description, "pos": "top",
+                       "idList": trello_id_list,
+                       "keepFromSource": "all", "key": trello_key, "token": trello_token}
+
+        response = requests.request("POST", url, params=querystring)
+
+        if response.status_code == 200:
+            log_user_event(request.user, "Submitted issue: " + title + " Content: " + description,
+                           "generic")
+
+            return JsonResponse({"success": True, "url": response.json()["shortUrl"]})
+
+        else:
+            return JsonResponse({"success": False})
+
+    # if Trello isn't configured, use email instead
+    else:
+        subject = f"{request.user.profile.get_full_name()} submitted an issue ({title})"
+
+        try:
+            if send_single_email(request.user, config.EMAIL_ADMIN, subject, subject, description):
+                return JsonResponse({"success": True})
+
+            else:
+                return JsonResponse({"success": False})
+
+        except:
+            return JsonResponse({"success": False})

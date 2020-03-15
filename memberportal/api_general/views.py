@@ -92,6 +92,7 @@ def api_get_profile(request):
     profile = {
         "fullName": user.profile.get_full_name(),
         "screenName": user.profile.screen_name,
+        "memberStatus": user.profile.state,
     }
 
     return JsonResponse(profile)

@@ -202,6 +202,13 @@ CONSTANCE_CONFIG = {
         "",
         "Same syntax as HOME_PAGE_CARDS but icons are ignored. If nothing is specified we will use HOME_PAGE_CARDS."),
 
+    # Trello config
+    "ENABLE_TRELLO_INTEGRATION": (False, "Enable the submit issue to trello integration."),
+    "TRELLO_API_KEY": ("", "Set this to your Trello API key."),
+    "TRELLO_API_TOKEN": ("", "Set this to your Trello API token."),
+    "TRELLO_ID_LIST": ("", "Set this to the ID of your card list you want issue "
+                                         "to go to."),
+
     # Space API config
     "SPACE_DIRECTORY_ENABLED": (True, "Turn on the space directory API available at /api/spacedirectory."),
     "SPACE_DIRECTORY_OPEN": (False, "Sets the open state."),
@@ -230,6 +237,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict([
     ("Images", ("SITE_LOGO", "SITE_FAVICON")),
     ("Group Localisation", ("MEMBERBUCKS_NAME", "GROUP_NAME", "ADMIN_NAME", "WEBCAM_PAGE_URLS",
                             "HOME_PAGE_CARDS", "WELCOME_EMAIL_CARDS")),
+    ("Trello", ("ENABLE_TRELLO_INTEGRATION", "TRELLO_API_KEY", "TRELLO_API_TOKEN", "TRELLO_ID_LIST")),
     ("Space Directory", (
         "SPACE_DIRECTORY_ENABLED", "SPACE_DIRECTORY_OPEN", "SPACE_DIRECTORY_MESSAGE", "SPACE_DIRECTORY_ICON_OPEN",
         "SPACE_DIRECTORY_ICON_CLOSED", "SPACE_DIRECTORY_LOCATION_ADDRESS", "SPACE_DIRECTORY_LOCATION_LAT",
