@@ -66,10 +66,6 @@
       <q-space />
 
       <div class="footer">
-        <q-toggle
-          label="Dark Mode"
-          v-model="darkMode"
-        />
         <p
           class="content-end q-mb-none q-pa-md"
           style="text-decoration: underline; cursor: pointer;"
@@ -142,7 +138,6 @@ export default {
   },
   data() {
     return {
-      darkMode: this.$q.dark.isActive,
       mainMenuOpen: true,
       essentialLinks: MainMenu,
       aboutMemberMatters: false,
@@ -156,20 +151,10 @@ export default {
     setMenuState() {
       localStorage.setItem('menuState', this.mainMenuOpen);
     },
-    getDarkState() {
-      return localStorage.getItem('darkMode');
-    },
-    setDarkState() {
-      localStorage.setItem('darkMode', this.darkMode);
-    },
   },
   watch: {
     mainMenuOpen() {
       this.setMenuState();
-    },
-    darkMode(value) {
-      this.$q.dark.set(value);
-      this.setDarkState();
     },
   },
   computed: {
@@ -186,7 +171,6 @@ export default {
   mounted() {
     if (this.loggedIn) this.getProfile();
     this.mainMenuOpen = this.getMenuState() === 'true';
-    this.darkMode = this.getDarkState() === 'true';
   },
 };
 </script>
@@ -197,7 +181,8 @@ export default {
     text-align: center;
   }
 
-  p {
+  .q-scrollarea {
+    border-right: none!important;
   }
 
   .fade-enter-active, .fade-leave-active {

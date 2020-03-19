@@ -20,6 +20,9 @@
           "splashscreenHash": false,
           "splashscreenType": "generate",
           "backgroundColor": "#0096fb"
+        },
+        "electron": {
+          "iconHash": "98ef37bc02a77106cb4e7aa4de34986f"
         }
       },
       "build": {
