@@ -1,13 +1,15 @@
 import axios from 'axios';
 
+const getDefaultState = () => ({
+  loggedIn: false,
+  profile: {},
+  doorAccess: [],
+  interlockAccess: [],
+});
+
 export default {
   namespaced: true,
-  state: {
-    loggedIn: false,
-    profile: {},
-    doorAccess: [],
-    interlockAccess: [],
-  },
+  state: getDefaultState(),
   getters: {
     loggedIn: (state) => state.loggedIn,
     profile: (state) => state.profile,
@@ -15,6 +17,9 @@ export default {
     interlockAccess: (state) => state.interlockAccess,
   },
   mutations: {
+    resetState(state) {
+      Object.assign(state, getDefaultState());
+    },
     setLoggedIn(state, payload) {
       state.loggedIn = payload;
     },

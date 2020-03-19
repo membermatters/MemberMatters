@@ -53,8 +53,9 @@ export default {
       });
   },
   methods: {
-    ...mapMutations('profile', ['setLoggedIn']),
+    ...mapMutations('profile', ['setLoggedIn', 'resetState']),
     completeLogout() {
+      this.resetState();
       this.setLoggedIn(false);
       this.error = false;
       this.spinner = false;

@@ -29,7 +29,10 @@
           src="../assets/img/menu-bg/menu-bg.jpg"
           style="height: 150px"
         >
-          <div class="absolute-bottom bg-transparent">
+          <div
+            v-if="loggedIn"
+            class="absolute-bottom bg-transparent"
+          >
             <q-avatar
               size="56px"
               class="q-mb-sm"
@@ -39,7 +42,7 @@
             <div class="text-weight-bold">
               {{ profile.fullName }}
             </div>
-            <div>
+            <div v-if="profile.screenName">
               ({{ profile.screenName }})
             </div>
           </div>
