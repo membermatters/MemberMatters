@@ -3,6 +3,7 @@ from django.views.decorators.http import require_GET, require_POST
 from membermatters.decorators import login_required_401
 from access.models import DoorLog, InterlockLog
 from profile.models import User
+from group.models import Group
 from constance import config
 from membermatters.helpers import log_user_event
 from profile.emailhelpers import send_single_email
@@ -74,7 +75,7 @@ def api_get_lastseen(request):
 
 
 @require_POST
-# @login_required_401
+@login_required_401
 def api_submit_issue(request):
     body = json.loads(request.body)
     title = body["title"]
@@ -119,3 +120,48 @@ def api_submit_issue(request):
 
         except:
             return JsonResponse({"success": False})
+
+
+@require_GET
+@login_required_401
+def api_get_member_groups(request):
+    """
+    This method returns a list of all active members and their groups.
+    :param request:
+    :return:
+    """
+    def get_groups(groups):
+        temp_groups = []
+
+        for group in groups:
+            if group.hidden:
+                continue
+            else:
+                temp_groups.append(group.name)
+
+        return temp_groups
+
+    members = User.objects.filter(profile__state="active")
+
+    groups = Group.objects.filter(hidden=False).prefetch_related()
+    parsed_groups = []
+    parsed_members = []
+
+    for member in members:
+        parsed_members.append({
+            "member": f"{member.profile.get_full_name()} ({member.profile.screen_name})",
+            "groups": get_groups(member.profile.groups.all())
+        })
+
+    for group in groups:
+        parsed_groups.append({
+            "name": group.name,
+            "activeMembers": group.get_active_count(),
+            "quorum": group.get_quorum(),
+        })
+
+    response = {
+        "groups": parsed_groups,
+        "members": parsed_members
+    }
+    return JsonResponse(response, safe=False)

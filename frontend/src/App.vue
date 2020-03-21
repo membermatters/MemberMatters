@@ -74,4 +74,9 @@ export default {
   body.body--dark, .q-tab-panels--dark {
     background: #1f1f1f;
   }
+
+  .q-table__bottom-nodata-icon {
+    font-size: 200%;
+    margin-right: 16px;
+}
 </style>

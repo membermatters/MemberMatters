@@ -46,7 +46,7 @@ const PageAndRouteConfig = [
         to: '/tools/groups/',
         name: 'groupMembers',
         loggedIn: true,
-        component: () => import('pages/Error404.vue'),
+        component: () => import('pages/MemberGroups.vue'),
       },
       {
         icon: icons.recentSwipes,

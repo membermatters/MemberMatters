@@ -98,7 +98,17 @@ export default {
     success: 'Your issue was reported succesfully.',
     fail: 'There was a problem reporting your issue.',
   },
+  memberGroups: {
+    pageDescription: 'You can browse our list of groups and see each group\'s membership and '
+      + 'quorum.',
+    activeMembers: 'Active Members',
+    quorum: 'Quorum',
+  },
   entityType: 'Association',
+  groups: 'Groups',
+  members: 'Members',
+  group: 'Group',
+  member: 'Member',
   failed: 'Action failed',
   success: 'Action was successful',
 };
