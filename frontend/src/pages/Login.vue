@@ -1,6 +1,14 @@
 <template>
   <q-page class="row flex content-start justify-center q-pt-xl">
-    <login-card />
+    <template>
+      <q-img
+        contain
+        src="../assets/img/logo/MemberMatters_small.png"
+        class="header-image-mobile q-my-lg"
+      />
+    </template>
+
+    <login-card :reset-token="resetToken" />
   </q-page>
 </template>
 
@@ -12,5 +20,17 @@ export default {
   components: {
     LoginCard,
   },
+  props: {
+    resetToken: {
+      type: String,
+      default: null,
+    },
+  },
 };
 </script>
+
+<style scoped>
+  .header-image-mobile {
+    max-height: 50px;
+  }
+</style>

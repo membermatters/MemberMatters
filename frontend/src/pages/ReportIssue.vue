@@ -1,5 +1,5 @@
 <template>
-  <q-page class="row flex content-start justify-center q-pt-xl">
+  <q-page class="q-pt-md">
     <report-issue-card />
   </q-page>
 </template>

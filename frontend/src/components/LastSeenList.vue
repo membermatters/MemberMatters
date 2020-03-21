@@ -41,7 +41,7 @@ export default {
       pagination: {
         sortBy: 'desc',
         descending: false,
-        rowsPerPage: this.$q.screen.xs ? 4 : 8,
+        rowsPerPage: this.$q.screen.xs ? 8 : 12,
       },
     };
   },

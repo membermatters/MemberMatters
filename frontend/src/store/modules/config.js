@@ -5,6 +5,7 @@ export default {
   state: {
     siteName: 'MemberMatters Portal',
     siteOwner: 'MemberMatters',
+    mainMenuOpen: false,
     homepageCards: {},
     webcamLinks: {},
   },
@@ -19,6 +20,9 @@ export default {
     },
     setSiteOwner(state, payload) {
       state.siteOwner = payload;
+    },
+    setMainMenuOpen(state, payload) {
+      state.mainMenuOpen = payload;
     },
     setHomepageCards(state, payload) {
       state.homepageCards = payload;

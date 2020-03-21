@@ -1,6 +1,9 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header
+      elevated
+      v-if="loggedIn || ($q.platform.is.mobile && loggedIn)"
+    >
       <q-toolbar>
         <q-btn
           flat
@@ -9,10 +12,15 @@
           icon="fal fa-bars"
           aria-label="Menu"
           @click="mainMenuOpen = !mainMenuOpen"
+          v-if="loggedIn"
         />
 
-        <q-toolbar-title>
-          {{ this.toolbarTitle }}
+        <q-toolbar-title class="row">
+          <template
+            v-if="loggedIn"
+          >
+            {{ this.toolbarTitle }}
+          </template>
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -21,6 +29,7 @@
       v-model="mainMenuOpen"
       bordered
       class="column"
+      v-if="loggedIn"
     >
       <router-link :to="{ name: 'profile' }">
         <q-img
@@ -30,7 +39,6 @@
           style="height: 150px"
         >
           <div
-            v-if="loggedIn"
             class="absolute-bottom bg-transparent"
           >
             <q-avatar
@@ -50,7 +58,9 @@
       </router-link>
 
       <q-scroll-area
-        style="height: calc(100% - 250px); margin-top: 150px; border-right: 1px solid #ddd"
+        :style="$q.platform.is.capacitor ? 'margin-top: 120px; height: calc(100% - 20px);' :
+          'margin-top: 150px; height: calc(100% - 220px);'"
+        style="border-right: 1px solid #ddd"
       >
         <q-list>
           <template
@@ -69,13 +79,12 @@
       <q-space />
 
       <div class="footer">
-        <p
-          class="content-end q-mb-none q-pa-md"
-          style="text-decoration: underline; cursor: pointer;"
+        <q-img
+          contain
+          src="../assets/img/logo/MemberMatters_small.png"
+          style="max-height: 40px; cursor: pointer;"
           @click="aboutMemberMatters = true"
-        >
-          {{ $t('about.title') }}
-        </p>
+        />
       </div>
     </q-drawer>
 
@@ -97,11 +106,13 @@
           {{ $t('about.description') }}
           <br><br>
           <a
+            :class="$q.dark.isActive ? 'text-white' : 'text-black'"
             href="https://github.com/membermatters/MemberMatters"
             target="_blank"
           >MemberMatters {{ $t('about.linkText') }}</a>
           <br>
           <a
+            :class="$q.dark.isActive ? 'text-white' : 'text-black'"
             href="https://github.com/jabelone"
             target="_blank"
           >Jaimyn Mayer {{ $t('about.linkText') }}</a>
@@ -141,7 +152,7 @@ export default {
   },
   data() {
     return {
-      mainMenuOpen: true,
+      mainMenuOpen: false,
       essentialLinks: MainMenu,
       aboutMemberMatters: false,
     };
@@ -162,6 +173,7 @@ export default {
   },
   computed: {
     ...mapGetters('profile', ['loggedIn', 'profile']),
+    ...mapGetters('config', ['siteName']),
     icons() {
       return icons;
     },
@@ -180,7 +192,7 @@ export default {
 
 <style scoped>
   .footer {
-    height: 100px;
+    height: 50px;
     text-align: center;
   }
 

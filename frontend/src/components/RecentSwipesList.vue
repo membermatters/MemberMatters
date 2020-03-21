@@ -122,12 +122,12 @@ export default {
       doorPagination: {
         sortBy: 'desc',
         descending: false,
-        rowsPerPage: this.$q.screen.xs ? 2 : 8,
+        rowsPerPage: this.$q.screen.xs ? 3 : 8,
       },
       interlockPagination: {
         sortBy: 'desc',
         descending: false,
-        rowsPerPage: this.$q.screen.xs ? 1 : 8,
+        rowsPerPage: this.$q.screen.xs ? 2 : 8,
       },
     };
   },

@@ -7,11 +7,13 @@ export default {
     dashboard: 'Dashboard',
     webcams: 'Webcams',
     login: 'Login',
+    resetPassword: 'Reset Password',
     logout: 'Logout',
     register: 'Register',
     memberTools: 'Member Tools',
     reportIssue: 'Report Issue',
     submitProxy: 'Submit Proxy Vote',
+    groupMembers: 'Group Members',
     recentSwipes: 'Recent Swipes',
     lastSeen: 'Last Seen',
     membership: 'Membership',
@@ -43,6 +45,7 @@ export default {
     submit: 'Submit',
     reset: 'Reset',
     cancel: 'Cancel',
+    close: 'Close',
   },
   loginCard: {
     login: 'Login',
@@ -56,10 +59,18 @@ export default {
     forgottenPasswordDescription: 'Please enter your email address and click submit. You will '
       + 'receive an email with further instructions.',
     emailLabel: 'Email address',
+    resetSuccess: 'Success. Check your email for further instructions.',
+    resetFailed: 'There was a problem resetting your password. Check your email address or '
+      + 'try again later.',
+    resetInvalid: 'Your password reset link is invalid.',
+    resetConfirm: 'Your password has been reset.',
+    resetNotConfirm: 'There was a problem resetting your password.',
+    backToLogin: 'Back to login page',
   },
   validation: {
     invalidEmail: 'Please type a valid email.',
     invalidPassword: 'Please type a valid password.',
+    passwordNotMatch: 'Sorry, but your passwords don\'t match.',
     cannotBeEmpty: 'This field cannot be empty.',
   },
   access: {

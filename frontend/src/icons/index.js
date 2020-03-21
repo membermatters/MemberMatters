@@ -17,6 +17,7 @@ export default {
   tools: pro ? 'fad fa-tools' : 'fal fa-tools',
   reportIssue: pro ? 'fad fa-exclamation-triangle' : 'fal fa-exclamation-triangle',
   submitProxy: pro ? 'fad fa-box-ballot' : 'fal fa-box-ballot',
+  groupMembers: pro ? 'fad fa-user-friends' : 'fal fa-user-friends',
   recentSwipes: pro ? 'fad fa-history' : 'fal fa-history',
   lastSeen: pro ? 'fad fa-user-clock' : 'fal fa-user-clock',
   membership: pro ? 'fad fa-user' : 'fal fa-user',

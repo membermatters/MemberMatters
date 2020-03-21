@@ -12,6 +12,7 @@ const menuRoutes = mainMenu.map((menuItem) => {
           ? child.component
           : () => import('pages/Error404.vue'),
         name: child.name ? child.name : null,
+        props: true,
         meta: { title: child.name, loggedIn: child.loggedIn },
       });
     });
@@ -22,6 +23,7 @@ const menuRoutes = mainMenu.map((menuItem) => {
         ? menuItem.component
         : () => import('pages/Error404.vue'),
       name: menuItem.name ? menuItem.name : null,
+      props: true,
       meta: { title: menuItem.name, loggedIn: menuItem.loggedIn },
     };
   }
@@ -32,6 +34,7 @@ const menuRoutes = mainMenu.map((menuItem) => {
       ? menuItem.component
       : () => import('pages/Error404.vue'),
     name: menuItem.name ? menuItem.name : null,
+    props: true,
     meta: { title: menuItem.name, loggedIn: menuItem.loggedIn },
   };
 });

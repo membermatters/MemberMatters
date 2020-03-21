@@ -42,6 +42,13 @@ const PageAndRouteConfig = [
         loggedIn: true,
       },
       {
+        icon: icons.groupMembers,
+        to: '/tools/groups/',
+        name: 'groupMembers',
+        loggedIn: true,
+        component: () => import('pages/Error404.vue'),
+      },
+      {
         icon: icons.recentSwipes,
         to: '/tools/swipes/recent',
         name: 'recentSwipes',
@@ -102,6 +109,15 @@ const PageAndRouteConfig = [
     to: '/register',
     name: 'register',
     loggedIn: false,
+  },
+
+  // These are endpoints that handle specific tasks and are not normally accessed.
+  {
+    icon: icons.login, // specify the icon to use
+    to: '/profile/password/reset/:resetToken', // specify the URL route for this page
+    name: 'resetPassword', // specify the name of this URL route
+    hiddenMenu: true, // adds the route and page config, but don't show in the menu
+    component: () => import('pages/Login.vue'), // which component to load as the page
   },
 ];
 

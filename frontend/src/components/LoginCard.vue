@@ -1,6 +1,9 @@
 <template>
   <div class="q-pa-md">
-    <q-card class="login-card">
+    <q-card
+      class="login-card"
+      v-if="!resetToken"
+    >
       <h6 class="q-ma-none q-pa-md">
         {{ $t('loginCard.loginToContinue') }}
       </h6>
@@ -43,12 +46,15 @@
             v-if="loginFailed"
             class="bg-red text-white"
           >
-            {{ $t('loginCard.loginFailed') }}
+            {{ $t('error.loginFailed') }}
           </q-banner>
 
           <p class="text-caption">
             {{ $t('loginCard.notAMember') }}
-            <router-link :to="{ name: 'register' }">
+            <router-link
+              :to="{ name: 'register' }"
+              :class="$q.dark.isActive ? 'text-white' : 'text-black'"
+            >
               {{ $t('loginCard.registerHere') }}
             </router-link>
           </p>
@@ -61,7 +67,7 @@
               color="primary"
               flat
               class="q-ml-sm"
-              @click="resetPasswordPrompt = true"
+              @click="reset.prompt = true"
             />
             <q-btn
               :label="$t('loginCard.login')"
@@ -74,8 +80,89 @@
       </q-card-section>
     </q-card>
 
+    <q-card
+      class="login-card"
+      v-else
+    >
+      <h6 class="q-ma-none q-pa-md">
+        {{ $t('loginCard.resetPassword') }}
+      </h6>
+      <q-card-section>
+        <q-form
+          @submit="submitResetPassword"
+          class="q-gutter-md"
+        >
+          <q-input
+            filled
+            autofocus
+            type="password"
+            v-model="reset.password"
+            label="Your new password"
+            lazy-rules
+            :disable="this.reset.formDisabled"
+            :rules="[
+              val => validateNotEmpty(val) || $t('validation.invalidPassword'),
+            ]"
+          />
+
+          <q-input
+            filled
+            type="password"
+            v-model="reset.password2"
+            label="Confirm password"
+            lazy-rules
+            :disable="this.reset.formDisabled"
+            :rules="[
+              val => validateNotEmpty(val) || $t('validation.invalidPassword'),
+              val => val === this.reset.password || $t('validation.passwordNotMatch')
+            ]"
+          />
+
+
+          <q-banner
+            v-if="this.reset.confirmed"
+            class="bg-green text-white"
+          >
+            {{ $t('loginCard.resetConfirm') }}
+          </q-banner>
+
+          <q-banner
+            v-if="this.reset.invalidToken"
+            class="bg-red text-white"
+          >
+            {{ $t('loginCard.resetInvalid') }}
+          </q-banner>
+
+          <q-banner
+            v-if="this.reset.failed"
+            class="bg-red text-white"
+          >
+            {{ $t('loginCard.resetNotConfirm') }}
+          </q-banner>
+
+          <div class="row">
+            <q-space />
+            <q-btn
+              :label="$t('loginCard.backToLogin')"
+              color="primary"
+              flat
+              class="q-ml-sm"
+              @click="$router.push({ name: 'login' })"
+            />
+            <q-btn
+              :label="$t('button.submit')"
+              type="submit"
+              color="primary"
+              :disable="this.reset.formDisabled"
+              :loading="this.reset.loading"
+            />
+          </div>
+        </q-form>
+      </q-card-section>
+    </q-card>
+
     <q-dialog
-      v-model="resetPasswordPrompt"
+      v-model="reset.prompt"
       persistent
     >
       <q-card style="max-width: 350px">
@@ -91,11 +178,25 @@
         <q-card-section class="q-pt-none">
           <q-input
             :label="$t('loginCard.emailLabel')"
-            v-model="email"
+            v-model="reset.email"
             autofocus
-            @keyup.enter="resetPasswordPrompt = false"
+            @keyup.enter="resetPassword()"
           />
         </q-card-section>
+
+        <q-banner
+          v-if="reset.success"
+          class="bg-green text-white q-mx-md"
+        >
+          {{ $t('loginCard.resetSuccess') }}
+        </q-banner>
+
+        <q-banner
+          v-if="reset.failed"
+          class="bg-red text-white q-mx-md"
+        >
+          {{ $t('loginCard.resetFailed') }}
+        </q-banner>
 
         <q-card-actions
           align="right"
@@ -103,13 +204,15 @@
         >
           <q-btn
             flat
-            :label="$t('button.cancel')"
+            :label="this.reset.disableResetSubmitButton ? $t('button.close') : $t('button.cancel')"
             v-close-popup
           />
           <q-btn
             flat
             :label="$t('button.submit')"
-            v-close-popup
+            :loading="reset.loading"
+            :disable="this.reset.disableResetSubmitButton"
+            @click="resetPassword()"
           />
         </q-card-actions>
       </q-card>
@@ -120,26 +223,60 @@
 <script>
 import axios from 'axios';
 import { mapMutations, mapGetters } from 'vuex';
+import { Loading } from 'quasar';
 import formMixin from '../mixins/formMixin';
 
 export default {
   name: 'LoginCard',
   mixins: [formMixin],
+  props: {
+    resetToken: {
+      type: String,
+      default: null,
+    },
+  },
   data() {
     return {
       email: '',
       password: '',
       loginFailed: false,
       buttonLoading: false,
-      resetPasswordPrompt: false,
+      disableResetSubmitButton: false,
+      reset: {
+        formDisabled: true,
+        success: false,
+        failed: false,
+        loading: false,
+        prompt: false,
+        password: '',
+        password2: '',
+        confirmed: false,
+        invalidToken: false,
+      },
     };
   },
   mounted() {
-    if (this.loggedIn) this.reditectLoggedIn();
+    if (this.loggedIn) this.redirectLoggedIn();
+    if (this.resetToken) {
+      Loading.show({ message: 'Validating request...' });
+
+      this.validatePasswordReset()
+        .then(() => {
+          Loading.hide();
+          this.reset.formDisabled = false;
+        })
+        .catch(() => {
+          Loading.hide();
+          this.reset.invalidToken = true;
+        });
+    }
   },
   methods: {
     ...mapMutations('profile', ['setLoggedIn']),
-    reditectLoggedIn() {
+    /**
+     * Redirects to the dashboard page on successful login.
+     */
+    redirectLoggedIn() {
       if (this.$route.query.redirect) this.$router.push(this.$route.query.redirect);
       else { this.$router.push({ name: 'dashboard' }); }
     },
@@ -150,6 +287,9 @@ export default {
     onSubmit() {
       this.login();
     },
+    /**
+     * This sends the login API request to log the user in.
+     */
     login() {
       this.loginFailed = false;
       this.buttonLoading = true;
@@ -161,7 +301,8 @@ export default {
           if (response.data.success === true) {
             this.setLoggedIn(true);
             this.loginFailed = false;
-            this.reditectLoggedIn();
+            localStorage.setItem('menuState', 'true');
+            this.redirectLoggedIn();
           } else {
             this.loginFailed = true;
           }
@@ -171,6 +312,90 @@ export default {
         })
         .finally(() => {
           this.buttonLoading = false;
+        });
+    },
+    /**
+     * This submits the password reset request so the user gets a reset link in their email.
+     */
+    resetPassword() {
+      this.loginFailed = false;
+      this.reset.success = false;
+      this.reset.loading = true;
+
+      axios.post('/api/password/reset/', {
+        email: this.reset.email,
+      })
+        .then((response) => {
+          if (response.data.success === true) {
+            this.reset.success = true;
+            this.reset.disableResetSubmitButton = true;
+            this.reset.failed = false;
+          } else {
+            this.reset.success = false;
+            this.reset.failed = true;
+          }
+        })
+        .catch((error) => {
+          throw error;
+        })
+        .finally(() => {
+          this.reset.loading = false;
+        });
+    },
+    /**
+     * This sends a request to validate the password reset token.
+     * @returns {Promise<unknown>}
+     */
+    validatePasswordReset() {
+      return new Promise((resolve, reject) => {
+        axios.post('/api/password/reset/', {
+          token: this.resetToken,
+        })
+          .then((response) => {
+            if (response.data.success) {
+              resolve();
+            } else {
+              reject();
+            }
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    /**
+     * This will send the user's new password and reset token to the API.
+     */
+    submitResetPassword() {
+      this.reset.success = false;
+      this.reset.loading = true;
+
+      axios.post('/api/password/reset/', {
+        password: this.reset.password,
+        token: this.resetToken,
+      })
+        .then((response) => {
+          if (response.data.success === true) {
+            this.reset.confirmed = true;
+            this.reset.failed = false;
+            this.reset.formDisabled = true;
+            setTimeout(() => {
+              // eslint-disable-next-line no-restricted-globals
+              location.href = '/login';
+            }, 3000);
+          } else {
+            this.reset.confirmed = false;
+            this.reset.failed = true;
+          }
+        })
+        .catch((error) => {
+          this.reset.confirmed = false;
+          this.reset.failed = true;
+          throw error;
+        })
+        .finally(() => {
+          this.reset.loading = false;
         });
     },
   },

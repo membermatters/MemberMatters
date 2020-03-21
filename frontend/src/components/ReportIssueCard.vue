@@ -138,6 +138,6 @@ export default {
 
 <style scoped>
   .submit-issue-card {
-    min-width: 400px;
+    min-width: 300px;
   }
 </style>

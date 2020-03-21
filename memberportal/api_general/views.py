@@ -8,8 +8,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.http import require_GET, require_POST
 from membermatters.decorators import login_required_401
 from constance import config
-from profile.models import User
+from profile.models import User, Profile
 import json
+import time
+import datetime
+from pytz import UTC as utc
 
 
 @require_GET
@@ -75,13 +78,46 @@ def api_logout(request):
 
 @require_POST
 def api_reset_password(request):
-    try:
-        user = User.objects.get(email=json.loads(request.body).get('email'))
-        user.reset_password()
-        return JsonResponse({'success': True})
+    # This will help mitigate any brute force attempts on this API
+    time.sleep(2)
+    body = json.loads(request.body)
 
-    except ObjectDoesNotExist:
-        return JsonResponse({'success': False})
+    # If we get a reset token and no email, the token is being validated
+    if body.get('token') and not body.get('password'):
+        user = User.objects.get(password_reset_key=body.get('token'))
+
+        if user and utc.localize(datetime.datetime.now()) < user.password_reset_expire:
+            return JsonResponse({"success": True})
+
+        else:
+            user.password_reset_key = None
+            user.password_reset_expire = None
+            user.save()
+            return JsonResponse({"success": False})
+
+    # If we get a reset token and email, the password should be reset
+    if body.get('token') and body.get('password'):
+        user = User.objects.get(password_reset_key=body.get('token'))
+
+        if user and utc.localize(datetime.datetime.now()) < user.password_reset_expire:
+            user.set_password(body.get('password'))
+            user.password_reset_key = None
+            user.password_reset_expire = None
+            user.save()
+
+            if user:
+                return JsonResponse({"success": True})
+
+        return JsonResponse({"success": False})
+
+    else:
+        try:
+            user = User.objects.get(email=body.get('email'))
+            user.reset_password()
+            return JsonResponse({'success': True})
+
+        except ObjectDoesNotExist:
+            return JsonResponse({'success': False})
 
 
 @require_GET
