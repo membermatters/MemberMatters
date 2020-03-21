@@ -12,6 +12,7 @@ module.exports = function (ctx) {
       'axios',
       'fontawesome-pro',
       'routeGuards',
+      'capacitor',
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css

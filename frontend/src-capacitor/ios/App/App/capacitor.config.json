@@ -4,7 +4,10 @@
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",
+  "ios": {
+    "allowsLinkPreview": false
+  },
   "server": {
-    "url": "http://192.168.0.185:8080"
+    "url": "http://192.168.0.185:8081"
   }
 }

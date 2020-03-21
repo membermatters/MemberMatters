@@ -3,5 +3,8 @@
   "appName": "MemberMatters",
   "bundledWebRuntime": false,
   "npmClient": "npm",
-  "webDir": "www"
+  "webDir": "www",
+  "ios": {
+    "allowsLinkPreview": false
+  }
 }
