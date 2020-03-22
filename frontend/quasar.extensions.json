@@ -3,32 +3,20 @@
     "minify_dev": "pngquant",
     "minify_build": "zopfli",
     "cordova": {
-      "background_color": "#ffffff",
-      "splashscreen_type": "generate"
+      "background_color": "#FFFFFF",
+      "splashscreen_type": "pure"
     },
     "build_always": false,
     "__internal": {
       "dev": {
-        "spa": {
-          "iconHash": "6009b4922adc783f924b52bf512b3728"
-        },
-        "pwa": {},
         "capacitor": {
-          "splashscreenHash": false,
-          "splashscreenType": "generate",
-          "backgroundColor": "#ffffff",
-          "iconHash": "6009b4922adc783f924b52bf512b3728"
-        },
-        "electron": {}
-      },
-      "build": {
-        "pwa": {},
-        "capacitor": {
-          "splashscreenHash": false,
-          "splashscreenType": "generate",
-          "backgroundColor": "#ffffff"
+          "iconHash": "6d9c218ef0e8a5dcaf9db10d74d0873f",
+          "splashscreenHash": "621e6e478ca54356bac3270a98663110",
+          "splashscreenType": "pure",
+          "backgroundColor": "#FFFFFF"
         }
-      }
+      },
+      "build": {}
     }
   }
 }

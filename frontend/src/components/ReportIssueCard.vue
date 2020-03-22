@@ -43,7 +43,7 @@
 
           <q-banner
             v-if="submitSuccess"
-            class="bg-green text-white"
+            class="bg-positive text-white"
           >
             {{ $t('reportIssue.success') }}<br>
             <a
@@ -55,7 +55,7 @@
 
           <q-banner
             v-if="submitError"
-            class="bg-red text-white"
+            class="bg-negative text-white"
           >
             {{ $t('reportIssue.fail') }}
           </q-banner>
@@ -65,7 +65,7 @@
             <q-btn
               :label="$t('button.submit')"
               type="submit"
-              color="primary"
+              color="primary-btn"
               :loading="buttonLoading"
             />
           </div>

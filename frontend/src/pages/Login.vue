@@ -3,7 +3,7 @@
     <template>
       <q-img
         contain
-        src="../assets/img/logo/MemberMatters_small.png"
+        src="../assets/img/logo/logo-small.png"
         class="header-image-mobile q-my-lg"
       />
     </template>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-icon
-      color="primary"
+      color="primary-btn"
       :name="icons.sadFace"
       style="font-size: 800%;"
     />

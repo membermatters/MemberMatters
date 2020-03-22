@@ -65,18 +65,16 @@ export default {
 };
 </script>
 
-<style>
-  .q-page {
-    max-width: 1000px;
-    margin: auto;
-  }
+<style lang="sass">
+  .q-page
+    max-width: 1000px
+    margin: auto
 
-  body.body--dark, .q-tab-panels--dark {
-    background: #1f1f1f;
-  }
+  body.body--dark, .q-tab-panels--dark
+    background: $grey-10
 
-  .q-table__bottom-nodata-icon {
-    font-size: 200%;
-    margin-right: 16px;
-}
+  .q-table__bottom-nodata-icon
+    font-size: 200%
+    margin-right: 16px
+
 </style>

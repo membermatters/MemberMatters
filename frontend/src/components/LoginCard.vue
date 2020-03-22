@@ -37,14 +37,14 @@
 
           <q-banner
             v-if="this.loggedIn"
-            class="bg-green text-white"
+            class="bg-positive text-white"
           >
             {{ $t('loginCard.loginSuccess') }}
           </q-banner>
 
           <q-banner
             v-if="loginFailed"
-            class="bg-red text-white"
+            class="bg-negative text-white"
           >
             {{ $t('error.loginFailed') }}
           </q-banner>
@@ -72,7 +72,7 @@
             <q-btn
               :label="$t('loginCard.login')"
               type="submit"
-              color="primary"
+              color="primary-btn"
               :loading="buttonLoading"
             />
           </div>
@@ -121,21 +121,21 @@
 
           <q-banner
             v-if="this.reset.confirmed"
-            class="bg-green text-white"
+            class="bg-positive text-white"
           >
             {{ $t('loginCard.resetConfirm') }}
           </q-banner>
 
           <q-banner
             v-if="this.reset.invalidToken"
-            class="bg-red text-white"
+            class="bg-negative text-white"
           >
             {{ $t('loginCard.resetInvalid') }}
           </q-banner>
 
           <q-banner
             v-if="this.reset.failed"
-            class="bg-red text-white"
+            class="bg-negative text-white"
           >
             {{ $t('loginCard.resetNotConfirm') }}
           </q-banner>
@@ -144,7 +144,7 @@
             <q-space />
             <q-btn
               :label="$t('loginCard.backToLogin')"
-              color="primary"
+              color="primary-btn"
               flat
               class="q-ml-sm"
               @click="$router.push({ name: 'login' })"
@@ -152,7 +152,7 @@
             <q-btn
               :label="$t('button.submit')"
               type="submit"
-              color="primary"
+              color="primary-btn"
               :disable="this.reset.formDisabled"
               :loading="this.reset.loading"
             />
@@ -186,14 +186,14 @@
 
         <q-banner
           v-if="reset.success"
-          class="bg-green text-white q-mx-md"
+          class="bg-positive text-white q-mx-md"
         >
           {{ $t('loginCard.resetSuccess') }}
         </q-banner>
 
         <q-banner
           v-if="reset.failed"
-          class="bg-red text-white q-mx-md"
+          class="bg-negative text-white q-mx-md"
         >
           {{ $t('loginCard.resetFailed') }}
         </q-banner>

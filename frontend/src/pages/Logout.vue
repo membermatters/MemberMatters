@@ -2,20 +2,20 @@
   <q-page class="flex flex-center">
     <q-spinner
       v-if="spinner"
-      color="primary"
+      color="primary-btn"
       size="3em"
     />
 
     <q-banner
       v-if="!spinner"
-      class="bg-green text-white"
+      class="bg-positive text-white"
     >
       {{ $t('info.logoutSuccess') }}
     </q-banner>
 
     <q-banner
       v-if="error"
-      class="bg-red text-white"
+      class="bg-negative text-white"
     >
       {{ $t('error.logoutFailed') }}
     </q-banner>

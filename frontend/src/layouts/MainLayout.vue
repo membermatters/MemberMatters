@@ -4,7 +4,9 @@
       elevated
       v-if="loggedIn || ($q.platform.is.mobile && loggedIn)"
     >
-      <q-toolbar>
+      <q-toolbar
+        class="bg-primary-toolbar"
+      >
         <q-btn
           flat
           dense
@@ -78,10 +80,10 @@
 
       <q-space />
 
-      <div class="footer">
+      <div class="footer q-pt-md">
         <q-img
           contain
-          src="../assets/img/logo/MemberMatters_small.png"
+          src="../assets/img/logo/logo-small.png"
           style="max-height: 40px; cursor: pointer;"
           @click="aboutMemberMatters = true"
         />
@@ -122,7 +124,7 @@
           <q-btn
             flat
             label="OK"
-            color="primary"
+            color="primary-btn"
             v-close-popup
           />
         </q-card-actions>

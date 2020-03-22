@@ -8,6 +8,6 @@
     "allowsLinkPreview": false
   },
   "server": {
-    "url": "http://192.168.0.185:8081"
+    "url": "http://192.168.0.185:8080"
   }
 }

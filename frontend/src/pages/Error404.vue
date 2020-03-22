@@ -7,7 +7,7 @@
       {{ $t('error.404') }}
     </p>
     <q-btn
-      color="primary"
+      color="primary-btn"
       style="width:200px;"
       to="/"
       label="Go Home"
