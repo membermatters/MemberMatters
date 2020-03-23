@@ -195,7 +195,7 @@ def create_membership_invoice(user, email_invoice=False):
             "ItemCode": user.profile.member_type.name,
             "UnitAmount": round(user.profile.member_type.cost * 0.7, 2),
             "TaxType": tax_type,
-            "AccountCode": "200"
+            "AccountCode": "261"
         }
     ]
 

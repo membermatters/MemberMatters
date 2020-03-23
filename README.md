@@ -1,6 +1,9 @@
 # MemberMatters
 MemberMatters is an open source membership and access management solution.
 
+### Updates
+The official place for updates on the MemberMatters software is on the HSBNE Inc. forum. You can access the specific thread [here](https://forum.hsbne.org/t/membermatters-hsbne-portal-updates/3514). You will also find a changelog under each release [here](https://github.com/membermatters/MemberMatters/releases) on GitHub.
+
 ### Features
 * Member registration system (signup, login etc)
 * Profile - members can update all their info in one place
