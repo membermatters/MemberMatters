@@ -1,7 +1,7 @@
 <template>
   <q-page class="flex flex-center">
     <q-spinner
-      v-if="spinner"
+      v-if="spinner && !error"
       color="primary-btn"
       size="3em"
     />
@@ -10,14 +10,14 @@
       v-if="!spinner"
       class="bg-positive text-white"
     >
-      {{ $t('info.logoutSuccess') }}
+      {{ $t('logoutPage.logoutSuccess') }}
     </q-banner>
 
     <q-banner
       v-if="error"
       class="bg-negative text-white"
     >
-      {{ $t('error.logoutFailed') }}
+      {{ $t('logoutPage.logoutFailed') }}
     </q-banner>
   </q-page>
 </template>
@@ -48,6 +48,7 @@ export default {
         if (error.response.status === 401) {
           this.completeLogout();
         } else {
+          this.error = true;
           throw error;
         }
       });

@@ -12,8 +12,7 @@
     "dev-ios": "quasar dev -m capacitor -T ios ",
     "build": "quasar build",
     "build-pwa": "quasar build -m pwa",
-    "lint": "eslint --ext .js,.vue src",
-    "test": "echo \"No test specified\" && exit 0"
+    "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
     "@capacitor/core": "^1.5.1",

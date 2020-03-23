@@ -22,14 +22,18 @@ export default {
     manageMemberbucks: 'Spacebucks',
   },
   error: {
-    logoutFailed: 'There was an error logging out. Please refresh the page and try again.',
     loginFailed: 'Your username or password was incorrect.',
+    requestFailed: 'Sorry, we\'re having trouble performing that action. Please try again later.',
     pageNotFound: 'Page not found',
     400: ' Sorry, there was an error with your request. (Error 400)',
     401: ' Sorry, you need to be logged in to access this page. (Error 401)',
     403: ' Sorry, you don\'t have permission to access this page. (Error 403)',
     404: ' Sorry, that page could not be found. (Error 404)',
     500: ' Sorry, there was a server error. Please try again later. (Error 500)',
+  },
+  logoutPage: {
+    logoutSuccess: 'Logout successful.',
+    logoutFailed: 'There was an error logging out. Please refresh the page and try again.',
   },
   webcams: {
     pageDescription: 'This page shows our public webcams, updated every minute for your convenience.',
@@ -50,8 +54,7 @@ export default {
   loginCard: {
     login: 'Login',
     resetPassword: 'Reset Password',
-    loginSuccess: 'Login successful, loading dashboard.',
-    logoutSuccess: 'Logout successful.',
+    loginSuccess: 'Login Successful',
     registerHere: 'Register Here',
     notAMember: 'Not a member? ',
     loginToContinue: 'Please login to continue',

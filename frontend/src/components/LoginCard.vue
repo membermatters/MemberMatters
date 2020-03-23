@@ -49,6 +49,13 @@
             {{ $t('error.loginFailed') }}
           </q-banner>
 
+          <q-banner
+            v-if="loginError"
+            class="bg-negative text-white"
+          >
+            {{ $t('error.requestFailed') }}
+          </q-banner>
+
           <p class="text-caption">
             {{ $t('loginCard.notAMember') }}
             <router-link
@@ -240,6 +247,7 @@ export default {
       email: '',
       password: '',
       loginFailed: false,
+      loginError: false,
       buttonLoading: false,
       disableResetSubmitButton: false,
       reset: {
@@ -278,7 +286,7 @@ export default {
      */
     redirectLoggedIn() {
       if (this.$route.query.redirect) this.$router.push(this.$route.query.redirect);
-      else { this.$router.push({ name: 'dashboard' }); }
+      else { setTimeout(() => { this.$router.push({ name: 'dashboard' }); }, 1000); }
     },
     onReset() {
       this.email = null;
@@ -301,6 +309,7 @@ export default {
           if (response.data.success === true) {
             this.setLoggedIn(true);
             this.loginFailed = false;
+            this.loginError = false;
             localStorage.setItem('menuState', 'true');
             this.redirectLoggedIn();
           } else {
@@ -308,6 +317,7 @@ export default {
           }
         })
         .catch((error) => {
+          this.loginError = true;
           throw error;
         })
         .finally(() => {
@@ -407,6 +417,6 @@ export default {
 
 <style scoped>
   .login-card {
-    min-width: 300px;
+    width: 320px;
   }
 </style>
