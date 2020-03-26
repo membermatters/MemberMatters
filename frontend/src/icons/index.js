@@ -14,6 +14,13 @@ export default {
   login: pro ? 'fad fa-sign-in' : 'fal fa-sign-in',
   dashboard: pro ? 'fad fa-columns' : 'fal fa-columns',
   webcams: pro ? 'fad fa-webcam' : 'fal fa-webcam',
+
+  cogs: pro ? 'fad fa-cogs' : 'fal fa-cogs',
+  memberManagement: pro ? 'fad fa-users-cog' : 'fal fa-users-cog',
+  manageGroups: pro ? 'fad fa-user-tag' : 'fal fa-user-tag',
+  manageDoors: pro ? 'fad fa-door-closed' : 'fal fa-door-closed',
+  manageInterlocks: pro ? 'fad fa-plug' : 'fal fa-plug',
+
   tools: pro ? 'fad fa-tools' : 'fal fa-tools',
   reportIssue: pro ? 'fad fa-exclamation-triangle' : 'fal fa-exclamation-triangle',
   submitProxy: pro ? 'fad fa-box-ballot' : 'fal fa-box-ballot',

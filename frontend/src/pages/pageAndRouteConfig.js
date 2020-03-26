@@ -24,6 +24,41 @@ const PageAndRouteConfig = [
     component: () => import('pages/Webcams.vue'),
   },
   {
+    icon: icons.cogs,
+    name: 'adminTools',
+    loggedIn: true,
+    children: [
+      {
+        icon: icons.memberManagement,
+        to: '/admin/members',
+        name: 'memberManagement',
+        loggedIn: true,
+        component: () => import('pages/Error404.vue'),
+      },
+      {
+        icon: icons.manageGroups,
+        to: '/admin/groups',
+        name: 'manageGroups',
+        loggedIn: true,
+        component: () => import('pages/Error404.vue'),
+      },
+      {
+        icon: icons.manageDoors,
+        to: '/admin/doors',
+        name: 'manageDoors',
+        loggedIn: true,
+        component: () => import('pages/Error404.vue'),
+      },
+      {
+        icon: icons.manageInterlocks,
+        to: '/admin/interlocks',
+        name: 'manageInterlocks',
+        loggedIn: true,
+        component: () => import('pages/Error404.vue'),
+      },
+    ],
+  },
+  {
     icon: icons.tools,
     name: 'memberTools',
     loggedIn: true,

@@ -10,8 +10,8 @@
     "__internal": {
       "dev": {
         "capacitor": {
-          "iconHash": "6d9c218ef0e8a5dcaf9db10d74d0873f",
-          "splashscreenHash": "621e6e478ca54356bac3270a98663110",
+          "iconHash": "5d44bf3f620872171597fd0e775ffddd",
+          "splashscreenHash": "27df45579f3b5da0fff58ab616351bb2",
           "splashscreenType": "pure",
           "backgroundColor": "#FFFFFF"
         },

@@ -17,8 +17,8 @@ sudo dnf install python3 python3-pip
 sudo -H pip3 install -r requirements.txt
 ```
  
-#### Mac
-You will need to install and use virtualenv on Mac in order to get your environment correct as there are conflicts with built in python on OSX.
+#### macOS
+You will need to install and use virtualenv on Mac in order to get your environment correct as there are conflicts with built in python on macOS.
  
 ```bash
 brew install python3
@@ -87,8 +87,13 @@ be presented with the home page of the web app. You can login with the username 
 "MemberMatters!". You should create a new account, then use the default account to give your new account admin rights. You 
 should change the password of the default admin account.
 
-##### Notes for HSBNE infrastructure maintainers
-On porthack01 you can find the mapped volumes at `/usr/app` and there's an update script at `/usr/app/update_portal.sh`. You will need to rebuild and push to docker hub the docker image.
+#### Pre-commit hooks
+Finally, you need to install the git pre-commit hooks:
+
+`pre-commit install`
+
+Failure to ensure your code is compliant with our code formatting and linting standards will result 
+in rejection of your pull request so please make sure you complete this step.
 
 ### Contributing Guidelines
 Please use best practices while contributing. This includes writing clean code (messy/hacky 
@@ -105,9 +110,13 @@ Note to collaborators with push permission: Do not push directly to master. You 
 branch first (`feature/<feature_name>`). When you are happy with it submit a pull request for merging into dev. The 
 `master` should only contain the latest stable release.
 
-We use eslint, prettier and black for code linting and formatting. These are setup as precommit hooks. These are a requirement and anything that fails these rules will not be accepted. If you would like to suggest changes to the eslint config please open an issue. If you have a specific use case, you may disable eslint rules on a line by line basis. Any global disables will be rejected.
+We use eslint, prettier and black for code linting and formatting. These are setup as precommit 
+hooks. These are a requirement and anything that fails these rules will not be accepted. If you 
+would like to suggest changes to the eslint config please open an issue. If you have a specific use 
+case, you may disable eslint rules on a line by line basis. Any global disables will be rejected 
+unless you have a really good reason.
 
-##### NOTE
+### Notes
 You will need to re-run the database migration every time the db models change. You may see random database related errors such as column does not exist if you forget to do this. You can do that by running:
 
 `python3 manage.py migrate`

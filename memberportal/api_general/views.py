@@ -18,7 +18,7 @@ from pytz import UTC as utc
 @require_GET
 def api_get_config(request):
     """
-    This method returns the site config used by the front end.
+    This method returns the site config used to customise the front end.
     :param request:
     :return:
     """
@@ -29,10 +29,7 @@ def api_get_config(request):
             "siteOwner": config.SITE_OWNER,
             "entityType": config.ENTITY_TYPE,
         },
-        "images": {
-            "siteLogo": config.SITE_LOGO,
-            "siteFavicon": config.SITE_FAVICON,
-        },
+        "images": {"siteLogo": config.SITE_LOGO, "siteFavicon": config.SITE_FAVICON,},
         "homepageCards": json.loads(config.HOME_PAGE_CARDS),
         "webcamLinks": json.loads(config.WEBCAM_PAGE_URLS),
     }
@@ -41,13 +38,14 @@ def api_get_config(request):
 
 @require_POST
 def api_login(request):
-    response_success = {
-        "success": True
-    }
+    """
+    Attempts to authenticate a user then logs them in if successful.
+    :param request:
+    :return:
+    """
+    response_success = {"success": True}
 
-    response_failure = {
-        "success": False
-    }
+    response_failure = {"success": False}
 
     if request.user.is_authenticated:
         return JsonResponse(response_success)
@@ -71,6 +69,11 @@ def api_login(request):
 @require_POST
 @login_required_401
 def api_logout(request):
+    """
+    Ends the user's session and logs them out.
+    :param request:
+    :return:
+    """
     logout(request)
 
     return JsonResponse({"success": True})
@@ -78,13 +81,18 @@ def api_logout(request):
 
 @require_POST
 def api_reset_password(request):
+    """
+    Handles the various stages of the password reset flow.
+    :param request:
+    :return:
+    """
     # This will help mitigate any brute force attempts on this API
     time.sleep(2)
     body = json.loads(request.body)
 
     # If we get a reset token and no email, the token is being validated
-    if body.get('token') and not body.get('password'):
-        user = User.objects.get(password_reset_key=body.get('token'))
+    if body.get("token") and not body.get("password"):
+        user = User.objects.get(password_reset_key=body.get("token"))
 
         if user and utc.localize(datetime.datetime.now()) < user.password_reset_expire:
             return JsonResponse({"success": True})
@@ -96,11 +104,11 @@ def api_reset_password(request):
             return JsonResponse({"success": False})
 
     # If we get a reset token and email, the password should be reset
-    if body.get('token') and body.get('password'):
-        user = User.objects.get(password_reset_key=body.get('token'))
+    if body.get("token") and body.get("password"):
+        user = User.objects.get(password_reset_key=body.get("token"))
 
         if user and utc.localize(datetime.datetime.now()) < user.password_reset_expire:
-            user.set_password(body.get('password'))
+            user.set_password(body.get("password"))
             user.password_reset_key = None
             user.password_reset_expire = None
             user.save()
@@ -112,23 +120,59 @@ def api_reset_password(request):
 
     else:
         try:
-            user = User.objects.get(email=body.get('email'))
+            user = User.objects.get(email=body.get("email"))
             user.reset_password()
-            return JsonResponse({'success': True})
+            return JsonResponse({"success": True})
 
         except ObjectDoesNotExist:
-            return JsonResponse({'success': False})
+            return JsonResponse({"success": False})
 
 
 @require_GET
 @login_required_401
 def api_get_profile(request):
-    user = request.user
+    """
+    Returns the user profile object.
+    :param request:
+    :return:
+    """
+    p = request.user.profile
 
-    profile = {
-        "fullName": user.profile.get_full_name(),
-        "screenName": user.profile.screen_name,
-        "memberStatus": user.profile.state,
+    response = {
+        "fullName": p.get_full_name(),
+        "firstName": p.first_name,
+        "lastName": p.last_name,
+        "screenName": p.screen_name,
+        "phone": p.phone,
+        "memberStatus": p.state,
+        "lastInduction": p.last_induction,
+        "lastSeen": p.last_seen,
+        "firstJoined": p.created,
+        "profileUpdateRequired": p.must_update_profile,
+        "groups": list(p.groups.values()),
+        "memberLevel": {"name": str(p.member_type.name), "id": str(p.member_type.id)},
+        "financial": {
+            "xeroAccNumber": p.xero_account_number,
+            "savedCard": {
+                "last4": p.stripe_card_last_digits,
+                "expiry": p.stripe_card_expiry,
+            },
+            "lastMemberbucksPurchase": p.last_memberbucks_purchase,
+            "memberbucksBalance": p.memberbucks_balance,
+        },
+        "permissions": {
+            "generateInvoice": p.can_generate_invoice,
+            "adminOfGroups": list(p.can_manage_group.values()),
+            "manageGroups": p.can_manage_groups,
+            "addGroup": p.can_add_group,
+            "manageInterlocks": p.can_manage_interlocks,
+            "manageDoors": p.can_manage_doors,
+            "seeMemberLogs": p.can_see_members_logs,
+            "seeMemberbucks": p.can_see_members_memberbucks,
+            "seeMemberPersonalDetails": p.can_see_members_personal_details,
+            "disableMembers": p.can_disable_members,
+            "manageAccess": p.can_manage_access,
+        },
     }
 
-    return JsonResponse(profile)
+    return JsonResponse(response)

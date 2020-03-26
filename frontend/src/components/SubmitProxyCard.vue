@@ -2,7 +2,7 @@
   <div class="q-pa-md">
     <q-card class="submit-issue-card">
       <h6 class="q-ma-none q-pa-md">
-        {{ $t('reportIssue.pageDescription') }}
+        {{ $t('submitProxy.pageDescription') }}
       </h6>
 
       <q-card-section>
@@ -45,7 +45,7 @@
             v-if="submitSuccess"
             class="bg-positive text-white"
           >
-            {{ $t('reportIssue.success') }}<br>
+            {{ $t('submitProxy.success') }}<br>
             <a
               v-if="issueUrl"
               target="_blank"
@@ -57,7 +57,7 @@
             v-if="submitError"
             class="bg-negative text-white"
           >
-            {{ $t('reportIssue.fail') }}
+            {{ $t('submitProxy.fail') }}
           </q-banner>
 
           <div class="row">
@@ -81,16 +81,13 @@ import formMixin from '../mixins/formMixin';
 import icons from '../icons';
 
 export default {
-  name: 'ReportIssueCard',
+  name: 'SubmitProxyCard',
   mixins: [formMixin],
   data() {
     return {
-      title: '',
-      description: '',
       submitSuccess: false,
       submitError: false,
       buttonLoading: false,
-      issueUrl: '',
     };
   },
   mounted() {

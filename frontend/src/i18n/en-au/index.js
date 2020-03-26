@@ -10,10 +10,17 @@ export default {
     resetPassword: 'Reset Password',
     logout: 'Logout',
     register: 'Register',
+
+    adminTools: 'Admin Tools',
+    groupMembers: 'Group Members',
+    memberManagement: 'Members',
+    manageGroups: 'Groups',
+    manageDoors: 'Doors',
+    manageInterlocks: 'Interlocks',
+
     memberTools: 'Member Tools',
     reportIssue: 'Report Issue',
     submitProxy: 'Submit Proxy Vote',
-    groupMembers: 'Group Members',
     recentSwipes: 'Recent Swipes',
     lastSeen: 'Last Seen',
     membership: 'Membership',
