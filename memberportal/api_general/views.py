@@ -139,6 +139,7 @@ def api_get_profile(request):
     p = request.user.profile
 
     response = {
+        "email": request.user.email,
         "fullName": p.get_full_name(),
         "firstName": p.first_name,
         "lastName": p.last_name,

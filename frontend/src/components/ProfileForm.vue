@@ -81,6 +81,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import icons from '../icons';
 import formMixin from '../mixins/formMixin';
 import SavedNotification from './SavedNotification';
@@ -119,7 +120,17 @@ export default {
       this.saved[field] = true;
     },
   },
+  watch: {
+    profile() {
+      this.form.email = this.profile.email;
+      this.form.firstName = this.profile.firstName;
+      this.form.lastName = this.profile.lastName;
+      this.form.phone = this.profile.phone;
+      this.form.screenName = this.profile.screenName;
+    },
+  },
   computed: {
+    ...mapGetters('profile', ['profile']),
     debounceLength() {
       return 1000;
     },
