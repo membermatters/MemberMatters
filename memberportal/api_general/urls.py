@@ -6,5 +6,5 @@ urlpatterns = [
     path("api/login/", views.api_login, name="api_login"),
     path("api/password/reset/", views.api_reset_password, name="api_reset_password"),
     path("api/logout/", views.api_logout, name="api_logout"),
-    path("api/profile/", views.api_get_profile, name="api_get_profile"),
+    path("api/profile/", views.api_profile, name="api_profile"),
 ]

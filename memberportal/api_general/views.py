@@ -128,52 +128,74 @@ def api_reset_password(request):
             return JsonResponse({"success": False})
 
 
-@require_GET
 @login_required_401
-def api_get_profile(request):
+def api_profile(request):
     """
-    Returns the user profile object.
+    Gets or updates the user profile object.
     :param request:
     :return:
     """
-    p = request.user.profile
 
-    response = {
-        "email": request.user.email,
-        "fullName": p.get_full_name(),
-        "firstName": p.first_name,
-        "lastName": p.last_name,
-        "screenName": p.screen_name,
-        "phone": p.phone,
-        "memberStatus": p.state,
-        "lastInduction": p.last_induction,
-        "lastSeen": p.last_seen,
-        "firstJoined": p.created,
-        "profileUpdateRequired": p.must_update_profile,
-        "groups": list(p.groups.values()),
-        "memberLevel": {"name": str(p.member_type.name), "id": str(p.member_type.id)},
-        "financial": {
-            "xeroAccNumber": p.xero_account_number,
-            "savedCard": {
-                "last4": p.stripe_card_last_digits,
-                "expiry": p.stripe_card_expiry,
+    if request.method == "GET":
+        p = request.user.profile
+
+        response = {
+            "email": request.user.email,
+            "fullName": p.get_full_name(),
+            "firstName": p.first_name,
+            "lastName": p.last_name,
+            "screenName": p.screen_name,
+            "phone": p.phone,
+            "memberStatus": p.state,
+            "lastInduction": p.last_induction,
+            "lastSeen": p.last_seen,
+            "firstJoined": p.created,
+            "profileUpdateRequired": p.must_update_profile,
+            "groups": list(p.groups.values()),
+            "memberLevel": {
+                "name": str(p.member_type.name),
+                "id": str(p.member_type.id),
             },
-            "lastMemberbucksPurchase": p.last_memberbucks_purchase,
-            "memberbucksBalance": p.memberbucks_balance,
-        },
-        "permissions": {
-            "generateInvoice": p.can_generate_invoice,
-            "adminOfGroups": list(p.can_manage_group.values()),
-            "manageGroups": p.can_manage_groups,
-            "addGroup": p.can_add_group,
-            "manageInterlocks": p.can_manage_interlocks,
-            "manageDoors": p.can_manage_doors,
-            "seeMemberLogs": p.can_see_members_logs,
-            "seeMemberbucks": p.can_see_members_memberbucks,
-            "seeMemberPersonalDetails": p.can_see_members_personal_details,
-            "disableMembers": p.can_disable_members,
-            "manageAccess": p.can_manage_access,
-        },
-    }
+            "financial": {
+                "xeroAccNumber": p.xero_account_number,
+                "savedCard": {
+                    "last4": p.stripe_card_last_digits,
+                    "expiry": p.stripe_card_expiry,
+                },
+                "lastMemberbucksPurchase": p.last_memberbucks_purchase,
+                "memberbucksBalance": p.memberbucks_balance,
+            },
+            "permissions": {
+                "generateInvoice": p.can_generate_invoice,
+                "adminOfGroups": list(p.can_manage_group.values()),
+                "manageGroups": p.can_manage_groups,
+                "addGroup": p.can_add_group,
+                "manageInterlocks": p.can_manage_interlocks,
+                "manageDoors": p.can_manage_doors,
+                "seeMemberLogs": p.can_see_members_logs,
+                "seeMemberbucks": p.can_see_members_memberbucks,
+                "seeMemberPersonalDetails": p.can_see_members_personal_details,
+                "disableMembers": p.can_disable_members,
+                "manageAccess": p.can_manage_access,
+            },
+        }
 
-    return JsonResponse(response)
+        return JsonResponse(response)
+
+    elif request.method == "PUT":
+        p = request.user.profile
+        body = json.loads(request.body)
+
+        request.user.email = body.get("email")
+        p.first_name = body.get("firstName")
+        p.last_name = body.get("lastName")
+        p.phone = body.get("phone")
+        p.screen_name = body.get("screenName")
+
+        request.user.save()
+        p.save()
+
+        return JsonResponse({"success": True})
+
+    else:
+        return HttpResponseBadRequest()

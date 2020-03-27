@@ -4,7 +4,7 @@
       {{ $t('form.pageDescription') }}
     </p>
 
-    <q-form>
+    <q-form ref="formRef">
       <q-input
         outlined
         @input="saveChange('email')"
@@ -15,6 +15,7 @@
       >
         <template v-slot:append>
           <saved-notification
+            show-text
             v-model="saved.email"
             :error="saved.error"
           />
@@ -82,6 +83,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import axios from 'axios';
 import icons from '../icons';
 import formMixin from '../mixins/formMixin';
 import SavedNotification from './SavedNotification';
@@ -116,17 +118,41 @@ export default {
     };
   },
   methods: {
-    saveChange(field) {
-      this.saved[field] = true;
-    },
-  },
-  watch: {
-    profile() {
+    loadInitialForm() {
       this.form.email = this.profile.email;
       this.form.firstName = this.profile.firstName;
       this.form.lastName = this.profile.lastName;
       this.form.phone = this.profile.phone;
       this.form.screenName = this.profile.screenName;
+    },
+    saveChange(field) {
+      this.$refs.formRef.validate(false).then(() => {
+        this.$refs.formRef.validate(false)
+          .then((result) => {
+            console.log(result);
+
+            if (result) {
+              axios.put('/api/profile/', this.form)
+                .then((response) => {
+                  console.log(response);
+                  this.saved.error = false;
+                  this.saved[field] = true;
+                })
+                .catch(() => {
+                  this.saved.error = true;
+                  this.saved[field] = true;
+                });
+            }
+          });
+      });
+    },
+  },
+  beforeMount() {
+    this.loadInitialForm();
+  },
+  watch: {
+    profile() {
+      this.loadInitialForm();
     },
   },
   computed: {

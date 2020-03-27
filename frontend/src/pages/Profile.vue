@@ -16,7 +16,7 @@
       <q-btn
         push
         color="accent"
-        label="Spacebucks"
+        label="Memberbucks"
       />
     </q-btn-group>
   </q-page>
