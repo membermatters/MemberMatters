@@ -1,1 +1,20 @@
-// app global css in Sass form
+// global css in Sass form
+
+@media (max-width: $breakpoint-sm-max)
+  .q-page
+    padding: 16px 16px
+
+@media (min-width: $breakpoint-sm-min)
+  .q-page
+    padding: 32px
+
+.q-page
+    max-width: $maxWidth
+    margin: auto
+
+body.body--dark, .q-tab-panels--dark
+  background: $grey-10
+
+.q-table__bottom-nodata-icon
+  font-size: 200%
+  margin-right: 16px

@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pl-lg q-pa-md">
+  <div>
     <q-table
       :data="humanLastSeen"
       :columns="[{ name: 'user', label: 'User', field: 'user', sortable: true },

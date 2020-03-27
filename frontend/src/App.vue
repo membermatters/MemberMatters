@@ -64,17 +64,3 @@ export default {
   },
 };
 </script>
-
-<style lang="sass">
-  .q-page
-    max-width: 1000px
-    margin: auto
-
-  body.body--dark, .q-tab-panels--dark
-    background: $grey-10
-
-  .q-table__bottom-nodata-icon
-    font-size: 200%
-    margin-right: 16px
-
-</style>

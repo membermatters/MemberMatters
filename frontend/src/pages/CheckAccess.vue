@@ -1,13 +1,8 @@
 <template>
-  <q-page class="row flex content-start justify-center">
-    <div
-      class="row"
-      style="width: 100%;"
-    >
-      <p class="page-description q-pa-lg">
-        {{ $t('access.pageDescription') }}
-      </p>
-    </div>
+  <q-page class="column flex content-center justify-start">
+    <p class="page-description q-pa-md">
+      {{ $t('access.pageDescription') }}
+    </p>
     <div class="column flex content-start justify-center">
       <q-banner
         v-if="profile.memberStatus !== 'active'"
@@ -23,19 +18,19 @@
         {{ $t('access.inactive') }}
       </q-banner>
 
-      <door-access-list />
+      <access-list />
     </div>
   </q-page>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
-import DoorAccessList from '../components/AccessList';
+import AccessList from '../components/AccessList';
 import icons from '../icons';
 
 export default {
   name: 'CheckAccessPage',
-  components: { DoorAccessList },
+  components: { AccessList },
   computed: {
     ...mapGetters('profile', ['profile']),
     icons() {
@@ -45,9 +40,8 @@ export default {
 };
 </script>
 
-<style scoped>
-  .page-description {
-    max-width: 600px;
-    margin: 0 auto;
-  }
+<style lang="sass" scoped>
+  .page-description
+    max-width: $maxWidthMedium
+    margin: 0 auto
 </style>

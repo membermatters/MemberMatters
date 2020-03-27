@@ -109,6 +109,7 @@ const PageAndRouteConfig = [
         to: '/account/profile',
         name: 'profile',
         loggedIn: true,
+        component: () => import('pages/Profile'),
       },
       {
         icon: icons.checkAccess,

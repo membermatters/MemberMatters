@@ -38,7 +38,7 @@
             :pagination.sync="doorPagination"
             :dense="$q.screen.lt.md"
             :grid="$q.screen.xs"
-            style="max-width: 500px;"
+            class="table"
             :loading="loading"
           >
             <template v-slot:top-right>

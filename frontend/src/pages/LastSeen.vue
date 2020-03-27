@@ -1,13 +1,9 @@
 <template>
-  <q-page class="row flex content-start justify-center">
-    <div>
-      <div>
-        <p class="q-pl-lg q-pt-lg q-pr-lg">
-          {{ $t('lastseen.pageDescription') }}
-        </p>
-      </div>
-      <last-seen-list />
-    </div>
+  <q-page class="column flex content-center justify-start">
+    <p class="">
+      {{ $t('lastseen.pageDescription') }}
+    </p>
+    <last-seen-list />
   </q-page>
 </template>
 

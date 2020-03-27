@@ -133,8 +133,7 @@ export default {
 };
 </script>
 
-<style scoped>
-  .submit-issue-card {
-    min-width: 300px;
-  }
+<style lang="sass" scoped>
+  .submit-issue-card
+    min-width: $minWidth
 </style>

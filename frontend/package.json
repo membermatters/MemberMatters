@@ -8,10 +8,11 @@
   "author": "Jaimyn Mayer <hello@jaimyn.com.au>",
   "private": true,
   "scripts": {
-    "dev": "quasar dev",
+    "dev": "quasar dev -m spa",
     "dev-ios": "quasar dev -m capacitor -T ios ",
-    "build": "quasar build",
-    "build-pwa": "quasar build -m pwa",
+    "dev-android": "quasar dev -m capacitor -T android ",
+    "build": "quasar build -m pwa",
+    "build-spa": "quasar build -m spa",
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {

@@ -36,10 +36,9 @@ export default {
 };
 </script>
 
-<style scoped>
-  .row {
-    width: 100%;
-    max-width: 1200px;
-    margin: auto;
-  }
+<style lang="sass" scoped>
+  .row
+    width: 100%
+    max-width: $maxWidth
+    margin: auto
 </style>
