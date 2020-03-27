@@ -1,6 +1,6 @@
 <template>
   <q-page class="column flex content-center justify-start">
-    <p>
+    <p class="text-body1">
       {{ $t('memberGroups.pageDescription') }}
     </p>
     <member-groups />

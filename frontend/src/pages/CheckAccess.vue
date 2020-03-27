@@ -1,6 +1,6 @@
 <template>
   <q-page class="column flex content-center justify-start">
-    <p class="page-description q-pa-md">
+    <p class="text-body1 page-description q-pa-md">
       {{ $t('access.pageDescription') }}
     </p>
     <div class="column flex content-start justify-center">

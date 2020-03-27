@@ -1,6 +1,6 @@
 <template>
   <q-page class="column flex content-center justify-start">
-    <p class="">
+    <p class="text-body1">
       {{ $t('lastseen.pageDescription') }}
     </p>
     <last-seen-list />

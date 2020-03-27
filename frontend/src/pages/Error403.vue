@@ -3,7 +3,7 @@
     <p>
       <sad-face />
     </p>
-    <p class="text-faded">
+    <p class="text-body1 text-faded">
       {{ $t('error.403') }}
     </p>
     <q-btn

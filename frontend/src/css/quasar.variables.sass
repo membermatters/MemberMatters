@@ -17,7 +17,9 @@ $toolbar   : #0461b1
 $accent    : #189ab4
 
 $positive  : #18a558
+$success   : $positive
 $negative  : #f83839
+$fail      : $negative
 $info      : #7fe5f0
 $warning   : #fad02c
 
@@ -25,7 +27,19 @@ $minWidth: 300px
 $maxWidthMedium: 500px
 $maxWidth: 1200px
 
-.bg-primary-toolbar
+.text-success, .text-positive
+  color: $positive
+
+.bg-success, .bg-positive
+  background-color: $positive
+
+.text-fail, .text-negative
+  color: $negative
+
+.bg-fail, .bg-negative
+  background-color: $negative
+
+.bg-toolbar
   background: $toolbar
 
 .bg-primary-btn

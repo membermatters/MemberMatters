@@ -1,7 +1,7 @@
 <template>
   <q-page class="row flex content-start justify-center q-mt-md">
     <div class="row flex flex-center">
-      <p class="col-12 text-center q-px-md q-pt-md">
+      <p class="text-body1 col-12 text-center q-px-md q-pt-md">
         {{ $t('webcams.pageDescription') }}
       </p>
       <div

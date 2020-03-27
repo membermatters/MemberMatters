@@ -1,6 +1,6 @@
 <template>
   <q-page class="column flex content-center justify-start">
-    <p class="q-pl-lg q-pt-lg q-pr-lg">
+    <p class="text-body1 q-pl-lg q-pt-lg q-pr-lg">
       {{ $t('recentSwipes.pageDescription') }}
     </p>
     <recent-swipes-list />

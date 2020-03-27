@@ -40,4 +40,7 @@ export default {
   warning: pro ? 'fad fa-exclamation-triangle' : 'fal fa-exclamation-triangle',
 
   comment: pro ? 'fad fa-comment-alt-lines' : 'fal fa-comment-alt-lines',
+
+  success: pro ? 'fad fa-check' : 'fal fa-check',
+  fail: pro ? 'fad fa-times' : 'fal fa-times',
 };

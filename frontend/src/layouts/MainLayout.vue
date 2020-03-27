@@ -5,7 +5,7 @@
       v-if="loggedIn || ($q.platform.is.mobile && loggedIn)"
     >
       <q-toolbar
-        class="bg-primary-toolbar"
+        class="bg-toolbar"
       >
         <q-btn
           flat
