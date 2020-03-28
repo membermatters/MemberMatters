@@ -1,3 +1,5 @@
+import Moment from 'moment';
+
 export default {
   methods: {
     formatCsvList(list) {
@@ -5,6 +7,9 @@ export default {
         if (list.length === i + 1) return x;
         return `${x}, `;
       });
+    },
+    formatDate(date) {
+      return Moment.utc(date).local().format('Do MMM YYYY, h:mm a');
     },
   },
 };

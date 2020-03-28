@@ -27,6 +27,9 @@ class Meeting(models.Model):
     )
     attendees = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
+    def get_type(self):
+        return self.group.name if self.type == "group" else self.get_type_display()
+
     def __str__(self):
         return f"{self.date} - {self.group if self.group else ''} {self.type} meeting"
 

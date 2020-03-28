@@ -4,6 +4,7 @@ import VuexPersistence from 'vuex-persist';
 import profile from './modules/profile';
 import config from './modules/config';
 import tools from './modules/tools';
+import adminTools from './modules/adminTools';
 
 Vue.use(Vuex);
 
@@ -16,6 +17,7 @@ export default new Vuex.Store({
     profile,
     config,
     tools,
+    adminTools,
   },
   plugins: [vuexLocal.plugin],
 });

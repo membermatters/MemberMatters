@@ -51,7 +51,7 @@ export default {
   mounted() {
     this.loading = true;
     this.getLastSeen()
-      .then(() => {
+      .finally(() => {
         this.loading = false;
       });
     this.updateInterval = setInterval(() => {

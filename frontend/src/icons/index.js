@@ -16,10 +16,11 @@ export default {
   webcams: pro ? 'fad fa-webcam' : 'fal fa-webcam',
 
   cogs: pro ? 'fad fa-cogs' : 'fal fa-cogs',
-  memberManagement: pro ? 'fad fa-users-cog' : 'fal fa-users-cog',
-  manageGroups: pro ? 'fad fa-user-tag' : 'fal fa-user-tag',
-  manageDoors: pro ? 'fad fa-door-closed' : 'fal fa-door-closed',
-  manageInterlocks: pro ? 'fad fa-plug' : 'fal fa-plug',
+  members: pro ? 'fad fa-users-cog' : 'fal fa-users-cog',
+  meetings: pro ? 'fad fa-clipboard-list' : 'fal fa-clipboard-list',
+  groups: pro ? 'fad fa-user-tag' : 'fal fa-user-tag',
+  doors: pro ? 'fad fa-door-closed' : 'fal fa-door-closed',
+  interlocks: pro ? 'fad fa-plug' : 'fal fa-plug',
 
   tools: pro ? 'fad fa-tools' : 'fal fa-tools',
   reportIssue: pro ? 'fad fa-exclamation-triangle' : 'fal fa-exclamation-triangle',
@@ -45,4 +46,8 @@ export default {
 
   success: pro ? 'fad fa-check' : 'fal fa-check',
   fail: pro ? 'fad fa-times' : 'fal fa-times',
+  add: pro ? 'fad fa-plus-circle' : 'fal fa-plus-circle',
+  remove: pro ? 'fad fa-times-circle' : 'fal fa-times-circle',
+  up: pro ? 'fad fa-chevron-down' : 'fal fa-chevron-down',
+  down: pro ? 'fad fa-chevron-up' : 'fal fa-chevron-up',
 };

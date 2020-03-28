@@ -175,10 +175,10 @@ def api_profile(request):
             "permissions": {
                 "generateInvoice": p.can_generate_invoice,
                 "adminOfGroups": list(p.can_manage_group.values()),
-                "manageGroups": p.can_manage_groups,
+                "groups": p.can_manage_groups,
                 "addGroup": p.can_add_group,
-                "manageInterlocks": p.can_manage_interlocks,
-                "manageDoors": p.can_manage_doors,
+                "interlocks": p.can_manage_interlocks,
+                "doors": p.can_manage_doors,
                 "seeMemberLogs": p.can_see_members_logs,
                 "seeMemberbucks": p.can_see_members_memberbucks,
                 "seeMemberPersonalDetails": p.can_see_members_personal_details,

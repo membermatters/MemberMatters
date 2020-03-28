@@ -11,12 +11,14 @@ def login_required_401(function=None, redirect_field_name=None):
     Otherwise return a HttpResponse 401 - authentication required
     instead of the 302 redirect of the original Django decorator
     """
+
     def _decorator(view_func):
         def _wrapped_view(request, *args, **kwargs):
             if request.user.is_authenticated:
                 return view_func(request, *args, **kwargs)
             else:
                 return HttpResponse(status=401)
+
         return _wrapped_view
 
     if function is None:
@@ -25,24 +27,22 @@ def login_required_401(function=None, redirect_field_name=None):
         return _decorator(function)
 
 
-def admin_required(view):
+def staff_required(view):
     def wrap(request, *args, **kwargs):
-        # do some logic here
         if request.user.is_staff:
             return view(request, *args, **kwargs)
         else:
             # if the user isn't authorised let them know
-            return HttpResponseForbidden("403 Access Forbidden")
+            return HttpResponseForbidden()
 
     return wrap
 
 
 def no_noobs(view):
     def wrap(request, *args, **kwargs):
-        # do some logic here
         if request.user.profile.state == "noob":
             # if the user isn't authorised let them know
-            return HttpResponseForbidden("403 Access Forbidden")
+            return HttpResponseForbidden()
         else:
             return view(request, *args, **kwargs)
 

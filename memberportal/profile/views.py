@@ -1,5 +1,11 @@
 from django.contrib.auth import login, update_session_auth_hash
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
+from django.http import (
+    HttpResponse,
+    HttpResponseRedirect,
+    JsonResponse,
+    HttpResponseBadRequest,
+    HttpResponseForbidden,
+)
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
@@ -8,7 +14,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.db.utils import IntegrityError
 from django.urls import reverse
-from membermatters.decorators import no_noobs, admin_required, api_auth
+from membermatters.decorators import no_noobs, staff_required, api_auth
 from membermatters.helpers import log_user_event
 from .models import Profile, User, MemberTypes
 from access.models import Doors, Interlock, DoorLog, InterlockLog
@@ -103,7 +109,8 @@ def signup(request):
                 "induction we will go over the basic safety and operational "
                 f"aspects of {config.SITE_OWNER}. To book in, click the link below.",
                 f"{config.INDUCTION_URL}",
-                "Register for Induction")
+                "Register for Induction",
+            )
 
             # for convenience, we should now log the user in
             login(request, new_user)
@@ -115,8 +122,9 @@ def signup(request):
         user_form = SignUpForm()
         profile_form = AddProfileForm()
 
-    return render(request, "signup.html",
-                  {"user_form": user_form, "profile_form": profile_form})
+    return render(
+        request, "signup.html", {"user_form": user_form, "profile_form": profile_form}
+    )
 
 
 @login_required
@@ -142,7 +150,9 @@ def reset_password(request, reset_token=None):
             user = User.objects.get(password_reset_key=reset_token)
 
         except ObjectDoesNotExist:
-            return render(request, "reset_password_form.html", {"error": "Invalid link."})
+            return render(
+                request, "reset_password_form.html", {"error": "Invalid link."}
+            )
 
         if request.method == "POST":
             form = ResetPasswordForm(request.POST)
@@ -156,29 +166,42 @@ def reset_password(request, reset_token=None):
 
                     user.email_notification(
                         f"Your {config.SITE_OWNER} password has changed.",
-                        "Your password has changed.", "",
-                        f"Your {config.SITE_OWNER} password has been successfully changed.")
+                        "Your password has changed.",
+                        "",
+                        f"Your {config.SITE_OWNER} password has been successfully changed.",
+                    )
 
                     return render(
-                        request, "reset_password_form.html",
-                        {"form": ResetPasswordForm(),
-                         "message": "Password changed successfully. Please use the login link in the menu."})
+                        request,
+                        "reset_password_form.html",
+                        {
+                            "form": ResetPasswordForm(),
+                            "message": "Password changed successfully. Please use the login link in the menu.",
+                        },
+                    )
 
                 else:
                     return render(
-                        request, "reset_password_form.html",
-                        {"form": ResetPasswordForm(),
-                         "error": "Passwords don't match."})
+                        request,
+                        "reset_password_form.html",
+                        {
+                            "form": ResetPasswordForm(),
+                            "error": "Passwords don't match.",
+                        },
+                    )
 
         else:
             if utc.localize(datetime.now()) < user.password_reset_expire:
-                return render(request, "reset_password_form.html",
-                              {"form": ResetPasswordForm()})
+                return render(
+                    request, "reset_password_form.html", {"form": ResetPasswordForm()}
+                )
 
             else:
-                return render(request, "reset_password_form.html",
-                              {"form": ResetPasswordForm(),
-                               "error": "Error. Link expired."})
+                return render(
+                    request,
+                    "reset_password_form.html",
+                    {"form": ResetPasswordForm(), "error": "Error. Link expired."},
+                )
 
     elif request.method == "POST":
         form = ResetPasswordRequestForm(request.POST)
@@ -188,27 +211,36 @@ def reset_password(request, reset_token=None):
                 user = User.objects.get(email=form.cleaned_data["email"])
                 user.reset_password()
                 return render(
-                    request, "reset_password.html",
-                    {"form": ResetPasswordRequestForm(),
-                     "message": "Check your email for a link."})
+                    request,
+                    "reset_password.html",
+                    {
+                        "form": ResetPasswordRequestForm(),
+                        "message": "Check your email for a link.",
+                    },
+                )
 
             except ObjectDoesNotExist:
                 return render(
-                    request, "reset_password.html",
-                    {"form": ResetPasswordRequestForm(),
-                     "error": "No user with that email."})
+                    request,
+                    "reset_password.html",
+                    {
+                        "form": ResetPasswordRequestForm(),
+                        "error": "No user with that email.",
+                    },
+                )
 
         else:
             return render(
-                request, "reset_password.html",
-                {"form": ResetPasswordRequestForm(),
-                 "error": "invalid email"})
+                request,
+                "reset_password.html",
+                {"form": ResetPasswordRequestForm(), "error": "invalid email"},
+            )
 
     else:
 
         return render(
-            request, "reset_password.html",
-            {"form": ResetPasswordRequestForm()})
+            request, "reset_password.html", {"form": ResetPasswordRequestForm()}
+        )
 
 
 @login_required
@@ -222,7 +254,7 @@ def profile(request, extra_context=None):
 
 
 @login_required
-@admin_required
+@staff_required
 def member_list(request):
     """
     The list all members view. Used to manage all members.
@@ -235,8 +267,9 @@ def member_list(request):
 
     return render(request, "memberlist.html", {"members": members})
 
+
 @login_required
-@admin_required
+@staff_required
 def member_list_new(request):
     """
     The list all members view. Used to manage all members.
@@ -249,8 +282,9 @@ def member_list_new(request):
 
     return render(request, "memberlist.html", {"members": members})
 
+
 @login_required
-@admin_required
+@staff_required
 def member_list_inactive(request):
     """
     The list all members view. Used to manage all members.
@@ -263,8 +297,9 @@ def member_list_inactive(request):
 
     return render(request, "memberlist.html", {"members": members})
 
+
 @login_required
-@admin_required
+@staff_required
 def member_list_all(request):
     """
     The list all members view. Used to manage all members.
@@ -279,18 +314,18 @@ def member_list_all(request):
 
 
 @login_required
-@admin_required
+@staff_required
 def member_export(request):
     # Create the HttpResponse object with the appropriate CSV header.
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="memberlist.csv"'
-    members = Profile.objects.prefetch_related('user')
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = 'attachment; filename="memberlist.csv"'
+    members = Profile.objects.prefetch_related("user")
 
     writer = csv.writer(response)
-    writer.writerow(['first_name', 'last_name', 'email', 'status'])
+    writer.writerow(["first_name", "last_name", "email", "status"])
 
     for member in members:
-        writer.writerow([member.first_name, member.last_name, member, member.state ])
+        writer.writerow([member.first_name, member.last_name, member, member.state])
 
     return response
 
@@ -302,12 +337,14 @@ def access_permissions(request):
     interlocks = Interlock.objects.all()
 
     return render(
-        request, "access_permissions.html",
-        {"doors": doors, "interlocks": interlocks, "member_id": request.user.id})
+        request,
+        "access_permissions.html",
+        {"doors": doors, "interlocks": interlocks, "member_id": request.user.id},
+    )
 
 
 @login_required
-@admin_required
+@staff_required
 def admin_memberbucks_transactions(request, member_id):
     if not request.user.profile.can_see_members_memberbucks:
         return HttpResponseForbidden(permission_message)
@@ -318,7 +355,7 @@ def admin_memberbucks_transactions(request, member_id):
         "transactions": transactions,
         "balance": user.profile.memberbucks_balance,
         "member": user,
-        "config": config
+        "config": config,
     }
     rendered = render_to_string("partial_admin_member_memberbucks.html", context)
 
@@ -326,7 +363,7 @@ def admin_memberbucks_transactions(request, member_id):
 
 
 @login_required
-@admin_required
+@staff_required
 def admin_add_memberbucks(request, member_id, amount):
     if not request.user.profile.can_see_members_memberbucks:
         return HttpResponseForbidden(permission_message)
@@ -347,10 +384,20 @@ def admin_add_memberbucks(request, member_id, amount):
         transaction.transaction_type = "bank"
         transaction.logging_info = ""
         transaction.save()
-        log_user_event(request.user, "Manually added ${} to {}.".format(amount, user.profile.get_full_name()),
-                       "memberbucks")
-        log_user_event(user, "{} manually added ${} to {}.".format(request.user.profile.get_full_name(), amount,
-                                                                   user.profile.get_full_name()), "stripe")
+        log_user_event(
+            request.user,
+            "Manually added ${} to {}.".format(amount, user.profile.get_full_name()),
+            "memberbucks",
+        )
+        log_user_event(
+            user,
+            "{} manually added ${} to {}.".format(
+                request.user.profile.get_full_name(),
+                amount,
+                user.profile.get_full_name(),
+            ),
+            "stripe",
+        )
 
         return JsonResponse({"success": True})
 
@@ -359,7 +406,7 @@ def admin_add_memberbucks(request, member_id, amount):
 
 
 @login_required
-@admin_required
+@staff_required
 def admin_edit_member(request, member_id):
     """
     Part of the process for our ajax requests for the member list.
@@ -387,7 +434,11 @@ def admin_edit_member(request, member_id):
                 profile_form.save()
                 user_form.save()
                 form_valid = True
-                log_user_event(profile.user, request.user.profile.get_full_name() + " edited user profile.", "profile")
+                log_user_event(
+                    profile.user,
+                    request.user.profile.get_full_name() + " edited user profile.",
+                    "profile",
+                )
 
             except IntegrityError:
                 form_valid = False
@@ -396,13 +447,20 @@ def admin_edit_member(request, member_id):
     data["form_is_valid"] = form_valid
     data["html_form"] = render_to_string(
         "partial_admin_edit_member.html",
-        {"profile_form": profile_form, "user_form": user_form,
-         "member_id": member_id, "profile": profile, "config": config}, request=request)
+        {
+            "profile_form": profile_form,
+            "user_form": user_form,
+            "member_id": member_id,
+            "profile": profile,
+            "config": config,
+        },
+        request=request,
+    )
     return JsonResponse(data)
 
 
 @login_required
-@admin_required
+@staff_required
 def admin_member_logs(request, member_id):
     """
     Part of the process for our ajax requests for the member list.
@@ -418,8 +476,10 @@ def admin_member_logs(request, member_id):
 
     # render the form and return it
     data["html_form"] = render_to_string(
-        "partial_admin_member_logs.html", {"logs": member.profile.get_logs(), "config": config},
-        request=request)
+        "partial_admin_member_logs.html",
+        {"logs": member.profile.get_logs(), "config": config},
+        request=request,
+    )
     return JsonResponse(data)
 
 
@@ -433,8 +493,7 @@ def edit_profile(request):
 
     if request.method == "POST":
         user_form = EditUserForm(request.POST, instance=request.user)
-        profile_form = EditProfileForm(
-            request.POST, instance=request.user.profile)
+        profile_form = EditProfileForm(request.POST, instance=request.user.profile)
 
         if user_form.is_valid() and profile_form.is_valid():
             # if it was a form submission save it
@@ -452,8 +511,10 @@ def edit_profile(request):
         profile_form = EditProfileForm(instance=request.user.profile)
 
     return render(
-        request, "edit_profile.html",
-        {"user_form": user_form, "profile_form": profile_form})
+        request,
+        "edit_profile.html",
+        {"user_form": user_form, "profile_form": profile_form},
+    )
 
 
 @login_required
@@ -468,7 +529,7 @@ def digital_id(request):
 
 
 @login_required
-@admin_required
+@staff_required
 def set_state(request, member_id, state):
     """
     Sets the active/inactive (access disabled/enabled) state for members.
@@ -495,11 +556,18 @@ def set_state(request, member_id, state):
             email = user.email_welcome()
             xero = user.profile.add_to_xero()
             invoice = user.profile.create_membership_invoice()
-            user.profile.state = "inactive"  # an admin should activate them when they pay their invoice
+            user.profile.state = (
+                "inactive"  # an admin should activate them when they pay their invoice
+            )
             user.profile.save()
 
             if "Error" not in xero and "Error" not in invoice and email:
-                return JsonResponse({"success": True, "message": "Successfully added to Xero and sent welcome email."})
+                return JsonResponse(
+                    {
+                        "success": True,
+                        "message": "Successfully added to Xero and sent welcome email.",
+                    }
+                )
 
             elif "Error" in xero:
                 return JsonResponse({"success": False, "message": xero})
@@ -508,23 +576,33 @@ def set_state(request, member_id, state):
                 return JsonResponse({"success": False, "message": invoice})
 
             elif email is False:
-                return JsonResponse({"success": False, "message": "Error, couldn't send welcome email."})
+                return JsonResponse(
+                    {"success": False, "message": "Error, couldn't send welcome email."}
+                )
 
             else:
-                return JsonResponse({"success": False, "message": "Unknown error while making into member."})
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "message": "Unknown error while making into member.",
+                    }
+                )
 
         else:
             user.profile.activate(request)
-            return JsonResponse({"success": True, "message": "Successfully enabled user. ✅"})
+            return JsonResponse(
+                {"success": True, "message": "Successfully enabled user. ✅"}
+            )
 
     else:
         user.profile.deactivate(request)
         return JsonResponse(
-            {"success": True, "message": "Successfully disabled user. ⛔"})
+            {"success": True, "message": "Successfully disabled user. ⛔"}
+        )
 
 
 @login_required
-@admin_required
+@staff_required
 def admin_edit_access(request, member_id):
     if not request.user.profile.can_manage_access:
         return HttpResponseForbidden(permission_message)
@@ -537,8 +615,15 @@ def admin_edit_access(request, member_id):
     # render the form and return it
     data["html_form"] = render_to_string(
         "partial_admin_edit_access.html",
-        {"member": member, "member_id": member_id, "doors": doors,
-         "interlocks": interlocks, "config": config}, request=request)
+        {
+            "member": member,
+            "member_id": member_id,
+            "doors": doors,
+            "interlocks": interlocks,
+            "config": config,
+        },
+        request=request,
+    )
     return JsonResponse(data)
 
 
@@ -549,8 +634,8 @@ def recent_swipes(request):
     interlocks = InterlockLog.objects.all().order_by("last_heartbeat")[::-1][:50]
 
     return render(
-        request, "recent_swipes.html",
-        {"doors": doors, "interlocks": interlocks})
+        request, "recent_swipes.html", {"doors": doors, "interlocks": interlocks}
+    )
 
 
 @login_required
@@ -562,8 +647,8 @@ def last_seen(request):
     for member in members:
         if member.profile.last_seen is not None:
             last_seens.append(
-                {"user": member, "never": False,
-                 "date": member.profile.last_seen})
+                {"user": member, "never": False, "date": member.profile.last_seen}
+            )
 
         else:
             last_seens.append({"user": member, "never": True})
@@ -575,8 +660,9 @@ def last_seen(request):
 @no_noobs
 def edit_theme_song(request):
     if request.method == "POST":
-        theme_form = ThemeForm(request.POST, request.FILES,
-                               instance=request.user.profile)
+        theme_form = ThemeForm(
+            request.POST, request.FILES, instance=request.user.profile
+        )
 
         if theme_form.is_valid():
             # todo: pass the uploaded file (or removal request) to asterisk
@@ -589,13 +675,11 @@ def edit_theme_song(request):
         # if it"'s not a form submission, return an empty form
         theme_form = ThemeForm(instance=request.user.profile)
 
-    return render(
-        request, "edit_theme_song.html",
-        {"theme_form": theme_form}, )
+    return render(request, "edit_theme_song.html", {"theme_form": theme_form},)
 
 
 @login_required
-@admin_required
+@staff_required
 def resend_welcome_email(request, member_id):
     success = User.objects.get(pk=member_id).email_welcome()
     log_user_event(request.user, "Resent welcome email.", "profile")
@@ -604,14 +688,14 @@ def resend_welcome_email(request, member_id):
         return JsonResponse({"message": success})
 
     else:
-        return JsonResponse(
-            {"message": "Couldn't email member, unknown error."})
+        return JsonResponse({"message": "Couldn't email member, unknown error."})
 
 
 @login_required
-@admin_required
+@staff_required
 def sync_xero_accounts(request):
     from .xerohelpers import sync_xero_accounts
+
     success = sync_xero_accounts(User.objects.all().prefetch_related())
     log_user_event(request.user, "Resynced xero accounts.", "profile")
 
@@ -619,14 +703,15 @@ def sync_xero_accounts(request):
         return JsonResponse({"message": success})
 
     else:
-        return JsonResponse(
-            {"message": "Couldn't sync xero accounts, unknown error."})
+        return JsonResponse({"message": "Couldn't sync xero accounts, unknown error."})
 
 
 @login_required
-@admin_required
+@staff_required
 def add_to_xero(request, member_id):
-    return JsonResponse({"message": User.objects.get(pk=member_id).profile.add_to_xero()})
+    return JsonResponse(
+        {"message": User.objects.get(pk=member_id).profile.add_to_xero()}
+    )
 
 
 @login_required
@@ -637,7 +722,9 @@ def create_invoice(request, member_id, option=False):
         email_invoice = True
 
     if request.user.profile.can_generate_invoice:
-        response = User.objects.get(pk=member_id).profile.create_membership_invoice(email_invoice=email_invoice)
+        response = User.objects.get(pk=member_id).profile.create_membership_invoice(
+            email_invoice=email_invoice
+        )
 
         return JsonResponse({"message": response})
 

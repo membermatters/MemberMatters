@@ -28,6 +28,7 @@ urlpatterns = [
     path("", include("api_general.urls")),
     path("", include("api_access.urls")),
     path("", include("api_member_tools.urls")),
+    path("", include("api_meeting.urls")),
     path("admin/", admin.site.urls),
 ]
 

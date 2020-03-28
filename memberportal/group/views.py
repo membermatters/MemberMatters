@@ -1,4 +1,9 @@
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
+from django.http import (
+    HttpResponseRedirect,
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseForbidden,
+)
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.utils.html import escape
@@ -6,7 +11,7 @@ from django.urls import reverse
 from membermatters.helpers import log_user_event
 from .forms import CauseForm, CauseFundForm
 from .models import Group, CauseFund
-from membermatters.decorators import admin_required, no_noobs
+from membermatters.decorators import staff_required, no_noobs
 from profile.emailhelpers import send_group_email
 from constance import config
 import pytz
@@ -15,7 +20,7 @@ utc = pytz.UTC
 
 
 @login_required
-@admin_required
+@staff_required
 def manage_groups(request):
     if not request.user.profile.can_manage_groups:
         return HttpResponseForbidden("You do not have permission to access that.")
@@ -28,7 +33,9 @@ def manage_groups(request):
             log_user_event(
                 request.user,
                 f"Created {form.cleaned_data.get('name')} {config.GROUP_NAME}.",
-                "admin", form)
+                "admin",
+                form,
+            )
             return HttpResponseRedirect(reverse("manage_groups"))
 
     else:
@@ -44,17 +51,18 @@ def manage_groups(request):
 def list_groups(request):
     groups = Group.objects.all()
 
-    return render(
-        request,
-        "list_groups.html", {"groups": groups, })
+    return render(request, "list_groups.html", {"groups": groups,})
 
 
 @login_required
-@admin_required
+@staff_required
 def email_group_members(request, group_id):
     group = get_object_or_404(Group, pk=group_id)
 
-    if not request.user.profile.can_manage_groups or group not in request.user.profile.can_manage_group.all():
+    if (
+        not request.user.profile.can_manage_groups
+        or group not in request.user.profile.can_manage_group.all()
+    ):
         return HttpResponseForbidden("You do not have permission to access that.")
 
     if request.method == "POST":
@@ -69,12 +77,22 @@ def email_group_members(request, group_id):
 
         # handle no message/subject specified
         if not len(title):
-            return render(request, "email_group_members.html", {"group": group, "error": "No subject specified."})
+            return render(
+                request,
+                "email_group_members.html",
+                {"group": group, "error": "No subject specified."},
+            )
 
         if not len(message):
-            return render(request, "email_group_members.html", {"group": group, "error": "No message specified."})
+            return render(
+                request,
+                "email_group_members.html",
+                {"group": group, "error": "No message specified."},
+            )
 
-        subject = escape(f"{config.SITE_OWNER} {group.name} - {title}")  # format our subject
+        subject = escape(
+            f"{config.SITE_OWNER} {group.name} - {title}"
+        )  # format our subject
 
         # make the list of our recipients
         emails = list()
@@ -85,7 +103,9 @@ def email_group_members(request, group_id):
             emails.append(request.user.email)
 
         response = send_group_email(request.user, emails, subject, title, message)
-        return render(request, "email_group_members.html", {"group": group, "success": response})
+        return render(
+            request, "email_group_members.html", {"group": group, "success": response}
+        )
 
     else:
         group = Group.objects.get(pk=group_id)
@@ -93,7 +113,7 @@ def email_group_members(request, group_id):
 
 
 @login_required
-@admin_required
+@staff_required
 def edit_group(request, group_id):
     """
     The edit group (admin) view.
@@ -103,7 +123,10 @@ def edit_group(request, group_id):
     """
     group = get_object_or_404(Group, pk=group_id)
 
-    if not request.user.profile.can_manage_groups or group not in request.user.profile.can_manage_group.all():
+    if (
+        not request.user.profile.can_manage_groups
+        or group not in request.user.profile.can_manage_group.all()
+    ):
         return HttpResponseForbidden("You do not have permission to access that.")
 
     if request.method == "POST":
@@ -112,9 +135,8 @@ def edit_group(request, group_id):
             # if it was a form submission save it
             form.save()
             log_user_event(
-                request.user,
-                f"Edited {group.name} {config.GROUP_NAME}.",
-                "admin", form)
+                request.user, f"Edited {group.name} {config.GROUP_NAME}.", "admin", form
+            )
             return HttpResponseRedirect("%s" % (reverse("manage_groups")))
         else:
             # otherwise return form with errors
@@ -127,11 +149,14 @@ def edit_group(request, group_id):
 
 
 @login_required
-@admin_required
+@staff_required
 def delete_group(request, group_id):
     group = get_object_or_404(Group, pk=group_id)
 
-    if not request.user.profile.can_manage_groups or group not in request.user.profile.can_manage_group.all():
+    if (
+        not request.user.profile.can_manage_groups
+        or group not in request.user.profile.can_manage_group.all()
+    ):
         return HttpResponseForbidden("You do not have permission to access that.")
 
     group.delete()

@@ -8,7 +8,7 @@ from membermatters.helpers import log_user_event
 import pytz
 import os
 import requests
-from membermatters.decorators import no_noobs, admin_required, api_auth
+from membermatters.decorators import no_noobs, staff_required, api_auth
 from xero import Xero
 from xero.auth import PrivateCredentials
 import datetime
@@ -59,29 +59,53 @@ def issue(request):
     if request.method == "POST":
         print(request.POST.get("title"))
         if request.POST.get("title") and request.POST.get("description"):
-            if "PORTAL_TRELLO_API_KEY" in os.environ and "PORTAL_TRELLO_API_TOKEN" in os.environ:
+            if (
+                "PORTAL_TRELLO_API_KEY" in os.environ
+                and "PORTAL_TRELLO_API_TOKEN" in os.environ
+            ):
                 issue = request.POST.get("title", "")
                 details = request.POST.get("description", "")
                 url = "https://api.trello.com/1/cards"
                 trelloKey = os.environ.get("PORTAL_TRELLO_API_KEY")
                 trelloToken = os.environ.get("PORTAL_TRELLO_API_TOKEN")
 
-                querystring = {"name": issue, "desc": details, "pos": "top", "idList": "5529dd886d658fdace75c830",
-                               "keepFromSource": "all", "key": trelloKey, "token": trelloToken}
+                querystring = {
+                    "name": issue,
+                    "desc": details,
+                    "pos": "top",
+                    "idList": "5529dd886d658fdace75c830",
+                    "keepFromSource": "all",
+                    "key": trelloKey,
+                    "token": trelloToken,
+                }
 
                 response = requests.request("POST", url, params=querystring)
 
                 if response.status_code == 200:
-                    log_user_event(request.user, "Submitted issue: " + issue + " Content: " + details, "generic")
+                    log_user_event(
+                        request.user,
+                        "Submitted issue: " + issue + " Content: " + details,
+                        "generic",
+                    )
 
-                    return render(request, "issue.html", {"message": "Submission Successful!"})
+                    return render(
+                        request, "issue.html", {"message": "Submission Successful!"}
+                    )
                 else:
-                    return render(request, "issue.html",
-                                  {"error": "Sorry but there was a server side error."})
+                    return render(
+                        request,
+                        "issue.html",
+                        {"error": "Sorry but there was a server side error."},
+                    )
 
             else:
-                return render(request, "issue.html",
-                              {"error": "Sorry but there was a server side error: Trello API is not configured."})
+                return render(
+                    request,
+                    "issue.html",
+                    {
+                        "error": "Sorry but there was a server side error: Trello API is not configured."
+                    },
+                )
 
         return render(request, "issue.html", {"error": "Invalid form submission..."})
 
@@ -98,8 +122,13 @@ def proxy(request):
     # Handle submission.
     if request.method == "POST":
         params = {}
-        required_aprams = ["proxy-memberaddress", "proxy-proxyname", "proxy-proxyaddress", "proxy-type",
-                           "proxy-meetingdate"]
+        required_aprams = [
+            "proxy-memberaddress",
+            "proxy-proxyname",
+            "proxy-proxyaddress",
+            "proxy-type",
+            "proxy-meetingdate",
+        ]
 
         for param in request.POST:
             params[param] = request.POST[param]
@@ -116,16 +145,29 @@ def proxy(request):
         proxy_date = params["proxy-meetingdate"]
         submit_date = datetime.datetime.now().strftime("%d-%m-%Y at %H:%M")
 
-        subject = "{} submitted a proxy for {} Meeting".format(full_name, params["proxy-type"])
-        message = "I, {}, of {}, being a member of the association, appoint {} of {} as my proxy to vote for me on my "\
-                  "behalf at the {} Meeting of the association, to be held on the day of {} and at any adjournment of "\
-                  "the meeting. ~br~ ~br~ Signed by {} on this day of {}.".format(full_name, member_address, proxy_name,
-                                                                                  proxy_address, proxy_type, proxy_date,
-                                                                                  full_name, submit_date)
+        subject = "{} submitted a proxy for {} Meeting".format(
+            full_name, params["proxy-type"]
+        )
+        message = (
+            "I, {}, of {}, being a member of the association, appoint {} of {} as my proxy to vote for me on my "
+            "behalf at the {} Meeting of the association, to be held on the day of {} and at any adjournment of "
+            "the meeting. ~br~ ~br~ Signed by {} on this day of {}.".format(
+                full_name,
+                member_address,
+                proxy_name,
+                proxy_address,
+                proxy_type,
+                proxy_date,
+                full_name,
+                submit_date,
+            )
+        )
 
         send_single_email(request.user, request.user.email, subject, subject, message)
         send_single_email(request.user, config.EMAIL_ADMIN, subject, subject, message)
-        context["message"] = "Successfully submitted proxy. A copy has been emailed to you for your records."
+        context[
+            "message"
+        ] = "Successfully submitted proxy. A copy has been emailed to you for your records."
 
     # render template normally
     return render(request, "proxy.html", context)
