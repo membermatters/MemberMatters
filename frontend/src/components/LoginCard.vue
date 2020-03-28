@@ -241,6 +241,10 @@ export default {
       type: String,
       default: null,
     },
+    noRedirect: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -285,8 +289,9 @@ export default {
      * Redirects to the dashboard page on successful login.
      */
     redirectLoggedIn() {
+      this.$emit('loginComplete');
       if (this.$route.query.redirect) this.$router.push(this.$route.query.redirect);
-      else { setTimeout(() => { this.$router.push({ name: 'dashboard' }); }, 1000); }
+      else if (!this.noRedirect) { setTimeout(() => { this.$router.push({ name: 'dashboard' }); }, 1000); }
     },
     onReset() {
       this.email = null;

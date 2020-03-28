@@ -26,7 +26,7 @@ export default {
     membership: 'Membership',
     profile: 'Profile',
     checkAccess: 'Check Access',
-    manageMemberbucks: 'Spacebucks',
+    memberbucks: 'Spacebucks',
   },
   error: {
     loginFailed: 'Your username or password was incorrect.',
@@ -77,6 +77,11 @@ export default {
     resetNotConfirm: 'There was a problem resetting your password.',
     backToLogin: 'Back to login page',
   },
+  changePasswordCard: {
+    pageTitle: 'Change Password',
+    success: 'Your new password was saved successfully.',
+    fail: 'There was an error saving your new password.',
+  },
   validation: {
     invalidEmail: 'Please enter a valid email.',
     invalidPassword: 'Please enter a valid password.',
@@ -126,6 +131,13 @@ export default {
     phone: 'Phone',
     screenName: 'Screen Name',
     groups: 'Groups',
+  },
+  digitalId: {
+    title: 'Digital ID',
+    fullName: 'Full Name',
+    memberState: 'Member Status',
+    memberId: 'Member ID',
+    memberSince: 'Member Since',
   },
   entityType: 'Association',
   groups: 'Groups',

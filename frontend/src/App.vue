@@ -1,6 +1,13 @@
 <template>
   <div id="q-app">
     <router-view />
+
+    <q-dialog v-model="loginModal">
+      <login-card
+        no-redirect
+        @loginComplete="loginModal = false"
+      />
+    </q-dialog>
   </div>
 </template>
 
@@ -9,25 +16,31 @@ import axios from 'axios';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import { colors } from 'quasar';
 import store from './store/index';
+import LoginCard from './components/LoginCard';
 
 colors.setBrand('dark', '#313131');
 
-
 export default {
   name: 'App',
+  components: { LoginCard },
   store,
+  data() {
+    return {
+      loginModal: false,
+    };
+  },
   watch: {
     $route() {
       this.updatePageTitle();
     },
     loggedIn(value) {
-      if (!value) this.$router.push({ name: 'login' });
+      // if (!value) this.$router.push({ name: 'login' });
       if (value) this.getProfile();
     },
   },
   methods: {
     ...mapMutations('config', ['setSiteName', 'setHomepageCards', 'setWebcamLinks']),
-    ...mapMutations('profile', ['setLoggedIn']),
+    ...mapMutations('profile', ['setLoggedIn', 'resetState']),
     ...mapActions('config', ['getSiteConfig']),
     ...mapActions('profile', ['getProfile']),
     updatePageTitle() {
@@ -44,6 +57,17 @@ export default {
           throw error;
         });
     },
+  },
+  beforeCreate() {
+    axios.interceptors.response.use((response) => response, (error) => {
+    // Do something with response error
+      if (error.response.status === 401) {
+        this.setLoggedIn(false);
+        this.resetState();
+        this.loginModal = true;
+      }
+      return Promise.reject(error);
+    });
   },
   mounted() {
     // This tells axios where to find the CSRF token

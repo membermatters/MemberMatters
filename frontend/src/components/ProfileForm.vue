@@ -33,8 +33,8 @@
         <template v-slot:append>
           <saved-notification
             show-text
-            :error="saved.error"
             v-model="saved.firstName"
+            :error="saved.error"
           />
         </template>
       </q-input>
@@ -48,7 +48,11 @@
         :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
       >
         <template v-slot:append>
-          <saved-notification v-model="saved.lastName" />
+          <saved-notification
+            show-text
+            v-model="saved.lastName"
+            :error="saved.error"
+          />
         </template>
       </q-input>
 
@@ -61,7 +65,11 @@
         :rules="[ val => validateNotEmpty(val) || $t('validation.invalidPhone')]"
       >
         <template v-slot:append>
-          <saved-notification v-model="saved.phone" />
+          <saved-notification
+            show-text
+            v-model="saved.phone"
+            :error="saved.error"
+          />
         </template>
       </q-input>
 
@@ -74,7 +82,11 @@
         :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
       >
         <template v-slot:append>
-          <saved-notification v-model="saved.screenName" />
+          <saved-notification
+            show-text
+            v-model="saved.screenName"
+            :error="saved.error"
+          />
         </template>
       </q-input>
     </q-form>
@@ -82,7 +94,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import axios from 'axios';
 import icons from '../icons';
 import formMixin from '../mixins/formMixin';
@@ -118,6 +130,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions('profile', ['getProfile']),
     loadInitialForm() {
       this.form.email = this.profile.email;
       this.form.firstName = this.profile.firstName;
@@ -129,14 +142,12 @@ export default {
       this.$refs.formRef.validate(false).then(() => {
         this.$refs.formRef.validate(false)
           .then((result) => {
-            console.log(result);
-
             if (result) {
               axios.put('/api/profile/', this.form)
-                .then((response) => {
-                  console.log(response);
+                .then(() => {
                   this.saved.error = false;
                   this.saved[field] = true;
+                  this.getProfile();
                 })
                 .catch(() => {
                   this.saved.error = true;
@@ -157,9 +168,6 @@ export default {
   },
   computed: {
     ...mapGetters('profile', ['profile']),
-    debounceLength() {
-      return 1000;
-    },
     icons() {
       return icons;
     },

@@ -7,31 +7,46 @@
         push
         color="toolbar"
         label="Digital ID"
+        @click="digitalId = true"
       />
       <q-btn
         push
         color="primary"
         label="Change Password"
+        @click="changePassword = true"
       />
       <q-btn
         push
         color="accent"
         label="Memberbucks"
+        @click="$router.push({ name: 'memberbucks' })"
       />
     </q-btn-group>
+
+    <q-dialog v-model="digitalId">
+      <digital-id-card />
+    </q-dialog>
+
+    <q-dialog v-model="changePassword">
+      <change-password-card />
+    </q-dialog>
   </q-page>
 </template>
 
 <script>
 import ProfileForm from '../components/ProfileForm';
 import icons from '../icons';
+import DigitalIdCard from '../components/DigitalIdCard';
+import ChangePasswordCard from '../components/ChangePasswordCard';
 
 export default {
   name: 'ProfilePage',
-  components: { ProfileForm },
+  components: { ChangePasswordCard, DigitalIdCard, ProfileForm },
   data() {
     return {
       text: '',
+      digitalId: false,
+      changePassword: false,
     };
   },
   computed: {

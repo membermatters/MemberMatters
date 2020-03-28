@@ -121,7 +121,7 @@ const PageAndRouteConfig = [
       {
         icon: icons.memberbucks,
         to: '/account/memberbucks',
-        name: 'manageMemberbucks',
+        name: 'memberbucks',
         loggedIn: true,
       },
     ],

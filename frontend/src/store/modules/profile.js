@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Moment from 'moment';
 
 const getDefaultState = () => ({
   loggedIn: false,
@@ -52,6 +53,7 @@ export default {
       return new Promise((resolve, reject) => {
         axios.get('/api/profile/')
           .then((response) => {
+            response.data.firstJoined = Moment(Date(response.data.firstJoined)).format('Do MMMM YYYY');
             commit('setProfile', response.data);
             resolve();
           })

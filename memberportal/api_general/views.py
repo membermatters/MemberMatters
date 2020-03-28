@@ -1,4 +1,4 @@
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.contrib.auth import (
     authenticate,
     login,
@@ -138,9 +138,11 @@ def api_profile(request):
 
     if request.method == "GET":
         p = request.user.profile
+        user = request.user
 
         response = {
-            "email": request.user.email,
+            "id": user.id,
+            "email": user.email,
             "fullName": p.get_full_name(),
             "firstName": p.first_name,
             "lastName": p.last_name,
@@ -199,3 +201,27 @@ def api_profile(request):
 
     else:
         return HttpResponseBadRequest()
+
+
+@login_required_401
+def api_password(request):
+    """
+    Change the user's password.
+    :param request:
+    :return:
+    """
+    if request.method == "PUT":
+        user = request.user
+        body = json.loads(request.body)
+        current = body.get("current")
+        new = body.get("new")
+
+        if user.check_password(current):
+            user.set_password(new)
+            user.save()
+
+            return JsonResponse({"success": True})
+
+        return HttpResponseForbidden()
+
+    return HttpResponseBadRequest

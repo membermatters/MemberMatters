@@ -41,6 +41,8 @@ export default {
 
   comment: pro ? 'fad fa-comment-alt-lines' : 'fal fa-comment-alt-lines',
 
+  close: pro ? 'fad fa-times' : 'fal fa-times',
+
   success: pro ? 'fad fa-check' : 'fal fa-check',
   fail: pro ? 'fad fa-times' : 'fal fa-times',
 };

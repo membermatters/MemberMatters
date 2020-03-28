@@ -7,5 +7,16 @@ export default {
     validateNotEmpty(value) {
       return value !== null && value !== '';
     },
+    validatePassword(value) {
+      return value.length > 7;
+    },
+    validateMatchingField(current, newField) {
+      return current === newField;
+    },
+  },
+  computed: {
+    debounceLength() {
+      return 1000;
+    },
   },
 };

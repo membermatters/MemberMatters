@@ -11,6 +11,7 @@ export default {
   },
   getters: {
     siteName: (state) => state.siteName,
+    siteOwner: (state) => state.siteOwner,
     homepageCards: (state) => state.homepageCards,
     webcamLinks: (state) => state.webcamLinks,
   },
