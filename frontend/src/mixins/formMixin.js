@@ -5,7 +5,7 @@ export default {
       return re.test(String(email).toLowerCase());
     },
     validateNotEmpty(value) {
-      return value !== null && value !== '';
+      return value !== null && value !== '' && value.length;
     },
     validatePassword(value) {
       return value.length > 7;

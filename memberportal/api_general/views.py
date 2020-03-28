@@ -13,6 +13,7 @@ import json
 import time
 import datetime
 from pytz import UTC as utc
+from group.models import Group
 
 
 @require_GET
@@ -22,6 +23,9 @@ def api_get_config(request):
     :param request:
     :return:
     """
+    groups = Group.objects.filter(hidden=False)
+    groups = list(groups.values())
+
     response = {
         "loggedIn": request.user.is_authenticated,
         "general": {
@@ -32,6 +36,7 @@ def api_get_config(request):
         "images": {"siteLogo": config.SITE_LOGO, "siteFavicon": config.SITE_FAVICON,},
         "homepageCards": json.loads(config.HOME_PAGE_CARDS),
         "webcamLinks": json.loads(config.WEBCAM_PAGE_URLS),
+        "groups": groups,
     }
     return JsonResponse(response)
 
@@ -193,6 +198,10 @@ def api_profile(request):
         p.last_name = body.get("lastName")
         p.phone = body.get("phone")
         p.screen_name = body.get("screenName")
+        p.groups.set([])
+
+        for group in body.get("groups"):
+            p.groups.add(Group.objects.get(id=group["id"]))
 
         request.user.save()
         p.save()
