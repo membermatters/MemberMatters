@@ -53,7 +53,7 @@ export default {
       return new Promise((resolve, reject) => {
         axios.get('/api/profile/')
           .then((response) => {
-            response.data.firstJoined = Moment(Date(response.data.firstJoined)).format('Do MMMM YYYY');
+            response.data.firstJoined = Moment(response.data.firstJoined).format('Do MMMM YYYY');
             commit('setProfile', response.data);
             resolve();
           })

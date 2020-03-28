@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column flex content-center justify-start items-center">
+  <q-page class="column flex justify-start items-center">
     <profile-form />
 
     <q-btn-group push>
