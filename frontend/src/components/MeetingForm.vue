@@ -181,6 +181,8 @@ import Moment from 'moment';
 import icons from '../icons';
 import formMixin from '../mixins/formMixin';
 
+const m = Moment();
+
 export default {
   name: 'MeetingForm',
   mixins: [formMixin],
@@ -199,7 +201,7 @@ export default {
 
         type: '',
         group: '',
-        date: Moment().format('YYYY-MM-DD HH:mm'),
+        date: m.minute() || m.second() || m.millisecond() ? m.add(1, 'hour').startOf('hour').format('YYYY-MM-DD HH:mm') : m.startOf('hour').format('YYYY-MM-DD HH:mm'),
         chair: '',
       },
     };
