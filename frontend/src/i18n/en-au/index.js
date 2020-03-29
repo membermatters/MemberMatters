@@ -136,6 +136,7 @@ export default {
     dateTime: 'Date & Time',
     chair: 'Chair',
     meetingType: 'Meeting Type',
+    meetingDate: 'Meeting Date',
   },
   digitalId: {
     title: 'Digital ID',
@@ -157,6 +158,16 @@ export default {
     meeting: 'Meeting',
     success: 'Successfully created meeting.',
     fail: 'Failed to create meeting, try again later.',
+  },
+  proxyForm: {
+    proxyBody: 'I, {memberName}, of {memberCity}, being a member of the association, appoint {proxyName} of {proxyCity} as my proxy to vote for me on my behalf at the {meetingName} meeting, to be held on the day of {meetingDate} and at any adjournment of the meeting.',
+    proxySignature: 'Signed by {memberName} on this day of {currentDate}. ',
+    proxyTo: 'To {siteOwner}:',
+
+    meeting: 'Meeting',
+    yourCity: 'Your city',
+    proxyName: 'Proxy\'s name',
+    proxyCity: 'Proxy\'s city',
   },
   entityType: 'Association',
   groups: 'Groups',

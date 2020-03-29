@@ -298,8 +298,12 @@ class Profile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile"
     )
-    digital_id_token = models.UUIDField("Digital ID Token", default=uuid.uuid4)
-    digital_id_token_expire = models.DateTimeField(editable=False, default=datetime.now)
+    digital_id_token = models.UUIDField(
+        "Digital ID Token", default=uuid.uuid4, null=True, blank=True
+    )
+    digital_id_token_expire = models.DateTimeField(
+        editable=False, default=datetime.now, null=True, blank=True
+    )
     created = models.DateTimeField(editable=False)
     modified = models.DateTimeField()
     screen_name = models.CharField("Screen Name", max_length=30)

@@ -1,7 +1,8 @@
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 from django.views.decorators.http import require_GET, require_POST
 from membermatters.decorators import login_required_401, staff_required
 from .models import Meeting, ProxyVote
+from profile.models import Profile
 import json
 from django.utils.timezone import make_aware
 from datetime import datetime
@@ -60,15 +61,45 @@ def api_meeting(request):
     return HttpResponseBadRequest()
 
 
-@require_POST
 @login_required_401
 def api_proxy(request):
     """
-    This method parses the proxy creation form
+    Handles the proxy related tasks.
     :param request:
     :return:
     """
-    pass
+    if request.method == "POST":
+        body = json.loads(request.body)
+        member_city = body.get("memberCity")
+        proxy_id = body.get("proxy")
+        proxy_city = body.get("proxyCity")
+        meeting = body.get("meeting")
+
+        existing_proxies = ProxyVote.objects.filter(
+            user=request.user, meeting_id=meeting
+        )
+        print(existing_proxies)
+
+        # if the user already has a proxy for this meeting we'll override it
+        if existing_proxies:
+            for proxy in existing_proxies:
+                proxy.delete()
+
+        if member_city and proxy_id and proxy_city and meeting:
+            ProxyVote.objects.create(
+                user=request.user,
+                user_city=member_city,
+                proxy_user=Profile.objects.get(id=proxy_id).user,
+                proxy_city=proxy_city,
+                meeting_id=meeting,
+            )
+
+        else:
+            return HttpResponseBadRequest()
+
+        return JsonResponse({"success": True})
+
+    return HttpResponseNotAllowed(["POST"])
 
 
 @require_GET

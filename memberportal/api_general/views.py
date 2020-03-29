@@ -39,7 +39,7 @@ def api_get_config(request):
             "siteOwner": config.SITE_OWNER,
             "entityType": config.ENTITY_TYPE,
         },
-        "images": {"siteLogo": config.SITE_LOGO, "siteFavicon": config.SITE_FAVICON,},
+        "images": {"siteLogo": config.SITE_LOGO, "siteFavicon": config.SITE_FAVICON},
         "homepageCards": json.loads(config.HOME_PAGE_CARDS),
         "webcamLinks": json.loads(config.WEBCAM_PAGE_URLS),
         "groups": groups,

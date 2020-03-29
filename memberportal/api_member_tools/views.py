@@ -2,13 +2,17 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_GET, require_POST
 from membermatters.decorators import login_required_401
 from access.models import DoorLog, InterlockLog
-from profile.models import User
+from profile.models import User, Profile
 from group.models import Group
+from api_meeting.models import Meeting, ProxyVote
 from constance import config
 from membermatters.helpers import log_user_event
 from profile.emailhelpers import send_single_email
+from random import shuffle
 import requests
 import json
+import datetime
+from django.utils import timezone
 
 
 @require_GET
@@ -26,7 +30,13 @@ def api_get_swipes(request):
     interlocks = []
 
     for door in recent_doors:
-        doors.append({"name": door.door.name, "date": door.date, "user": door.user.profile.get_full_name()})
+        doors.append(
+            {
+                "name": door.door.name,
+                "date": door.date,
+                "user": door.user.profile.get_full_name(),
+            }
+        )
 
     for interlock in recent_interlocks:
         user_off = None
@@ -34,14 +44,16 @@ def api_get_swipes(request):
         if interlock.user_off:
             user_off = interlock.user_off.profile.get_full_name()
 
-        interlocks.append({
-            "name": interlock.interlock.name,
-            "sessionStart": interlock.first_heartbeat,
-            "sessionEnd": interlock.last_heartbeat,
-            "sessionComplete": interlock.session_complete,
-            "userOn": interlock.user.profile.get_full_name(),
-            "userOff": user_off,
-        })
+        interlocks.append(
+            {
+                "name": interlock.interlock.name,
+                "sessionStart": interlock.first_heartbeat,
+                "sessionEnd": interlock.last_heartbeat,
+                "sessionComplete": interlock.session_complete,
+                "userOn": interlock.user.profile.get_full_name(),
+                "userOff": user_off,
+            }
+        )
 
     return JsonResponse({"doors": doors, "interlocks": interlocks}, safe=False)
 
@@ -55,7 +67,7 @@ def api_get_lastseen(request):
     :return:
     """
     last_seen = list()
-    members = User.objects.all().order_by('-profile__last_seen')
+    members = User.objects.all().order_by("-profile__last_seen")
 
     for member in members:
         if not member.profile.state == "active":
@@ -63,9 +75,10 @@ def api_get_lastseen(request):
 
         if member.profile.last_seen is not None:
             append_object = {
-                    "user": member.profile.get_full_name(), "never": False,
-                    "date": member.profile.last_seen
-                }
+                "user": member.profile.get_full_name(),
+                "never": False,
+                "date": member.profile.last_seen,
+            }
             last_seen.append(append_object)
 
         else:
@@ -92,15 +105,24 @@ def api_submit_issue(request):
     if use_trello:
         url = "https://api.trello.com/1/cards"
 
-        querystring = {"name": title, "desc": description, "pos": "top",
-                       "idList": trello_id_list,
-                       "keepFromSource": "all", "key": trello_key, "token": trello_token}
+        querystring = {
+            "name": title,
+            "desc": description,
+            "pos": "top",
+            "idList": trello_id_list,
+            "keepFromSource": "all",
+            "key": trello_key,
+            "token": trello_token,
+        }
 
         response = requests.request("POST", url, params=querystring)
 
         if response.status_code == 200:
-            log_user_event(request.user, "Submitted issue: " + title + " Content: " + description,
-                           "generic")
+            log_user_event(
+                request.user,
+                "Submitted issue: " + title + " Content: " + description,
+                "generic",
+            )
 
             return JsonResponse({"success": True, "url": response.json()["shortUrl"]})
 
@@ -112,7 +134,9 @@ def api_submit_issue(request):
         subject = f"{request.user.profile.get_full_name()} submitted an issue ({title})"
 
         try:
-            if send_single_email(request.user, config.EMAIL_ADMIN, subject, subject, description):
+            if send_single_email(
+                request.user, config.EMAIL_ADMIN, subject, subject, description
+            ):
                 return JsonResponse({"success": True})
 
             else:
@@ -130,6 +154,7 @@ def api_get_member_groups(request):
     :param request:
     :return:
     """
+
     def get_groups(groups):
         temp_groups = []
 
@@ -148,20 +173,83 @@ def api_get_member_groups(request):
     parsed_members = []
 
     for member in members:
-        parsed_members.append({
-            "member": f"{member.profile.get_full_name()} ({member.profile.screen_name})",
-            "groups": get_groups(member.profile.groups.all())
-        })
+        parsed_members.append(
+            {
+                "member": f"{member.profile.get_full_name()} ({member.profile.screen_name})",
+                "groups": get_groups(member.profile.groups.all()),
+            }
+        )
 
     for group in groups:
-        parsed_groups.append({
-            "name": group.name,
-            "activeMembers": group.get_active_count(),
-            "quorum": group.get_quorum(),
-        })
+        parsed_groups.append(
+            {
+                "name": group.name,
+                "activeMembers": group.get_active_count(),
+                "quorum": group.get_quorum(),
+            }
+        )
 
-    response = {
-        "groups": parsed_groups,
-        "members": parsed_members
-    }
+    response = {"groups": parsed_groups, "members": parsed_members}
     return JsonResponse(response, safe=False)
+
+
+@require_GET
+@login_required_401
+def api_meetings(request):
+    """
+    Returns a list of upcoming meetings that a member is entitled to vote at.
+    :param request:
+    :return:
+    """
+
+    meetings = Meeting.objects.filter(date__gt=datetime.datetime.now())
+
+    def get_meeting(meeting):
+        date = timezone.localtime(meeting.date).strftime("%x %X")
+
+        if meeting.type == "group":
+            return {
+                "id": meeting.id,
+                "name": meeting.group.name,
+                "date": date,
+            }
+        return {
+            "id": meeting.id,
+            "name": meeting.get_type_display(),
+            "date": date,
+        }
+
+    def check_meeting(meeting):
+        if meeting.type != "group":
+            return True
+
+        elif meeting.group in request.user.profile.groups.all():
+            return True
+
+        return False
+
+    response = list(map(get_meeting, filter(check_meeting, meetings)))
+
+    return JsonResponse(response, safe=False)
+
+
+@require_GET
+@login_required_401
+def api_members(request):
+    """
+    Gets a list of all members.
+    :param request:
+    :return:
+    """
+
+    def get_member(member):
+        return {
+            "id": member.id,
+            "name": member.get_full_name(),
+            "screenName": member.screen_name,
+        }
+
+    members = list(map(get_member, Profile.objects.filter(state="active")))
+    shuffle(members)
+
+    return JsonResponse(members, safe=False)

@@ -7,12 +7,16 @@ export default {
     recentSwipes: [],
     memberList: [],
     groupList: [],
+    upcomingMeetings: [],
+    members: [],
   },
   getters: {
     lastSeen: (state) => state.lastSeen,
     recentSwipes: (state) => state.recentSwipes,
     memberList: (state) => state.memberList,
     groupList: (state) => state.groupList,
+    upcomingMeetings: (state) => state.upcomingMeetings,
+    members: (state) => state.members,
   },
   mutations: {
     setLastSeen(state, payload) {
@@ -26,6 +30,12 @@ export default {
     },
     setGroupList(state, payload) {
       state.groupList = payload;
+    },
+    setUpcomingMeetings(state, payload) {
+      state.upcomingMeetings = payload;
+    },
+    setMembers(state, payload) {
+      state.members = payload;
     },
   },
   actions: {
@@ -61,6 +71,32 @@ export default {
           .then((result) => {
             commit('setGroupList', result.data.groups);
             commit('setMemberList', result.data.members);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getUpcomingMeetings({ commit }) {
+      return new Promise((resolve, reject) => {
+        axios.get('/api/tools/meetings/')
+          .then((result) => {
+            commit('setUpcomingMeetings', result.data);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getMembers({ commit }) {
+      return new Promise((resolve, reject) => {
+        axios.get('/api/tools/members/')
+          .then((result) => {
+            commit('setMembers', result.data);
             resolve();
           })
           .catch((error) => {

@@ -82,6 +82,7 @@ const PageAndRouteConfig = [
         to: '/tools/proxy',
         name: 'submitProxy',
         loggedIn: true,
+        component: () => import('pages/Proxy.vue'),
       },
       {
         icon: icons.groupMembers,

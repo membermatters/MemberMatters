@@ -34,8 +34,10 @@ class ProxyVote(models.Model):
     """
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user_city = models.CharField(max_length=30, null=True, blank=True)
     proxy_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="held_proxies"
     )
+    proxy_city = models.CharField(max_length=30, null=True, blank=True)
     created_date = models.DateTimeField("Date proxy was created", auto_now_add=True)
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
