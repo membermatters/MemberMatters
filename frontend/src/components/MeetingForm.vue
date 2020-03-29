@@ -181,7 +181,7 @@ import Moment from 'moment';
 import icons from '../icons';
 import formMixin from '../mixins/formMixin';
 
-const m = Moment();
+let m = Moment();
 
 export default {
   name: 'MeetingForm',
@@ -225,6 +225,7 @@ export default {
   },
   beforeMount() {
     this.getMeetingTypes();
+    m = Moment();
   },
   computed: {
     ...mapGetters('adminTools', ['meetings', 'meetingTypes']),

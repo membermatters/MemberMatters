@@ -3,6 +3,8 @@ from django.views.decorators.http import require_GET, require_POST
 from membermatters.decorators import login_required_401, staff_required
 from .models import Meeting, ProxyVote
 import json
+from django.utils.timezone import make_aware
+from datetime import datetime
 
 
 @staff_required
@@ -45,9 +47,9 @@ def api_meeting(request):
         body = json.loads(request.body)
 
         meeting = Meeting.objects.create(
-            date=body.get("date"),
+            date=make_aware(datetime.strptime(body.get("date"), "%Y-%m-%d %H:%M")),
             type=body.get("type")["value"],
-            group_id=body.get("group")["id"],
+            group_id=body.get("group")["id"] if len(body.get("group")) else "",
             chair=body.get("chair"),
         )
 
