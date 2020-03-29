@@ -1,4 +1,9 @@
-from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
+from django.http import (
+    JsonResponse,
+    HttpResponseBadRequest,
+    HttpResponseForbidden,
+    HttpResponseNotAllowed,
+)
 from django.contrib.auth import (
     authenticate,
     login,
@@ -7,6 +12,7 @@ from django.contrib.auth import (
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.http import require_GET, require_POST
 from membermatters.decorators import login_required_401
+from django.views.decorators.csrf import csrf_exempt
 from constance import config
 from profile.models import User, Profile
 import json
@@ -234,3 +240,27 @@ def api_password(request):
         return HttpResponseForbidden()
 
     return HttpResponseBadRequest
+
+
+@csrf_exempt
+def api_digital_id(request):
+    """
+    Get the user's digital ID token.
+    :param request:
+    :return:
+    """
+    if request.method == "GET":
+        p = request.user.profile
+
+        return JsonResponse({"success": True, "token": p.generate_digital_id_token()})
+
+    elif request.method == "POST":
+        token = json.loads(request.body).get("token")
+
+        valid = Profile.objects.get(digital_id_token=token).validate_digital_id_token(
+            token
+        )
+
+        return JsonResponse({"success": True, "valid": valid})
+
+    return HttpResponseNotAllowed(["GET", "POST"])

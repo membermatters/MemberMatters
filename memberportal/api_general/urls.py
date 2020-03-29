@@ -8,4 +8,5 @@ urlpatterns = [
     path("api/logout/", views.api_logout, name="api_logout"),
     path("api/profile/", views.api_profile, name="api_profile"),
     path("api/profile/password/", views.api_password, name="api_password"),
+    path("api/profile/idtoken/", views.api_digital_id, name="api_digital_id"),
 ]

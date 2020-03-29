@@ -19,13 +19,10 @@
         <h5 class="q-mb-md q-mt-none">
           {{ siteOwner }} {{ $t('digitalId.title') }}
         </h5>
-        <q-avatar
-          color="primary"
-          text-color="white"
-          class="q-my-lg text-h1"
-        >
-          <q-icon :name="icons.profile" />
-        </q-avatar>
+        <q-img
+          class="qrcode"
+          :src="qrcode"
+        />
       </div>
 
       <div
@@ -77,10 +74,28 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import axios from 'axios';
+import QRCode from 'qrcode';
 import icons from '../icons';
 
 export default {
   name: 'DigitalIdCard',
+  data() {
+    return {
+      qrcode: '',
+    };
+  },
+  mounted() {
+    this.getIdToken();
+  },
+  methods: {
+    getIdToken() {
+      axios.get('api/profile/idtoken/')
+        .then((result) => {
+          QRCode.toDataURL(result.data.token, async (err, url) => { this.qrcode = url; });
+        });
+    },
+  },
   computed: {
     ...mapGetters('config', ['siteOwner']),
     ...mapGetters('profile', ['profile']),
@@ -99,4 +114,7 @@ export default {
 
   .disclaimer
     text-transform: none
+
+  .qrcode
+    max-width: 200px
 </style>

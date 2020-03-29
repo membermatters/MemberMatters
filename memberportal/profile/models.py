@@ -1,11 +1,12 @@
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime
 import pytz
 import os
 import sendgrid
 from sendgrid.helpers.mail import *
+from django.utils.timezone import make_aware
 import uuid
 from django.template.loader import render_to_string
 from django.contrib.auth.models import (
@@ -297,6 +298,8 @@ class Profile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile"
     )
+    digital_id_token = models.UUIDField("Digital ID Token", default=uuid.uuid4)
+    digital_id_token_expire = models.DateTimeField(editable=False, default=datetime.now)
     created = models.DateTimeField(editable=False)
     modified = models.DateTimeField()
     screen_name = models.CharField("Screen Name", max_length=30)
@@ -375,6 +378,24 @@ class Profile(models.Model):
     )
 
     updated_starving_details = models.DateTimeField(null=True)
+
+    def generate_digital_id_token(self):
+        self.digital_id_token = uuid.uuid4()
+        self.digital_id_token_expire = make_aware(
+            datetime.now() + timedelta(minutes=10)
+        )
+        self.save()
+
+        return self.digital_id_token
+
+    def validate_digital_id_token(self, token):
+        if make_aware(
+            datetime.now()
+        ) < self.digital_id_token_expire and self.digital_id_token == uuid.UUID(token):
+            return True
+
+        else:
+            return False
 
     def deactivate(self, request):
         log_user_event(
