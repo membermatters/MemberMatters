@@ -89,6 +89,7 @@ export default {
     invalidPhone: 'Please enter a valid phone number.',
     passwordNotMatch: 'Sorry, but your passwords don\'t match.',
     cannotBeEmpty: 'This field cannot be empty.',
+    futureDate: 'Date must be today or in the future.',
   },
   access: {
     pageDescription: 'Your access permissions for doors and interlocks are shown below. Please '
@@ -131,7 +132,10 @@ export default {
     lastName: 'Last Name',
     phone: 'Phone',
     screenName: 'Screen Name',
-    groups: 'Groups',
+    date: 'Date',
+    dateTime: 'Date & Time',
+    chair: 'Chair',
+    meetingType: 'Meeting Type',
   },
   digitalId: {
     title: 'Digital ID',
@@ -146,6 +150,13 @@ export default {
     dateAssigned: 'Date Assigned',
     proxyVotes: 'Proxy Votes',
     attendees: 'Attendees',
+  },
+  meetingForm: {
+    pageDescription: 'Fill out the form below to create a new meeting.',
+    newMeeting: 'New Meeting',
+    meeting: 'Meeting',
+    success: 'Successfully created meeting.',
+    fail: 'Failed to create meeting, try again later.',
   },
   entityType: 'Association',
   groups: 'Groups',

@@ -15,11 +15,27 @@
                  sortable: true
                },
     ]"
-    row-key="date"
+    row-key="id"
     :filter="filter"
     :pagination.sync="pagination"
     :loading="loading"
   >
+    <template v-slot:top-left>
+      <q-btn
+        color="accent"
+        :icon="icons.add"
+        :label="$t('meetingForm.newMeeting')"
+        @click="newMeeting = true"
+      />
+
+      <q-dialog
+        v-model="newMeeting"
+        persistent
+      >
+        <meeting-form />
+      </q-dialog>
+    </template>
+
     <template v-slot:top-right>
       <q-input
         outlined
@@ -136,15 +152,18 @@
 import { mapActions, mapGetters } from 'vuex';
 import icons from '../icons';
 import formatMixin from '../mixins/formatMixin';
+import MeetingForm from './MeetingForm';
 
 export default {
   name: 'MeetingsList',
+  components: { MeetingForm },
   mixins: [formatMixin],
   data() {
     return {
       filter: '',
       loading: false,
       updateInterval: null,
+      newMeeting: false,
       pagination: {
         sortBy: 'desc',
         descending: false,

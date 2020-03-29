@@ -1,3 +1,5 @@
+import Moment from 'moment';
+
 export default {
   methods: {
     validateEmail(email) {
@@ -5,13 +7,22 @@ export default {
       return re.test(String(email).toLowerCase());
     },
     validateNotEmpty(value) {
-      return value !== null && value !== '' && value.length;
+      return value !== null && value !== '';
     },
     validatePassword(value) {
       return value.length > 7;
     },
     validateMatchingField(current, newField) {
       return current === newField;
+    },
+    validateFutureDate(date) {
+      return date >= Moment().format('YYYY/MM/DD');
+    },
+    validateFutureTime(time) {
+      return time >= Moment().format('HH:MM');
+    },
+    validateFutureDateTime(date) {
+      return date >= Moment().format('YYYY-MM-DD HH:MM');
     },
   },
   computed: {

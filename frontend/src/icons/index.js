@@ -39,6 +39,8 @@ export default {
 
   search: pro ? 'fad fa-search' : 'fal fa-search',
   warning: pro ? 'fad fa-exclamation-triangle' : 'fal fa-exclamation-triangle',
+  clock: pro ? 'fad fa-clock' : 'fal fa-clock',
+  calendar: pro ? 'fad fa-calendar' : 'fal fa-calendar',
 
   comment: pro ? 'fad fa-comment-alt-lines' : 'fal fa-comment-alt-lines',
 

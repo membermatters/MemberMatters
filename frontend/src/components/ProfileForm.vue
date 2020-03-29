@@ -93,7 +93,7 @@
       <q-select
         @input="saveChange('groups')"
         outlined
-        label="Select groups"
+        :label="$t('groups')"
         v-model="form.groups"
         use-input
         use-chips
