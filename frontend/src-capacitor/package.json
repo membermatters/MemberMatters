@@ -5,8 +5,9 @@
   "author": "Jaimyn Mayer <hello@jaimyn.com.au>",
   "private": true,
   "dependencies": {
+    "@capacitor/android": "^1.5.2",
     "@capacitor/cli": "^1.0.0",
     "@capacitor/core": "^1.0.0",
-    "@capacitor/ios": "^1.5.1"
+    "@capacitor/ios": "^2.0.0-beta.1"
   }
 }

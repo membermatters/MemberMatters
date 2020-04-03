@@ -11,8 +11,11 @@
     "dev": "quasar dev -m spa",
     "dev-ios": "quasar dev -m capacitor -T ios ",
     "dev-android": "quasar dev -m capacitor -T android ",
-    "build": "quasar build -m pwa",
-    "build-spa": "quasar build -m spa",
+    "build": "quasar build -m spa",
+    "build-pwa": "quasar build -m pwa",
+    "build-ios": "cd src-capacitor && npx cap sync && npx cap open ios",
+    "build-android": "cd src-capacitor && npx cap sync && npx cap open android",
+    "build-electron": "quasar build -m electron",
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {

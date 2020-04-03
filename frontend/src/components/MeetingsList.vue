@@ -165,8 +165,8 @@ export default {
       updateInterval: null,
       newMeeting: false,
       pagination: {
-        sortBy: 'desc',
-        descending: false,
+        sortBy: 'date',
+        descending: true,
         rowsPerPage: this.$q.screen.xs ? 8 : 12,
       },
     };
