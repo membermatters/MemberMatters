@@ -228,7 +228,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { mapMutations, mapGetters } from 'vuex';
 import { Loading } from 'quasar';
 import formMixin from '../mixins/formMixin';
@@ -291,7 +290,12 @@ export default {
     redirectLoggedIn() {
       this.$emit('loginComplete');
       if (this.$route.query.redirect) this.$router.push(this.$route.query.redirect);
-      else if (!this.noRedirect) { setTimeout(() => { this.$router.push({ name: 'dashboard' }); }, 1000); }
+      else if (!this.noRedirect) {
+        setTimeout(() => {
+          this.setLoggedIn(true);
+          this.$router.push({ name: 'dashboard' });
+        }, 1000);
+      }
     },
     onReset() {
       this.email = null;
@@ -306,16 +310,14 @@ export default {
     login() {
       this.loginFailed = false;
       this.buttonLoading = true;
-      axios.post('/api/login/', {
+      this.$axios.post('/api/login/', {
         email: this.email,
         password: this.password,
       })
         .then((response) => {
           if (response.data.success === true) {
-            this.setLoggedIn(true);
             this.loginFailed = false;
             this.loginError = false;
-            localStorage.setItem('menuState', 'true');
             this.redirectLoggedIn();
           } else {
             this.loginFailed = true;
@@ -337,7 +339,7 @@ export default {
       this.reset.success = false;
       this.reset.loading = true;
 
-      axios.post('/api/password/reset/', {
+      this.$axios.post('/api/password/reset/', {
         email: this.reset.email,
       })
         .then((response) => {
@@ -363,7 +365,7 @@ export default {
      */
     validatePasswordReset() {
       return new Promise((resolve, reject) => {
-        axios.post('/api/password/reset/', {
+        this.$axios.post('/api/password/reset/', {
           token: this.resetToken,
         })
           .then((response) => {
@@ -386,7 +388,7 @@ export default {
       this.reset.success = false;
       this.reset.loading = true;
 
-      axios.post('/api/password/reset/', {
+      this.$axios.post('/api/password/reset/', {
         password: this.reset.password,
         token: this.resetToken,
       })

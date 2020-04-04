@@ -126,6 +126,7 @@ export default {
     saved: 'Saved',
     error: 'Error Saving',
     pageDescription: 'Edit any of the fields below and they will be automatically saved.',
+    noResults: 'No Results',
 
     email: 'Email',
     firstName: 'First Name',
@@ -160,9 +161,15 @@ export default {
     fail: 'Failed to create meeting, try again later.',
   },
   proxyForm: {
+    pageDescription: 'If you are unable to attend a meeting, you can submit a proxy vote. This '
+      + 'allows you to give someone else your vote for a specific meeting so please think carefully'
+      + ' before using this form. You should check with the other person before submitting this '
+      + 'form.',
     proxyBody: 'I, {memberName}, of {memberCity}, being a member of the association, appoint {proxyName} of {proxyCity} as my proxy to vote for me on my behalf at the {meetingName} meeting, to be held on the day of {meetingDate} and at any adjournment of the meeting.',
     proxySignature: 'Signed by {memberName} on this day of {currentDate}. ',
     proxyTo: 'To {siteOwner}:',
+
+    noMeetings: 'There are no meetings scheduled.',
 
     meeting: 'Meeting',
     yourCity: 'Your city',

@@ -176,7 +176,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import axios from 'axios';
 import Moment from 'moment';
 import icons from '../icons';
 import formMixin from '../mixins/formMixin';
@@ -211,7 +210,7 @@ export default {
     submitMeeting() {
       this.loading = true;
 
-      axios.post('/api/meetings/', this.form)
+      this.$axios.post('/api/meetings/', this.form)
         .then(() => {
           this.form.error = false;
           this.form.success = true;

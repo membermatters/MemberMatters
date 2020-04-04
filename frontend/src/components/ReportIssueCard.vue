@@ -76,7 +76,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import formMixin from '../mixins/formMixin';
 import icons from '../icons';
 
@@ -104,7 +103,7 @@ export default {
       this.submitError = false;
       this.buttonLoading = true;
 
-      axios.post('/api/tools/issue/', {
+      this.$axios.post('/api/tools/issue/', {
         title: this.title,
         description: this.description,
       })

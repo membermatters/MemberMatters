@@ -1,5 +1,5 @@
 <template>
-  <q-card class="q-pa-md">
+  <q-card class="q-pa-md card">
     <i18n
       path="proxyForm.proxyTo"
       tag="p"
@@ -74,6 +74,9 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+  .card
+    max-width: 400px
+
   .proxy-field
     font-style: italic
     font-weight: bold

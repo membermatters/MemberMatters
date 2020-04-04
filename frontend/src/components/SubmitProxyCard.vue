@@ -101,7 +101,7 @@ export default {
       this.submitError = false;
       this.buttonLoading = true;
 
-      axios.post('/api/tools/issue/', {
+      this.$axios.post('/api/tools/issue/', {
         title: this.title,
         description: this.description,
       })

@@ -74,7 +74,6 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import axios from 'axios';
 import QRCode from 'qrcode';
 import icons from '../icons';
 
@@ -90,7 +89,7 @@ export default {
   },
   methods: {
     getIdToken() {
-      axios.get('api/profile/idtoken/')
+      this.$axios.get('api/profile/idtoken/')
         .then((result) => {
           QRCode.toDataURL(result.data.token, async (err, url) => { this.qrcode = url; });
         });

@@ -83,7 +83,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import formMixin from '../mixins/formMixin';
 
 export default {
@@ -110,7 +109,7 @@ export default {
       this.fail = false;
       this.buttonLoading = true;
 
-      axios.put('/api/profile/password/', {
+      this.$axios.put('/api/profile/password/', {
         current: this.currentPassword,
         new: this.newPassword,
       })

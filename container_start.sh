@@ -5,7 +5,7 @@ service nginx start
 # Navigate to the app and start gunicorn
 cd memberportal
 
-# We should migrate on every startup in case there's been any db changes
+# We should migrate on startup in case there's been any db changes
 python manage.py migrate
 
 if [ ! -f /usr/src/data/setupcomplete ]; then

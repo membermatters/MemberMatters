@@ -60,7 +60,7 @@
       </router-link>
 
       <q-scroll-area
-        :style="$q.platform.is.capacitor ? 'margin-top: 120px; height: calc(100% - 20px);' :
+        :style="$q.platform.is.capacitor ? 'margin-top: 110px; height: calc(100% - 190px);' :
           'margin-top: 150px; height: calc(100% - 220px);'"
         style="border-right: 1px solid #ddd"
       >

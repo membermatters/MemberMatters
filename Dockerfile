@@ -1,5 +1,5 @@
 # Specify our base image
-FROM nikolaik/python-nodejs:python3.7-nodejs12
+FROM nikolaik/python-nodejs:python3.8-nodejs12
 MAINTAINER Jaimyn Mayer (infrastructure@hsbne.org)
 
 # Install nginx
@@ -18,12 +18,20 @@ ADD ./nginx.conf /etc/nginx/nginx.conf
 
 # Add the rest of our code and build it
 ADD . /usr/src/app
+
+WORKDIR /usr/src/app/memberportal/
+RUN python manage.py collectstatic --noinput
+
 WORKDIR /usr/src/app/frontend
 RUN npm install
 RUN npm run build
 
+# We don't want people to access our .npmrc config after we publish this image!
+RUN rm -f .npmrc
+
 VOLUME /usr/src/data
 VOLUME /usr/src/logs
+WORKDIR /usr/src/app
 
 # Expose the port and run the app
 EXPOSE 8000

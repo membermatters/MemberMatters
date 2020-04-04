@@ -12,7 +12,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import { colors } from 'quasar';
 import store from './store/index';
@@ -59,7 +58,7 @@ export default {
     },
   },
   beforeCreate() {
-    axios.interceptors.response.use((response) => response, (error) => {
+    this.$axios.interceptors.response.use((response) => response, (error) => {
     // Do something with response error
       if (error.response.status === 401) {
         this.setLoggedIn(false);
@@ -70,10 +69,6 @@ export default {
     });
   },
   mounted() {
-    // This tells axios where to find the CSRF token
-    axios.defaults.xsrfCookieName = 'csrftoken';
-    axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
-
     // Get initial portal configuration data
     this.getPortalConfig();
 

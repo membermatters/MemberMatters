@@ -117,7 +117,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import axios from 'axios';
 import icons from '../icons';
 import formMixin from '../mixins/formMixin';
 import SavedNotification from './SavedNotification';
@@ -166,7 +165,7 @@ export default {
         this.$refs.formRef.validate(false)
           .then((result) => {
             if (result) {
-              axios.put('/api/profile/', this.form)
+              this.$axios.put('/api/profile/', this.form)
                 .then(() => {
                   this.saved.error = false;
                   this.saved[field] = true;

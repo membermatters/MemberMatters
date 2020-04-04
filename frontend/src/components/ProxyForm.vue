@@ -1,92 +1,109 @@
 <template>
-  <div class="column flex items-start justify-start">
-    <div>
-      <q-form
-        ref="formRef"
-        @submit="submitProxy"
-      >
-        <q-input
-          outlined
-          :label="$t('proxyForm.yourCity')"
-          v-model="memberCity"
-          :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
-          class="q-mb-md"
-        />
+  <div class="column flex items-center justify-center">
+    <p class="page-description">
+      {{ $t('proxyForm.pageDescription') }}
+    </p>
+    <div
+      class="row flex items-start justify-center"
+    >
+      <proxy-card
+        class="q-ma-md"
+        :proxy-card-info="proxyCardInfo"
+      />
 
-        <q-select
-          outlined
-          v-model="proxy.member"
-          use-input
-          fill-input
-          hide-selected
-          input-debounce="0"
-          :label="$t('proxyForm.proxyName')"
-          :options="memberNames"
-          @filter="filterNames"
-          option-value="id"
-          option-label="name"
-          style="width: 250px"
+      <div class="q-ma-md">
+        <q-form
+          ref="formRef"
+          @submit="submitProxy"
         >
-          <template v-slot:no-option>
-            <q-item>
-              <q-item-section class="text-grey">
-                No results
-              </q-item-section>
-            </q-item>
-          </template>
-        </q-select>
+          <q-input
+            outlined
+            :label="$t('proxyForm.yourCity')"
+            v-model="memberCity"
+            :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+            class="q-mb-sm"
+          />
 
-        <q-input
-          outlined
-          :label="$t('proxyForm.proxyCity')"
-          v-model="proxy.city"
-          :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
-          class="q-mb-md"
-        />
+          <q-select
+            outlined
+            v-model="proxy.member"
+            use-input
+            fill-input
+            hide-selected
+            input-debounce="0"
+            :label="$t('proxyForm.proxyName')"
+            :options="memberNames"
+            @filter="filterNames"
+            option-value="id"
+            option-label="name"
+            class="q-mb-lg"
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  {{ $t('form.noResults') }}
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
 
-        <q-select
-          outlined
-          v-model="meeting"
-          :label="$t('proxyForm.meeting')"
-          :options="displayUpcomingMeetings"
-          option-label="selectName"
-          option-value="id"
-          style="width: 250px"
-        />
+          <q-input
+            outlined
+            :label="$t('proxyForm.proxyCity')"
+            v-model="proxy.city"
+            :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+            class="q-mb-sm"
+          />
 
-        <q-banner
-          v-if="form.success"
-          class="bg-positive text-white q-my-md"
-        >
-          {{ $t('meetingForm.success') }}
-        </q-banner>
+          <q-select
+            outlined
+            v-model="meeting"
+            :label="$t('proxyForm.meeting')"
+            :options="displayUpcomingMeetings"
+            :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+            option-label="selectName"
+            option-value="id"
+            style="width: 250px"
+            class="q-mb-md"
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  {{ $t('proxyForm.noMeetings') }}
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
 
-        <q-banner
-          v-if="form.error"
-          class="bg-negative text-white q-my-md"
-        >
-          {{ $t('meetingForm.fail') }}
-        </q-banner>
+          <q-banner
+            v-if="form.success"
+            class="bg-positive text-white q-my-md"
+          >
+            {{ $t('meetingForm.success') }}
+          </q-banner>
 
-        <q-btn
-          :label="$t('button.submit')"
-          :loading="loading"
-          :disable="loading"
-          color="primary-btn"
-          type="submit"
-        />
-      </q-form>
+          <q-banner
+            v-if="form.error"
+            class="bg-negative text-white q-my-md"
+          >
+            {{ $t('meetingForm.fail') }}
+          </q-banner>
+
+          <q-btn
+            :label="$t('button.submit')"
+            :loading="loading"
+            :disable="loading"
+            color="primary-btn"
+            type="submit"
+          />
+        </q-form>
+      </div>
     </div>
-
-    <proxy-card
-      :proxy-card-info="proxyCardInfo"
-    />
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import axios from 'axios';
 import icons from '../icons';
 import ProxyCard from './ProxyCard';
 import formMixin from '../mixins/formMixin';
@@ -114,7 +131,7 @@ export default {
   methods: {
     ...mapActions('tools', ['getMembers', 'getUpcomingMeetings']),
     submitProxy() {
-      axios.post('api/proxy/', {
+      this.$axios.post('api/proxy/', {
         meeting: this.meeting.id,
         memberCity: this.memberCity,
         proxy: this.proxy.member.id,
@@ -171,4 +188,7 @@ export default {
     font-style: italic
     font-weight: bold
     text-decoration: underline
+
+  .page-description
+    max-width: 700px
 </style>
