@@ -8,6 +8,6 @@ Vue.prototype.$axios = axios;
 Vue.prototype.$axios.defaults.xsrfCookieName = 'csrftoken';
 Vue.prototype.$axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
 
-if (Vue.prototype.$q.platform.is.capacitor && process.env.NODE_ENV === 'development') {
+if (Vue.prototype.$q.platform.is.capacitor && process.env.NODE_ENV !== 'development') {
   Vue.prototype.$axios.defaults.baseURL = process.env.capacitorBaseUrl;
 }

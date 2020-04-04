@@ -30,6 +30,7 @@ urlpatterns = [
     path("", include("api_member_tools.urls")),
     path("", include("api_meeting.urls")),
     path("admin/", admin.site.urls),
+    path("api-auth/", include("rest_framework.urls")),
 ]
 
 if settings.DEBUG:
