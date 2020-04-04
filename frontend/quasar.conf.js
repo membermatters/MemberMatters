@@ -4,8 +4,6 @@
 // eslint-disable-next-line func-names,no-unused-vars
 module.exports = function (ctx) {
   return {
-    // app boot file (/src/boot)
-    // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/cli-documentation/boot-files
     boot: [
       'i18n',
@@ -15,26 +13,14 @@ module.exports = function (ctx) {
       'capacitor',
     ],
 
-    // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: [
       'app.sass',
     ],
 
-    // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
-      // 'ionicons-v4',
-      // 'mdi-v4',
-      // 'fontawesome-v5',
-      // 'eva-icons',
-      // 'themify',
-      // 'line-awesome',
-      // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
-
       'roboto-font', // optional, you are not bound to it
-      // 'material-icons', // optional, you are not bound to it
     ],
 
-    // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
       config: {
         dark: 'auto', // or Boolean true/false
@@ -42,23 +28,15 @@ module.exports = function (ctx) {
       iconSet: 'fontawesome-v5-pro', // Quasar icon set
       lang: 'en-us', // Quasar language pack
 
-      // Possible values for "all":
-      // * 'auto' - Auto-import needed Quasar components & directives
-      //            (slightly higher compile time; next to minimum bundle size; most convenient)
-      // * false  - Manually specify what to import
-      //            (fastest compile time; minimum bundle size; most tedious)
-      // * true   - Import everything from Quasar
-      //            (not treeshaking Quasar; biggest bundle size; convenient)
       all: 'auto',
 
       components: [],
       directives: [],
 
-      // Quasar plugins
       plugins: [],
     },
 
-    // https://quasar.dev/quasar-cli/cli-documentation/supporting-ie
+    // We do *not* support IE
     supportIE: false,
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
@@ -67,17 +45,17 @@ module.exports = function (ctx) {
         // Set this to false to disable fontawesome pro icons. You need to configure your .npmrc
         // file as per the font awesome pro instructions to download and use FA pro icons.
         proIcons: true,
+
+        // When running with capacitor this value is used for the base URL for all API requests
+        capacitorBaseUrl: JSON.stringify(process.env.API_BASE_URL),
       },
 
-      vueRouterMode: 'history', // available values: 'hash', 'history'
+      vueRouterMode: 'history',
 
       showProgress: false,
-      // gzip: true,
-      // analyze: true,
 
-      // Options below are automatically set depending on the env, set them if you want to override
-      // preloadChunks: false,
-      // extractCSS: false,
+      sourceMap: true,
+      minify: true,
 
       // https://quasar.dev/quasar-cli/cli-documentation/handling-webpack
       extendWebpack(cfg) {
@@ -111,11 +89,8 @@ module.exports = function (ctx) {
       },
     },
 
-    // animations: 'all', // --- includes all animations
-    // https://quasar.dev/options/animations
     animations: [],
 
-    // https://quasar.dev/quasar-cli/developing-ssr/configuring-ssr
     ssr: {
       pwa: false,
     },
@@ -130,7 +105,7 @@ module.exports = function (ctx) {
       manifest: {
         name: 'MemberMatters',
         short_name: 'MemberMatters',
-        description: 'The new MemberMatters frontend',
+        description: 'The MemberMatters frontend',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',

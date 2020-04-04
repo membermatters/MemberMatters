@@ -1,5 +1,5 @@
 # Specify our base image
-FROM python:3.7
+FROM nikolaik/python-nodejs:python3.7-nodejs12
 MAINTAINER Jaimyn Mayer (infrastructure@hsbne.org)
 
 # Install nginx
@@ -16,8 +16,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy over the nginx config file
 ADD ./nginx.conf /etc/nginx/nginx.conf
 
-# Add the rest of our code
+# Add the rest of our code and build it
 ADD . /usr/src/app
+WORKDIR /usr/src/app/frontend
+RUN npm install
+RUN npm run build
+
 VOLUME /usr/src/data
 VOLUME /usr/src/logs
 
