@@ -105,6 +105,8 @@
         </div>
       </q-tab-panel>
     </q-tab-panels>
+
+    <refresh-data-dialog v-model="errorLoading" />
   </div>
 </template>
 
@@ -112,14 +114,17 @@
 import { mapActions, mapGetters } from 'vuex';
 import icons from '../icons';
 import formatMixin from '../mixins/formatMixin';
+import RefreshDataDialog from './RefreshDataDialog';
 
 export default {
   name: 'MemberGroups',
+  components: { RefreshDataDialog },
   mixins: [formatMixin],
   data() {
     return {
       tab: 'groups',
       loading: false,
+      errorLoading: false,
       memberFilter: '',
       groupFilter: '',
       memberPagination: {
@@ -140,6 +145,9 @@ export default {
   mounted() {
     this.loading = true;
     this.getMemberGroups()
+      .catch(() => {
+        this.errorLoading = true;
+      })
       .then(() => {
         this.loading = false;
       });

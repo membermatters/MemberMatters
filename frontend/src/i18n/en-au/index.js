@@ -55,6 +55,7 @@ export default {
   },
   button: {
     submit: 'Submit',
+    ok: 'Ok',
     reset: 'Reset',
     cancel: 'Cancel',
     close: 'Close',
@@ -183,4 +184,7 @@ export default {
   member: 'Member',
   failed: 'Action failed',
   success: 'Action was successful',
+  warning: 'Warning',
+  dataRefreshWarning: 'There was an error fetching new data. Any data that you see may not be up '
+    + 'to date.',
 };

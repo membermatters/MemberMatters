@@ -87,22 +87,37 @@
         </q-item-section>
       </q-item>
     </q-list>
+
+    <refresh-data-dialog v-model="errorLoading" />
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import RefreshDataDialog from './RefreshDataDialog';
 
 export default {
   name: 'AccessList',
+  components: { RefreshDataDialog },
+  data() {
+    return {
+      errorLoading: false,
+    };
+  },
   methods: {
     ...mapActions('profile', ['getAccess']),
   },
   mounted() {
-    this.getAccess();
+    this.getAccess()
+      .catch(() => {
+        this.errorLoading = true;
+      });
     setInterval(() => {
-      this.getAccess();
-    }, 60000);
+      this.getAccess()
+        .catch(() => {
+          this.errorLoading = true;
+        });
+    }, 30000);
   },
   computed: {
     ...mapGetters('profile', ['doorAccess', 'interlockAccess']),

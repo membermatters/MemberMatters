@@ -23,6 +23,8 @@
         </q-input>
       </template>
     </q-table>
+
+    <refresh-data-dialog v-model="errorLoading" />
   </div>
 </template>
 
@@ -30,13 +32,16 @@
 import { mapActions, mapGetters } from 'vuex';
 import Moment from 'moment';
 import icons from '../icons';
+import RefreshDataDialog from './RefreshDataDialog';
 
 export default {
   name: 'LastSeenList',
+  components: { RefreshDataDialog },
   data() {
     return {
       filter: '',
       loading: false,
+      errorLoading: false,
       updateInterval: null,
       pagination: {
         sortBy: 'desc',
@@ -51,6 +56,9 @@ export default {
   mounted() {
     this.loading = true;
     this.getLastSeen()
+      .catch(() => {
+        this.errorLoading = true;
+      })
       .finally(() => {
         this.loading = false;
       });

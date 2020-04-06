@@ -103,6 +103,8 @@
         </div>
       </q-tab-panel>
     </q-tab-panels>
+
+    <refresh-data-dialog v-model="errorLoading" />
   </div>
 </template>
 
@@ -110,13 +112,16 @@
 import { mapActions, mapGetters } from 'vuex';
 import Moment from 'moment';
 import icons from '../icons';
+import RefreshDataDialog from './RefreshDataDialog';
 
 export default {
   name: 'RecentSwipesList',
+  components: { RefreshDataDialog },
   data() {
     return {
       tab: 'doors',
       loading: false,
+      errorLoading: false,
       updateInterval: null,
       filter: '',
       doorPagination: {
@@ -137,11 +142,18 @@ export default {
   mounted() {
     this.loading = true;
     this.getRecentSwipes()
-      .then(() => {
+      .catch(() => {
+        this.errorLoading = true;
+      })
+      .finally(() => {
         this.loading = false;
       });
     this.updateInterval = setInterval(() => {
-      this.getRecentSwipes();
+      this.loading = true;
+      this.getRecentSwipes()
+        .finally(() => {
+          this.loading = false;
+        });
     }, 30000);
   },
   destroyed() {

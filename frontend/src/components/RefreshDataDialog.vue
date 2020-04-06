@@ -1,0 +1,42 @@
+<template>
+  <q-dialog v-model="value">
+    <q-card>
+      <q-card-section>
+        <div class="text-h6">
+          {{ $t('warning') }}
+        </div>
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        {{ $t('dataRefreshWarning') }}
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn
+          flat
+          :label="$t('button.ok')"
+          color="primary"
+          @click="close"
+          v-close-popup
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+</template>
+
+<script>
+export default {
+  name: 'RefreshDataDialog',
+  props: {
+    value: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  methods: {
+    close() {
+      this.$emit('input', false);
+    },
+  },
+};
+</script>
