@@ -121,20 +121,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         "Is the user a admin member?"
         return self.admin
 
-    def clean_username(self):
-        # Since User.username is unique, this check is redundant,
-        # but it sets a nicer error message than the ORM. See #13147.
-        username = self.cleaned_data["username"]
-        if self.instance.username == username:
-            return username
-        try:
-            User._default_manager.get(username=username)
-        except User.DoesNotExist:
-            return username
-        raise forms.ValidationError(
-            "Sorry, that email has already been used.", code="duplicate_username",
-        )
-
     def __send_email(self, subject, body):
         if "PORTAL_SENDGRID_API_KEY" in os.environ:
             sg = sendgrid.SendGridAPIClient(os.environ.get("PORTAL_SENDGRID_API_KEY"))
@@ -295,6 +281,17 @@ class Profile(models.Model):
         ("inactive", "Inactive Member"),
     )
 
+    class Meta:
+        permissions = [
+            ("change_staff", "Can change if the user is a staff member or not"),
+            ("manage_access", "Can manage a user's access permissions"),
+            ("deactivate_member", "Can deactivate or activate a member"),
+            ("see_personal_details", "Can see and update a member's personal details"),
+            ("manage_memberbucks_balance", "Can see and modify memberbucks balance"),
+            ("member_logs", "Can see a members log"),
+            ("generate_invoice", "Can generate a member invoice"),
+        ]
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile"
     )
@@ -351,37 +348,6 @@ class Profile(models.Model):
     xero_account_number = models.CharField(
         max_length=6, blank=True, null=True, default=""
     )
-
-    # for now our permissions are stored here
-    can_manage_access = models.BooleanField("Can manage access", default=False)
-    can_disable_members = models.BooleanField("Can disable members", default=False)
-    can_see_members_personal_details = models.BooleanField(
-        "Can see member personal details", default=False
-    )
-    can_see_members_memberbucks = models.BooleanField(
-        "Can see member memberbucks details", default=False
-    )
-    can_see_members_logs = models.BooleanField("Can see member logs", default=False)
-    can_manage_doors = models.BooleanField("Can manage doors", default=False)
-    can_manage_interlocks = models.BooleanField("Can manage interlocks", default=False)
-    can_manage_groups = models.BooleanField(
-        f"Can manage {config.GROUP_NAME}", default=False
-    )
-    can_add_group = models.BooleanField(f"Can add a {config.GROUP_NAME}", default=False)
-    can_manage_group = models.ManyToManyField(
-        "group.Group", blank=True, related_name="can_manage_group"
-    )
-    can_generate_invoice = models.BooleanField(
-        "Can generate & email invoice", default=False
-    )
-
-    BRACKETS = (
-        ("low", "$0/wk to $550/wk"),
-        ("medium", "$550/wk to $950/wk"),
-        ("high", "$950/wk or more"),
-    )
-
-    updated_starving_details = models.DateTimeField(null=True)
 
     def generate_digital_id_token(self):
         self.digital_id_token = uuid.uuid4()

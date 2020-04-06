@@ -36,7 +36,7 @@
 
 
           <q-banner
-            v-if="this.loggedIn"
+            v-if="loginComplete"
             class="bg-positive text-white"
           >
             {{ $t('loginCard.loginSuccess') }}
@@ -251,6 +251,7 @@ export default {
       password: '',
       loginFailed: false,
       loginError: false,
+      loginComplete: false,
       buttonLoading: false,
       disableResetSubmitButton: false,
       reset: {
@@ -288,6 +289,10 @@ export default {
      * Redirects to the dashboard page on successful login.
      */
     redirectLoggedIn() {
+      this.loginFailed = false;
+      this.loginError = false;
+      this.loginComplete = true;
+
       this.$emit('loginComplete');
       if (this.$route.query.redirect) this.$router.push(this.$route.query.redirect);
       else if (!this.noRedirect) {
@@ -314,14 +319,8 @@ export default {
         email: this.email,
         password: this.password,
       })
-        .then((response) => {
-          if (response.data.success === true) {
-            this.loginFailed = false;
-            this.loginError = false;
-            this.redirectLoggedIn();
-          } else {
-            this.loginFailed = true;
-          }
+        .then(() => {
+          this.redirectLoggedIn();
         })
         .catch((error) => {
           this.loginError = true;

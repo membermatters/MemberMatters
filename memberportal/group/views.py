@@ -9,8 +9,8 @@ from django.shortcuts import render, get_object_or_404
 from django.utils.html import escape
 from django.urls import reverse
 from membermatters.helpers import log_user_event
-from .forms import CauseForm, CauseFundForm
-from .models import Group, CauseFund
+from .forms import CauseForm
+from .models import Group
 from membermatters.decorators import staff_required, no_noobs
 from profile.emailhelpers import send_group_email
 from constance import config

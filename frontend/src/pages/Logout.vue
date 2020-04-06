@@ -37,12 +37,8 @@ export default {
   mounted() {
     axios
       .post('/api/logout/')
-      .then((response) => {
-        if (response.data.success === true) {
-          this.completeLogout();
-        } else {
-          this.error = true;
-        }
+      .then(() => {
+        this.completeLogout();
       })
       .catch((error) => {
         if (error.response.status === 401) {

@@ -123,3 +123,5 @@ webpack-stats.json
 frontend/src/statics/icons/
 
 frontend/src-capacitor/ios/App/App/Assets.xcassets/Splash.imageset/
+
+frontend/.npmrc

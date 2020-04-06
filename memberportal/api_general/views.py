@@ -14,94 +14,127 @@ from django.views.decorators.http import require_GET, require_POST
 from membermatters.decorators import login_required_401
 from django.views.decorators.csrf import csrf_exempt
 from constance import config
-from profile.models import User, Profile
 import json
 import time
 import datetime
 from pytz import UTC as utc
 from group.models import Group
 
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework import status, permissions, generics, mixins
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .serializers import *
 
-@require_GET
-def api_get_config(request):
-    """
-    This method returns the site config used to customise the front end.
-    :param request:
-    :return:
-    """
-    groups = Group.objects.filter(hidden=False)
-    groups = list(groups.values())
 
-    response = {
-        "loggedIn": request.user.is_authenticated,
-        "general": {
-            "siteName": config.SITE_NAME,
-            "siteOwner": config.SITE_OWNER,
-            "entityType": config.ENTITY_TYPE,
-        },
-        "images": {"siteLogo": config.SITE_LOGO, "siteFavicon": config.SITE_FAVICON},
-        "homepageCards": json.loads(config.HOME_PAGE_CARDS),
-        "webcamLinks": json.loads(config.WEBCAM_PAGE_URLS),
-        "groups": groups,
+class GetConfig(APIView):
+    """
+    get: This method returns the site config used to customise the front end.
+    """
+
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        groups = list(Group.objects.filter(hidden=False).values())
+
+        response = {
+            "loggedIn": request.user.is_authenticated,
+            "general": {
+                "siteName": config.SITE_NAME,
+                "siteOwner": config.SITE_OWNER,
+                "entityType": config.ENTITY_TYPE,
+            },
+            "images": {
+                "siteLogo": config.SITE_LOGO,
+                "siteFavicon": config.SITE_FAVICON,
+            },
+            "homepageCards": json.loads(config.HOME_PAGE_CARDS),
+            "webcamLinks": json.loads(config.WEBCAM_PAGE_URLS),
+            "groups": groups,
+        }
+
+        return Response(response)
+
+
+class DjangoModelPermissionsWithRead(permissions.DjangoModelPermissions):
+    perms_map = {
+        "GET": ["%(app_label)s.view_%(model_name)s"],
+        "OPTIONS": [],
+        "HEAD": [],
+        "POST": ["%(app_label)s.add_%(model_name)s"],
+        "PUT": ["%(app_label)s.change_%(model_name)s"],
+        "PATCH": ["%(app_label)s.change_%(model_name)s"],
+        "DELETE": ["%(app_label)s.delete_%(model_name)s"],
     }
-    return JsonResponse(response)
 
 
-@require_POST
-def api_login(request):
+class UserCreate(APIView):
     """
-    Attempts to authenticate a user then logs them in if successful.
-    :param request:
-    :return:
+    post: Creates a new user account.
     """
-    response_success = {"success": True}
 
-    response_failure = {"success": False}
+    permission_classes = (permissions.AllowAny,)
 
-    if request.user.is_authenticated:
-        return JsonResponse(response_success)
+    def post(self, request):
+        # TODO: implement sign up endpoint
 
-    body = json.loads(request.body.decode("utf-8"))
-
-    if body.get("email") is None or body.get("password") is None:
-        return HttpResponseBadRequest()
-
-    user = authenticate(username=body.get("email"), password=body.get("password"))
-
-    # correct login details
-    if user is not None:
-        login(request, user)
-        return JsonResponse(response_success)
-
-    else:
-        return JsonResponse(response_failure)
+        return Response("", status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
-@require_POST
-@login_required_401
-def api_logout(request):
+class Login(APIView):
     """
-    Ends the user's session and logs them out.
-    :param request:
-    :return:
-    """
-    logout(request)
+    WEB_ONLY
 
-    return JsonResponse({"success": True})
+    post: Attempts to authenticate a user then logs them in if successful.
+    """
+
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        if request.user.is_authenticated:
+            return Response(status=status.HTTP_200_OK)
+
+        body = json.loads(request.body.decode("utf-8"))
+
+        if body.get("email") is None or body.get("password") is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        user = authenticate(username=body.get("email"), password=body.get("password"))
+
+        # correct login details
+        if user is not None:
+            login(request, user)
+            return Response(status=status.HTTP_200_OK)
+
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class Logout(APIView):
+    """
+    WEB_ONLY
+
+    post: Ends the user's session and logs them out.
+    """
+
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        logout(request)
+
+        return Response()
 
 
 @require_POST
 def api_reset_password(request):
     """
-    Handles the various stages of the password reset flow.
-    :param request:
-    :return:
+    WEB_ONLY
+
+    post: Handles the various stages of the password reset flow.
     """
-    # This will help mitigate any brute force attempts on this API
-    time.sleep(2)
     body = json.loads(request.body)
 
-    # If we get a reset token and no email, the token is being validated
+    # If we get a reset token and no password, the token is being validated
     if body.get("token") and not body.get("password"):
         user = User.objects.get(password_reset_key=body.get("token"))
 
@@ -139,15 +172,13 @@ def api_reset_password(request):
             return JsonResponse({"success": False})
 
 
-@login_required_401
-def api_profile(request):
+class ProfileDetail(generics.GenericAPIView):
     """
-    Gets or updates the user profile object.
-    :param request:
-    :return:
+    get: Gets the user profile object.
+    put: Updates the user profile object.
     """
 
-    if request.method == "GET":
+    def get(self, request):
         p = request.user.profile
         user = request.user
 
@@ -178,24 +209,24 @@ def api_profile(request):
                 "lastMemberbucksPurchase": p.last_memberbucks_purchase,
                 "memberbucksBalance": p.memberbucks_balance,
             },
-            "permissions": {
-                "generateInvoice": p.can_generate_invoice,
-                "adminOfGroups": list(p.can_manage_group.values()),
-                "groups": p.can_manage_groups,
-                "addGroup": p.can_add_group,
-                "interlocks": p.can_manage_interlocks,
-                "doors": p.can_manage_doors,
-                "seeMemberLogs": p.can_see_members_logs,
-                "seeMemberbucks": p.can_see_members_memberbucks,
-                "seeMemberPersonalDetails": p.can_see_members_personal_details,
-                "disableMembers": p.can_disable_members,
-                "manageAccess": p.can_manage_access,
-            },
+            # "permissions": {
+            #     "generateInvoice": p.can_generate_invoice,
+            #     "adminOfGroups": list(p.can_manage_group.values()),
+            #     "groups": p.can_manage_groups,
+            #     "addGroup": p.can_add_group,
+            #     "interlocks": p.can_manage_interlocks,
+            #     "doors": p.can_manage_doors,
+            #     "seeMemberLogs": p.can_see_members_logs,
+            #     "seeMemberbucks": p.can_see_members_memberbucks,
+            #     "seeMemberPersonalDetails": p.can_see_members_personal_details,
+            #     "disableMembers": p.can_disable_members,
+            #     "manageAccess": p.can_manage_access,
+            # },
         }
 
         return JsonResponse(response)
 
-    elif request.method == "PUT":
+    def put(self, request):
         p = request.user.profile
         body = json.loads(request.body)
 
@@ -213,9 +244,6 @@ def api_profile(request):
         p.save()
 
         return JsonResponse({"success": True})
-
-    else:
-        return HttpResponseBadRequest()
 
 
 @login_required_401
@@ -246,8 +274,6 @@ def api_password(request):
 def api_digital_id(request):
     """
     Get the user's digital ID token.
-    :param request:
-    :return:
     """
     if request.method == "GET":
         p = request.user.profile
