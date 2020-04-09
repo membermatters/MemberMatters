@@ -115,7 +115,7 @@ class IssueDetail(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
-        body = json.loads(request.body)
+        body = request.data
         title = body["title"]
         description = request.user.profile.get_full_name() + ": " + body["description"]
 
@@ -251,7 +251,7 @@ class MeetingList(APIView):
 
             return False
 
-        response = list(map(get_meeting, filter(check_meeting, self.queryset)))
+        response = list(map(get_meeting, filter(check_meeting, self.queryset.all())))
 
         return JsonResponse(response, safe=False)
 

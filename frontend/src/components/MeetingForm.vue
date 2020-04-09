@@ -2,7 +2,7 @@
   <q-card>
     <q-card-section>
       <div class="text-h6">
-        New Meeting
+        {{ $t('meetingForm.newMeeting') }}
       </div>
     </q-card-section>
 
@@ -150,7 +150,7 @@
             v-close-popup
           />
           <q-btn
-            flat
+            color="primary"
             :label="$t('button.submit')"
             :loading="loading"
             :disable="loading"

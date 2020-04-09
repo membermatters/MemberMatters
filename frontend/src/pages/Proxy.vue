@@ -1,14 +1,14 @@
 <template>
   <q-page class="row flex content-start justify-center">
-    <proxy-form />
+    <proxy-list />
   </q-page>
 </template>
 
 <script>
-import ProxyForm from '../components/ProxyForm';
+import ProxyList from '../components/ProxyList';
 
 export default {
   name: 'ProxyPage',
-  components: { ProxyForm },
+  components: { ProxyList },
 };
 </script>

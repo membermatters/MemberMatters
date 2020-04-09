@@ -19,6 +19,7 @@
     :filter="filter"
     :pagination.sync="pagination"
     :loading="loading"
+    :grid="$q.screen.xs"
   >
     <template v-slot:top-left>
       <q-btn
@@ -162,7 +163,6 @@ export default {
     return {
       filter: '',
       loading: false,
-      updateInterval: null,
       newMeeting: false,
       pagination: {
         sortBy: 'date',

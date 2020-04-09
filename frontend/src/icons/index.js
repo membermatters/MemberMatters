@@ -43,13 +43,13 @@ export default {
   calendar: pro ? 'fad fa-calendar' : 'fal fa-calendar',
 
   comment: pro ? 'fad fa-comment-alt-lines' : 'fal fa-comment-alt-lines',
-
   close: pro ? 'fad fa-times' : 'fal fa-times',
-
   success: pro ? 'fad fa-check' : 'fal fa-check',
   fail: pro ? 'fad fa-times' : 'fal fa-times',
   add: pro ? 'fad fa-plus-circle' : 'fal fa-plus-circle',
   remove: pro ? 'fad fa-times-circle' : 'fal fa-times-circle',
   up: pro ? 'fad fa-chevron-down' : 'fal fa-chevron-down',
   down: pro ? 'fad fa-chevron-up' : 'fal fa-chevron-up',
+  edit: pro ? 'fad fa-pencil' : 'fal fa-pencil',
+  delete: pro ? 'fad fa-trash-alt' : 'fal fa-trash-alt',
 };

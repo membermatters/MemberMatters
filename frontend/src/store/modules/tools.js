@@ -8,6 +8,7 @@ export default {
     memberList: [],
     groupList: [],
     upcomingMeetings: [],
+    proxies: [],
     members: [],
   },
   getters: {
@@ -16,6 +17,7 @@ export default {
     memberList: (state) => state.memberList,
     groupList: (state) => state.groupList,
     upcomingMeetings: (state) => state.upcomingMeetings,
+    proxies: (state) => state.proxies,
     members: (state) => state.members,
   },
   mutations: {
@@ -33,6 +35,9 @@ export default {
     },
     setUpcomingMeetings(state, payload) {
       state.upcomingMeetings = payload;
+    },
+    setProxies(state, payload) {
+      state.proxies = payload;
     },
     setMembers(state, payload) {
       state.members = payload;
@@ -84,6 +89,19 @@ export default {
         axios.get('/api/tools/meetings/')
           .then((result) => {
             commit('setUpcomingMeetings', result.data);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getProxies({ commit }) {
+      return new Promise((resolve, reject) => {
+        axios.get('/api/proxies/')
+          .then((result) => {
+            commit('setProxies', result.data);
             resolve();
           })
           .catch((error) => {

@@ -21,7 +21,7 @@ export default {
 
     memberTools: 'Member Tools',
     reportIssue: 'Report Issue',
-    submitProxy: 'Submit Proxy Vote',
+    proxy: 'Proxy Votes',
     recentSwipes: 'Recent Swipes',
     lastSeen: 'Last Seen',
     membership: 'Membership',
@@ -162,10 +162,8 @@ export default {
     fail: 'Failed to create meeting, try again later.',
   },
   proxyForm: {
-    pageDescription: 'If you are unable to attend a meeting, you can submit a proxy vote. This '
-      + 'allows you to give someone else your vote for a specific meeting so please think carefully'
-      + ' before using this form. You should check with the other person before submitting this '
-      + 'form.',
+    pageDescription: 'This form allows you to give someone else your vote for a specific '
+      + 'meeting. Always check with the other person before submission.',
     proxyBody: 'I, {memberName}, of {memberCity}, being a member of the association, appoint {proxyName} of {proxyCity} as my proxy to vote for me on my behalf at the {meetingName} meeting, to be held on the day of {meetingDate} and at any adjournment of the meeting.',
     proxySignature: 'Signed by {memberName} on this day of {currentDate}. ',
     proxyTo: 'To {siteOwner}:',
@@ -176,6 +174,12 @@ export default {
     yourCity: 'Your city',
     proxyName: 'Proxy\'s name',
     proxyCity: 'Proxy\'s city',
+
+    newProxy: 'New Proxy',
+    editTitle: 'Edit Proxy',
+
+    deleteTitle: 'Confirm Proxy Deletion',
+    delete: 'Are you sure you want to delete this proxy?',
   },
   entityType: 'Association',
   groups: 'Groups',

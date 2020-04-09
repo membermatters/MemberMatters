@@ -3,9 +3,9 @@ from . import views
 
 urlpatterns = [
     path("api/tools/swipes/", views.SwipesList.as_view(), name="SwipesList"),
-    path("api/tools/lastseen/", views.Lastseen, name="Lastseen"),
-    path("api/tools/issue/", views.IssueDetail, name="IssueDetail"),
-    path("api/tools/groups/", views.MemberGroupList, name="MemberGroupList"),
-    path("api/tools/meetings/", views.MemberGroupList, name="MemberGroupList"),
+    path("api/tools/lastseen/", views.Lastseen.as_view(), name="Lastseen"),
+    path("api/tools/issue/", views.IssueDetail.as_view(), name="IssueDetail"),
+    path("api/tools/groups/", views.MemberGroupList.as_view(), name="MemberGroupList"),
+    path("api/tools/meetings/", views.MeetingList.as_view(), name="MemberGroupList"),
     path("api/tools/members/", views.api_members, name="api_members"),
 ]

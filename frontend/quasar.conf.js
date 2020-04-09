@@ -33,7 +33,9 @@ module.exports = function (ctx) {
       components: [],
       directives: [],
 
-      plugins: [],
+      plugins: [
+        'Dialog',
+      ],
     },
 
     // We do *not* support IE

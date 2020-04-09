@@ -1,22 +1,23 @@
-from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseNotAllowed
-from django.views.decorators.http import require_GET, require_POST
-from membermatters.decorators import login_required_401, staff_required
 from .models import Meeting, ProxyVote
 from profile.models import Profile
-import json
 from django.utils.timezone import make_aware
 from datetime import datetime
 
+from rest_framework import status, permissions, generics, mixins
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from api_general.permissions import DjangoModelPermissionsWithRead
 
-@staff_required
-@login_required_401
-def api_meeting(request):
+
+class Meetings(APIView):
     """
-    This method handles the /api/meetings/ endpoint
-    :param request:
-    :return:
+    get: retrieves a list of all meetings.
+    post: creates a new meeting.
     """
-    if request.method == "GET":
+
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request):
         meetings = Meeting.objects.all()
 
         def get_attendee(attendee):
@@ -42,34 +43,47 @@ def api_meeting(request):
 
         meetings_object = list(map(get_meeting, meetings))
 
-        return JsonResponse(meetings_object, safe=False)
+        return Response(meetings_object)
 
-    elif request.method == "POST":
-        body = json.loads(request.body)
+    def post(self, request):
+        body = request.data
 
         meeting = Meeting.objects.create(
-            date=make_aware(datetime.strptime(body.get("date"), "%Y-%m-%d %H:%M")),
-            type=body.get("type")["value"],
-            group_id=body.get("group")["id"] if len(body.get("group")) else "",
-            chair=body.get("chair"),
+            date=make_aware(datetime.strptime(body["date"], "%Y-%m-%d %H:%M")),
+            type=body["type"]["value"],
+            group_id=body["group"]["id"] if len(body["group"]) else "",
+            chair=body["chair"],
         )
 
         meeting.save()
 
-        return JsonResponse({"success": True})
-
-    return HttpResponseBadRequest()
+        return Response({"success": True})
 
 
-@login_required_401
-def api_proxy(request):
+class Proxies(APIView):
     """
-    Handles the proxy related tasks.
-    :param request:
-    :return:
+    get: retrieve a list of user's proxy votes.
+    post: create a new proxy vote.
+    delete: delete an existing proxy vote.
     """
-    if request.method == "POST":
-        body = json.loads(request.body)
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        proxies = ProxyVote.objects.filter(user=request.user)
+
+        def get_proxy_details(proxy):
+            return {
+                "id": proxy.id,
+                "name": proxy.proxy_user.profile.get_full_name(),
+                "date": proxy.meeting.date,
+                "type": proxy.meeting.get_type(),
+            }
+
+        return Response(list(map(get_proxy_details, proxies)))
+
+    def post(self, request):
+        body = request.data
         member_city = body.get("memberCity")
         proxy_id = body.get("proxy")
         proxy_city = body.get("proxyCity")
@@ -78,7 +92,6 @@ def api_proxy(request):
         existing_proxies = ProxyVote.objects.filter(
             user=request.user, meeting_id=meeting
         )
-        print(existing_proxies)
 
         # if the user already has a proxy for this meeting we'll override it
         if existing_proxies:
@@ -94,24 +107,28 @@ def api_proxy(request):
                 meeting_id=meeting,
             )
 
+            return Response({"success": True})
+
         else:
-            return HttpResponseBadRequest()
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        return JsonResponse({"success": True})
+    def delete(self, request, meeting_id):
+        proxy = ProxyVote.objects.get(id=meeting_id)
 
-    return HttpResponseNotAllowed(["POST"])
+        if request.user == proxy.user:
+            proxy.delete()
+            return Response()
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
 
-@require_GET
-@login_required_401
-def api_meeting_types(request):
+class MeetingTypes(APIView):
     """
-    This method returns all of the meeting types.
-    :param request:
-    :return:
+    get: retrieves returns all of the meeting types.
     """
 
-    def get_type(type):
-        return {"label": type[1], "value": type[0]}
+    def get(self, request):
+        def get_type(type):
+            return {"label": type[1], "value": type[0]}
 
-    return JsonResponse(list(map(get_type, Meeting.MEETING_TYPES)), safe=False)
+        return Response(list(map(get_type, Meeting.MEETING_TYPES)))
