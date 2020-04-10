@@ -21,7 +21,8 @@ export default {
     validateFutureTime(time) {
       return time >= Moment().format('HH:MM');
     },
-    validateFutureDateTime(date) {
+    validateFutureDateTime(date, disable) {
+      if (disable) return true;
       return date >= Moment().format('YYYY-MM-DD HH:MM');
     },
   },

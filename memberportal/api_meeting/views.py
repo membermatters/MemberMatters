@@ -36,6 +36,9 @@ class Meetings(APIView):
                 "date": meeting.date,
                 "chair": meeting.chair,
                 "type": meeting.get_type(),
+                "typeValue": meeting.type,
+                "group": meeting.group.name if meeting.group else None,
+                "groupValue": meeting.group.id if meeting.group else None,
                 "attendeeCount": meeting.attendees.count(),
                 "attendees": list(map(get_attendee, meeting.attendees.all())),
                 "proxyList": list(map(get_proxy, meeting.proxyvote_set.all())),
@@ -58,6 +61,22 @@ class Meetings(APIView):
         meeting.save()
 
         return Response({"success": True})
+
+    def put(self, request, meeting_id):
+        body = request.data
+
+        meeting = Meeting.objects.get(id=meeting_id)
+        meeting.date = make_aware(datetime.strptime(body["date"], "%Y-%m-%d %H:%M"))
+        meeting.chair = body["chair"]
+        meeting.save()
+
+        return Response()
+
+    def delete(self, request, meeting_id):
+        meeting = Meeting.objects.get(id=meeting_id)
+        meeting.delete()
+
+        return Response()
 
 
 class Proxies(APIView):
@@ -112,8 +131,8 @@ class Proxies(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, meeting_id):
-        proxy = ProxyVote.objects.get(id=meeting_id)
+    def delete(self, request, proxy_id):
+        proxy = ProxyVote.objects.get(id=proxy_id)
 
         if request.user == proxy.user:
             proxy.delete()

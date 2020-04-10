@@ -63,7 +63,10 @@
           {{ col.label }}
         </q-th>
         <q-th auto-width>
-          Edit
+          {{ $t('edit') }}
+        </q-th>
+        <q-th auto-width>
+          {{ $t('delete') }}
         </q-th>
       </q-tr>
     </template>
@@ -91,7 +94,36 @@
             size="sm"
             color="accent"
             round
+            @click="editMeeting(props.row.id)"
             :icon="icons.edit"
+          />
+
+          <q-dialog v-model="editMeetingDialog">
+            <q-card>
+              <q-card-section class="row items-center q-pb-none dialog-close-button">
+                <q-space />
+                <q-btn
+                  :icon="icons.close"
+                  flat
+                  round
+                  dense
+                  v-close-popup
+                />
+              </q-card-section>
+
+              <q-card-section>
+                <meeting-form :meeting-id="editMeetingId" />
+              </q-card-section>
+            </q-card>
+          </q-dialog>
+        </q-td>
+        <q-td auto-width>
+          <q-btn
+            size="sm"
+            color="accent"
+            round
+            @click="deleteMeeting(props.row.id)"
+            :icon="icons.delete"
           />
         </q-td>
       </q-tr>
@@ -100,73 +132,10 @@
         :props="props"
       >
         <q-td colspan="100%">
-          <div class="text-left proxy-votes">
-            <h5
-              class="q-ma-md"
-            >
-              {{ $t('meetings.proxyVotes') }}
-            </h5>
-            <template v-if="props.row.proxyList.length">
-              <q-markup-table>
-                <thead>
-                  <tr>
-                    <th class="text-left">
-                      {{ $t('meetings.memberName') }}
-                    </th>
-                    <th class="text-right">
-                      {{ $t('meetings.proxy') }}
-                    </th>
-                    <th class="text-right">
-                      {{ $t('meetings.dateAssigned') }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="proxy in props.row.proxyList"
-                    :key="proxy.name"
-                  >
-                    <td class="text-left">
-                      {{ proxy.name }}
-                    </td>
-                    <td class="text-right">
-                      {{ proxy.proxyName }}
-                    </td>
-                    <td class="text-right">
-                      {{ formatDate(proxy.date) }}
-                    </td>
-                  </tr>
-                </tbody>
-              </q-markup-table>
-            </template>
-            <div
-              class="q-pl-md"
-              v-else
-            >
-              {{ $t('meetings.noProxies') }}
-            </div>
-          </div>
-
-          <div class="text-left attendees">
-            <h5
-              class="q-pa-md q-ma-none"
-            >
-              {{ $t('meetings.attendees') }}
-            </h5>
-            <p class="q-px-md">
-              <template v-if="props.row.attendees.length">
-                <span
-                  v-for="member in props.row.attendees"
-                  :key="member"
-                >
-                  {{ member }},
-                </span>
-              </template>
-              <template v-else>
-                {{ $t('meetings.noAttendees') }}
-              </template>
-            </p>
-          </div>
+          <meetings-details
+            :proxies="props.row.proxyList"
+            :attendees="props.row.attednees"
+          />
         </q-td>
       </q-tr>
     </template>
@@ -175,19 +144,22 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import MeetingsDetails from 'components/MeetingDetails';
 import icons from '../icons';
 import formatMixin from '../mixins/formatMixin';
 import MeetingForm from './MeetingForm';
 
 export default {
   name: 'MeetingsList',
-  components: { MeetingForm },
+  components: { MeetingsDetails, MeetingForm },
   mixins: [formatMixin],
   data() {
     return {
       filter: '',
       loading: false,
       newMeeting: false,
+      editMeetingDialog: false,
+      editMeetingId: 0,
       pagination: {
         sortBy: 'date',
         descending: true,
@@ -197,6 +169,38 @@ export default {
   },
   methods: {
     ...mapActions('adminTools', ['getMeetings']),
+    deleteMeeting(id) {
+      this.$q.dialog({
+        title: 'Confirm',
+        message: this.$t('meetingForm.deleteMeeting'),
+        cancel: {
+          color: 'primary',
+          flat: true,
+          label: this.$t('button.cancel'),
+        },
+        ok: {
+          color: 'primary',
+          flat: true,
+          label: this.$t('button.ok'),
+        },
+        persistent: true,
+      }).onOk(() => {
+        this.$axios.delete(`/api/meetings/${id}/`, this.form)
+          .then(() => {
+            this.getMeetings();
+          })
+          .catch(() => {
+            this.$q.dialog({
+              title: this.$t('error.error'),
+              message: this.$t('error.requestFailed'),
+            });
+          });
+      });
+    },
+    editMeeting(id) {
+      this.editMeetingId = id;
+      this.editMeetingDialog = true;
+    },
   },
   mounted() {
     this.loading = true;

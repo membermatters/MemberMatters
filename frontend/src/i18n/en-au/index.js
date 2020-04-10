@@ -30,6 +30,7 @@ export default {
     memberbucks: 'Spacebucks',
   },
   error: {
+    error: 'Error',
     loginFailed: 'Your username or password was incorrect.',
     requestFailed: 'Sorry, we\'re having trouble performing that action. Please try again later.',
     pageNotFound: 'Page not found',
@@ -158,10 +159,16 @@ export default {
   },
   meetingForm: {
     pageDescription: 'Fill out the form below to create a new meeting.',
+    editDescription: 'Fill out the form below to update the meeting.',
     newMeeting: 'New Meeting',
+    updatePastMeeting: "Sorry, you can't update this field for a past meeting.",
+    noUpdateMeetingType: "Sorry, you can't update this field for an existing meeting.",
     meeting: 'Meeting',
     success: 'Successfully created meeting.',
+    editSuccess: 'Successfully updated meeting.',
     fail: 'Failed to create meeting, try again later.',
+    editMeeting: 'Edit Meeting',
+    deleteMeeting: 'Are you sure you want to delete this meeting?',
   },
   proxyForm: {
     pageDescription: 'This form allows you to give someone else your vote for a specific '
@@ -191,6 +198,8 @@ export default {
   failed: 'Action failed',
   success: 'Action was successful',
   warning: 'Warning',
+  edit: 'Edit',
+  delete: 'Delete',
   dataRefreshWarning: 'There was an error fetching new data. Any data that you see may not be up '
     + 'to date.',
 };
