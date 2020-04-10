@@ -27,6 +27,7 @@
         :icon="icons.add"
         :label="$t('meetingForm.newMeeting')"
         @click="newMeeting = true"
+        class="q-mb-sm"
       />
 
       <q-dialog
@@ -61,6 +62,9 @@
         >
           {{ col.label }}
         </q-th>
+        <q-th auto-width>
+          Edit
+        </q-th>
       </q-tr>
     </template>
 
@@ -71,7 +75,6 @@
             size="sm"
             color="accent"
             round
-            dense
             @click="props.expand = !props.expand"
             :icon="props.expand ? icons.down : icons.up"
           />
@@ -82,6 +85,14 @@
           :props="props"
         >
           {{ col.value }}
+        </q-td>
+        <q-td auto-width>
+          <q-btn
+            size="sm"
+            color="accent"
+            round
+            :icon="icons.edit"
+          />
         </q-td>
       </q-tr>
       <q-tr
@@ -95,37 +106,45 @@
             >
               {{ $t('meetings.proxyVotes') }}
             </h5>
-            <q-markup-table>
-              <thead>
-                <tr>
-                  <th class="text-left">
-                    {{ $t('meetings.memberName') }}
-                  </th>
-                  <th class="text-right">
-                    {{ $t('meetings.proxy') }}
-                  </th>
-                  <th class="text-right">
-                    {{ $t('meetings.dateAssigned') }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="proxy in props.row.proxyList"
-                  :key="proxy.name"
-                >
-                  <td class="text-left">
-                    {{ proxy.name }}
-                  </td>
-                  <td class="text-right">
-                    {{ proxy.proxyName }}
-                  </td>
-                  <td class="text-right">
-                    {{ formatDate(proxy.date) }}
-                  </td>
-                </tr>
-              </tbody>
-            </q-markup-table>
+            <template v-if="props.row.proxyList.length">
+              <q-markup-table>
+                <thead>
+                  <tr>
+                    <th class="text-left">
+                      {{ $t('meetings.memberName') }}
+                    </th>
+                    <th class="text-right">
+                      {{ $t('meetings.proxy') }}
+                    </th>
+                    <th class="text-right">
+                      {{ $t('meetings.dateAssigned') }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="proxy in props.row.proxyList"
+                    :key="proxy.name"
+                  >
+                    <td class="text-left">
+                      {{ proxy.name }}
+                    </td>
+                    <td class="text-right">
+                      {{ proxy.proxyName }}
+                    </td>
+                    <td class="text-right">
+                      {{ formatDate(proxy.date) }}
+                    </td>
+                  </tr>
+                </tbody>
+              </q-markup-table>
+            </template>
+            <div
+              class="q-pl-md"
+              v-else
+            >
+              {{ $t('meetings.noProxies') }}
+            </div>
           </div>
 
           <div class="text-left attendees">
@@ -135,12 +154,17 @@
               {{ $t('meetings.attendees') }}
             </h5>
             <p class="q-px-md">
-              <span
-                v-for="member in props.row.attendees"
-                :key="member"
-              >
-                {{ member }},
-              </span>
+              <template v-if="props.row.attendees.length">
+                <span
+                  v-for="member in props.row.attendees"
+                  :key="member"
+                >
+                  {{ member }},
+                </span>
+              </template>
+              <template v-else>
+                {{ $t('meetings.noAttendees') }}
+              </template>
             </p>
           </div>
         </q-td>
@@ -167,7 +191,7 @@ export default {
       pagination: {
         sortBy: 'date',
         descending: true,
-        rowsPerPage: this.$q.screen.xs ? 8 : 12,
+        rowsPerPage: this.$q.screen.xs ? 2 : 12,
       },
     };
   },

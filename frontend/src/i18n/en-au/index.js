@@ -150,9 +150,11 @@ export default {
   meetings: {
     memberName: 'Member Name',
     proxy: 'Proxy',
+    noProxies: 'No Proxy Votes Found',
     dateAssigned: 'Date Assigned',
     proxyVotes: 'Proxy Votes',
     attendees: 'Attendees',
+    noAttendees: 'No Attendees Found',
   },
   meetingForm: {
     pageDescription: 'Fill out the form below to create a new meeting.',
