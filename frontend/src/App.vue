@@ -12,6 +12,9 @@
 </template>
 
 <script>
+// We should include Stripe everywhere to enable better fraud protection
+import '@stripe/stripe-js';
+
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import { colors } from 'quasar';
 import store from './store/index';
