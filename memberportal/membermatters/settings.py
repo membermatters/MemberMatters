@@ -240,12 +240,12 @@ CONSTANCE_CONFIG = {
     # Localisation of terminology
     "MEMBERBUCKS_NAME": (
         "Memberbucks",
-        "You can customise the name of the portals currency.",
+        "You can customise the name of the built in currency.",
     ),
-    "GROUP_NAME": ("Group", "You can customise what the portal calls a group."),
+    "GROUP_NAME": ("Group", "You can customise what we call a group."),
     "ADMIN_NAME": (
         "Administrators",
-        "You can specify a different name for your admin group like exec or leaders.",
+        "You can specify a different name for your admin group like executive or management committee.",
     ),
     "WEBCAM_PAGE_URLS": (
         "",
@@ -253,16 +253,23 @@ CONSTANCE_CONFIG = {
     ),
     "HOME_PAGE_CARDS": (
         '[{"title": "Example", "description": "Example", "icon": "forum", "url": "https://membermatters.org/", "btn_text": "Click Here"}]',
-        "You can specify cards that go on the home page with JSON. See https://github.com/jabelone/MemberMatters/blob/master/GETTING_STARTED.md.",
+        "You can specify cards that go on the home page with JSON. See https://github.com/MemberMatters/MemberMatters/blob/master/GETTING_STARTED.md.",
     ),
     "WELCOME_EMAIL_CARDS": (
         "",
-        "Same syntax as HOME_PAGE_CARDS but icons are ignored. If nothing is specified we will use HOME_PAGE_CARDS.",
+        "Same syntax as HOME_PAGE_CARDS but icons are not used. If nothing is specified we will use HOME_PAGE_CARDS.",
+    ),
+    # Stripe config
+    "STRIPE_PUBLISHABLE_KEY": ("", "Set this to your Stripe PUBLIC API key."),
+    "STRIPE_SECRET_KEY": ("", "Set this to your Stripe PRIVATE API key."),
+    "ENABLE_MEMBERBUCKS_STRIPE_INTEGRATION": (
+        False,
+        "Enable integration with stripe for adding memberbucks.",
     ),
     # Trello config
     "ENABLE_TRELLO_INTEGRATION": (
         False,
-        "Enable the submit issue to trello integration.",
+        "Enable the submit issue to trello integration. If disabled we'll send an email to EMAIL_ADMIN instead.",
     ),
     "TRELLO_API_KEY": ("", "Set this to your Trello API key."),
     "TRELLO_API_TOKEN": ("", "Set this to your Trello API token."),
@@ -339,7 +346,15 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ),
         ),
         (
-            "Trello",
+            "Stripe Integration",
+            (
+                "STRIPE_PUBLISHABLE_KEY",
+                "STRIPE_SECRET_KEY",
+                "ENABLE_MEMBERBUCKS_STRIPE_INTEGRATION",
+            ),
+        ),
+        (
+            "Trello Integration",
             (
                 "ENABLE_TRELLO_INTEGRATION",
                 "TRELLO_API_KEY",
