@@ -4,7 +4,7 @@
       :data="humanLastSeen"
       :columns="[{ name: 'user', label: 'User', field: 'user', sortable: true },
                  { name: 'lastSeen', label: 'Last Seen', field: 'date', sortable: true },]"
-      row-key="user"
+      row-key="id"
       :filter="filter"
       :pagination.sync="pagination"
       :loading="loading"
@@ -77,7 +77,9 @@ export default {
     humanLastSeen() {
       return this.lastSeen.map((value) => {
         const humanReadable = Moment.utc(value.date).local().format('Do MMM YYYY, h:mm a');
-        return { user: value.user, date: humanReadable, never: value.never };
+        return {
+          id: value.id, user: value.user, date: humanReadable, never: value.never,
+        };
       });
     },
   },

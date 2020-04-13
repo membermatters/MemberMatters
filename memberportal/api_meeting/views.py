@@ -13,6 +13,8 @@ class Meetings(APIView):
     """
     get: retrieves a list of all meetings.
     post: creates a new meeting.
+    put: update an existing meeting.
+    delete: delete an existing meeting.
     """
 
     permission_classes = [permissions.IsAdminUser]
@@ -143,7 +145,7 @@ class Proxies(APIView):
 
 class MeetingTypes(APIView):
     """
-    get: retrieves returns all of the meeting types.
+    get: retrieves all of the meeting types.
     """
 
     def get(self, request):

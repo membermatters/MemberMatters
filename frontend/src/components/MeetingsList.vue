@@ -180,7 +180,6 @@ export default {
         },
         ok: {
           color: 'primary',
-          flat: true,
           label: this.$t('button.ok'),
         },
         persistent: true,
