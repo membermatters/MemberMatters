@@ -24,7 +24,7 @@
         color="accent"
         :icon="icons.add"
         :label="$t('memberbucks.addFunds')"
-        @click="$router.push({ name: 'memberbucks', params: { dialog: 'add' } })"
+        @click="addFunds()"
         class="q-mb-sm q-mr-sm"
       />
 
@@ -32,7 +32,7 @@
         color="accent"
         :icon="icons.billing"
         :label="$t('memberbucks.manageBilling')"
-        @click="$router.push({ name: 'memberbucks', params: { dialog: 'billing' } })"
+        @click="manageBilling()"
         class="q-mb-sm q-mr-md"
       />
 
@@ -49,18 +49,6 @@
           <q-icon :name="icons.search" />
         </template>
       </q-input>
-
-      <q-dialog
-        v-model="addFunds"
-      >
-        HI
-      </q-dialog>
-
-      <q-dialog
-        v-model="manageBilling"
-      >
-        HI
-      </q-dialog>
     </template>
 
     <template
@@ -93,6 +81,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import MemberBucksAddFunds from 'components/MemberBucksAddFunds';
+import MemberBucksManageBilling from 'components/MemberBucksManageBilling';
 import icons from '../icons';
 import formatMixin from '../mixins/formatMixin';
 
@@ -109,8 +99,6 @@ export default {
     return {
       filter: '',
       loading: false,
-      addFunds: false,
-      manageBilling: false,
       pagination: {
         sortBy: 'date',
         descending: true,
@@ -121,27 +109,63 @@ export default {
   },
   methods: {
     ...mapActions('tools', ['getMemberBucksTransactions', 'getMemberBucksBalance']),
+    checkOpenDialogs() {
+      if (this.dialog === 'add') {
+        this.openAddFundsDialog();
+      } else if (this.dialog === 'billing') {
+        this.openManageBillingDialog();
+      }
+    },
+    closeBothDialogs() {
+      this.$router.push({ name: 'memberbucks', params: { dialog: 'transactions' } });
+    },
+    openAddFundsDialog() {
+      this.$q.dialog({
+        component: MemberBucksAddFunds,
+        parent: this,
+      }).onDismiss(() => {
+        this.closeBothDialogs();
+      });
+    },
+    openManageBillingDialog() {
+      this.$q.dialog({
+        component: MemberBucksManageBilling,
+        parent: this,
+      }).onDismiss(() => {
+        this.closeBothDialogs();
+      });
+    },
+    addFunds() {
+      this.$router.push({ name: 'memberbucks', params: { dialog: 'add' } })
+        .catch((error) => {
+          if (error.name === 'NavigationDuplicated') {
+            this.openAddFundsDialog();
+          } else {
+            throw error;
+          }
+        });
+    },
+    manageBilling() {
+      this.$router.push({ name: 'memberbucks', params: { dialog: 'billing' } })
+        .catch((error) => {
+          if (error.name === 'NavigationDuplicated') {
+            this.openManageBillingDialog();
+          } else {
+            throw error;
+          }
+        });
+    },
   },
   mounted() {
     this.loading = true;
     Promise.all([this.getMemberBucksBalance(), this.getMemberBucksTransactions()]).finally(() => {
       this.loading = false;
     });
+    this.checkOpenDialogs();
   },
   watch: {
-    dialog(value) {
-      this.testDialog = value;
-      if (value === 'add') {
-        console.log('add');
-        this.manageBilling = false;
-        this.addFunds = true;
-      } else if (value === 'billing') {
-        this.manageBilling = true;
-        this.addFunds = false;
-      } else {
-        this.manageBilling = false;
-        this.addFunds = false;
-      }
+    dialog() {
+      this.checkOpenDialogs();
     },
   },
   computed: {
