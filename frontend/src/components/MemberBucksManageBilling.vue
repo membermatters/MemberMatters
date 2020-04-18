@@ -4,9 +4,26 @@
     @hide="onDialogHide"
   >
     <q-card class="q-dialog-plugin">
-      <q-card-section>
-        Hi
-      </q-card-section>
+      <template v-if="profile.financial.memberBucks.savedCard.last4">
+        <q-card-section>
+          {{ $t('memberbucks.savedCard') }}
+        </q-card-section>
+
+        <q-card-section>
+          <credit-card
+            :name="profile.fullName"
+            :expiry="profile.financial.memberBucks.savedCard.expiry"
+            :last4="profile.financial.memberBucks.savedCard.last4"
+            :brand="profile.financial.memberBucks.savedCard.brand"
+            class="shadow-7"
+          />
+        </q-card-section>
+      </template>
+
+      <template v-else>
+        You don't have any saved cards.
+      </template>
+
       <q-card-actions align="right">
         <q-btn
           color="accent"
@@ -20,12 +37,12 @@
 </template>
 
 <script>
+import CreditCard from 'components/CreditCard';
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'MemberBucksManageBilling',
-  props: {
-    // ...your custom props
-  },
-
+  components: { CreditCard },
   methods: {
     show() {
       this.$refs.dialog.show();
@@ -43,6 +60,9 @@ export default {
     onCancelClick() {
       this.hide();
     },
+  },
+  computed: {
+    ...mapGetters('profile', ['profile']),
   },
 };
 </script>

@@ -77,10 +77,6 @@ import { mapGetters } from 'vuex';
 
 export default {
   name: 'MemberBucksAddFunds',
-  props: {
-    // ...your custom props
-  },
-
   methods: {
     show() {
       this.$refs.dialog.show();
