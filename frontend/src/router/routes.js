@@ -8,6 +8,7 @@ const menuRoutes = mainMenu.map((menuItem) => {
     menuItem.children.map((child) => {
       childRoutes.push({
         path: child.to ? child.to : '/no-route', // this means we didn't get a path and shouldn't route there
+        alias: child.alias,
         component: child.component
           ? child.component
           : () => import('pages/Error404.vue'),
@@ -19,6 +20,7 @@ const menuRoutes = mainMenu.map((menuItem) => {
 
     return {
       path: menuItem.to ? menuItem.to : '/no-route', // this means we didn't get a path and shouldn't route there
+      alias: menuItem.alias,
       component: menuItem.component
         ? menuItem.component
         : () => import('pages/Error404.vue'),
@@ -30,6 +32,7 @@ const menuRoutes = mainMenu.map((menuItem) => {
 
   return {
     path: menuItem.to,
+    alias: menuItem.alias,
     component: menuItem.component
       ? menuItem.component
       : () => import('pages/Error404.vue'),

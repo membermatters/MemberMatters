@@ -13,9 +13,10 @@
 
 <script>
 // We should include Stripe everywhere to enable better fraud protection
-import '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
 import { mapGetters, mapMutations, mapActions } from 'vuex';
+import Vue from 'vue';
 import { colors } from 'quasar';
 import store from './store/index';
 import LoginCard from './components/LoginCard';
@@ -54,6 +55,25 @@ export default {
       this.getSiteConfig()
         .then(() => {
           this.updatePageTitle();
+          if (this.features.stripe.enabled) {
+            Vue.prototype.$stripe = loadStripe(this.keys.stripePublishableKey);
+            Vue.prototype.$stripeElementsStyle = {
+              base: {
+                color: '#32325d',
+                fontFamily: '"Roboto", "-apple-system", "Helvetica Neue", Helvetica, Arial, '
+                + 'sans-serif',
+                fontSmoothing: 'antialiased',
+                fontSize: '16px',
+                '::placeholder': {
+                  color: '#aab7c4',
+                },
+              },
+              invalid: {
+                color: '#fa755a',
+                iconColor: '#fa755a',
+              },
+            };
+          }
         })
         .catch((error) => {
           throw error;
@@ -81,7 +101,7 @@ export default {
     }, 60000);
   },
   computed: {
-    ...mapGetters('config', ['siteName']),
+    ...mapGetters('config', ['siteName', 'keys', 'features']),
     ...mapGetters('profile', ['loggedIn']),
   },
 };

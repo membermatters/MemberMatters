@@ -11,5 +11,8 @@ export default {
     formatDate(date) {
       return Moment.utc(date).local().format('Do MMM YYYY, h:mm a');
     },
+    formatWhen(date) {
+      return Moment.utc(date).local().fromNow();
+    },
   },
 };

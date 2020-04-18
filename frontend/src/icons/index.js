@@ -52,4 +52,5 @@ export default {
   down: pro ? 'fad fa-chevron-up' : 'fal fa-chevron-up',
   edit: pro ? 'fad fa-pencil' : 'fal fa-pencil',
   delete: pro ? 'fad fa-trash-alt' : 'fal fa-trash-alt',
+  billing: pro ? 'fad fa-credit-card' : 'fal fa-credit-card',
 };

@@ -5,10 +5,11 @@ export default {
   state: {
     siteName: 'MemberMatters Portal',
     siteOwner: 'MemberMatters',
-    mainMenuOpen: false,
     homepageCards: {},
     webcamLinks: {},
     groups: [],
+    keys: {},
+    features: {},
   },
   getters: {
     siteName: (state) => state.siteName,
@@ -16,6 +17,8 @@ export default {
     homepageCards: (state) => state.homepageCards,
     webcamLinks: (state) => state.webcamLinks,
     groups: (state) => state.groups,
+    keys: (state) => state.keys,
+    features: (state) => state.features,
   },
   mutations: {
     setSiteName(state, payload) {
@@ -23,9 +26,6 @@ export default {
     },
     setSiteOwner(state, payload) {
       state.siteOwner = payload;
-    },
-    setMainMenuOpen(state, payload) {
-      state.mainMenuOpen = payload;
     },
     setHomepageCards(state, payload) {
       state.homepageCards = payload;
@@ -35,6 +35,12 @@ export default {
     },
     setGroups(state, payload) {
       state.groups = payload;
+    },
+    setKeys(state, payload) {
+      state.keys = payload;
+    },
+    setFeatures(state, payload) {
+      state.features = payload;
     },
   },
   actions: {
@@ -47,6 +53,8 @@ export default {
             commit('setHomepageCards', result.data.homepageCards);
             commit('setWebcamLinks', result.data.webcamLinks);
             commit('setGroups', result.data.groups);
+            commit('setKeys', result.data.keys);
+            commit('setFeatures', result.data.features);
             resolve();
           })
           .catch((error) => {

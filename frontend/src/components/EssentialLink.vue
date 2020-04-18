@@ -3,7 +3,7 @@
     <template v-if="!children && !hiddenMenu">
       <q-item
         clickable
-        :to="{ name: name }"
+        :to="{ name: name, params: defaultParams }"
       >
         <q-item-section
           v-if="icon"
@@ -29,7 +29,7 @@
           v-for="child in children"
           clickable
           :inset-level="1"
-          :to="{ name: child.name }"
+          :to="{ name: child.name, params: child.defaultParams }"
           :key="child.name"
         >
           <q-item-section
@@ -63,6 +63,11 @@ export default {
     name: {
       type: [String, Object],
       default: '/',
+    },
+
+    defaultParams: {
+      type: [Object],
+      default: () => {},
     },
 
     icon: {

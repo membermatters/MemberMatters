@@ -7,21 +7,21 @@ const PageAndRouteConfig = [
     name: 'rootIndex', // specify the name of this URL route
     loggedIn: false, // only allow access to logged in users if true or logged out users if false
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
-    component: () => import('pages/Login.vue'), // which component to load as the page
+    component: () => import('pages/Login'), // which component to load as the page
   },
   {
     icon: icons.dashboard,
     to: '/dashboard',
     name: 'dashboard',
     loggedIn: true,
-    component: () => import('pages/Dashboard.vue'),
+    component: () => import('pages/Dashboard'),
   },
   {
     icon: icons.webcams,
     to: '/webcams',
     name: 'webcams',
     loggedIn: true,
-    component: () => import('pages/Webcams.vue'),
+    component: () => import('pages/Webcams'),
   },
   {
     icon: icons.cogs,
@@ -33,35 +33,35 @@ const PageAndRouteConfig = [
         to: '/manage/members',
         name: 'members',
         loggedIn: true,
-        component: () => import('pages/Error404.vue'),
+        component: () => import('pages/Error404'),
       },
       {
         icon: icons.meetings,
         to: '/manage/meetings',
         name: 'meetings',
         loggedIn: true,
-        component: () => import('pages/Meetings.vue'),
+        component: () => import('pages/Meetings'),
       },
       {
         icon: icons.groups,
         to: '/manage/groups',
         name: 'groups',
         loggedIn: true,
-        component: () => import('pages/Error404.vue'),
+        component: () => import('pages/Error404'),
       },
       {
         icon: icons.doors,
         to: '/manage/doors',
         name: 'doors',
         loggedIn: true,
-        component: () => import('pages/Error404.vue'),
+        component: () => import('pages/Error404'),
       },
       {
         icon: icons.interlocks,
         to: '/manage/interlocks',
         name: 'interlocks',
         loggedIn: true,
-        component: () => import('pages/Error404.vue'),
+        component: () => import('pages/Error404'),
       },
     ],
   },
@@ -75,35 +75,35 @@ const PageAndRouteConfig = [
         to: '/tools/issue',
         name: 'reportIssue',
         loggedIn: true,
-        component: () => import('pages/ReportIssue.vue'),
+        component: () => import('pages/ReportIssue'),
       },
       {
         icon: icons.submitProxy,
         to: '/tools/proxy',
         name: 'proxy',
         loggedIn: true,
-        component: () => import('pages/Proxy.vue'),
+        component: () => import('pages/Proxy'),
       },
       {
         icon: icons.groupMembers,
         to: '/tools/groups/',
         name: 'groupMembers',
         loggedIn: true,
-        component: () => import('pages/MemberGroups.vue'),
+        component: () => import('pages/MemberGroups'),
       },
       {
         icon: icons.recentSwipes,
         to: '/tools/swipes/recent',
         name: 'recentSwipes',
         loggedIn: true,
-        component: () => import('pages/RecentSwipes.vue'),
+        component: () => import('pages/RecentSwipes'),
       },
       {
         icon: icons.lastSeen,
         to: '/tools/swipes/lastseen',
         name: 'lastSeen',
         loggedIn: true,
-        component: () => import('pages/LastSeen.vue'),
+        component: () => import('pages/LastSeen'),
       },
     ],
   },
@@ -124,13 +124,15 @@ const PageAndRouteConfig = [
         to: '/account/access',
         name: 'checkAccess',
         loggedIn: true,
-        component: () => import('pages/CheckAccess.vue'),
+        component: () => import('pages/CheckAccess'),
       },
       {
         icon: icons.memberbucks,
-        to: '/account/memberbucks',
+        to: '/account/memberbucks/:dialog',
+        defaultParams: { dialog: 'transactions' },
         name: 'memberbucks',
         loggedIn: true,
+        component: () => import('pages/MemberBucks'),
       },
     ],
   },
@@ -139,14 +141,14 @@ const PageAndRouteConfig = [
     to: '/logout',
     name: 'logout',
     loggedIn: true,
-    component: () => import('pages/Logout.vue'),
+    component: () => import('pages/Logout'),
   },
   {
     icon: icons.signin,
     to: '/login',
     name: 'login',
     loggedIn: false,
-    component: () => import('pages/Login.vue'),
+    component: () => import('pages/Login'),
   },
   {
     icon: icons.register,
@@ -161,7 +163,7 @@ const PageAndRouteConfig = [
     to: '/profile/password/reset/:resetToken', // specify the URL route for this page
     name: 'resetPassword', // specify the name of this URL route
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
-    component: () => import('pages/Login.vue'), // which component to load as the page
+    component: () => import('pages/Login'), // which component to load as the page
   },
 ];
 

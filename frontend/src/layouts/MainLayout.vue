@@ -161,17 +161,6 @@ export default {
   },
   methods: {
     ...mapActions('profile', ['getProfile']),
-    getMenuState() {
-      return localStorage.getItem('menuState');
-    },
-    setMenuState() {
-      localStorage.setItem('menuState', this.mainMenuOpen);
-    },
-  },
-  watch: {
-    mainMenuOpen() {
-      this.setMenuState();
-    },
   },
   computed: {
     ...mapGetters('profile', ['loggedIn', 'profile']),
@@ -187,7 +176,6 @@ export default {
   },
   mounted() {
     if (this.loggedIn) this.getProfile();
-    this.mainMenuOpen = this.getMenuState() === 'true';
   },
 };
 </script>

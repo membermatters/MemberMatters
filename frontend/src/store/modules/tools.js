@@ -10,6 +10,8 @@ export default {
     upcomingMeetings: [],
     proxies: [],
     members: [],
+    memberBucksTransactions: [],
+    memberBucksBalance: [],
   },
   getters: {
     lastSeen: (state) => state.lastSeen,
@@ -19,6 +21,8 @@ export default {
     upcomingMeetings: (state) => state.upcomingMeetings,
     proxies: (state) => state.proxies,
     members: (state) => state.members,
+    memberBucksTransactions: (state) => state.memberBucksTransactions,
+    memberBucksBalance: (state) => state.memberBucksBalance,
   },
   mutations: {
     setLastSeen(state, payload) {
@@ -41,6 +45,12 @@ export default {
     },
     setMembers(state, payload) {
       state.members = payload;
+    },
+    setMemberBucksTransactions(state, payload) {
+      state.memberBucksTransactions = payload;
+    },
+    setMemberBucksBalance(state, payload) {
+      state.memberBucksBalance = payload;
     },
   },
   actions: {
@@ -115,6 +125,32 @@ export default {
         axios.get('/api/tools/members/')
           .then((result) => {
             commit('setMembers', result.data);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getMemberBucksTransactions({ commit }) {
+      return new Promise((resolve, reject) => {
+        axios.get('/api/memberbucks/transactions/')
+          .then((result) => {
+            commit('setMemberBucksTransactions', result.data);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getMemberBucksBalance({ commit }) {
+      return new Promise((resolve, reject) => {
+        axios.get('/api/memberbucks/balance/')
+          .then((result) => {
+            commit('setMemberBucksBalance', result.data);
             resolve();
           })
           .catch((error) => {

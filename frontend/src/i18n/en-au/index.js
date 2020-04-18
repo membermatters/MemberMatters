@@ -190,6 +190,10 @@ export default {
     deleteTitle: 'Confirm Proxy Deletion',
     delete: 'Are you sure you want to delete this proxy?',
   },
+  memberbucks: {
+    addFunds: 'Add Funds',
+    manageBilling: 'Manage Billing',
+  },
   entityType: 'Association',
   groups: 'Groups',
   members: 'Members',

@@ -38,6 +38,16 @@ class GetConfig(APIView):
     def get(self, request):
         groups = list(Group.objects.filter(hidden=False).values())
 
+        features = {
+            "stripe": {
+                "enabled": len(config.STRIPE_PUBLISHABLE_KEY) > 0,
+                "memberBucksIntegration": config.ENABLE_MEMBERBUCKS_STRIPE_INTEGRATION,
+            },
+            "trelloIntegration": config.ENABLE_TRELLO_INTEGRATION,
+        }
+
+        keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}
+
         response = {
             "loggedIn": request.user.is_authenticated,
             "general": {
@@ -52,6 +62,8 @@ class GetConfig(APIView):
             "homepageCards": json.loads(config.HOME_PAGE_CARDS),
             "webcamLinks": json.loads(config.WEBCAM_PAGE_URLS),
             "groups": groups,
+            "keys": keys,
+            "features": features,
         }
 
         return Response(response)

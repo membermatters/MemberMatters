@@ -79,29 +79,28 @@ class Lastseen(APIView):
     # TODO: refactor this so it utilises DRF more
 
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = User.objects.filter(group__profile__state="active").order_by(
-        "-profile__last_seen"
-    )
+    queryset = Profile.objects.filter(state="active").order_by("-last_seen")
 
     def get(self, request):
         last_seen = list()
 
-        for member in self.queryset:
-            if not member.profile.state == "active":
+        for member in self.queryset.all():
+            if not member.state == "active":
                 continue
 
-            if member.profile.last_seen is not None:
+            if member.last_seen is not None:
                 last_seen.append(
                     {
-                        "user": member.profile.get_full_name(),
+                        "id": member.id,
+                        "user": member.get_full_name(),
                         "never": False,
-                        "date": member.profile.last_seen,
+                        "date": member.last_seen,
                     }
                 )
 
             else:
                 last_seen.append(
-                    {"user": member.profile.get_full_name(), "never": True}
+                    {"id": member.id, "user": member.get_full_name(), "never": True}
                 )
 
         return Response(last_seen, status=status.HTTP_200_OK)
