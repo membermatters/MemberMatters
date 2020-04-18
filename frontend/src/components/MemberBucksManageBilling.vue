@@ -9,7 +9,7 @@
       </q-card-section>
       <q-card-actions align="right">
         <q-btn
-          color="primary"
+          color="accent"
           flat
           :label="$t('button.close')"
           @click="onCancelClick"

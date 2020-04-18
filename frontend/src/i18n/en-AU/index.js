@@ -194,7 +194,9 @@ export default {
     currentBalance: 'Current Balance:',
     addFunds: 'Add Funds',
     addFundsDescription: 'Click one of the buttons above to top up your account. This will '
-      + 'immediately charge your saved credit card.',
+      + 'immediately charge your saved card ending in {savedCard}.',
+    noSavedBilling: 'Sorry, but you don\'t have any valid billing methods. Please add a new '
+      + 'billing method by clicking the button below.',
     manageBilling: 'Manage Billing',
   },
   entityType: 'Association',

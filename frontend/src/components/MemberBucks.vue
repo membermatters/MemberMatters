@@ -92,7 +92,7 @@ export default {
   props: {
     dialog: {
       type: String,
-      default: null,
+      default: 'transactions',
     },
   },
   data() {
@@ -109,30 +109,20 @@ export default {
   },
   methods: {
     ...mapActions('tools', ['getMemberBucksTransactions', 'getMemberBucksBalance']),
-    checkOpenDialogs() {
-      if (this.dialog === 'add') {
-        this.openAddFundsDialog();
-      } else if (this.dialog === 'billing') {
-        this.openManageBillingDialog();
-      }
-    },
     closeBothDialogs() {
-      this.$router.push({ name: 'memberbucks', params: { dialog: 'transactions' } });
+      this.$router.push({ name: 'memberbucks', params: { dialog: 'transactions' } })
+        .catch(() => {});
     },
     openAddFundsDialog() {
       this.$q.dialog({
         component: MemberBucksAddFunds,
         parent: this,
-      }).onDismiss(() => {
-        this.closeBothDialogs();
       });
     },
     openManageBillingDialog() {
       this.$q.dialog({
         component: MemberBucksManageBilling,
         parent: this,
-      }).onDismiss(() => {
-        this.closeBothDialogs();
       });
     },
     addFunds() {
@@ -161,11 +151,21 @@ export default {
     Promise.all([this.getMemberBucksBalance(), this.getMemberBucksTransactions()]).finally(() => {
       this.loading = false;
     });
-    this.checkOpenDialogs();
+    if (this.dialog === 'add') {
+      this.openAddFundsDialog();
+    } else if (this.dialog === 'billing') {
+      this.openManageBillingDialog();
+    }
   },
   watch: {
-    dialog() {
-      this.checkOpenDialogs();
+    dialog(dialog) {
+      if (dialog === 'add') {
+        this.openAddFundsDialog();
+      } else if (dialog === 'billing') {
+        this.openManageBillingDialog();
+      } else {
+        this.closeBothDialogs();
+      }
     },
   },
   computed: {

@@ -203,12 +203,13 @@ class ProfileDetail(generics.GenericAPIView):
             },
             "financial": {
                 "xeroAccNumber": p.xero_account_number,
-                "savedCard": {
-                    "last4": p.stripe_card_last_digits,
-                    "expiry": p.stripe_card_expiry,
+                "memberBucks": {
+                    "lastPurchase": p.last_memberbucks_purchase,
+                    "savedCard": {
+                        "last4": p.stripe_card_last_digits,
+                        "expiry": p.stripe_card_expiry,
+                    },
                 },
-                "lastMemberbucksPurchase": p.last_memberbucks_purchase,
-                "memberbucksBalance": p.memberbucks_balance,
             },
             # "permissions": {
             #     "generateInvoice": p.can_generate_invoice,
