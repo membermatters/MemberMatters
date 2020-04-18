@@ -1,5 +1,5 @@
-// This is just an example,
-// so you can safely delete all default props below
+// This is an object containing every piece of user visible text used for localisation (currently
+// only Australian English is supported)
 
 export default {
   menuLink: {
@@ -191,7 +191,10 @@ export default {
     delete: 'Are you sure you want to delete this proxy?',
   },
   memberbucks: {
+    currentBalance: 'Current Balance:',
     addFunds: 'Add Funds',
+    addFundsDescription: 'Click one of the buttons above to top up your account. This will '
+      + 'immediately charge your saved credit card.',
     manageBilling: 'Manage Billing',
   },
   entityType: 'Association',

@@ -1,12 +1,14 @@
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
 import messages from 'src/i18n';
+import numberFormats from 'src/i18n/numberFormats';
 
 Vue.use(VueI18n);
 
 const i18n = new VueI18n({
-  locale: 'en-au',
-  fallbackLocale: 'en-au',
+  locale: 'en-AU',
+  fallbackLocale: 'en-AU',
+  numberFormats,
   messages,
 });
 
