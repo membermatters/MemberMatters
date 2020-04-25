@@ -19,7 +19,6 @@ from django.conf.urls.static import static
 from django.urls import include, path
 
 urlpatterns = [
-    path("", include("portal.urls")),
     path("", include("access.urls")),
     path("", include("group.urls")),
     path("", include("profile.urls")),

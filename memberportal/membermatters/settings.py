@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.humanize",
     "profile",
-    "portal",
     "access",
     "group",
     "memberbucks",
@@ -173,7 +172,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.environ.get(
-    "PORTAL_STATIC_LOCATION", "/usr/src/app/memberportal/portal/static"
+    "PORTAL_STATIC_LOCATION", "/usr/src/app/memberportal/membermatters/static"
 )
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/signin"
