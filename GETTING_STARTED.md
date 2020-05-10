@@ -4,7 +4,7 @@
  
  To get started, download the latest version from docker hub using the following command:
  ```bash
-docker pull jaimynmayer/membermatters
+docker pull membermatters/membermatters
 ```
 
 Create a file to contain all of your environment variables. This file contains sensitive information so treat it like a 
