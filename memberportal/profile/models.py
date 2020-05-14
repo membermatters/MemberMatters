@@ -384,7 +384,7 @@ class Profile(models.Model):
             request.user.profile.get_full_name() + " activated member",
             "profile",
         )
-        if self.state is not "noob":
+        if self.state != "noob":
             self.user.email_enable_member()
 
         self.state = "active"
