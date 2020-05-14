@@ -9,13 +9,13 @@
   "private": true,
   "scripts": {
     "dev": "quasar dev -m spa",
-    "dev-ios": "quasar dev -m capacitor -T ios ",
-    "dev-android": "quasar dev -m capacitor -T android ",
+    "dev:ios": "quasar dev -m capacitor -T ios ",
+    "dev:android": "quasar dev -m capacitor -T android ",
     "build": "quasar build -m spa",
-    "build-pwa": "quasar build -m pwa",
-    "build-ios": "quasar build -m capacitor -T ios --ide",
-    "build-android": "quasar build -m capacitor -T android --ide",
-    "build-electron": "quasar build -m electron",
+    "build:pwa": "quasar build -m pwa",
+    "build:ios": "quasar build -m capacitor -T ios --ide",
+    "build:android": "quasar build -m capacitor -T android --ide",
+    "build:electron": "quasar build -m electron",
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {

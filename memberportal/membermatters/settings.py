@@ -15,10 +15,9 @@ from collections import OrderedDict
 from datetime import timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SECRET_KEY = os.environ.get("PORTAL_SECRET_KEY")
-
-if SECRET_KEY is None:
-    raise RuntimeError("Missing PORTAL_SECRET_KEY !")
+SECRET_KEY = os.environ.get(
+    "PORTAL_SECRET_KEY", "l)#t68rzepzp)0l#x=9mntciapun$whl+$j&=_@nl^zl1xm3j*"
+)
 
 # Default config is for dev environments and is overwritten in prod
 DEBUG = True
