@@ -1,10 +1,7 @@
 #!/bin/sh
 
-# Make sure nginx auto starts
-rc-update add nginx default
-
 # Start nginx
-service nginx start
+nginx
 
 # Navigate to the app and start gunicorn
 cd memberportal
