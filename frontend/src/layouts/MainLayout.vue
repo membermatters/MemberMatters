@@ -68,7 +68,7 @@
           <template
             v-for="link in essentialLinks"
           >
-            <template v-if="link.loggedIn === loggedIn">
+            <template v-if="link.loggedIn === loggedIn && link.kiosk === $q.platform.is.electron">
               <EssentialLink
                 :key="link.title"
                 v-bind="link"

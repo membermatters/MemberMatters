@@ -273,6 +273,7 @@ def api_password(request):
 
 
 @csrf_exempt
+@login_required_401
 def api_digital_id(request):
     """
     Get the user's digital ID token.

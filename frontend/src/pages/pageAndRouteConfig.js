@@ -6,6 +6,7 @@ const PageAndRouteConfig = [
     to: '/', // specify the URL route for this page
     name: 'rootIndex', // specify the name of this URL route
     loggedIn: false, // only allow access to logged in users if true or logged out users if false
+    kiosk: true, // whether this page should show up in kiosk mode
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
     component: () => import('pages/Login'), // which component to load as the page
   },
@@ -14,6 +15,7 @@ const PageAndRouteConfig = [
     to: '/dashboard',
     name: 'dashboard',
     loggedIn: true,
+    kiosk: true,
     component: () => import('pages/Dashboard'),
   },
   {
@@ -21,6 +23,7 @@ const PageAndRouteConfig = [
     to: '/webcams',
     name: 'webcams',
     loggedIn: true,
+    kiosk: true,
     component: () => import('pages/Webcams'),
   },
   {
@@ -69,12 +72,14 @@ const PageAndRouteConfig = [
     icon: icons.tools,
     name: 'memberTools',
     loggedIn: true,
+    kiosk: true,
     children: [
       {
         icon: icons.reportIssue,
         to: '/tools/issue',
         name: 'reportIssue',
         loggedIn: true,
+        kiosk: true,
         component: () => import('pages/ReportIssue'),
       },
       {
@@ -82,6 +87,7 @@ const PageAndRouteConfig = [
         to: '/tools/proxy',
         name: 'proxy',
         loggedIn: true,
+        kiosk: true,
         component: () => import('pages/Proxy'),
       },
       {
@@ -89,6 +95,7 @@ const PageAndRouteConfig = [
         to: '/tools/groups/',
         name: 'groupMembers',
         loggedIn: true,
+        kiosk: true,
         component: () => import('pages/MemberGroups'),
       },
       {
@@ -96,6 +103,7 @@ const PageAndRouteConfig = [
         to: '/tools/swipes/recent',
         name: 'recentSwipes',
         loggedIn: true,
+        kiosk: true,
         component: () => import('pages/RecentSwipes'),
       },
       {
@@ -103,6 +111,7 @@ const PageAndRouteConfig = [
         to: '/tools/swipes/lastseen',
         name: 'lastSeen',
         loggedIn: true,
+        kiosk: true,
         component: () => import('pages/LastSeen'),
       },
     ],
@@ -111,6 +120,7 @@ const PageAndRouteConfig = [
     icon: icons.membership,
     name: 'membership',
     loggedIn: true,
+    kiosk: true,
     children: [
       {
         icon: icons.profile,
@@ -124,6 +134,7 @@ const PageAndRouteConfig = [
         to: '/account/access',
         name: 'checkAccess',
         loggedIn: true,
+        kiosk: true,
         component: () => import('pages/CheckAccess'),
       },
       {
@@ -141,6 +152,7 @@ const PageAndRouteConfig = [
     to: '/logout',
     name: 'logout',
     loggedIn: true,
+    kiosk: true,
     component: () => import('pages/Logout'),
   },
   {
@@ -148,6 +160,7 @@ const PageAndRouteConfig = [
     to: '/login',
     name: 'login',
     loggedIn: false,
+    kiosk: true,
     component: () => import('pages/Login'),
   },
   {
@@ -155,6 +168,7 @@ const PageAndRouteConfig = [
     to: '/register',
     name: 'register',
     loggedIn: false,
+    kiosk: true,
   },
 
   // These are endpoints that handle specific tasks and are not normally accessed.

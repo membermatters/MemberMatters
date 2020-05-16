@@ -1,5 +1,14 @@
+import { Platform } from 'quasar';
+
 export default ({ router, store }) => {
   router.beforeEach((to, from, next) => {
+    // if we're in kiosk mode disallow certain pages
+    if (Platform.is.electron) {
+      if (!to.meta.kiosk) {
+        next({ name: 'dashboard' });
+      }
+    }
+
     // Check if the user must be logged in to access the route
     if (to.meta.loggedIn === true) {
       if (store.getters['profile/loggedIn'] === true) next();
@@ -12,6 +21,7 @@ export default ({ router, store }) => {
     if ((to.path === '/login' || to.path === '/') && store.getters['profile/loggedIn'] === true) {
       next({ name: 'dashboard' });
     }
+
     next();
   });
 };

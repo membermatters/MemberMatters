@@ -26,7 +26,7 @@
         :label="$t(`menuLink.${name}`)"
       >
         <q-item
-          v-for="child in children"
+          v-for="child in visibleLinks"
           clickable
           :inset-level="1"
           :to="{ name: child.name, params: child.defaultParams }"
@@ -87,6 +87,10 @@ export default {
   },
   computed: {
     ...mapGetters('profile', ['loggedIn']),
+    visibleLinks() {
+      // eslint-disable-next-line max-len
+      return this.children.filter((link) => link.loggedIn === this.loggedIn && link.kiosk === this.$q.platform.is.electron);
+    },
   },
 };
 </script>
