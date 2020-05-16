@@ -112,12 +112,6 @@ export default {
       .catch(() => {
         this.errorLoading = true;
       });
-    setInterval(() => {
-      this.getAccess()
-        .catch(() => {
-          this.errorLoading = true;
-        });
-    }, 30000);
   },
   computed: {
     ...mapGetters('profile', ['doorAccess', 'interlockAccess']),

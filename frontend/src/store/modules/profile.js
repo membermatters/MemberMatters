@@ -1,5 +1,7 @@
 import axios from 'axios';
 import Moment from 'moment';
+import idleTimeout from 'idle-timeout';
+import { Platform } from 'quasar';
 
 const getDefaultState = () => ({
   loggedIn: false,
@@ -22,6 +24,18 @@ export default {
       Object.assign(state, getDefaultState());
     },
     setLoggedIn(state, payload) {
+      if (Platform.is.electron && payload === true) {
+        window.IDLETIMEOUT = idleTimeout(
+          () => {
+            this.$router.push({ name: 'logout' });
+          },
+          {
+            element: document,
+            timeout: 1000 * 60,
+            loop: false,
+          },
+        );
+      }
       state.loggedIn = payload;
     },
     setProfile(state, payload) {

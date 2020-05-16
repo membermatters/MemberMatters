@@ -15,6 +15,7 @@
           class="q-gutter-md"
         >
           <q-input
+            autofocus
             filled
             type="email"
             v-model="email"
