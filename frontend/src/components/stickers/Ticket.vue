@@ -9,19 +9,15 @@
     >
       <div class="column q-pl-xl q-py-lg">
         <p class="text-h3">
-          <b>Finder:</b> {{ profile.fullName }}
+          <b>{{ ticketType }}:</b> {{ profile.fullName }}
         </p>
 
         <p class="text-h3 two-lines">
-          <b>Description: </b> Lorem ipsum dolor sit amet, consectetur
-          adipiscing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-          nostrud
-          exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat
+          <b>Description: </b> {{ description }}
         </p>
 
         <p class="text-h3">
-          <b>Date:</b> 02/02/20 <b>Exp:</b> 02/02/20
+          <b>Date:</b> {{ date }} <b>Exp:</b> {{ exp }}
         </p>
       </div>
 
@@ -38,11 +34,29 @@
 <script>
 import { mapGetters } from 'vuex';
 import QRCode from 'qrcode';
-// import htmlToImage from 'html-to-image';
+import Moment from 'moment';
 import icons from '../../icons';
 
 export default {
   name: 'RedTicket',
+  props: {
+    red: {
+      type: Boolean,
+      default: false,
+    },
+    orange: {
+      type: Boolean,
+      default: false,
+    },
+    description: {
+      type: String,
+      default: 'No Description',
+    },
+    qrCodeId: {
+      type: String,
+      default: '0',
+    },
+  },
   data() {
     return {
       qrcode: '',
@@ -53,7 +67,7 @@ export default {
   },
   methods: {
     getIdToken() {
-      QRCode.toDataURL('1,12345', { errorCorrectionLevel: 'H' }, async (err, url) => {
+      QRCode.toDataURL(`1,${this.qrCodeId}`, { errorCorrectionLevel: 'H' }, async (err, url) => {
         this.qrcode = url;
       });
     },
@@ -64,32 +78,19 @@ export default {
     icons() {
       return icons;
     },
+    date() {
+      return Moment().format('DD/MM/YY'); // May 17th 2020, 1:30:47 pm
+    },
+    exp() {
+      return Moment().add(14, 'days').format('DD/MM/YY');
+    },
+    ticketType() {
+      return this.red || this.orange ? 'Finder' : 'Owner';
+    },
   },
 };
 </script>
 
 <style lang="sass" scoped>
-  #sticker-image
-    width: 991px
-    max-width: 991px
-    height: 306px
-
-  .qrcode
-    min-width: 306px
-
-  p
-    max-width: 100%
-    text-overflow: ellipsis
-    white-space: nowrap
-    overflow: hidden
-    margin-bottom: 8px
-    font-size: 2.7rem
-
-  .two-lines
-    font-size: 2.3rem
-    white-space: initial
-    -webkit-line-clamp: 2
-    display: -webkit-box
-    -webkit-box-orient: vertical
-
+@import "src/css/sticker"
 </style>
