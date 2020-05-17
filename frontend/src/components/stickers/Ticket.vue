@@ -13,11 +13,13 @@
         </p>
 
         <p class="text-h3 two-lines">
-          <b>Description: </b> {{ description }}
+          <b>{{ ticketDescription }}: </b> {{ description }}
         </p>
 
         <p class="text-h3">
-          <b>Date:</b> {{ date }} <b>Exp:</b> {{ exp }}
+          <b>Date:</b> {{ date }} <template v-if="!this.orange">
+            <b>Exp:</b> {{ exp }}
+          </template>
         </p>
       </div>
 
@@ -34,6 +36,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import QRCode from 'qrcode';
+import htmlToImage from 'html-to-image';
 import Moment from 'moment';
 import icons from '../../icons';
 
@@ -67,7 +70,7 @@ export default {
   },
   methods: {
     getIdToken() {
-      QRCode.toDataURL(`1,${this.qrCodeId}`, { errorCorrectionLevel: 'H' }, async (err, url) => {
+      QRCode.toDataURL(`3,${this.qrCodeId}`, { errorCorrectionLevel: 'H' }, async (err, url) => {
         this.qrcode = url;
       });
     },
@@ -86,6 +89,9 @@ export default {
     },
     ticketType() {
       return this.red || this.orange ? 'Finder' : 'Owner';
+    },
+    ticketDescription() {
+      return this.orange ? 'Name' : 'Description';
     },
   },
 };

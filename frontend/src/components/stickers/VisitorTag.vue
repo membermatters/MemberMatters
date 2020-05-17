@@ -9,19 +9,19 @@
     >
       <div class="column q-pl-xl q-py-lg">
         <h2 class="q-mt-none q-mb-md">
-          <b>Extended Green Ticket</b>
+          <b>VISITOR TAG</b>
         </h2>
 
         <p class="text-h3">
-          <b>Approved By:</b> {{ approvedBy }}
+          <b>Name:</b> {{ visitorName }}
         </p>
 
         <p class="text-h3">
-          <b>Date Approved:</b> {{ dateApproved }}
+          <b>Supervisor:</b> {{ supervisor }}
         </p>
 
         <p class="text-h3">
-          <b>Date Expires:</b> {{ dateExpires }}
+          <b>Issued:</b> {{ date }}
         </p>
       </div>
 
@@ -44,13 +44,13 @@ import icons from '../../icons';
 export default {
   name: 'ExtendedGreenTicket',
   props: {
-    approvedBy: {
+    visitorName: {
       type: String,
       default: 'No Name',
     },
-    date: {
+    supervisor: {
       type: String,
-      default: '',
+      default: 'None',
     },
     qrCodeId: {
       type: String,
@@ -67,7 +67,7 @@ export default {
   },
   methods: {
     getQrCode() {
-      QRCode.toDataURL(`4,${this.qrCodeId}`, { errorCorrectionLevel: 'H' }, async (err, url) => {
+      QRCode.toDataURL(`1,${this.qrCodeId}`, { errorCorrectionLevel: 'H' }, async (err, url) => {
         this.qrcode = url;
       });
     },
@@ -78,11 +78,8 @@ export default {
     icons() {
       return icons;
     },
-    dateApproved() {
-      return this.date.length ? Moment(this.date).format('DD/MM/YY') : Moment().format('DD/MM/YY');
-    },
-    dateExpires() {
-      return this.date.length ? Moment(this.date).add(1, 'month').format('DD/MM/YY') : Moment().add(1, 'month').format('DD/MM/YY');
+    date() {
+      return Moment().format('DD/MM/YY hh:mm a');
     },
   },
 };
