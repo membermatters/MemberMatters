@@ -60,6 +60,8 @@ export default {
     reset: 'Reset',
     cancel: 'Cancel',
     close: 'Close',
+    connect: 'Connect',
+    disconnect: 'Disconnect',
   },
   loginCard: {
     login: 'Login',
@@ -198,6 +200,25 @@ export default {
     noSavedBilling: 'Sorry, but you don\'t have any valid billing methods. Please add a new '
       + 'billing method by clicking the button below.',
     manageBilling: 'Manage Billing',
+  },
+  loginRfidCard: {
+    swipeCard: 'Swipe Card',
+  },
+  settings: {
+    title: 'Kiosk Settings',
+    description: 'You\'ve opened the kiosk settings. If this was an accident, please close this '
+      + 'window.',
+    rfidScanner: {
+      title: 'RFID Scanner',
+      hostname: 'Hostname',
+      connectionStatus: 'Connection Status',
+      connected: 'Connected',
+      disconnected: 'Disconnected',
+    },
+    other: {
+      title: 'Other',
+      reloadPage: 'Reload Page',
+    },
   },
   entityType: 'Association',
   groups: 'Groups',

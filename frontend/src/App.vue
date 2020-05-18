@@ -8,6 +8,8 @@
         @loginComplete="loginModal = false"
       />
     </q-dialog>
+
+    <settings />
   </div>
 </template>
 
@@ -17,15 +19,50 @@ import { loadStripe } from '@stripe/stripe-js';
 
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import Vue from 'vue';
-import { colors } from 'quasar';
+import { colors, Platform } from 'quasar';
+import Settings from 'components/Settings';
 import store from './store/index';
 import LoginCard from './components/LoginCard';
+
+
+if (Platform.is.electron) {
+  // eslint-disable-next-line global-require
+  const { remote, webFrame } = require('electron');
+
+  const { getCurrentWebContents, Menu, MenuItem } = remote;
+  //
+  let rightClickPosition;
+  //
+  const contextMenu = new Menu();
+  const menuItem = new MenuItem(
+    {
+      label: 'Inspect Element',
+      click: () => {
+        const factor = webFrame.getZoomFactor();
+        const x = Math.round(rightClickPosition.x * factor);
+        const y = Math.round(rightClickPosition.y * factor);
+        getCurrentWebContents().inspectElement(x, y);
+      },
+    },
+  );
+  contextMenu.append(menuItem);
+
+  window.addEventListener(
+    'contextmenu',
+    (event) => {
+      event.preventDefault();
+      rightClickPosition = { x: event.x, y: event.y };
+      contextMenu.popup();
+    },
+    false,
+  );
+}
 
 colors.setBrand('dark', '#313131');
 
 export default {
   name: 'App',
-  components: { LoginCard },
+  components: { Settings, LoginCard },
   store,
   data() {
     return {
@@ -44,6 +81,7 @@ export default {
   methods: {
     ...mapMutations('config', ['setSiteName', 'setHomepageCards', 'setWebcamLinks']),
     ...mapMutations('profile', ['setLoggedIn', 'resetState']),
+    ...mapMutations('rfid', ['setConnected', 'setCardId']),
     ...mapActions('config', ['getSiteConfig']),
     ...mapActions('profile', ['getProfile']),
     updatePageTitle() {
@@ -92,6 +130,9 @@ export default {
     });
   },
   mounted() {
+    this.setConnected(false);
+    this.setCardId(null);
+
     // Get initial portal configuration data
     this.getPortalConfig();
 

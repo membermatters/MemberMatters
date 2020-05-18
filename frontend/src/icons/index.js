@@ -53,4 +53,7 @@ export default {
   edit: pro ? 'fad fa-pencil' : 'fal fa-pencil',
   delete: pro ? 'fad fa-trash-alt' : 'fal fa-trash-alt',
   billing: pro ? 'fad fa-credit-card' : 'fal fa-credit-card',
+
+  rfid: pro ? 'fad fa-wifi' : 'fal fa-wifi',
+  rfidSlash: pro ? 'fad fa-wifi-slash' : 'fal fa-times',
 };

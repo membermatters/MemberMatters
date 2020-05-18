@@ -36,7 +36,6 @@
 <script>
 import { mapGetters } from 'vuex';
 import QRCode from 'qrcode';
-import htmlToImage from 'html-to-image';
 import Moment from 'moment';
 import icons from '../../icons';
 

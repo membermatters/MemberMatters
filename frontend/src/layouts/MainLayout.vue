@@ -24,6 +24,13 @@
             {{ this.toolbarTitle }}
           </template>
         </q-toolbar-title>
+
+        <q-space />
+
+        <q-icon
+          class="rotate-90"
+          :name="connected ? icons.rfid : icons.rfidSlash"
+        />
       </q-toolbar>
     </q-header>
 
@@ -66,14 +73,12 @@
       >
         <q-list>
           <template
-            v-for="link in essentialLinks"
+            v-for="link in filteredLinks"
           >
-            <template v-if="link.loggedIn === loggedIn && link.kiosk === $q.platform.is.electron">
-              <EssentialLink
-                :key="link.title"
-                v-bind="link"
-              />
-            </template>
+            <EssentialLink
+              :key="link.title"
+              v-bind="link"
+            />
           </template>
         </q-list>
       </q-scroll-area>
@@ -142,7 +147,6 @@ import icons from '../icons';
 import MainMenu from '../pages/pageAndRouteConfig';
 import mainMixin from '../mixins/mainMixin';
 
-
 Vue.use(Transitions);
 
 export default {
@@ -165,6 +169,7 @@ export default {
   computed: {
     ...mapGetters('profile', ['loggedIn', 'profile']),
     ...mapGetters('config', ['siteName']),
+    ...mapGetters('rfid', ['connected']),
     icons() {
       return icons;
     },
@@ -173,6 +178,17 @@ export default {
       const name = `${this.$t(nameKey)}`;
       return this.$route.meta.title ? name : this.$t('error.pageNotFound');
     },
+    filteredLinks() {
+      return this.essentialLinks.filter((link) => {
+        let displayLink = true;
+
+        if (link.loggedIn && !this.loggedIn) displayLink = false;
+        if (!link.loggedIn && this.loggedIn) displayLink = false;
+        if (this.$q.platform.is.electron && !link.kiosk) displayLink = false;
+
+        return displayLink;
+      });
+    },
   },
   mounted() {
     if (this.loggedIn) this.getProfile();
@@ -180,22 +196,17 @@ export default {
 };
 </script>
 
-<style scoped>
-  .footer {
-    height: 50px;
-    text-align: center;
-  }
+<style lang="sass" scoped>
+  .footer
+    height: 50px
+    text-align: center
 
-  .q-scrollarea {
-    border-right: none!important;
-  }
+  .q-scrollarea
+    border-right: none!important
 
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity .3s;
-  }
+  .fade-enter-active, .fade-leave-active
+    transition: opacity .3s
 
   .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
-  {
-    opacity: 0;
-  }
+    opacity: 0
 </style>
