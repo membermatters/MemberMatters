@@ -21,6 +21,7 @@ export default {
   groups: pro ? 'fad fa-user-tag' : 'fal fa-user-tag',
   doors: pro ? 'fad fa-door-closed' : 'fal fa-door-closed',
   interlocks: pro ? 'fad fa-plug' : 'fal fa-plug',
+  kiosks: pro ? 'fad fa-desktop' : 'fal fa-desktop',
 
   tools: pro ? 'fad fa-tools' : 'fal fa-tools',
   reportIssue: pro ? 'fad fa-exclamation-triangle' : 'fal fa-exclamation-triangle',

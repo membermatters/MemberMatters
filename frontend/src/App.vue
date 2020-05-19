@@ -82,7 +82,7 @@ export default {
     ...mapMutations('config', ['setSiteName', 'setHomepageCards', 'setWebcamLinks']),
     ...mapMutations('profile', ['setLoggedIn', 'resetState']),
     ...mapMutations('rfid', ['setConnected', 'setCardId']),
-    ...mapActions('config', ['getSiteConfig']),
+    ...mapActions('config', ['getSiteConfig', 'getKioskId', 'pushKioskId']),
     ...mapActions('profile', ['getProfile']),
     updatePageTitle() {
       const pageTitle = this.$route.meta.title;
@@ -121,7 +121,7 @@ export default {
   beforeCreate() {
     this.$axios.interceptors.response.use((response) => response, (error) => {
     // Do something with response error
-      if (error.response.status === 401) {
+      if (error.response.status === 401 && !error.response.config.url.includes('/api/login/')) {
         this.setLoggedIn(false);
         this.resetState();
         this.loginModal = true;
@@ -130,6 +130,13 @@ export default {
     });
   },
   mounted() {
+    if (Platform.is.electron) {
+      this.getKioskId()
+        .then(() => {
+          this.pushKioskId();
+        });
+    }
+
     this.setConnected(false);
     this.setCardId(null);
 

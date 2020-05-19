@@ -18,6 +18,7 @@ export default {
     groups: 'Groups',
     doors: 'Doors',
     interlocks: 'Interlocks',
+    kiosks: 'Kiosks',
 
     memberTools: 'Member Tools',
     reportIssue: 'Report Issue',
@@ -142,6 +143,10 @@ export default {
     chair: 'Chair',
     meetingType: 'Meeting Type',
     meetingDate: 'Meeting Date',
+    name: 'Name',
+    playTheme: 'Play Theme Song',
+    ipAddress: 'IP Address',
+    lastSeen: 'Last Seen',
   },
   digitalId: {
     title: 'Digital ID',
@@ -203,6 +208,7 @@ export default {
   },
   loginRfidCard: {
     swipeCard: 'Swipe Card',
+    failed: 'Sorry we couldn\'t log you in. Please check your card.',
   },
   settings: {
     title: 'Kiosk Settings',
@@ -219,6 +225,15 @@ export default {
       title: 'Other',
       reloadPage: 'Reload Page',
     },
+  },
+  kiosk: {
+    editForm: 'Edit Kiosk',
+    authorised: 'Authorised',
+    updated: 'Successfully updated kiosk.',
+    fail: 'Sorry, there was a problem updating the kiosk.',
+    delete: 'Are you sure you want to delete this kiosk?',
+    nodata: 'There are no kiosks in the system.',
+    kioskId: 'Kiosk ID',
   },
   entityType: 'Association',
   groups: 'Groups',

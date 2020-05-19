@@ -15,7 +15,7 @@ from membermatters.decorators import login_required_401
 from django.views.decorators.csrf import csrf_exempt
 from constance import config
 import json
-import time
+from django.utils.timezone import make_aware
 import datetime
 from pytz import UTC as utc
 from group.models import Group
@@ -26,6 +26,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import *
 from .permissions import DjangoModelPermissionsWithRead
+from .models import Kiosk
 
 
 class GetConfig(APIView):
@@ -111,9 +112,42 @@ class Login(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
+class LoginKiosk(APIView):
+    """
+    KIOSK_ONLY
+
+    post: Attempts to authenticate a user then logs them in if successful.
+    """
+
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        if request.user.is_authenticated:
+            return Response(status=status.HTTP_200_OK)
+
+        body = json.loads(request.body.decode("utf-8"))
+
+        if body.get("cardId") is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = Profile.objects.get(rfid=body.get("cardId")).user
+
+        except Profile.DoesNotExist:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        # rfid matches a user so log them in
+        if user is not None:
+            login(request, user)
+            return Response(status=status.HTTP_200_OK)
+
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
 class Logout(APIView):
     """
-    WEB_ONLY
+    WEB_ONLY, KIOSK_ONLY
 
     post: Ends the user's session and logs them out.
     """
@@ -293,3 +327,79 @@ def api_digital_id(request):
         return JsonResponse({"success": True, "valid": valid})
 
     return HttpResponseNotAllowed(["GET", "POST"])
+
+
+class Kiosks(APIView):
+    """
+    get: retrieves a list of all kiosks.
+    post: creates a new kiosk.
+    put: update an existing kiosk.
+    delete: delete an existing kiosk.
+    """
+
+    def get(self, request):
+        if not request.user.is_authenticated and not request.user.is_admin:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        kiosks = Kiosk.objects.all()
+
+        def get_kiosk(kiosk):
+            return {
+                "id": kiosk.id,
+                "name": kiosk.name,
+                "kioskId": kiosk.kiosk_id,
+                "kioskIp": kiosk.ip_address,
+                "lastSeen": kiosk.last_seen,
+                "playTheme": kiosk.play_theme,
+                "authorised": kiosk.authorised,
+            }
+
+        return Response(list(map(get_kiosk, kiosks)))
+
+    def put(self, request, id=None):
+        body = request.data
+
+        try:
+            if id:
+                kiosk = Kiosk.objects.get(id=id)
+                if not request.user.is_authenticated and not request.user.is_admin:
+                    return Response(status=status.HTTP_403_FORBIDDEN)
+            else:
+                kiosk = Kiosk.objects.get(kiosk_id=body.get("kioskId"))
+
+                if not request.user.is_authenticated and not request.user.is_admin:
+                    return Response(status=status.HTTP_403_FORBIDDEN)
+
+        except Kiosk.DoesNotExist:
+            kiosk = Kiosk.objects.create(
+                last_seen=make_aware(datetime.datetime.now()),
+                kiosk_id=body.get("kioskId"),
+                name=body.get("kioskId"),
+                play_theme=False,
+            )
+
+        if body.get("playTheme"):
+            kiosk.play_theme = body.get("playTheme")
+
+        if body.get("name"):
+            kiosk.name = body.get("name")
+
+        if body.get("authorised") is not None and request.user.is_admin:
+            kiosk.authorised = body.get("authorised")
+
+        kiosk.ip_address = request.META.get(
+            "HTTP_X_REAL_IP", request.META.get("REMOTE_ADDR")
+        )
+        kiosk.checkin()
+        kiosk.save()
+
+        return Response()
+
+    def delete(self, request, id):
+        if not request.user.is_authenticated and not request.user.is_admin:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        kiosk = Kiosk.objects.get(id=id)
+        kiosk.delete()
+
+        return Response()

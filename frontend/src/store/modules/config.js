@@ -1,4 +1,7 @@
 import axios from 'axios';
+import address from 'address';
+import sha256 from 'crypto-js/sha256';
+import CryptoJS from 'crypto-js';
 
 export default {
   namespaced: true,
@@ -10,6 +13,8 @@ export default {
     groups: [],
     keys: {},
     features: {},
+    kioskId: null,
+    kioskIp: null,
   },
   getters: {
     siteName: (state) => state.siteName,
@@ -19,6 +24,8 @@ export default {
     groups: (state) => state.groups,
     keys: (state) => state.keys,
     features: (state) => state.features,
+    kioskId: (state) => state.kioskId,
+    kioskIp: (state) => state.kioskIp,
   },
   mutations: {
     setSiteName(state, payload) {
@@ -42,6 +49,12 @@ export default {
     setFeatures(state, payload) {
       state.features = payload;
     },
+    setKioskId(state, payload) {
+      state.kioskId = payload;
+    },
+    setKioskIp(state, payload) {
+      state.kioskIp = payload;
+    },
   },
   actions: {
     getSiteConfig({ commit }) {
@@ -56,6 +69,27 @@ export default {
             commit('setKeys', result.data.keys);
             commit('setFeatures', result.data.features);
             resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getKioskId({ commit }) {
+      return new Promise((resolve) => {
+        commit('setKioskIp', address.ip());
+        address.mac((err, macAddress) => {
+          commit('setKioskId', sha256(macAddress).toString(CryptoJS.enc.Hex));
+          resolve();
+        });
+      });
+    },
+    pushKioskId({ state }) {
+      return new Promise((resolve, reject) => {
+        axios.put('/api/kiosks/', { name: state.kioskId, kioskId: state.kioskId })
+          .then((result) => {
+            resolve(result);
           })
           .catch((error) => {
             reject();

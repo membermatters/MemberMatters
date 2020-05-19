@@ -15,7 +15,7 @@
           class="q-gutter-md"
         >
           <q-input
-            autofocus
+            :autofocus="!$q.platform.is.electron"
             filled
             type="email"
             v-model="email"

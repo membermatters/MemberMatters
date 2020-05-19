@@ -66,6 +66,13 @@ const PageAndRouteConfig = [
         loggedIn: true,
         component: () => import('pages/Error404'),
       },
+      {
+        icon: icons.kiosks,
+        to: '/manage/kiosks',
+        name: 'kiosks',
+        loggedIn: true,
+        component: () => import('pages/Kiosks'),
+      },
     ],
   },
   {

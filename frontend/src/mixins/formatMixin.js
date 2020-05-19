@@ -14,5 +14,8 @@ export default {
     formatWhen(date) {
       return Moment.utc(date).local().fromNow();
     },
+    capitaliseFirst(value) {
+      return String(value) && String(value)[0].toUpperCase() + String(value).slice(1);
+    },
   },
 };

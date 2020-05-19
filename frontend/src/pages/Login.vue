@@ -10,11 +10,14 @@
 
     <login-card :reset-token="resetToken" />
 
-    <h4 class="q-my-sm">
+    <h4
+      v-if="$q.platform.is.electron"
+      class="q-my-sm"
+    >
       OR
     </h4>
 
-    <login-rfid-card />
+    <login-rfid-card v-if="$q.platform.is.electron" />
   </q-page>
 </template>
 

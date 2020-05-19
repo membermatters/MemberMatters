@@ -57,6 +57,7 @@
 </template>
 
 <script>
+/* eslint-disable no-console */
 import icons from 'src/icons';
 import { mapGetters, mapMutations } from 'vuex';
 import Vue from 'vue';
@@ -87,12 +88,10 @@ export default {
   methods: {
     ...mapMutations('rfid', ['setConnected', 'setReaderUrl', 'setCardId']),
     connectReader() {
-      console.log(`Opening connection to ${this.readerUrl}`);
       const ws = new WebSocket(this.readerUrl, ['arduino']);
       Vue.prototype.$rfid = ws;
 
       ws.onopen = () => {
-        console.log('connected');
         ws.send('something');
         this.setConnected(true);
       };
@@ -102,10 +101,7 @@ export default {
           if (message.data.startsWith('c:')) {
             const cardId = message.data.replace('c:', '');
 
-            console.log(`Received card: ${cardId}`);
             this.setCardId(cardId);
-          } else {
-            console.warn(`Received unknown socket message! ${message.data}`);
           }
         } else console.warn('Received corrupt socket message!');
       };

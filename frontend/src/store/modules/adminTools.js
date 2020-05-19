@@ -6,10 +6,12 @@ export default {
   state: {
     meetings: [],
     meetingTypes: [],
+    kiosks: [],
   },
   getters: {
     meetings: (state) => state.meetings,
     meetingTypes: (state) => state.meetingTypes,
+    kiosks: (state) => state.kiosks,
   },
   mutations: {
     setMeetings(state, payload) {
@@ -17,6 +19,9 @@ export default {
     },
     setMeetingTypes(state, payload) {
       state.meetingTypes = payload;
+    },
+    setKiosks(state, payload) {
+      state.kiosks = payload;
     },
   },
   actions: {
@@ -43,6 +48,19 @@ export default {
               value: type.value,
             }));
             commit('setMeetingTypes', results);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getKiosks({ commit }) {
+      return new Promise((resolve, reject) => {
+        axios.get('/api/kiosks/')
+          .then((result) => {
+            commit('setKiosks', result.data);
             resolve();
           })
           .catch((error) => {
