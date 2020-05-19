@@ -37,10 +37,13 @@ if os.environ.get("PORTAL_ENV") == "Production":
     DEBUG = False
     ALLOWED_HOSTS = [
         os.environ.get("PORTAL_DOMAIN", "portal.example.org"),
+        "localhost",
+    ]
+    CORS_ORIGIN_WHITELIST = [
+        "https://" + os.environ.get("PORTAL_DOMAIN", "portal.example.org"),
         "capacitor://localhost",
         "http://localhost",
     ]
-    CORS_ORIGIN_WHITELIST = ALLOWED_HOSTS
 
     # Slightly hacky, but allows a direct IP while on the local network.
     # These may or may not be required for the interlocks, doors, etc. depending on your setup
