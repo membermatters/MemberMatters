@@ -6,7 +6,7 @@
           <q-icon
             class="rotate-90 q-mt-xs q-mr-sm"
             style="font-size: 90%;"
-            :name="icons.rfid"
+            :name="connected ? icons.rfid : icons.rfidSlash"
           /> {{ $t('loginRfidCard.swipeCard') }}
         </h5>
 
@@ -55,7 +55,7 @@ export default {
     ...mapMutations('profile', ['setLoggedIn']),
   },
   computed: {
-    ...mapGetters('rfid', ['cardId']),
+    ...mapGetters('rfid', ['cardId', 'connected']),
     ...mapGetters('config', ['kioskId']),
     icons() {
       return icons;

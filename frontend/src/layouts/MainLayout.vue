@@ -28,6 +28,7 @@
         <q-space />
 
         <q-icon
+          v-if="$q.platform.is.electron"
           class="rotate-90"
           :name="connected ? icons.rfid : icons.rfidSlash"
         />

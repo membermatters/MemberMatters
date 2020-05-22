@@ -127,7 +127,7 @@ class LoginKiosk(APIView):
 
         body = json.loads(request.body.decode("utf-8"))
 
-        if body.get("cardId") is None:
+        if body.get("cardId") is None and body.get("kioskId") is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -135,6 +135,11 @@ class LoginKiosk(APIView):
 
         except Profile.DoesNotExist:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        kiosk = Kiosk.objects.get(kiosk_id=body.get("kioskId"))
+
+        if not kiosk.authorised:
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
         # rfid matches a user so log them in
         if user is not None:

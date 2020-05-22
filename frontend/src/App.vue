@@ -9,7 +9,7 @@
       />
     </q-dialog>
 
-    <settings />
+    <settings v-if="$q.platform.is.electron" />
   </div>
 </template>
 
