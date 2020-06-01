@@ -1,6 +1,8 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 
+const path = require('path');
+
 // eslint-disable-next-line func-names,no-unused-vars
 module.exports = function (ctx) {
   return {
@@ -73,6 +75,14 @@ module.exports = function (ctx) {
               .getFormatter('stylish'),
           },
         });
+
+        cfg.resolve.alias = {
+          ...cfg.resolve.alias,
+          '@components': path.resolve(__dirname, './src/components'),
+          '@icons': path.resolve(__dirname, './src/icons'),
+          '@store': path.resolve(__dirname, './src/store'),
+          '@mixins': path.resolve(__dirname, './src/mixins'),
+        };
       },
     },
 
@@ -80,8 +90,8 @@ module.exports = function (ctx) {
     devServer: {
       https: false,
       port: ctx.mode.electron ? 8081 : 8080,
-      host: '0.0.0.0',
-      open: false, // opens browser window automatically
+      host: '127.0.0.1',
+      open: true, // opens browser window automatically
       proxy: {
         // proxy all requests starting with /api to
         '/api': {
