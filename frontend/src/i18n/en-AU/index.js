@@ -40,6 +40,7 @@ export default {
     403: ' Sorry, you don\'t have permission to access this page. (Error 403)',
     404: ' Sorry, that page could not be found. (Error 404)',
     500: ' Sorry, there was a server error. Please try again later. (Error 500)',
+    501: ' Sorry, this feature hasn\'t been implemented yet. Please try again later. (Error 501)',
   },
   logoutPage: {
     logoutSuccess: 'Logout successful.',

@@ -21,23 +21,6 @@
     :loading="loading"
     :grid="$q.screen.xs"
   >
-    <template v-slot:top-left>
-      <q-btn
-        color="accent"
-        :icon="icons.add"
-        :label="$t('meetingForm.newMeeting')"
-        @click="newMeeting = true"
-        class="q-mb-sm"
-      />
-
-      <q-dialog
-        v-model="newMeeting"
-        persistent
-      >
-        <meeting-form />
-      </q-dialog>
-    </template>
-
     <template v-slot:top-right>
       <q-input
         outlined
@@ -104,22 +87,17 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import MeetingsDetails from 'components/MeetingDetails';
-import icons from '../icons';
-import formatMixin from '../mixins/formatMixin';
-import MeetingForm from './MeetingForm';
+import icons from '@icons';
+import formatMixin from '@mixins/formatMixin';
 
 export default {
-  name: 'MeetingsList',
-  components: { MeetingsDetails, MeetingForm },
+  name: 'MembersList',
+  components: {},
   mixins: [formatMixin],
   data() {
     return {
       filter: '',
       loading: false,
-      newMeeting: false,
-      editMeetingDialog: false,
-      editMeetingId: 0,
       pagination: {
         sortBy: 'date',
         descending: true,
