@@ -88,8 +88,17 @@ export default {
   computed: {
     ...mapGetters('profile', ['loggedIn']),
     visibleLinks() {
-      // eslint-disable-next-line max-len
-      return this.children.filter((link) => link.loggedIn === this.loggedIn && link.kiosk === this.$q.platform.is.electron);
+      return this.children.filter((link) => {
+        if (link.loggedIn === true) {
+          if (!this.loggedIn) return false;
+        }
+
+        if (this.$q.platform.is.electron && !link.kiosk) {
+          return false;
+        }
+
+        return true;
+      });
     },
   },
 };

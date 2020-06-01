@@ -36,7 +36,7 @@ const PageAndRouteConfig = [
         to: '/manage/members',
         name: 'members',
         loggedIn: true,
-        component: () => import('pages/Error404'),
+        component: () => import('pages/AdminTools/Members'),
       },
       {
         icon: icons.meetings,
@@ -50,21 +50,21 @@ const PageAndRouteConfig = [
         to: '/manage/groups',
         name: 'groups',
         loggedIn: true,
-        component: () => import('pages/Error404'),
+        component: () => import('pages/Error501'),
       },
       {
         icon: icons.doors,
         to: '/manage/doors',
         name: 'doors',
         loggedIn: true,
-        component: () => import('pages/Error404'),
+        component: () => import('pages/Error501'),
       },
       {
         icon: icons.interlocks,
         to: '/manage/interlocks',
         name: 'interlocks',
         loggedIn: true,
-        component: () => import('pages/Error404'),
+        component: () => import('pages/Error501'),
       },
       {
         icon: icons.kiosks,

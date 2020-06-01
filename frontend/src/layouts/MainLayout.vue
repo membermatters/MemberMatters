@@ -183,8 +183,12 @@ export default {
       return this.essentialLinks.filter((link) => {
         let displayLink = true;
 
-        if (link.loggedIn && !this.loggedIn) displayLink = false;
-        if (!link.loggedIn && this.loggedIn) displayLink = false;
+        if (link.loggedIn) {
+          if (!this.loggedIn) displayLink = false;
+        }
+        if (!link.loggedIn) {
+          if (this.loggedIn) displayLink = false;
+        }
         if (this.$q.platform.is.electron && !link.kiosk) displayLink = false;
 
         return displayLink;
