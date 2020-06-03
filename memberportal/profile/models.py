@@ -252,7 +252,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.save()
         self.email_password_reset(
             config.SITE_URL
-            + reverse("reset_password", kwargs={"reset_token": self.password_reset_key})
+            + reverse(
+                "api_reset_password", kwargs={"reset_token": self.password_reset_key}
+            )
         )
 
         return True
