@@ -1,4 +1,4 @@
-import axios from 'axios';
+import Vue from 'vue';
 import { i18n } from '../../boot/i18n';
 
 export default {
@@ -27,7 +27,7 @@ export default {
   actions: {
     getMeetings({ commit }) {
       return new Promise((resolve, reject) => {
-        axios.get('/api/meetings/')
+        Vue.prototype.$axios.get('/api/meetings/')
           .then((result) => {
             commit('setMeetings', result.data);
             resolve();
@@ -40,7 +40,7 @@ export default {
     },
     getMeetingTypes({ commit }) {
       return new Promise((resolve, reject) => {
-        axios.get('/api/meetings/types/')
+        Vue.prototype.$axios.get('/api/meetings/types/')
           .then((result) => {
             // eslint-disable-next-line no-return-assign
             const results = result.data.map((type) => ({
@@ -58,7 +58,7 @@ export default {
     },
     getKiosks({ commit }) {
       return new Promise((resolve, reject) => {
-        axios.get('/api/kiosks/')
+        Vue.prototype.$axios.get('/api/kiosks/')
           .then((result) => {
             commit('setKiosks', result.data);
             resolve();

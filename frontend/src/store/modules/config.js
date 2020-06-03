@@ -1,7 +1,7 @@
-import axios from 'axios';
 import address from 'address';
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
+import Vue from 'vue';
 
 export default {
   namespaced: true,
@@ -59,7 +59,7 @@ export default {
   actions: {
     getSiteConfig({ commit }) {
       return new Promise((resolve, reject) => {
-        axios.get('/api/config/')
+        Vue.prototype.$axios.get('/api/config/')
           .then((result) => {
             commit('setSiteName', result.data.general.siteName);
             commit('setSiteOwner', result.data.general.siteOwner);
@@ -87,7 +87,7 @@ export default {
     },
     pushKioskId({ state }) {
       return new Promise((resolve, reject) => {
-        axios.put('/api/kiosks/', { name: state.kioskId, kioskId: state.kioskId })
+        Vue.prototype.$axios.put('/api/kiosks/', { name: state.kioskId, kioskId: state.kioskId })
           .then((result) => {
             resolve(result);
           })

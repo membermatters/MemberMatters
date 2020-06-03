@@ -1,7 +1,7 @@
-import axios from 'axios';
 import Moment from 'moment';
 import idleTimeout from 'idle-timeout';
 import { Platform } from 'quasar';
+import Vue from 'vue';
 
 const getDefaultState = () => ({
   loggedIn: false,
@@ -51,7 +51,7 @@ export default {
   actions: {
     getAccess({ commit }) {
       return new Promise((resolve, reject) => {
-        axios.get('/api/access/permissions/')
+        Vue.prototype.$axios.get('/api/access/permissions/')
           .then((response) => {
             commit('setDoorAccess', response.data.doors);
             commit('setInterlockAccess', response.data.interlocks);
@@ -65,7 +65,7 @@ export default {
     },
     getProfile({ commit }) {
       return new Promise((resolve, reject) => {
-        axios.get('/api/profile/')
+        Vue.prototype.$axios.get('/api/profile/')
           .then((response) => {
             response.data.firstJoined = Moment(response.data.firstJoined).format('Do MMMM YYYY');
             commit('setProfile', response.data);

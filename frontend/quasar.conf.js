@@ -8,6 +8,7 @@ module.exports = function (ctx) {
   return {
     // https://quasar.dev/quasar-cli/cli-documentation/boot-files
     boot: [
+      'sentry',
       'i18n',
       'axios',
       'fontawesome-pro',
@@ -51,7 +52,7 @@ module.exports = function (ctx) {
         proIcons: true,
 
         // When running with capacitor this value is used for the base URL for all API requests
-        capacitorBaseUrl: JSON.stringify(process.env.API_BASE_URL),
+        apiBaseUrl: JSON.stringify(process.env.API_BASE_URL),
       },
 
       vueRouterMode: 'history',
@@ -169,6 +170,8 @@ module.exports = function (ctx) {
       bundler: 'packager', // 'packager' or 'builder'
 
       packager: {
+        platform: 'all',
+        overwrite: true,
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
 
         // OS X / Mac App Store

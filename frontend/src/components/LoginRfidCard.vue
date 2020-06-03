@@ -40,7 +40,6 @@
 <script>
 import icons from 'src/icons';
 import { mapGetters, mapMutations } from 'vuex';
-import axios from 'axios';
 
 export default {
   name: 'LoginRfidCard',
@@ -63,7 +62,7 @@ export default {
   },
   watch: {
     cardId(card) {
-      axios.post('/api/login/kiosk/', { cardId: card, kioskId: this.kioskId })
+      this.$axios.post('/api/login/kiosk/', { cardId: card, kioskId: this.kioskId })
         .then(() => {
           this.loginComplete = true;
           this.loginFailed = false;
