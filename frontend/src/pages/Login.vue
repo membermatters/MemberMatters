@@ -3,7 +3,7 @@
     <template>
       <q-img
         contain
-        src="../assets/img/logo/logo-small.png"
+        src="../assets/img/logo/HSBNE_logo.png"
         class="header-image-mobile q-my-lg"
       />
     </template>

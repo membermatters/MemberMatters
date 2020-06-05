@@ -14,7 +14,7 @@
           icon="fal fa-bars"
           aria-label="Menu"
           @click="mainMenuOpen = !mainMenuOpen"
-          v-if="loggedIn"
+          v-if="loggedIn && !Platform.is.electron"
         />
 
         <q-toolbar-title class="row">
@@ -89,7 +89,7 @@
       <div class="footer q-pt-md">
         <q-img
           contain
-          src="../assets/img/logo/logo-small.png"
+          src="../assets/img/logo/HSBNE_logo.png"
           style="max-height: 40px; cursor: pointer;"
           @click="aboutMemberMatters = true"
         />
@@ -144,6 +144,7 @@ import EssentialLink from 'components/EssentialLink';
 import { mapActions, mapGetters } from 'vuex';
 import Transitions, { FadeTransition } from 'vue2-transitions';
 import Vue from 'vue';
+import { Platform } from 'quasar';
 import icons from '../icons';
 import MainMenu from '../pages/pageAndRouteConfig';
 import mainMixin from '../mixins/mainMixin';
@@ -159,7 +160,7 @@ export default {
   },
   data() {
     return {
-      mainMenuOpen: false,
+      mainMenuOpen: !!Platform.is.electron,
       essentialLinks: MainMenu,
       aboutMemberMatters: false,
     };
@@ -168,6 +169,9 @@ export default {
     ...mapActions('profile', ['getProfile']),
   },
   computed: {
+    Platform() {
+      return Platform;
+    },
     ...mapGetters('profile', ['loggedIn', 'profile']),
     ...mapGetters('config', ['siteName']),
     ...mapGetters('rfid', ['connected']),

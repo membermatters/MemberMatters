@@ -2,7 +2,14 @@
   <q-page class="row flex content-start justify-center">
     <div v-if="loggedIn">
       <h5 class="q-ma-md">
-        Useful Resources
+        {{ $t('dashboard.quickActions') }}
+      </h5>
+      <div class="row">
+        <quick-actions />
+      </div>
+
+      <h5 class="q-ma-md">
+        {{ $t('dashboard.usefulResources') }}
       </h5>
       <div class="row">
         <dashboard-card
@@ -24,11 +31,12 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import QuickActions from 'components/QuickActions';
 import DashboardCard from '../components/DashboardCard';
 
 export default {
   name: 'DashboardPage',
-  components: { DashboardCard },
+  components: { QuickActions, DashboardCard },
   computed: {
     ...mapGetters('config', ['homepageCards']),
     ...mapGetters('profile', ['loggedIn']),

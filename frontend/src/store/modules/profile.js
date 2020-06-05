@@ -8,6 +8,7 @@ const getDefaultState = () => ({
   profile: {},
   doorAccess: [],
   interlockAccess: [],
+  siteSignedIn: false,
 });
 
 export default {
@@ -18,13 +19,15 @@ export default {
     profile: (state) => state.profile,
     doorAccess: (state) => state.doorAccess,
     interlockAccess: (state) => state.interlockAccess,
+    siteSignedIn: (state) => state.siteSignedIn,
   },
   mutations: {
     resetState(state) {
       Object.assign(state, getDefaultState());
     },
     setLoggedIn(state, payload) {
-      if (Platform.is.electron && payload === true) {
+      // If we're on electron, logged in, and not in dev then enable auto logout after 60s
+      if (Platform.is.electron && payload === true && process.env.NODE_ENV !== 'Development') {
         window.IDLETIMEOUT = idleTimeout(
           () => {
             this.$router.push({ name: 'logout' });
@@ -46,6 +49,9 @@ export default {
     },
     setInterlockAccess(state, payload) {
       state.interlockAccess = payload;
+    },
+    setSiteSignedIn(state, payload) {
+      state.siteSignedIn = payload;
     },
   },
   actions: {

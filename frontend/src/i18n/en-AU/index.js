@@ -30,6 +30,10 @@ export default {
     checkAccess: 'Check Access',
     memberbucks: 'Spacebucks',
   },
+  dashboard: {
+    usefulResources: 'Useful Resources',
+    quickActions: 'Quick Actions',
+  },
   error: {
     error: 'Error',
     loginFailed: 'Your username or password was incorrect.',
