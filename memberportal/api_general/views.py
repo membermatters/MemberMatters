@@ -150,6 +150,7 @@ class LoginKiosk(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
+@csrf_exempt
 class Logout(APIView):
     """
     WEB_ONLY, KIOSK_ONLY
