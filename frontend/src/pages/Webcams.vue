@@ -4,6 +4,16 @@
       <p class="text-body1 col-12 text-center q-px-md q-pt-md">
         {{ $t('webcams.pageDescription') }}
       </p>
+
+      <q-banner
+        inline-actions
+        class="text-white bg-warning text-center"
+        style="max-width: 1200px;"
+      >
+        Due to the recent upgrade of our camera system, these snapshots are currently not updating.
+        Thanks for your patience while this is fixed.
+      </q-banner>
+
       <div
         v-for="link in webcamLinks"
         class="col-xs-12 col-sm-6 q-pa-sm"

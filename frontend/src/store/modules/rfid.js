@@ -19,6 +19,10 @@ export default {
     },
     setCardId(state, payload) {
       state.cardId = payload;
+
+      setTimeout(() => {
+        state.cardId = null;
+      }, 1000);
     },
   },
 };
