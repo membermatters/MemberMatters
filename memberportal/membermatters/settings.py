@@ -36,6 +36,7 @@ SECRET_KEY = os.environ.get(
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
 SESSION_COOKIE_SAMESITE = None
+CSRF_COOKIE_SAMESITE = None
 
 # this allows the frontend dev server to talk to the dev server
 CORS_ORIGIN_WHITELIST = [
