@@ -208,7 +208,7 @@ export default {
     manageBilling: 'Manage Billing',
   },
   loginRfidCard: {
-    swipeCard: 'Swipe Card',
+    swipeCard: 'Tap Card',
     failed: 'Sorry we couldn\'t log you in. Please check your card.',
   },
   settings: {
