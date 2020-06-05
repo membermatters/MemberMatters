@@ -342,6 +342,8 @@ class Kiosks(APIView):
     delete: delete an existing kiosk.
     """
 
+    permission_classes = (permissions.AllowAny,)
+
     def get(self, request):
         if not request.user.is_authenticated and not request.user.is_admin:
             return Response(status=status.HTTP_403_FORBIDDEN)
