@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md">
+  <div>
     <q-dialog v-model="settingsDialog">
       <q-card>
         <q-card-section>
