@@ -25,23 +25,24 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 import icons from '@icons';
 
 export default {
   name: 'QuickActions',
   methods: {
+    ...mapMutations('profile', ['setSiteSignedIn']),
     doSignIn() {
-      console.log('sign in triggered');
-
       this.$axios.post('/api/sitesessions/signin/', { guests: [] })
         .then(() => {
+          this.setSiteSignedIn(true);
           this.$q.dialog({
             title: 'Success',
             message: this.$t('dashboard.signinSuccess'),
           });
         })
         .catch(() => {
+          this.setSiteSignedIn(false);
           this.$q.dialog({
             title: 'Alert',
             message: this.$t('dashboard.signinError'),
@@ -49,10 +50,9 @@ export default {
         });
     },
     doSignOut() {
-      console.log('sign out triggered');
-
       this.$axios.put('/api/sitesessions/signout/')
         .then(() => {
+          this.setSiteSignedIn(false);
           this.$router.push({ name: 'logout' });
         })
         .catch(() => {
@@ -77,7 +77,7 @@ export default {
       } else {
         actions.push({
           title: 'Site Sign In',
-          icon: icons.login,
+          icon: icons.signin,
           click: this.doSignIn,
         });
       }

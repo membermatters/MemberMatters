@@ -23,7 +23,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { mapMutations } from 'vuex';
 
 export default {
@@ -35,7 +34,7 @@ export default {
     };
   },
   mounted() {
-    axios
+    this.$axios
       .post('/api/logout/')
       .then(() => {
         this.completeLogout();

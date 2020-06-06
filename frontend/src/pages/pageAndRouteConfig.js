@@ -2,7 +2,7 @@ import icons from '../icons';
 
 const PageAndRouteConfig = [
   {
-    icon: icons.login, // specify the icon to use
+    icon: icons.signin, // specify the icon to use
     to: '/', // specify the URL route for this page
     name: 'rootIndex', // specify the name of this URL route
     loggedIn: false, // only allow access to logged in users if true or logged out users if false
@@ -180,7 +180,7 @@ const PageAndRouteConfig = [
 
   // These are endpoints that handle specific tasks and are not normally accessed.
   {
-    icon: icons.login, // specify the icon to use
+    icon: icons.signin, // specify the icon to use
     to: '/profile/password/reset/:resetToken', // specify the URL route for this page
     name: 'resetPassword', // specify the name of this URL route
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
