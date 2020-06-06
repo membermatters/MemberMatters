@@ -11,7 +11,6 @@ export default {
   sadFace: pro ? 'fad fa-frown' : 'fal fa-frown',
 
   // all of these are for pages
-  login: pro ? 'fad fa-sign-in' : 'fal fa-sign-in',
   dashboard: pro ? 'fad fa-columns' : 'fal fa-columns',
   webcams: pro ? 'fad fa-webcam' : 'fal fa-webcam',
 
