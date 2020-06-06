@@ -35,6 +35,7 @@ SECRET_KEY = os.environ.get(
 # Default config is for dev environments and is overwritten in prod
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
+SESSION_COOKIE_HTTPONLY = False
 SESSION_COOKIE_SAMESITE = None
 CSRF_COOKIE_SAMESITE = None
 

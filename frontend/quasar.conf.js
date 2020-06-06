@@ -170,7 +170,7 @@ module.exports = function (ctx) {
       bundler: 'packager', // 'packager' or 'builder'
 
       packager: {
-        platform: 'all',
+        // platform: 'all',
         overwrite: true,
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
 

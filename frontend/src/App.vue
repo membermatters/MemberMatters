@@ -17,7 +17,7 @@
 // We should include Stripe everywhere to enable better fraud protection
 import { loadStripe } from '@stripe/stripe-js';
 
-import { mapGetters, mapMutations, mapActions } from 'vuex';
+import { mapActions, mapGetters, mapMutations } from 'vuex';
 import Vue from 'vue';
 import { colors, Platform } from 'quasar';
 import Settings from 'components/Settings';
@@ -28,7 +28,6 @@ import LoginCard from './components/LoginCard';
 if (Platform.is.electron) {
   // eslint-disable-next-line global-require
   const { remote, webFrame } = require('electron');
-
   const { getCurrentWebContents, Menu, MenuItem } = remote;
   //
   let rightClickPosition;
@@ -119,6 +118,29 @@ export default {
     },
   },
   beforeCreate() {
+    if (Platform.is.electron) {
+      // eslint-disable-next-line global-require
+      const { remote } = require('electron');
+
+      this.$axios.interceptors.request.use(async (config) => {
+        // Grab the csrf token
+        const cookies = await remote.session.defaultSession.cookies.get(
+          { url: process.env.apiBaseUrl },
+        );
+
+        if (!cookies.length) return config;
+
+        const [csrfToken] = cookies.filter((cookie) => cookie.name === 'csrftoken');
+
+        config.headers['X-CSRFTOKEN'] = csrfToken.value;
+
+        return config;
+      },
+      (error) => {
+        Promise.reject(error);
+      });
+    }
+
     this.$axios.interceptors.response.use((response) => response, (error) => {
     // Do something with response error
       if (error.response.status === 401 && !error.response.config.url.includes('/api/login/')) {
@@ -137,7 +159,6 @@ export default {
         });
     }
 
-    this.setConnected(false);
     this.setCardId(null);
 
     // Get initial portal configuration data
