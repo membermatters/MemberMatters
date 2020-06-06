@@ -150,15 +150,12 @@ class LoginKiosk(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
-@csrf_exempt
 class Logout(APIView):
     """
     WEB_ONLY, KIOSK_ONLY
 
     post: Ends the user's session and logs them out.
     """
-
-    permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
         logout(request)
@@ -370,13 +367,15 @@ class Kiosks(APIView):
         try:
             if id:
                 kiosk = Kiosk.objects.get(id=id)
+
+                kiosk.ip_address = request.META.get(
+                    "HTTP_X_REAL_IP", request.META.get("REMOTE_ADDR")
+                )
+                kiosk.checkin()
                 if not request.user.is_authenticated and not request.user.is_admin:
                     return Response(status=status.HTTP_403_FORBIDDEN)
             else:
                 kiosk = Kiosk.objects.get(kiosk_id=body.get("kioskId"))
-
-                if not request.user.is_authenticated and not request.user.is_admin:
-                    return Response(status=status.HTTP_403_FORBIDDEN)
 
         except Kiosk.DoesNotExist:
             kiosk = Kiosk.objects.create(
@@ -386,19 +385,17 @@ class Kiosks(APIView):
                 play_theme=False,
             )
 
-        if body.get("playTheme"):
-            kiosk.play_theme = body.get("playTheme")
+        if request.user.is_authenticated:
+            if request.user.is_admin:
+                if body.get("playTheme"):
+                    kiosk.play_theme = body.get("playTheme")
 
-        if body.get("name"):
-            kiosk.name = body.get("name")
+                if body.get("name"):
+                    kiosk.name = body.get("name")
 
-        if body.get("authorised") is not None and request.user.is_admin:
-            kiosk.authorised = body.get("authorised")
+                if body.get("authorised") is not None and request.user.is_admin:
+                    kiosk.authorised = body.get("authorised")
 
-        kiosk.ip_address = request.META.get(
-            "HTTP_X_REAL_IP", request.META.get("REMOTE_ADDR")
-        )
-        kiosk.checkin()
         kiosk.save()
 
         return Response()
