@@ -3,6 +3,7 @@ from django.http import (
     HttpResponseBadRequest,
     HttpResponseForbidden,
     HttpResponseNotAllowed,
+    HttpResponse,
 )
 from django.contrib.auth import (
     authenticate,
@@ -150,17 +151,17 @@ class LoginKiosk(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
-class Logout(APIView):
+@csrf_exempt
+def Logout(request):
     """
     WEB_ONLY, KIOSK_ONLY
 
     post: Ends the user's session and logs them out.
     """
 
-    def post(self, request):
-        logout(request)
+    logout(request)
 
-        return Response()
+    return HttpResponse()
 
 
 @require_POST
