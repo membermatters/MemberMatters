@@ -1,12 +1,14 @@
 <template>
   <q-page class="row flex content-start justify-center">
     <div v-if="loggedIn">
-      <h5 class="q-ma-md">
-        {{ $t('dashboard.quickActions') }}
-      </h5>
-      <div class="row">
-        <quick-actions />
-      </div>
+      <template v-if="Platform.is.electron">
+        <h5 class="q-ma-md">
+          {{ $t('dashboard.quickActions') }}
+        </h5>
+        <div class="row">
+          <quick-actions />
+        </div>
+      </template>
 
       <h5 class="q-ma-md">
         {{ $t('dashboard.usefulResources') }}
@@ -32,12 +34,16 @@
 <script>
 import { mapGetters } from 'vuex';
 import QuickActions from 'components/QuickActions';
+import { Platform } from 'quasar';
 import DashboardCard from '../components/DashboardCard';
 
 export default {
   name: 'DashboardPage',
   components: { QuickActions, DashboardCard },
   computed: {
+    Platform() {
+      return Platform;
+    },
     ...mapGetters('config', ['homepageCards']),
     ...mapGetters('profile', ['loggedIn']),
   },

@@ -19,6 +19,7 @@ from django.conf import settings
 from profile.xerohelpers import get_xero_contact, create_membership_invoice
 from profile.xerohelpers import add_to_xero
 from constance import config
+from api_general.models import SiteSession
 import json
 import uuid
 
@@ -466,6 +467,11 @@ class Profile(models.Model):
 
     def create_membership_invoice(self, email_invoice=True):
         return create_membership_invoice(self.user, email_invoice)
+
+    def is_signed_into_site(self):
+        sessions = SiteSession.objects.filter(user=self, signout_date=None)
+
+        return True if len(sessions) else False
 
     def save(self, *args, **kwargs):
         """ On save, update timestamps """

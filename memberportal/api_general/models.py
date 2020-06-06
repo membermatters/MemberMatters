@@ -2,9 +2,8 @@ from django.db import models
 from datetime import timedelta
 from django.utils import timezone
 import pytz
-from django.contrib import auth
+from django.conf import settings
 
-User = auth.get_user_model()
 utc = pytz.UTC
 
 
@@ -31,3 +30,17 @@ class Kiosk(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class SiteSession(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    signin_date = models.DateTimeField(default=timezone.now)
+    signout_date = models.DateTimeField(null=True, blank=True)
+    guests = models.TextField(default="[]")
+
+    def signout(self):
+        self.signout_date = timezone.now()
+        self.save()
+
+    def __str__(self):
+        return f"{self.user.profile.get_full_name()} - in: {self.signin_date} out: {self.signout_date}"

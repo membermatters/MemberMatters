@@ -21,5 +21,14 @@ urlpatterns = [
     path("api/profile/password/", views.api_password, name="api_password"),
     path("api/profile/idtoken/", views.api_digital_id, name="api_digital_id"),
     path("api/kiosks/", views.Kiosks.as_view(), name="api_kiosks"),
+    path(
+        "api/sitesessions/signin/", views.SiteSignIn.as_view(), name="api_site_sign_in"
+    ),
+    path(
+        "api/sitesessions/signout/",
+        views.SiteSignOut.as_view(),
+        name="api_site_sign_out",
+    ),
+    path("api/sitesessions/", views.SiteSessions.as_view(), name="api_site_sessions"),
     path("api/kiosks/<int:id>/", views.Kiosks.as_view(), name="api_kiosks"),
 ]

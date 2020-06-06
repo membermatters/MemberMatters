@@ -27,7 +27,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import *
 from .permissions import DjangoModelPermissionsWithRead
-from .models import Kiosk
+from .models import Kiosk, SiteSession
 
 
 class GetConfig(APIView):
@@ -409,3 +409,42 @@ class Kiosks(APIView):
         kiosk.delete()
 
         return Response()
+
+
+class SiteSignIn(APIView):
+    """
+    post: sign a member in.
+    """
+
+    def post(self, request):
+        body = request.data
+        guests = body.get("guests")
+
+        SiteSession.objects.create(user=request.user, guests=guests)
+
+        return Response()
+
+
+class SiteSignOut(APIView):
+    """
+    put: sign a member out.
+    """
+
+    def put(self, request):
+        session = SiteSession.objects.filter(user=request.user).order_by(
+            "-signin_date"
+        )[0]
+        session.signout()
+
+        return Response()
+
+
+class SiteSessions(APIView):
+    """
+    get: gets all members signed into the site.
+    """
+
+    def get(self, request):
+        sessions = SiteSession.objects.filter().order_by("-signin_date")
+
+        return Response(sessions)

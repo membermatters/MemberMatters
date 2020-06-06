@@ -5,8 +5,8 @@
       v-for="action in quickActions"
       :key="action.title"
     >
-      <router-link
-        :to="action.to"
+      <a
+        @click="action.click"
       >
         <q-card
           class="q-pa-xl column justify-center items-center"
@@ -19,7 +19,7 @@
             :name="action.icon"
           />
         </q-card>
-      </router-link>
+      </a>
     </div>
   </div>
 </template>
@@ -30,6 +30,39 @@ import icons from '@icons';
 
 export default {
   name: 'QuickActions',
+  methods: {
+    doSignIn() {
+      console.log('sign in triggered');
+
+      this.$axios.post('/api/sitesessions/signin/', { guests: [] })
+        .then(() => {
+          this.$q.dialog({
+            title: 'Success',
+            message: this.$t('dashboard.signinSuccess'),
+          });
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: 'Alert',
+            message: this.$t('dashboard.signinError'),
+          });
+        });
+    },
+    doSignOut() {
+      console.log('sign out triggered');
+
+      this.$axios.put('/api/sitesessions/signout/')
+        .then(() => {
+          this.$router.push({ name: 'logout' });
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: 'Alert',
+            message: this.$t('dashboard.signoutError'),
+          });
+        });
+    },
+  },
   computed: {
     ...mapGetters('profile', ['siteSignedIn']),
     quickActions() {
@@ -39,13 +72,13 @@ export default {
         actions.push({
           title: 'Site Sign Out',
           icon: icons.logout,
-          to: { name: 'siteSignOut' },
+          click: this.doSignOut,
         });
       } else {
         actions.push({
           title: 'Site Sign In',
           icon: icons.login,
-          to: { name: 'siteSignIn' },
+          click: this.doSignIn,
         });
       }
 

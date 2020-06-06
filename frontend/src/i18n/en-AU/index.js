@@ -33,6 +33,9 @@ export default {
   dashboard: {
     usefulResources: 'Useful Resources',
     quickActions: 'Quick Actions',
+    signinSuccess: 'Successfully signed you in. Please remember to sign out when you leave.',
+    signoutError: 'There was a problem signing you out. Please contact the management committee if this problem persists.',
+    signinError: 'There was a problem signing you in. Please contact the management committee if this problem persists.',
   },
   error: {
     error: 'Error',
