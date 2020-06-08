@@ -21,13 +21,12 @@ import datetime
 from pytz import UTC as utc
 from group.models import Group
 
-from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import status, permissions, generics, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import *
-from .permissions import DjangoModelPermissionsWithRead
 from .models import Kiosk, SiteSession
+from django.core import serializers
 
 
 class GetConfig(APIView):
@@ -249,19 +248,20 @@ class ProfileDetail(generics.GenericAPIView):
                     },
                 },
             },
-            # "permissions": {
-            #     "generateInvoice": p.can_generate_invoice,
-            #     "adminOfGroups": list(p.can_manage_group.values()),
-            #     "groups": p.can_manage_groups,
-            #     "addGroup": p.can_add_group,
-            #     "interlocks": p.can_manage_interlocks,
-            #     "doors": p.can_manage_doors,
-            #     "seeMemberLogs": p.can_see_members_logs,
-            #     "seeMemberbucks": p.can_see_members_memberbucks,
-            #     "seeMemberPersonalDetails": p.can_see_members_personal_details,
-            #     "disableMembers": p.can_disable_members,
-            #     "manageAccess": p.can_manage_access,
-            # },
+            "permissions": {
+                "admin": user.is_admin
+                #     "generateInvoice": p.can_generate_invoice,
+                #     "adminOfGroups": list(p.can_manage_group.values()),
+                #     "groups": p.can_manage_groups,
+                #     "addGroup": p.can_add_group,
+                #     "interlocks": p.can_manage_interlocks,
+                #     "doors": p.can_manage_doors,
+                #     "seeMemberLogs": p.can_see_members_logs,
+                #     "seeMemberbucks": p.can_see_members_memberbucks,
+                #     "seeMemberPersonalDetails": p.can_see_members_personal_details,
+                #     "disableMembers": p.can_disable_members,
+                #     "manageAccess": p.can_manage_access,
+            },
         }
 
         return JsonResponse(response)
@@ -439,6 +439,19 @@ class SiteSignOut(APIView):
         return Response()
 
 
+class UserSiteSession(APIView):
+    """
+    get: checks if the member is signed into the site.
+    """
+
+    def get(self, request):
+        sessions = SiteSession.objects.filter(
+            user=request.user, signout_date=None
+        ).order_by("-signin_date")
+
+        return Response(sessions.values()[0])
+
+
 class SiteSessions(APIView):
     """
     get: gets all members signed into the site.
@@ -447,4 +460,4 @@ class SiteSessions(APIView):
     def get(self, request):
         sessions = SiteSession.objects.filter().order_by("-signin_date")
 
-        return Response(sessions)
+        return Response(sessions.values())

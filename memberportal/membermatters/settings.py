@@ -64,6 +64,7 @@ if os.environ.get("PORTAL_ENV") == "Production":
     # These may or may not be required for the interlocks, doors, etc. depending on your setup
     for x in range(1, 255):
         ALLOWED_HOSTS.append("http://10.0.0." + str(x))
+        ALLOWED_HOSTS.append("10.0.0." + str(x))
         ALLOWED_HOSTS.append("http://10.0.1." + str(x))
         ALLOWED_HOSTS.append("http://192.168.0." + str(x))
         ALLOWED_HOSTS.append("http://192.168.1." + str(x))

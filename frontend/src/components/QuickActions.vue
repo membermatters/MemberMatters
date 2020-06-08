@@ -25,13 +25,17 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 import icons from '@icons';
 
 export default {
   name: 'QuickActions',
+  mounted() {
+    this.getSiteSignedIn();
+  },
   methods: {
     ...mapMutations('profile', ['setSiteSignedIn']),
+    ...mapActions('profile', ['getSiteSignedIn']),
     doSignIn() {
       this.$axios.post('/api/sitesessions/signin/', { guests: [] })
         .then(() => {
@@ -71,7 +75,7 @@ export default {
       if (this.siteSignedIn) {
         actions.push({
           title: 'Site Sign Out',
-          icon: icons.logout,
+          icon: icons.signout,
           click: this.doSignOut,
         });
       } else {

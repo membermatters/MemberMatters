@@ -83,5 +83,18 @@ export default {
           });
       });
     },
+    getSiteSignedIn({ commit }) {
+      return new Promise((resolve, reject) => {
+        Vue.prototype.$axios.get('/api/sitesessions/check/')
+          .then((response) => {
+            commit('setSiteSignedIn', response.data);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
   },
 };

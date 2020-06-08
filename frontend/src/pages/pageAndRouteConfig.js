@@ -30,12 +30,14 @@ const PageAndRouteConfig = [
     icon: icons.cogs,
     name: 'adminTools',
     loggedIn: true,
+    admin: true,
     children: [
       {
         icon: icons.members,
         to: '/manage/members',
         name: 'members',
         loggedIn: true,
+        admin: true,
         component: () => import('pages/AdminTools/Members'),
       },
       {
@@ -43,6 +45,7 @@ const PageAndRouteConfig = [
         to: '/manage/meetings',
         name: 'meetings',
         loggedIn: true,
+        admin: true,
         component: () => import('pages/Meetings'),
       },
       {
@@ -50,6 +53,7 @@ const PageAndRouteConfig = [
         to: '/manage/groups',
         name: 'groups',
         loggedIn: true,
+        admin: true,
         component: () => import('pages/Error501'),
       },
       {
@@ -57,6 +61,7 @@ const PageAndRouteConfig = [
         to: '/manage/doors',
         name: 'doors',
         loggedIn: true,
+        admin: true,
         component: () => import('pages/Error501'),
       },
       {
@@ -64,6 +69,7 @@ const PageAndRouteConfig = [
         to: '/manage/interlocks',
         name: 'interlocks',
         loggedIn: true,
+        admin: true,
         component: () => import('pages/Error501'),
       },
       {
@@ -71,6 +77,7 @@ const PageAndRouteConfig = [
         to: '/manage/kiosks',
         name: 'kiosks',
         loggedIn: true,
+        admin: true,
         component: () => import('pages/Kiosks'),
       },
     ],
@@ -185,6 +192,13 @@ const PageAndRouteConfig = [
     name: 'resetPassword', // specify the name of this URL route
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
     component: () => import('pages/Login'), // which component to load as the page
+  },
+  {
+    icon: icons.signin, // specify the icon to use
+    to: '/error/403', // specify the URL route for this page
+    name: 'Error403', // specify the name of this URL route
+    hiddenMenu: true, // adds the route and page config, but don't show in the menu
+    component: () => import('pages/Error403'), // which component to load as the page
   },
 ];
 

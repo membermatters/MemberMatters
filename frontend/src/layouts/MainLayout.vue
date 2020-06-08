@@ -194,6 +194,7 @@ export default {
           if (this.loggedIn) displayLink = false;
         }
         if (this.$q.platform.is.electron && !link.kiosk) displayLink = false;
+        if (link.admin && !this.profile.permissions.admin) displayLink = false;
 
         return displayLink;
       });
