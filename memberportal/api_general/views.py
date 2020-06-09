@@ -452,12 +452,19 @@ class UserSiteSession(APIView):
         return Response(sessions.values()[0])
 
 
-class SiteSessions(APIView):
+class Statistics(APIView):
     """
-    get: gets all members signed into the site.
+    get: gets site statistics.
     """
 
     def get(self, request):
-        sessions = SiteSession.objects.filter().order_by("-signin_date")
+        statistics = {
+            "onSite": {
+                "members": SiteSession.objects.filter(signout_date=None)
+                .order_by("-signin_date")
+                .values(),
+                "count": SiteSession.objects.filter(signout_date=None).count(),
+            }
+        }
 
-        return Response(sessions.values())
+        return Response(statistics)

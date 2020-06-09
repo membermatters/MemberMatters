@@ -12,6 +12,7 @@ export default {
     members: [],
     memberBucksTransactions: [],
     memberBucksBalance: [],
+    statistics: {},
   },
   getters: {
     lastSeen: (state) => state.lastSeen,
@@ -23,6 +24,7 @@ export default {
     members: (state) => state.members,
     memberBucksTransactions: (state) => state.memberBucksTransactions,
     memberBucksBalance: (state) => state.memberBucksBalance,
+    statistics: (state) => state.statistics,
   },
   mutations: {
     setLastSeen(state, payload) {
@@ -51,6 +53,9 @@ export default {
     },
     setMemberBucksBalance(state, payload) {
       state.memberBucksBalance = payload;
+    },
+    setStatistics(state, payload) {
+      state.statistics = payload;
     },
   },
   actions: {
@@ -151,6 +156,19 @@ export default {
         Vue.prototype.$axios.get('/api/memberbucks/balance/')
           .then((result) => {
             commit('setMemberBucksBalance', result.data);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getStatistics({ commit }) {
+      return new Promise((resolve, reject) => {
+        Vue.prototype.$axios.get('/api/statistics/')
+          .then((result) => {
+            commit('setStatistics', result.data);
             resolve();
           })
           .catch((error) => {

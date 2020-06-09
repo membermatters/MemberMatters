@@ -33,7 +33,7 @@ const PageAndRouteConfig = [
     admin: true,
     children: [
       {
-        icon: icons.members,
+        icon: icons.manageMembers,
         to: '/manage/members',
         name: 'members',
         loggedIn: true,

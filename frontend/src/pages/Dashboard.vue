@@ -11,6 +11,13 @@
       </template>
 
       <h5 class="q-ma-md">
+        {{ $t('dashboard.statistics') }}
+      </h5>
+      <div class="row">
+        <statistics-cards />
+      </div>
+
+      <h5 class="q-ma-md">
         {{ $t('dashboard.usefulResources') }}
       </h5>
       <div class="row">
@@ -35,11 +42,12 @@
 import { mapGetters } from 'vuex';
 import QuickActions from 'components/QuickActions';
 import { Platform } from 'quasar';
+import StatisticsCards from 'components/StatisticsCards';
 import DashboardCard from '../components/DashboardCard';
 
 export default {
   name: 'DashboardPage',
-  components: { QuickActions, DashboardCard },
+  components: { StatisticsCards, QuickActions, DashboardCard },
   computed: {
     Platform() {
       return Platform;

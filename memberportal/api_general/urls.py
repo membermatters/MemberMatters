@@ -29,11 +29,11 @@ urlpatterns = [
         views.SiteSignOut.as_view(),
         name="api_site_sign_out",
     ),
-    path("api/sitesessions/", views.SiteSessions.as_view(), name="api_site_sessions"),
     path(
         "api/sitesessions/check/",
         views.UserSiteSession.as_view(),
         name="api_user_site_session",
     ),
+    path("api/statistics/", views.Statistics.as_view(), name="api_statistics",),
     path("api/kiosks/<int:id>/", views.Kiosks.as_view(), name="api_kiosks"),
 ]
