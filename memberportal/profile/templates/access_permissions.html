@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Access Permissions{% endblock %}
+{% block page_title %}Access Permissions{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col s12 m8 offset-m2">
+            <h3 class="header center text">Access Permissions</h3>
+            <div id='info' class="center">
+                <p>
+                    Most tools require inductions before access can be granted. Please talk to the {{config.GROUP_NAME | lower}} leader for more
+                    information. If you don't have access to something and you think you should, please
+                    <a href="mailto:{{config.EMAIL_ADMIN}}">email the {{config.ADMIN_NAME}}</a>.
+                </p>
+            </div>
+            <h4 class="header center text">Doors</h4>
+            <table id="access-list" class="striped">
+                <thead>
+                <tr>
+                    <th>Door Name</th>
+                    <th>Access</th>
+                    {#  TODO: allow someone to request access #}
+                    {#                    <th>Request Access</th>#}
+                </tr>
+                </thead>
+                <tbody>
+                {% for door in doors %}
+                    <tr>
+                        <td>{{ door.name }}</td>
+                        {% if user.profile.state == "inactive" or user.profile.state == "noob" %}
+                            <td class="red-text">Access Not Allowed (Inactive Member)</td>
+                        {% elif door in user.profile.doors.all %}
+                            <td class="light-green-text">Access Allowed</td>
+                        {% else %}
+                            <td class="red-text">Access Not Allowed</td>
+                        {% endif %}
+                        {#  TODO: allow someone to request access. #}
+                        {#                        <td>#}
+                        {#                            <a onclick="requestAccess('{% url 'request_access' door_id=door.id %}');"#}
+                        {#                               class="waves-effect waves-light btn" href="#">Request Access</a>#}
+                        {#                        </td>#}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <h4 class="header center text">Interlocks</h4>
+            <table id="access-list" class="striped">
+                <thead>
+                <tr>
+                    <th>Interlock Name</th>
+                    <th>Access</th>
+                    {#  TODO: allow someone to request access. #}
+                    {#                    <th>Request Access</th>#}
+                </tr>
+                </thead>
+                <tbody>
+                {% for interlock in interlocks %}
+                    <tr>
+                        <td>{{ interlock.name }}</td>
+                        {% if user.profile.state == "inactive" or user.profile.state == "noob" %}
+                            <td class="red-text">Access Not Allowed (Inactive Member)</td>
+                        {% elif interlock in user.profile.interlocks.all %}
+                            <td class="light-green-text">Access Allowed</td>
+                        {% else %}
+                            <td class="red-text">Access Not Allowed</td>
+                        {% endif %}
+                        {# TODO: allow someone to request access. #}
+                        {#                        <td>#}
+                        {#                            <a onclick="requestAccess('{% url 'request_access' door_id=door.id %}');"#}
+                        {#                               class="waves-effect waves-light btn" href="#">Request Access</a>#}
+                        {#                        </td>#}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
