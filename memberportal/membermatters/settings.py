@@ -52,6 +52,7 @@ if os.environ.get("PORTAL_ENV") == "Production":
     DEBUG = False
     ALLOWED_HOSTS = [
         os.environ.get("PORTAL_DOMAIN", "portal.example.org"),
+        os.environ.get("PORTAL_DOMAIN_KIOSK", "kiosk.example.org"),
         "localhost",
     ]
     CORS_ORIGIN_WHITELIST = [
