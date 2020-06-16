@@ -38,18 +38,27 @@ def play_theme_song(user):
     return False
 
 
-def post_door_swipe_to_discord(name, door, successful):
+def post_door_swipe_to_discord(name, door, status):
     if "PORTAL_DISCORD_DOOR_WEBHOOK" in os.environ:
         url = os.environ.get("PORTAL_DISCORD_DOOR_WEBHOOK")
 
         json_message = {"description": "", "embeds": []}
 
-        if successful:
+        if status is True:
             json_message["embeds"].append(
                 {
                     "description": ":unlock: {} just **successfully** swiped at {} door.".format(
                         name, door
                     ),
+                    "color": 5025616,
+                }
+            )
+
+        elif status == "not_signed_in":
+            json_message["embeds"].append(
+                {
+                    "description": ":lock: {} swiped at {} door but was rejected because they "
+                    "aren't signed into site.".format(name, door),
                     "color": 5025616,
                 }
             )
@@ -121,6 +130,15 @@ def post_interlock_swipe_to_discord(name, interlock, type, time=None):
                         name, interlock
                     ),
                     "color": 16007990,
+                }
+            )
+
+        elif type == "not_signed_in":
+            json_message["embeds"].append(
+                {
+                    "description": ":lock: {} swiped at {} but was rejected because they "
+                    "aren't signed into site.".format(name, interlock),
+                    "color": 5025616,
                 }
             )
 
@@ -220,6 +238,17 @@ def check_door_access(request, rfid_code, door_id=None):
         if allowed_doors:
             if door in allowed_doors:
                 # user has access
+
+                # if the user isn't signed into site
+                if not user.is_signed_into_site():
+                    user.profile.update_last_seen()
+                    post_door_swipe_to_discord(
+                        user.profile.get_full_name(), door.name, "not_signed_in"
+                    )
+                    return JsonResponse(
+                        {"access": False, "name": user.profile.first_name}
+                    )
+
                 door.log_access(user.id)
                 user.profile.update_last_seen()
                 post_door_swipe_to_discord(
@@ -300,7 +329,7 @@ def get_door_tags(door, return_hash=False):
 
     for profile in Profile.objects.all():
         if door in profile.doors.all() and profile.state == "active":
-            if profile.rfid:
+            if profile.rfid and profile.user.is_signed_into_site():
                 authorised_tags.append(profile.rfid)
 
     if return_hash:
@@ -329,7 +358,7 @@ def get_interlock_tags(interlock, return_hash=False):
 
     for profile in Profile.objects.all():
         if interlock in profile.interlocks.all() and profile.state == "active":
-            if profile.rfid:
+            if profile.rfid and profile.user.is_signed_into_site():
                 authorised_tags.append(profile.rfid)
 
     if return_hash:
@@ -660,6 +689,17 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
         if allowed_interlocks:
             if interlock in allowed_interlocks:
                 # user has access
+
+                # if the user isn't signed into site
+                if not user.is_signed_into_site():
+                    user.profile.update_last_seen()
+                    post_door_swipe_to_discord(
+                        user.profile.get_full_name(), interlock.name, "not_signed_in"
+                    )
+                    return JsonResponse(
+                        {"access": False, "name": user.profile.first_name}
+                    )
+
                 session = interlock.create_session(user)
                 user.profile.update_last_seen()
                 post_interlock_swipe_to_discord(
