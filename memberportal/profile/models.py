@@ -469,7 +469,7 @@ class Profile(models.Model):
         return create_membership_invoice(self.user, email_invoice)
 
     def is_signed_into_site(self):
-        sessions = SiteSession.objects.filter(user=self, signout_date=None)
+        sessions = SiteSession.objects.filter(user=self.user, signout_date=None)
 
         return True if len(sessions) else False
 
