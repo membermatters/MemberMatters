@@ -240,7 +240,7 @@ def check_door_access(request, rfid_code, door_id=None):
                 # user has access
 
                 # if the user isn't signed into site
-                if not user.is_signed_into_site():
+                if not user.profile.is_signed_into_site():
                     user.profile.update_last_seen()
                     post_door_swipe_to_discord(
                         user.profile.get_full_name(), door.name, "not_signed_in"
@@ -329,7 +329,7 @@ def get_door_tags(door, return_hash=False):
 
     for profile in Profile.objects.all():
         if door in profile.doors.all() and profile.state == "active":
-            if profile.rfid and profile.user.is_signed_into_site():
+            if profile.rfid and profile.is_signed_into_site():
                 authorised_tags.append(profile.rfid)
 
     if return_hash:
@@ -358,7 +358,7 @@ def get_interlock_tags(interlock, return_hash=False):
 
     for profile in Profile.objects.all():
         if interlock in profile.interlocks.all() and profile.state == "active":
-            if profile.rfid and profile.user.is_signed_into_site():
+            if profile.rfid and profile.is_signed_into_site():
                 authorised_tags.append(profile.rfid)
 
     if return_hash:
@@ -691,7 +691,7 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
                 # user has access
 
                 # if the user isn't signed into site
-                if not user.is_signed_into_site():
+                if not user.profile.is_signed_into_site():
                     user.profile.update_last_seen()
                     post_door_swipe_to_discord(
                         user.profile.get_full_name(), interlock.name, "not_signed_in"
