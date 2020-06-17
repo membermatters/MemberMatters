@@ -22,6 +22,9 @@ class AccessControlledDevice(models.Model):
     all_members = models.BooleanField("Members have access by default", default=False)
     locked_out = models.BooleanField("Maintenance lockout enabled", default=False)
     play_theme = models.BooleanField("Play theme on door swipe", default=False)
+    exempt_signin = models.BooleanField(
+        "Exempt this device from requiring a sign in", default=False
+    )
 
     def checkin(self):
         self.last_seen = timezone.now()
