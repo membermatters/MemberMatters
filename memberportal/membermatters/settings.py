@@ -162,6 +162,7 @@ LOGGING = {
 }
 
 REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "membermatters.custom_exception_handlers.fix_401",
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
