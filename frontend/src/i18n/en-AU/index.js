@@ -260,4 +260,12 @@ export default {
   delete: 'Delete',
   dataRefreshWarning: 'There was an error fetching new data. Any data that you see may not be up '
     + 'to date.',
+  adminTools: {
+    emailAddresses: 'Email Addresses',
+    exportCsv: 'Export CSV',
+    all: 'All',
+    active: 'Active',
+    inactive: 'Inactive',
+    new: 'New',
+  },
 };

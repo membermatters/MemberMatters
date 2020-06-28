@@ -30,6 +30,7 @@
     "address": "^1.1.2",
     "axios": "^0.19.2",
     "crypto-js": "^4.0.0",
+    "csv-stringify": "^5.5.0",
     "html-to-image": "^0.1.1",
     "http-proxy": "^1.18.1",
     "idle-timeout": "^2.0.1",
