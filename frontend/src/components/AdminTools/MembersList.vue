@@ -7,7 +7,8 @@
                  format: (val, row) => `${val} (${row.screenName})` },
                { name: 'email',
                  label: 'Email',
-                 field: 'email', },
+                 field: 'email',
+                 sortable: true, },
                { name: 'memberType',
                  label: 'Member Type',
                  field: (row) => row.memberType.name,
@@ -19,7 +20,8 @@
                  format: (val, row) => row.groups.map((val => val.name)).join(', ') },
                { name: 'status',
                  label: 'Status',
-                 field: 'state', },
+                 field: 'state',
+                 sortable: true, },
     ]"
     row-key="email"
     :filter="filter"

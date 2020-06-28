@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column flex content-center justify-start">
+  <q-page class="column">
     <members-list />
   </q-page>
 </template>
