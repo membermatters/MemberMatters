@@ -279,9 +279,9 @@ class Profile(models.Model):
         return os.path.join(filename)
 
     STATES = (
-        ("noob", "New Member"),
-        ("active", "Active Member"),
-        ("inactive", "Inactive Member"),
+        ("noob", "New"),
+        ("active", "Active"),
+        ("inactive", "Inactive"),
     )
 
     class Meta:
@@ -448,11 +448,9 @@ class Profile(models.Model):
         return str(self.user)
 
     def get_full_name(self):
-        # The user is identified by their email address
         return self.first_name + " " + self.last_name
 
     def get_short_name(self):
-        # The user is identified by their email address
         return self.first_name
 
     def update_last_seen(self):

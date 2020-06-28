@@ -1,21 +1,27 @@
 <template>
   <q-table
-    :data="meetings"
-    :columns="[{ name: 'type', label: 'Type', field: 'type', sortable: true },
-               { name: 'date',
-                 label: 'Date',
-                 field: 'date',
+    :data="members"
+    :columns="[{ name: 'name',
+                 label: 'Name', field: (row) => row.name.full,
                  sortable: true,
-                 format: (val, row) => this.formatDate(val)
-               },
-               { name: 'chair', label: 'Chair', field: 'chair', sortable: true },
-               { name: 'attendeeCount',
-                 label: 'Attendees',
-                 field: 'attendeeCount',
-                 sortable: true
-               },
+                 format: (val, row) => `${val} (${row.screenName})` },
+               { name: 'email',
+                 label: 'Email',
+                 field: 'email', },
+               { name: 'memberType',
+                 label: 'Member Type',
+                 field: (row) => row.memberType.name,
+                 sortable: true },
+               { name: 'groups',
+                 label: 'Groups',
+                 field: 'groups',
+                 sortable: true,
+                 format: (val, row) => row.groups.map((val => val.name)).join(', ') },
+               { name: 'status',
+                 label: 'Status',
+                 field: 'state', },
     ]"
-    row-key="id"
+    row-key="email"
     :filter="filter"
     :pagination.sync="pagination"
     :loading="loading"
@@ -75,10 +81,7 @@
         :props="props"
       >
         <q-td colspan="100%">
-          <meetings-details
-            :proxies="props.row.proxyList"
-            :attendees="props.row.attednees"
-          />
+          Hello
         </q-td>
       </q-tr>
     </template>
@@ -86,7 +89,6 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
 import icons from '@icons';
 import formatMixin from '@mixins/formatMixin';
 
@@ -96,6 +98,7 @@ export default {
   mixins: [formatMixin],
   data() {
     return {
+      members: [],
       filter: '',
       loading: false,
       pagination: {
@@ -106,57 +109,30 @@ export default {
     };
   },
   methods: {
-    ...mapActions('adminTools', ['getMeetings']),
-    deleteMeeting(id) {
-      this.$q.dialog({
-        title: 'Confirm',
-        message: this.$t('meetingForm.deleteMeeting'),
-        cancel: {
-          color: 'primary',
-          flat: true,
-          label: this.$t('button.cancel'),
-        },
-        ok: {
-          color: 'primary',
-          label: this.$t('button.ok'),
-        },
-        persistent: true,
-      }).onOk(() => {
-        this.$axios.delete(`/api/meetings/${id}/`, this.form)
-          .then(() => {
-            this.getMeetings();
-          })
-          .catch(() => {
-            this.$q.dialog({
-              title: this.$t('error.error'),
-              message: this.$t('error.requestFailed'),
-            });
+    getMembers() {
+      this.loading = true;
+      this.$axios.get('/api/admin/members/')
+        .then((response) => {
+          this.members = response.data;
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('error.requestFailed'),
           });
-      });
-    },
-    editMeeting(id) {
-      this.editMeetingId = id;
-      this.editMeetingDialog = true;
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
   },
   mounted() {
-    this.loading = true;
-    this.getMeetings()
-      .finally(() => {
-        this.loading = false;
-      });
+    this.getMembers();
   },
   computed: {
-    ...mapGetters('adminTools', ['meetings']),
     icons() {
       return icons;
     },
   },
 };
 </script>
-
-<style lang="stylus" scoped>
-  @media (max-width: $breakpoint-xs-max)
-    .access-list
-      width: 100%;
-</style>

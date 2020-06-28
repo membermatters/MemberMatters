@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     "api_general",
     "api_access",
     "api_meeting",
+    "api_admin_tools",
     "constance",
     "corsheaders",
     "rest_framework",

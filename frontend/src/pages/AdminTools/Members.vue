@@ -1,14 +1,14 @@
 <template>
   <q-page class="column flex content-center justify-start">
-    <meetings-list />
+    <members-list />
   </q-page>
 </template>
 
 <script>
-import MeetingsList from '@components/AdminTools/MembersList';
+import MembersList from '@components/AdminTools/MembersList';
 
 export default {
   name: 'MembersPage',
-  components: { MeetingsList },
+  components: { MembersList },
 };
 </script>

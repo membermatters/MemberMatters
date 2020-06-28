@@ -8,8 +8,9 @@ export default {
         return `${x}, `;
       });
     },
-    formatDate(date) {
-      return Moment.utc(date).local().format('Do MMM YYYY, h:mm a');
+    formatDate(date, time = true) {
+      if (time) return Moment.utc(date).local().format('Do MMM YYYY, h:mm a');
+      return Moment.utc(date).local().format('Do MMM YYYY');
     },
     formatWhen(date) {
       return Moment.utc(date).local().fromNow();
