@@ -1,6 +1,6 @@
 <template>
   <q-table
-    :data="members"
+    :data="displayMemberList"
     :columns="[{ name: 'name',
                  label: 'Name', field: (row) => row.name.full,
                  sortable: true,
@@ -27,6 +27,19 @@
     :loading="loading"
     :grid="$q.screen.xs"
   >
+    <template v-slot:top-left>
+      <q-option-group
+        v-model="memberState"
+        inline
+        class="q-mb-md"
+        :options="[
+          { label: 'All', value: 'All' },
+          { label: 'Active', value: 'Active' },
+          { label: 'Inactive', value: 'Inactive' },
+          { label: 'New', value: 'New' },
+        ]"
+      />
+    </template>
     <template v-slot:top-right>
       <q-input
         outlined
@@ -100,6 +113,7 @@ export default {
     return {
       members: [],
       filter: '',
+      memberState: 'Active',
       loading: false,
       pagination: {
         sortBy: 'date',
@@ -130,6 +144,10 @@ export default {
     this.getMembers();
   },
   computed: {
+    displayMemberList() {
+      if (this.memberState === 'All') return this.members;
+      return this.members.filter((member) => member.state === this.memberState);
+    },
     icons() {
       return icons;
     },
