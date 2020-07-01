@@ -6,7 +6,8 @@
     :filter="filter"
     :pagination.sync="pagination"
     :loading="loading"
-    :grid="$q.screen.xs"
+    :grid="$q.screen.lt.md"
+    class="full-width"
   >
     <template v-slot:top-left>
       <div class="row flex items-start">
@@ -132,28 +133,54 @@
         v-show="props.expand"
         :props="props"
       >
-        <q-td colspan="100%">
-          <manage-member />
+        <q-td
+          colspan="100%"
+        >
+          <div
+            class="q-py-md q-px-xl"
+          >
+            <manage-member
+              :member="props"
+            />
+          </div>
         </q-td>
       </q-tr>
     </template>
 
-    <template v-slot:body="props">
-      <q-list dense>
-        <q-item
-          v-for="col in props.cols.filter(col => col.name !== 'desc')"
-          :key="col.name"
-        >
-          <q-item-section>
-            <q-item-label>{{ col.label }}</q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-item-label caption>
-              {{ col.value }}
-            </q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
+    <template v-slot:item="props">
+      <div
+        class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
+        :style="props.selected ? 'transform: scale(0.95);' : ''"
+      >
+        <q-card>
+          <q-list
+            dense
+            class="q-py-sm"
+          >
+            <q-item
+              v-for="col in props.cols.filter(col => col.name !== 'desc')"
+              :key="col.name"
+            >
+              <q-item-section>
+                <q-item-label>{{ col.label }}</q-item-label>
+              </q-item-section>
+              <q-item-section side>
+                <q-item-label caption>
+                  {{ col.value }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-btn
+                class="q-ma-sm full-width"
+                color="primary"
+                :label="$t('adminTools.manageMember')"
+              />
+            </q-item>
+          </q-list>
+        </q-card>
+      </div>
     </template>
   </q-table>
 </template>

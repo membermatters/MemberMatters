@@ -273,6 +273,6 @@ export default {
     disableAccess: 'Disable Access',
     makeMember: 'Make Member',
     sendWelcomeEmail: 'Send Welcome Email',
-
+    manageMember: 'Manage Member',
   },
 };
