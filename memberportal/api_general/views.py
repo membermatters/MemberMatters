@@ -449,7 +449,7 @@ class UserSiteSession(APIView):
             user=request.user, signout_date=None
         ).order_by("-signin_date")
 
-        return Response(sessions.values()[0])
+        return Response(sessions.values()[0] if sessions.length else [])
 
 
 class Statistics(APIView):
