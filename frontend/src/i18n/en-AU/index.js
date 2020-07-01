@@ -263,9 +263,16 @@ export default {
   adminTools: {
     emailAddresses: 'Email Addresses',
     exportCsv: 'Export CSV',
+    exportOptions: 'Export Options',
+    filterOptions: 'Filter Options',
     all: 'All',
     active: 'Active',
     inactive: 'Inactive',
     new: 'New',
+    enableAccess: 'Enable Access',
+    disableAccess: 'Disable Access',
+    makeMember: 'Make Member',
+    sendWelcomeEmail: 'Send Welcome Email',
+
   },
 };

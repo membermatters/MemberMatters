@@ -25,6 +25,7 @@ module.exports = function (ctx) {
     ],
 
     framework: {
+      cssAddon: true,
       config: {
         dark: 'auto', // or Boolean true/false
       },

@@ -10,30 +10,73 @@
   >
     <template v-slot:top-left>
       <div class="row flex items-start">
-        <q-btn
-          class="q-mr-sm"
-          color="primary"
-          :icon="icons.export"
-          :label="$t('adminTools.exportCsv')"
-          @click="exportCsv"
-        />
-        <q-btn
-          color="primary"
-          :icon="icons.email"
-          :label="$t('adminTools.emailAddresses')"
-          @click="exportEmails"
-        />
-        <q-option-group
-          v-model="memberState"
-          inline
-          class="q-mb-md"
-          :options="[
-            { label: $t('adminTools.all'), value: 'All' },
-            { label: $t('adminTools.active'), value: 'Active' },
-            { label: $t('adminTools.inactive'), value: 'Inactive' },
-            { label: $t('adminTools.new'), value: 'New' },
-          ]"
-        />
+        <template
+          v-if="$q.screen.lt.md"
+        >
+          <div class="full-width">
+            <q-btn-dropdown
+              class="q-mb-xs-sm"
+              color="primary"
+              :label="$t('adminTools.exportOptions')"
+            >
+              <q-list>
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="exportCsv"
+                >
+                  <q-item-section>
+                    <q-item-label>{{ $t('adminTools.exportCsv') }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="exportEmails"
+                >
+                  <q-item-section>
+                    <q-item-label>{{ $t('adminTools.emailAddresses') }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+          </div>
+          <div class="full-width">
+            <q-select
+              class="q-mb-xs-sm"
+              outlined
+              emit-value
+              v-model="memberState"
+              :options="filterOptions"
+              :label="$t('adminTools.filterOptions')"
+              dense
+            />
+          </div>
+        </template>
+
+        <template v-else>
+          <q-btn
+            class="q-mr-sm q-mb-xs-sm"
+            color="primary"
+            :icon="icons.export"
+            :label="$t('adminTools.exportCsv')"
+            @click="exportCsv"
+          />
+          <q-btn
+            class="q-mr-sm q-mb-xs-sm"
+            color="primary"
+            :icon="icons.email"
+            :label="$t('adminTools.emailAddresses')"
+            @click="exportEmails"
+          />
+          <q-option-group
+            v-model="memberState"
+            inline
+            class="q-mb-md"
+            :options="filterOptions"
+          />
+        </template>
       </div>
     </template>
     <template v-slot:top-right>
@@ -90,9 +133,27 @@
         :props="props"
       >
         <q-td colspan="100%">
-          Hello
+          <manage-member />
         </q-td>
       </q-tr>
+    </template>
+
+    <template v-slot:body="props">
+      <q-list dense>
+        <q-item
+          v-for="col in props.cols.filter(col => col.name !== 'desc')"
+          :key="col.name"
+        >
+          <q-item-section>
+            <q-item-label>{{ col.label }}</q-item-label>
+          </q-item-section>
+          <q-item-section side>
+            <q-item-label caption>
+              {{ col.value }}
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
     </template>
   </q-table>
 </template>
@@ -102,10 +163,11 @@ import icons from '@icons';
 import formatMixin from '@mixins/formatMixin';
 import { exportFile } from 'quasar';
 import stringify from 'csv-stringify';
+import ManageMember from 'pages/AdminTools/ManageMember';
 
 export default {
   name: 'MembersList',
-  components: {},
+  components: { ManageMember },
   mixins: [formatMixin],
   data() {
     return {
@@ -173,10 +235,19 @@ export default {
       return this.members.filter((member) => member.state === this.memberState);
     },
     memberEmails() {
-      return this.displayMemberList.map((member) => member.email).join(',');
+      return this.displayMemberList.map((member) => member.email)
+        .join(',');
     },
     icons() {
       return icons;
+    },
+    filterOptions() {
+      return [
+        { label: this.$t('adminTools.all'), value: 'All' },
+        { label: this.$t('adminTools.active'), value: 'Active' },
+        { label: this.$t('adminTools.inactive'), value: 'Inactive' },
+        { label: this.$t('adminTools.new'), value: 'New' },
+      ];
     },
     columns() {
       return [{
@@ -185,6 +256,12 @@ export default {
         field: (row) => row.name.full,
         sortable: true,
         format: (val, row) => `${val} (${row.screenName})`,
+      },
+      {
+        name: 'rfid',
+        label: 'RFID',
+        field: 'rfid',
+        sortable: true,
       },
       {
         name: 'email',
@@ -203,7 +280,8 @@ export default {
         label: 'Groups',
         field: 'groups',
         sortable: true,
-        format: (val, row) => row.groups.map(((group) => group.name)).join(', '),
+        format: (val, row) => row.groups.map(((group) => group.name))
+          .join(', '),
       },
       {
         name: 'status',
