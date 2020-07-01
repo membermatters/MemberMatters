@@ -140,7 +140,8 @@
             class="q-py-md q-px-xl"
           >
             <manage-member
-              :member="props"
+              :member="props.row"
+              @updateMembers="getMembers"
             />
           </div>
         </q-td>
