@@ -1,189 +1,206 @@
 <template>
-  <q-table
-    :data="displayMemberList"
-    :columns="columns"
-    row-key="email"
-    :filter="filter"
-    :pagination.sync="pagination"
-    :loading="loading"
-    :grid="$q.screen.lt.md"
-    class="full-width"
-  >
-    <template v-slot:top-left>
-      <div class="row flex items-start">
-        <template
-          v-if="$q.screen.lt.md"
-        >
-          <div class="full-width">
-            <q-btn-dropdown
-              class="q-mb-xs-sm"
-              color="primary"
-              :label="$t('adminTools.exportOptions')"
-            >
-              <q-list>
-                <q-item
-                  clickable
-                  v-close-popup
-                  @click="exportCsv"
-                >
-                  <q-item-section>
-                    <q-item-label>{{ $t('adminTools.exportCsv') }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-
-                <q-item
-                  clickable
-                  v-close-popup
-                  @click="exportEmails"
-                >
-                  <q-item-section>
-                    <q-item-label>{{ $t('adminTools.emailAddresses') }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-btn-dropdown>
-          </div>
-          <div class="full-width">
-            <q-select
-              class="q-mb-xs-sm"
-              outlined
-              emit-value
-              v-model="memberState"
-              :options="filterOptions"
-              :label="$t('adminTools.filterOptions')"
-              dense
-            />
-          </div>
-        </template>
-
-        <template v-else>
-          <q-btn
-            class="q-mr-sm q-mb-xs-sm"
-            color="primary"
-            :icon="icons.export"
-            :label="$t('adminTools.exportCsv')"
-            @click="exportCsv"
-          />
-          <q-btn
-            class="q-mr-sm q-mb-xs-sm"
-            color="primary"
-            :icon="icons.email"
-            :label="$t('adminTools.emailAddresses')"
-            @click="exportEmails"
-          />
-          <q-option-group
-            v-model="memberState"
-            inline
-            class="q-mb-md"
-            :options="filterOptions"
-          />
-        </template>
-      </div>
-    </template>
-    <template v-slot:top-right>
-      <q-input
-        outlined
-        dense
-        debounce="300"
-        v-model="filter"
-        placeholder="Search"
-      >
-        <template v-slot:append>
-          <q-icon :name="icons.search" />
-        </template>
-      </q-input>
-    </template>
-
-    <template v-slot:header="props">
-      <q-tr :props="props">
-        <q-th auto-width />
-        <q-th
-          v-for="col in props.cols"
-          :key="col.name"
-          :props="props"
-        >
-          {{ col.label }}
-        </q-th>
-      </q-tr>
-    </template>
-
-    <template v-slot:body="props">
-      <q-tr
-        :props="props"
-        @click="props.expand = !props.expand"
-      >
-        <q-td auto-width>
-          <q-btn
-            size="sm"
-            color="accent"
-            round
-            @click.stop="props.expand = !props.expand"
-            :icon="props.expand ? icons.down : icons.up"
-          />
-        </q-td>
-        <q-td
-          v-for="col in props.cols"
-          :key="col.name"
-          :props="props"
-        >
-          {{ col.value }}
-        </q-td>
-      </q-tr>
-      <q-tr
-        v-show="props.expand"
-        :props="props"
-      >
-        <q-td
-          colspan="100%"
-        >
-          <div
-            class="q-py-md q-px-xl"
+  <div>
+    <q-table
+      :data="displayMemberList"
+      :columns="columns"
+      row-key="email"
+      :filter="filter"
+      :pagination.sync="pagination"
+      :loading="loading"
+      :grid="$q.screen.lt.md"
+      class="full-width"
+    >
+      <template v-slot:top-left>
+        <div class="row flex items-start">
+          <template
+            v-if="$q.screen.lt.md"
           >
-            <manage-member
-              :member="props.row"
-              @updateMembers="getMembers"
-            />
-          </div>
-        </q-td>
-      </q-tr>
-    </template>
-
-    <template v-slot:item="props">
-      <div
-        class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
-        :style="props.selected ? 'transform: scale(0.95);' : ''"
-      >
-        <q-card>
-          <q-list
-            dense
-            class="q-py-sm"
-          >
-            <q-item
-              v-for="col in props.cols.filter(col => col.name !== 'desc')"
-              :key="col.name"
-            >
-              <q-item-section>
-                <q-item-label>{{ col.label }}</q-item-label>
-              </q-item-section>
-              <q-item-section side>
-                <q-item-label caption>
-                  {{ col.value }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item>
-              <q-btn
-                class="q-ma-sm full-width"
+            <div class="full-width">
+              <q-btn-dropdown
+                class="q-mb-xs-sm"
                 color="primary"
-                :label="$t('adminTools.manageMember')"
+                :label="$t('adminTools.exportOptions')"
+              >
+                <q-list>
+                  <q-item
+                    clickable
+                    v-close-popup
+                    @click="exportCsv"
+                  >
+                    <q-item-section>
+                      <q-item-label>{{ $t('adminTools.exportCsv') }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item
+                    clickable
+                    v-close-popup
+                    @click="exportEmails"
+                  >
+                    <q-item-section>
+                      <q-item-label>{{ $t('adminTools.emailAddresses') }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
+            </div>
+            <div class="full-width">
+              <q-select
+                class="q-mb-xs-sm"
+                outlined
+                emit-value
+                v-model="memberState"
+                :options="filterOptions"
+                :label="$t('adminTools.filterOptions')"
+                dense
               />
-            </q-item>
-          </q-list>
-        </q-card>
-      </div>
-    </template>
-  </q-table>
+            </div>
+          </template>
+
+          <template v-else>
+            <q-btn
+              class="q-mr-sm q-mb-xs-sm"
+              color="primary"
+              :icon="icons.export"
+              :label="$t('adminTools.exportCsv')"
+              @click="exportCsv"
+            />
+            <q-btn
+              class="q-mr-sm q-mb-xs-sm"
+              color="primary"
+              :icon="icons.email"
+              :label="$t('adminTools.emailAddresses')"
+              @click="exportEmails"
+            />
+            <q-option-group
+              v-model="memberState"
+              inline
+              class="q-mb-md"
+              :options="filterOptions"
+            />
+          </template>
+        </div>
+      </template>
+      <template v-slot:top-right>
+        <q-input
+          outlined
+          dense
+          debounce="300"
+          v-model="filter"
+          placeholder="Search"
+        >
+          <template v-slot:append>
+            <q-icon :name="icons.search" />
+          </template>
+        </q-input>
+      </template>
+
+      <template v-slot:header="props">
+        <q-tr :props="props">
+          <q-th auto-width />
+          <q-th
+            v-for="col in props.cols"
+            :key="col.name"
+            :props="props"
+          >
+            {{ col.label }}
+          </q-th>
+        </q-tr>
+      </template>
+
+      <template v-slot:body="props">
+        <q-tr
+          :props="props"
+          @click="props.expand = !props.expand"
+        >
+          <q-td auto-width>
+            <q-btn
+              size="sm"
+              color="accent"
+              round
+              @click.stop="props.expand = !props.expand"
+              :icon="props.expand ? icons.down : icons.up"
+            />
+          </q-td>
+          <q-td
+            v-for="col in props.cols"
+            :key="col.name"
+            :props="props"
+          >
+            {{ col.value }}
+          </q-td>
+        </q-tr>
+        <q-tr
+          v-show="props.expand"
+          :props="props"
+        >
+          <q-td
+            colspan="100%"
+          >
+            <div
+              class="q-py-md q-px-xl"
+            >
+              <manage-member
+                :member="props.row"
+                @updateMembers="getMembers"
+              />
+            </div>
+          </q-td>
+        </q-tr>
+      </template>
+
+      <template v-slot:item="props">
+        <div
+          class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
+          :style="props.selected ? 'transform: scale(0.95);' : ''"
+        >
+          <q-card>
+            <q-list
+              dense
+              class="q-py-sm"
+            >
+              <q-item
+                v-for="col in props.cols.filter(col => col.name !== 'desc')"
+                :key="col.name"
+              >
+                <q-item-section>
+                  <q-item-label>{{ col.label }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-item-label caption>
+                    {{ col.value }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item>
+                <q-btn
+                  class="q-ma-sm full-width"
+                  color="primary"
+                  :label="$t('adminTools.manageMember')"
+                  @click="openManageMemberModal(props.cols)"
+                />
+              </q-item>
+            </q-list>
+          </q-card>
+        </div>
+      </template>
+    </q-table>
+
+    <q-dialog v-model="manageMemberModal">
+      <q-card>
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            :label="$t('button.close')"
+            color="primary"
+            v-close-popup
+            @click="resetManageMemberModal()"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+  </div>
 </template>
 
 <script>
@@ -199,6 +216,8 @@ export default {
   mixins: [formatMixin],
   data() {
     return {
+      manageMemberModal: false,
+      manageMemberModalMember: null,
       members: [],
       filter: '',
       memberState: 'Active',
@@ -211,6 +230,14 @@ export default {
     };
   },
   methods: {
+    resetManageMemberModal() {
+      this.manageMemberModal = false;
+      this.manageMemberModalMember = null;
+    },
+    openManageMemberModal(member) {
+      this.manageMemberModal = true;
+      this.manageMemberModalMember = member;
+    },
     getMembers() {
       this.loading = true;
       this.$axios.get('/api/admin/members/')

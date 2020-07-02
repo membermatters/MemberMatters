@@ -271,8 +271,8 @@ export default {
     new: 'New',
     enableAccess: 'Enable Access',
     disableAccess: 'Disable Access',
-    makeMember: 'Make Member',
     sendWelcomeEmail: 'Send Welcome Email',
     manageMember: 'Manage Member',
+    makeMember: 'Make Member',
   },
 };

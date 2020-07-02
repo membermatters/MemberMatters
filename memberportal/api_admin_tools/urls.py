@@ -11,8 +11,8 @@ urlpatterns = [
         name="MemberState",
     ),
     path(
-        "members/<int:member_id>/state/",
-        views.MemberState.as_view(),
-        name="MemberState",
+        "members/<int:member_id>/makemember/",
+        views.MakeMember.as_view(),
+        name="ActivateMember",
     ),
 ]

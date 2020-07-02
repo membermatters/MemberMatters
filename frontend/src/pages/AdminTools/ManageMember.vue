@@ -9,6 +9,14 @@
       :loading="stateLoading"
     />
     <q-btn
+      v-else-if="member.state==='New'"
+      class="q-mr-sm"
+      color="primary"
+      :label="$t('adminTools.makeMember')"
+      @click="activateMember()"
+      :loading="stateLoading"
+    />
+    <q-btn
       v-else
       class="q-mr-sm"
       color="negative"
@@ -38,6 +46,20 @@ export default {
     setMemberState(state) {
       this.stateLoading = true;
       this.$axios.post(`/api/admin/members/${this.member.id}/state/${state}/`)
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('error.requestFailed'),
+          });
+        })
+        .finally(() => {
+          this.$emit('updateMembers');
+          setTimeout(() => { this.stateLoading = false; }, 1200);
+        });
+    },
+    activateMember() {
+      this.stateLoading = true;
+      this.$axios.post(`/api/admin/members/${this.member.id}/makemember/`)
         .catch(() => {
           this.$q.dialog({
             title: this.$t('error.error'),

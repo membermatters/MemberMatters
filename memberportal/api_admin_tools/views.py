@@ -1,5 +1,6 @@
 from profile.models import User
 from group.models import Group
+from access.models import Doors, Interlock
 from constance import config
 from profile.emailhelpers import send_single_email
 import requests
@@ -21,7 +22,10 @@ class GetMembers(APIView):
         members = User.objects.all()
 
         def get_member(user):
-            profile = user.profile
+            try:
+                profile = user.profile
+            except:
+                print(user.id)
             try:
                 picture = None
             except (FileNotFoundError, ValueError):
@@ -97,3 +101,59 @@ class MemberState(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         return Response()
+
+
+class MakeMember(APIView):
+    """
+    post: This activates a new member.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def post(self, request, member_id):
+        user = User.objects.get(id=member_id)
+        if user.profile.state == "noob":
+            # give default door access
+            for door in Doors.objects.filter(all_members=True):
+                user.profile.doors.add(door)
+
+            # give default interlock access
+            for interlock in Interlock.objects.filter(all_members=True):
+                user.profile.interlocks.add(interlock)
+
+            email = user.email_welcome()
+            xero = user.profile.add_to_xero()
+            invoice = user.profile.create_membership_invoice()
+            user.profile.state = (
+                "inactive"  # an admin should activate them when they pay their invoice
+            )
+            user.profile.save()
+
+            if "Error" not in xero and "Error" not in invoice and email:
+                return Response(
+                    {
+                        "success": True,
+                        "message": "Successfully added to Xero and sent welcome email.",
+                    }
+                )
+
+            elif "Error" in xero:
+                return Response({"success": False, "message": xero})
+
+            elif "Error" in invoice:
+                return Response({"success": False, "message": invoice})
+
+            elif email is False:
+                return Response(
+                    {"success": False, "message": "Error, couldn't send welcome email."}
+                )
+
+            else:
+                return Response(
+                    {
+                        "success": False,
+                        "message": "Unknown error while making into member.",
+                    }
+                )
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
