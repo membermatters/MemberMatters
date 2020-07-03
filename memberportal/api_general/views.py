@@ -458,13 +458,12 @@ class Statistics(APIView):
     """
 
     def get(self, request):
-        statistics = {
-            "onSite": {
-                "members": SiteSession.objects.filter(signout_date=None)
-                .order_by("-signin_date")
-                .values(),
-                "count": SiteSession.objects.filter(signout_date=None).count(),
-            }
-        }
+        members = SiteSession.objects.filter(signout_date=None).order_by("-signin_date")
+        member_list = []
+
+        for member in members:
+            member_list.append(member.user.profile.get_full_name())
+
+        statistics = {"onSite": {"members": member_list, "count": members.count()}}
 
         return Response(statistics)

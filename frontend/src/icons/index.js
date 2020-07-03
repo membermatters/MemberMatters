@@ -58,6 +58,7 @@ export default {
   rfidSlash: pro ? 'fad fa-wifi-slash' : 'fal fa-times',
 
   members: pro ? 'fad fa-users' : 'fal fa-users',
+  membersOnSite: pro ? 'fad fa-address-book' : 'fal fa-address-book',
   export: pro ? 'fad fa-archive' : 'fal fa-archive',
   email: pro ? 'fad fa-mail-bulk' : 'fal fa-mail-bulk',
 };

@@ -20,6 +20,21 @@
               </q-item-label>
             </q-item-section>
           </q-item>
+          <q-item clickable>
+            <q-item-section avatar>
+              <q-icon
+                color="primary"
+                :name="icons.membersOnSite"
+              />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>{{ $t('statistics.memberList') }}</q-item-label>
+              <q-item-label caption>
+                {{ onsiteMembers.join(", ") }}
+              </q-item-label>
+            </q-item-section>
+          </q-item>
         </q-list>
       </q-card>
     </div>
@@ -58,6 +73,9 @@ export default {
     },
     onsiteCount() {
       return this.statistics.onSite ? this.statistics.onSite.count : 0;
+    },
+    onsiteMembers() {
+      return this.statistics.onSite.members ? this.statistics.onSite.members : [];
     },
   },
 };

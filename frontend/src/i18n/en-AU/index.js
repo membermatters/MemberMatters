@@ -247,6 +247,7 @@ export default {
   statistics: {
     memberCount: 'Member Count',
     onSite: ' on site right now.',
+    memberList: 'Members On Site',
   },
   entityType: 'Association',
   groups: 'Groups',
