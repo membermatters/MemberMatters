@@ -15,4 +15,6 @@ urlpatterns = [
         views.MakeMember.as_view(),
         name="ActivateMember",
     ),
+    path("doors/", views.Doors.as_view(), name="Doors"),
+    path("interlocks/", views.Interlocks.as_view(), name="Interlocks"),
 ]

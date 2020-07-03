@@ -276,4 +276,10 @@ export default {
     manageMember: 'Manage Member',
     makeMember: 'Make Member',
   },
+  doors: {
+    nodata: 'There are no doors in the system.',
+  },
+  interlocks: {
+    nodata: 'There are no interlocks in the system.',
+  },
 };

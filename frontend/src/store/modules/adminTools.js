@@ -7,11 +7,15 @@ export default {
     meetings: [],
     meetingTypes: [],
     kiosks: [],
+    doors: [],
+    interlocks: [],
   },
   getters: {
     meetings: (state) => state.meetings,
     meetingTypes: (state) => state.meetingTypes,
     kiosks: (state) => state.kiosks,
+    doors: (state) => state.doors,
+    interlocks: (state) => state.interlocks,
   },
   mutations: {
     setMeetings(state, payload) {
@@ -22,6 +26,12 @@ export default {
     },
     setKiosks(state, payload) {
       state.kiosks = payload;
+    },
+    setDoors(state, payload) {
+      state.doors = payload;
+    },
+    setInterlocks(state, payload) {
+      state.interlocks = payload;
     },
   },
   actions: {
@@ -61,6 +71,32 @@ export default {
         Vue.prototype.$axios.get('/api/kiosks/')
           .then((result) => {
             commit('setKiosks', result.data);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getDoors({ commit }) {
+      return new Promise((resolve, reject) => {
+        Vue.prototype.$axios.get('/api/admin/doors/')
+          .then((result) => {
+            commit('setDoors', result.data);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getInterlocks({ commit }) {
+      return new Promise((resolve, reject) => {
+        Vue.prototype.$axios.get('/api/admin/interlocks/')
+          .then((result) => {
+            commit('setInterlocks', result.data);
             resolve();
           })
           .catch((error) => {

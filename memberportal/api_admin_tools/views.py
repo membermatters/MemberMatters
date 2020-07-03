@@ -1,6 +1,6 @@
 from profile.models import User
 from group.models import Group
-from access.models import Doors, Interlock
+from access import models
 from constance import config
 from profile.emailhelpers import send_single_email
 import requests
@@ -114,11 +114,11 @@ class MakeMember(APIView):
         user = User.objects.get(id=member_id)
         if user.profile.state == "noob":
             # give default door access
-            for door in Doors.objects.filter(all_members=True):
+            for door in models.Doors.objects.filter(all_members=True):
                 user.profile.doors.add(door)
 
             # give default interlock access
-            for interlock in Interlock.objects.filter(all_members=True):
+            for interlock in models.Interlock.objects.filter(all_members=True):
                 user.profile.interlocks.add(interlock)
 
             email = user.email_welcome()
@@ -157,3 +157,43 @@ class MakeMember(APIView):
                 )
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class Doors(APIView):
+    """
+    get: This method returns a list of doors.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request):
+        doors = models.Doors.objects.all()
+
+        def get_door(door):
+            return {
+                "name": door.name,
+                "lastSeen": door.last_seen,
+                "ipAddress": door.ip_address,
+            }
+
+        return Response(map(get_door, doors))
+
+
+class Interlocks(APIView):
+    """
+    get: This method returns a list of interlocks.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request):
+        interlocks = models.Interlock.objects.all()
+
+        def get_door(interlock):
+            return {
+                "name": interlock.name,
+                "lastSeen": interlock.last_seen,
+                "ipAddress": interlock.ip_address,
+            }
+
+        return Response(map(get_door, interlocks))

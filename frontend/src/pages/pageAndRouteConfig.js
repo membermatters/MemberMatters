@@ -62,7 +62,7 @@ const PageAndRouteConfig = [
         name: 'doors',
         loggedIn: true,
         admin: true,
-        component: () => import('pages/Error501'),
+        component: () => import('pages/AdminTools/Doors'),
       },
       {
         icon: icons.interlocks,
@@ -70,7 +70,7 @@ const PageAndRouteConfig = [
         name: 'interlocks',
         loggedIn: true,
         admin: true,
-        component: () => import('pages/Error501'),
+        component: () => import('pages/AdminTools/Interlocks'),
       },
       {
         icon: icons.kiosks,
