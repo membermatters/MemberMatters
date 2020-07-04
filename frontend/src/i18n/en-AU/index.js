@@ -141,11 +141,13 @@ export default {
     error: 'Error Saving',
     pageDescription: 'Edit any of the fields below and they will be automatically saved.',
     noResults: 'No Results',
+    allFieldsRequired: 'All fields are required.',
 
     email: 'Email',
     firstName: 'First Name',
     lastName: 'Last Name',
     phone: 'Phone',
+    mobile: 'Mobile Number',
     screenName: 'Screen Name',
     date: 'Date',
     dateTime: 'Date & Time',
@@ -156,6 +158,7 @@ export default {
     playTheme: 'Play Theme Song',
     ipAddress: 'IP Address',
     lastSeen: 'Last Seen',
+    password: 'Password',
   },
   digitalId: {
     title: 'Digital ID',
@@ -281,5 +284,10 @@ export default {
   },
   interlocks: {
     nodata: 'There are no interlocks in the system.',
+  },
+  registrationCard: {
+    register: 'Register An Account',
+    alreadyAMember: 'Already a member? ',
+    loginHere: 'Login Here',
   },
 };

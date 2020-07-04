@@ -183,6 +183,7 @@ const PageAndRouteConfig = [
     name: 'register',
     loggedIn: false,
     kiosk: true,
+    component: () => import('pages/Registration'),
   },
 
   // These are endpoints that handle specific tasks and are not normally accessed.
