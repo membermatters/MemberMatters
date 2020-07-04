@@ -252,10 +252,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.password_reset_expire = timezone.now() + timedelta(hours=24)
         self.save()
         self.email_password_reset(
-            config.SITE_URL
-            + reverse(
-                "api_reset_password", kwargs={"reset_token": self.password_reset_key}
-            )
+            f"{config.SITE_URL}/profile/password/reset/{self.password_reset_key}"
         )
 
         return True
