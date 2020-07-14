@@ -17,33 +17,11 @@
           @reset="onReset"
           class="q-gutter-md"
         >
-          <div class="row items-start no-wrap">
-            <q-input
-              autofocus
-              class="q-pr-md"
-              filled
-              v-model="email"
-              :label="$t('form.firstName')"
-              lazy-rules
-              :rules="[
-                val => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
-              ]"
-            />
-            <q-input
-              filled
-              v-model="email"
-              :label="$t('form.lastName')"
-              lazy-rules
-              :rules="[
-                val => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
-              ]"
-            />
-          </div>
-
           <q-input
+            autofocus
             filled
             type="email"
-            v-model="email"
+            v-model="form.email"
             :label="$t('form.email')"
             lazy-rules
             :rules="[ val => validateEmail(val) || $t('validation.invalidEmail')]"
@@ -53,7 +31,29 @@
             <q-input
               class="q-pr-md"
               filled
-              v-model="email"
+              v-model="form.firstName"
+              :label="$t('form.firstName')"
+              lazy-rules
+              :rules="[
+                val => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+              ]"
+            />
+            <q-input
+              filled
+              v-model="form.lastName"
+              :label="$t('form.lastName')"
+              lazy-rules
+              :rules="[
+                val => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+              ]"
+            />
+          </div>
+
+          <div class="row items-start no-wrap">
+            <q-input
+              class="q-pr-md"
+              filled
+              v-model="form.screenName"
               :label="$t('form.screenName')"
               lazy-rules
               :rules="[
@@ -62,7 +62,7 @@
             />
             <q-input
               filled
-              v-model="email"
+              v-model="form.mobile"
               type="tel"
               :label="$t('form.mobile')"
               lazy-rules
@@ -72,19 +72,26 @@
             />
           </div>
 
-          <group-select />
+          <group-select v-model="form.groups" />
 
           <q-input
-            filled
-            type="password"
-            v-model="password"
             :label="$t('form.password')"
+            v-model="form.password"
+            filled
+            :type="isPwd ? 'password' : 'text'"
             lazy-rules
             :rules="[
               val => validateNotEmpty(val) || $t('validation.invalidPassword'),
             ]"
-          />
-
+          >
+            <template v-slot:append>
+              <q-icon
+                :name="isPwd ? icons.visibilityOff : icons.visibility"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </q-input>
 
           <q-banner
             v-if="complete"
@@ -136,6 +143,7 @@
 import { mapGetters } from 'vuex';
 import GroupSelect from 'components/FormElements/GroupSelect';
 import formMixin from '../../mixins/formMixin';
+import icons from '../../icons';
 
 export default {
   name: 'RegistrationCard',
@@ -147,10 +155,15 @@ export default {
       error: false,
       complete: false,
       loading: false,
+      isPwd: true,
       form: {
         firstName: null,
         lastName: null,
-
+        email: null,
+        screenName: null,
+        mobile: null,
+        groups: [],
+        password: null,
       },
     };
   },
@@ -182,9 +195,14 @@ export default {
     register() {
       this.loginFailed = false;
       this.buttonLoading = true;
-      this.$axios.post('/api/login/', {
-        email: this.email,
-        password: this.password,
+      this.$axios.post('/api/register/', {
+        firstName: this.form.firstName,
+        lastName: this.form.lastName,
+        email: this.form.email,
+        screenName: this.form.screenName,
+        mobile: this.form.mobile,
+        groups: this.form.groups,
+        password: this.form.password,
       })
         .then(() => {
           this.redirectLoggedIn();
@@ -200,6 +218,9 @@ export default {
   },
   computed: {
     ...mapGetters('profile', ['loggedIn']),
+    icons() {
+      return icons;
+    },
   },
 };
 </script>

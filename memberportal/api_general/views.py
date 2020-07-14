@@ -467,3 +467,51 @@ class Statistics(APIView):
         statistics = {"onSite": {"members": member_list, "count": members.count()}}
 
         return Response(statistics)
+
+
+class Register(APIView):
+    """
+    post: registers a new member.
+    """
+
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        body = request.data
+
+        new_user = User.objects.create(
+            email=body.get("email"), password=body.get("password")
+        )
+        profile = Profile.objects.create(
+            user=new_user,
+            member_type_id=2,
+            first_name=body.get("firstName"),
+            last_name=body.get("lastName"),
+            screen_name=body.get("screenName"),
+            phone=body.get("mobile"),
+        )
+
+        # for group in data.
+        for group in body.get("groups"):
+            profile.groups.add(Group.objects.get(id=group["id"]))
+        profile.save()
+
+        profile.email_profile_to(config.EMAIL_ADMIN)
+
+        new_user.email_link(
+            f"{config.SITE_OWNER} New Member Signup - Action Required",
+            "Next Step: Register for an Induction",
+            "Important. Please read this email for details on how to "
+            "register for an induction.",
+            "Hi {profile.first_name}, thanks for signing up! The next step to becoming a fully "
+            "fledged member is to book in for an induction. During this "
+            "induction we will go over the basic safety and operational "
+            f"aspects of {config.SITE_OWNER}. To book in, click the link below.",
+            f"{config.INDUCTION_URL}",
+            "Register for Induction",
+        )
+
+        # for convenience, we should now log the user in
+        login(request, new_user)
+
+        return Response()

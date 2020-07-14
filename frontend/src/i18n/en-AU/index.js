@@ -148,7 +148,7 @@ export default {
     lastName: 'Last Name',
     phone: 'Phone',
     mobile: 'Mobile Number',
-    screenName: 'Screen Name',
+    screenName: 'Screen / Nickname',
     date: 'Date',
     dateTime: 'Date & Time',
     chair: 'Chair',
