@@ -315,6 +315,7 @@ export default {
      */
     login() {
       this.loginFailed = false;
+      this.loginError = false;
       this.buttonLoading = true;
       this.$axios.post('/api/login/', {
         email: this.email,
@@ -324,8 +325,12 @@ export default {
           this.redirectLoggedIn();
         })
         .catch((error) => {
-          this.loginError = true;
-          throw error;
+          if (error.response.status === 401) {
+            this.loginFailed = true;
+          } else {
+            this.loginError = true;
+            throw error;
+          }
         })
         .finally(() => {
           this.buttonLoading = false;
