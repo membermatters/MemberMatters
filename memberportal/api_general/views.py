@@ -70,19 +70,6 @@ class GetConfig(APIView):
         return Response(response)
 
 
-class UserCreate(APIView):
-    """
-    post: Creates a new user account.
-    """
-
-    permission_classes = (permissions.AllowAny,)
-
-    def post(self, request):
-        # TODO: implement sign up endpoint
-
-        return Response("", status=status.HTTP_501_NOT_IMPLEMENTED)
-
-
 class Login(APIView):
     """
     WEB_ONLY
@@ -480,7 +467,7 @@ class Register(APIView):
         body = request.data
 
         new_user = User.objects.create(
-            email=body.get("email"), password=body.get("password")
+            email=body.get("email").lower(), password=body.get("password")
         )
         profile = Profile.objects.create(
             user=new_user,

@@ -4,7 +4,6 @@ from . import views
 
 urlpatterns = [
     path("api/config/", views.GetConfig.as_view(), name="get_config"),
-    path("api/users/", views.UserCreate.as_view(), name="users"),
     path(
         "api/token/obtain/",
         jwt_views.TokenObtainPairView.as_view(),

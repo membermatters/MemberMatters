@@ -61,6 +61,9 @@ from membermatters.helpers import log_user_event
 
 
 class UserManager(BaseUserManager):
+    def get_by_natural_key(self, username):
+        return self.get(**{self.model.USERNAME_FIELD + "__iexact": username})
+
     def create_user(self, email, password=None, is_superuser=False):
         """
         Creates and saves a User with the given email and password.
