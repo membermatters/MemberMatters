@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <q-btn
-      v-if="member.state==='Inactive'"
+      v-if="selectedMember.state==='Inactive'"
       class="q-mr-sm"
       color="positive"
       :label="$t('adminTools.enableAccess')"
@@ -9,7 +9,7 @@
       :loading="stateLoading"
     />
     <q-btn
-      v-else-if="member.state==='New'"
+      v-else-if="selectedMember.state==='New'"
       class="q-mr-sm"
       color="primary"
       :label="$t('adminTools.makeMember')"
@@ -41,6 +41,10 @@ export default {
       type: Object,
       default: () => {},
     },
+    members: {
+      type: Array,
+      default: () => {},
+    },
   },
   methods: {
     setMemberState(state) {
@@ -70,6 +74,14 @@ export default {
           this.$emit('updateMembers');
           setTimeout(() => { this.stateLoading = false; }, 1200);
         });
+    },
+  },
+  computed: {
+    selectedMember() {
+      if (this.members) {
+        return this.members.find((e) => e.id === this.member.id);
+      }
+      return this.member;
     },
   },
 };

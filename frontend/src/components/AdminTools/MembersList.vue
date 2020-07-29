@@ -178,7 +178,7 @@
                   class="q-ma-sm full-width"
                   color="primary"
                   :label="$t('adminTools.manageMember')"
-                  @click="openManageMemberModal(props.cols)"
+                  @click="openManageMemberModal(props.row)"
                 />
               </q-item>
             </q-list>
@@ -190,6 +190,12 @@
     <q-dialog v-model="manageMemberModal">
       <q-card>
         <q-card-actions align="right">
+          <manage-member
+            :members="members"
+            :member="manageMemberModalMember"
+            @updateMembers="getMembers"
+          />
+
           <q-btn
             flat
             :label="$t('button.close')"

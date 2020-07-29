@@ -22,15 +22,7 @@ class GetMembers(APIView):
         members = User.objects.all()
 
         def get_member(user):
-            try:
-                profile = user.profile
-            except:
-                print(user.id)
-            try:
-                picture = None
-            except (FileNotFoundError, ValueError):
-                # this means the file doesn't exist so just return None
-                picture = None
+            profile = user.profile
 
             return {
                 "id": user.id,
