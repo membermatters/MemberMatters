@@ -46,14 +46,11 @@ class GetMembers(APIView):
                 },
                 "groups": profile.groups.all().values(),
                 "rfid": profile.rfid,
-                # "access": {
-                #     "doors": profile.doors.all().values(),
-                #     "interlocks": profile.interlocks.all().values(),
-                # },
-                # "memberBucks": {
-                #     "balance": profile.memberbucks_balance,
-                #     "lastPurchase": profile.last_memberbucks_purchase,
-                # },
+                "access": profile.get_access_permissions(),
+                "memberBucks": {
+                    "balance": profile.memberbucks_balance,
+                    "lastPurchase": profile.last_memberbucks_purchase,
+                },
                 "updateProfileRequired": profile.must_update_profile,
                 # "last_seen": profile.last_seen,
                 # "last_induction": profile.last_induction,

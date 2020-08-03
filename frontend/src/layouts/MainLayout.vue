@@ -45,7 +45,7 @@
         <q-img
           spinner-color="white"
           class="absolute-top"
-          src="../assets/img/menu-bg/menu-bg.jpg"
+          src="../assets/img/menu-bg/menu-bg.png"
           style="height: 150px"
         >
           <div

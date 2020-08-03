@@ -10,7 +10,7 @@
       </q-item-label>
 
       <q-item
-        v-for="door in doorAccess"
+        v-for="door in doors"
         :key="door.name"
       >
         <q-item-section
@@ -54,7 +54,7 @@
       </q-item-label>
 
       <q-item
-        v-for="interlock in interlockAccess"
+        v-for="interlock in interlocks"
         :key="interlock.name"
       >
         <q-item-section
@@ -99,6 +99,12 @@ import RefreshDataDialog from './RefreshDataDialog';
 export default {
   name: 'AccessList',
   components: { RefreshDataDialog },
+  props: {
+    propData: {
+      type: Object,
+      default: null,
+    },
+  },
   data() {
     return {
       errorLoading: false,
@@ -115,6 +121,12 @@ export default {
   },
   computed: {
     ...mapGetters('profile', ['doorAccess', 'interlockAccess']),
+    doors() {
+      return this.propData ? this.propData.access.doors : this.doorAccess;
+    },
+    interlocks() {
+      return this.propData ? this.propData.access.interlocks : this.interlockAccess;
+    },
   },
 };
 </script>

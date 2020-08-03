@@ -278,6 +278,9 @@ export default {
     sendWelcomeEmail: 'Send Welcome Email',
     manageMember: 'Manage Member',
     makeMember: 'Make Member',
+
+    access: 'Access',
+    log: 'Log',
   },
   doors: {
     nodata: 'There are no doors in the system.',

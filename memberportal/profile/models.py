@@ -270,6 +270,9 @@ class MemberTypes(models.Model):
         return self.name + " - ${} per mth. {}".format(self.cost, self.conditions)
 
 
+from access.models import Doors, Interlock
+
+
 class Profile(models.Model):
     def path_and_rename(self, filename):
         ext = filename.split(".")[-1]
@@ -470,6 +473,32 @@ class Profile(models.Model):
         sessions = SiteSession.objects.filter(user=self.user, signout_date=None)
 
         return True if len(sessions) else False
+
+    def get_access_permissions(self):
+        """
+        returns a dictionary of the user's access permissions
+        :return:
+        """
+        doors = []
+        interlocks = []
+
+        user_active = not (self.state == "inactive" or self.state == "noob")
+
+        for door in Doors.objects.all():
+            if door in self.doors.all() and user_active:
+                doors.append({"name": door.name, "access": True})
+
+            else:
+                doors.append({"name": door.name, "access": False})
+
+        for interlock in Interlock.objects.all():
+            if interlock in self.interlocks.all() and user_active:
+                interlocks.append({"name": interlock.name, "access": True})
+
+            else:
+                interlocks.append({"name": interlock.name, "access": False})
+
+        return {"doors": doors, "interlocks": interlocks}
 
     def save(self, *args, **kwargs):
         """ On save, update timestamps """
