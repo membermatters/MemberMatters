@@ -136,10 +136,9 @@
         >
           <q-td
             colspan="100%"
+            class="td"
           >
-            <div
-              class="q-py-md q-px-xl"
-            >
+            <div>
               <manage-member
                 :member="props.row"
                 @updateMembers="getMembers"
@@ -189,13 +188,12 @@
 
     <q-dialog v-model="manageMemberModal">
       <q-card>
-        <q-card-actions align="right">
-          <manage-member
-            :members="members"
-            :member="manageMemberModalMember"
-            @updateMembers="getMembers"
-          />
-
+        <manage-member
+          :members="members"
+          :member="manageMemberModalMember"
+          @updateMembers="getMembers"
+        />
+        <div class="row justify-end">
           <q-btn
             flat
             :label="$t('button.close')"
@@ -203,7 +201,7 @@
             v-close-popup
             @click="resetManageMemberModal()"
           />
-        </q-card-actions>
+        </div>
       </q-card>
     </q-dialog>
   </div>
@@ -355,3 +353,9 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="scss">
+.td {
+  padding: 0;
+}
+</style>

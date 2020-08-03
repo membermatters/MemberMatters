@@ -1,33 +1,6 @@
 <template>
   <div class="column">
-    <div class="row justify-start q-pb-sm">
-      <q-btn
-        v-if="selectedMember.state==='Inactive'"
-        class="q-mr-sm"
-        color="positive"
-        :label="$t('adminTools.enableAccess')"
-        @click="setMemberState('active')"
-        :loading="stateLoading"
-      />
-      <q-btn
-        v-else-if="selectedMember.state==='New'"
-        class="q-mr-sm"
-        color="primary"
-        :label="$t('adminTools.makeMember')"
-        @click="activateMember()"
-        :loading="stateLoading"
-      />
-      <q-btn
-        v-else
-        class="q-mr-sm"
-        color="negative"
-        :label="$t('adminTools.disableAccess')"
-        @click="setMemberState('inactive')"
-        :loading="stateLoading"
-      />
-    </div>
-
-    <q-card>
+    <q-card flat>
       <q-tabs
         v-model="tab"
         dense
@@ -60,14 +33,48 @@
         v-model="tab"
         animated
       >
-        <q-tab-panel name="profile">
-          <div class="text-h6">
-            {{ $t('menuLink.profile') }}
+        <q-tab-panel
+          name="profile"
+          class="q-px-xl q-py-lg"
+        >
+          <p>These pages are read only for now (apart from the buttons just below).</p>
+
+          <div class="row justify-start q-pt-sm">
+            <q-btn
+              v-if="selectedMember.state==='Inactive'"
+              class="q-mr-sm q-mb-sm"
+              color="positive"
+              :label="$t('adminTools.enableAccess')"
+              @click="setMemberState('active')"
+              :loading="stateLoading"
+            />
+            <q-btn
+              v-else-if="selectedMember.state==='New'"
+              class="q-mr-sm q-mb-sm"
+              color="primary"
+              :label="$t('adminTools.makeMember')"
+              @click="activateMember()"
+              :loading="stateLoading"
+            />
+            <q-btn
+              v-else
+              class="q-mr-sm q-mb-sm"
+              color="negative"
+              :label="$t('adminTools.disableAccess')"
+              @click="setMemberState('inactive')"
+              :loading="stateLoading"
+            />
+            <q-btn
+              v-if="selectedMember.state!=='New'"
+              class="q-mr-sm q-mb-sm"
+              color="primary"
+              :label="$t('adminTools.sendWelcomeEmail')"
+              @click="sendWelcomeEmail()"
+              :loading="welcomeLoading"
+            />
           </div>
-          These pages are read only for now.
 
-
-          <div class="q-pa-md">
+          <div class="q-pt-lg">
             <q-list
               bordered
               separator
@@ -90,16 +97,12 @@
         </q-tab-panel>
 
         <q-tab-panel name="access">
-          <div class="text-h6">
-            {{ $t('adminTools.access') }}
-          </div>
-          <access-list :prop-data="selectedMember" />
+          <access-list
+            :access="{doors: access.doors, interlocks: access.interlocks}"
+          />
         </q-tab-panel>
 
         <q-tab-panel name="log">
-          <div class="text-h6">
-            {{ $t('adminTools.log') }}
-          </div>
           Lorem ipsum dolor sit amet consectetur adipisicing elit.
         </q-tab-panel>
 
@@ -123,7 +126,9 @@ export default {
   data() {
     return {
       stateLoading: false,
+      welcomeLoading: false,
       tab: 'profile',
+      access: {},
     };
   },
   props: {
@@ -136,7 +141,45 @@ export default {
       default: () => {},
     },
   },
+  mounted() {
+    this.getMemberAccess();
+  },
   methods: {
+    sendWelcomeEmail() {
+      this.welcomeLoading = true;
+      this.$axios.post(`/api/admin/members/${this.member.id}/sendwelcome/`)
+        .then(() => {
+          this.$q.dialog({
+            title: this.$t('success'),
+            message: this.$t('adminTools.sendWelcomeEmailSuccess'),
+          });
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('error.requestFailed'),
+          });
+        })
+        .finally(() => {
+          this.welcomeLoading = false;
+        });
+    },
+    getMemberAccess() {
+      this.stateLoading = true;
+      this.$axios.get(`/api/admin/members/${this.member.id}/access/`)
+        .then((response) => {
+          this.access = response.data;
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('error.requestFailed'),
+          });
+        })
+        .finally(() => {
+          this.stateLoading = false;
+        });
+    },
     setMemberState(state) {
       this.stateLoading = true;
       this.$axios.post(`/api/admin/members/${this.member.id}/state/${state}/`)

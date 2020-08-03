@@ -229,7 +229,7 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex';
+import { mapMutations, mapGetters, mapActions } from 'vuex';
 import { Loading } from 'quasar';
 import formMixin from '../mixins/formMixin';
 
@@ -269,6 +269,7 @@ export default {
     };
   },
   mounted() {
+    this.getLoggedIn();
     if (this.loggedIn) this.redirectLoggedIn();
     if (this.resetToken) {
       Loading.show({ message: 'Validating request...' });
@@ -285,6 +286,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions('profile', ['getLoggedIn']),
     ...mapMutations('profile', ['setLoggedIn']),
     /**
      * Redirects to the dashboard page on successful login.

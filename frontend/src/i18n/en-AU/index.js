@@ -127,7 +127,7 @@ export default {
   },
   reportIssue: {
     pageDescription: 'Report an issue',
-    success: 'Your issue was reported succesfully.',
+    success: 'Your issue was reported successfully.',
     fail: 'There was a problem reporting your issue.',
   },
   memberGroups: {
@@ -278,6 +278,7 @@ export default {
     sendWelcomeEmail: 'Send Welcome Email',
     manageMember: 'Manage Member',
     makeMember: 'Make Member',
+    sendWelcomeEmailSuccess: 'Successfully resent the welcome email.',
 
     access: 'Access',
     log: 'Log',

@@ -474,6 +474,47 @@ class Profile(models.Model):
 
         return True if len(sessions) else False
 
+    def get_basic_profile(self):
+        """
+        Returns a user's profile with a basic amount of info.
+        :return: {}
+        """
+        return {
+            "id": self.user.id,
+            "admin": self.user.is_staff,
+            "superuser": self.user.is_admin,
+            "email": self.user.email,
+            "registrationDate": self.created,
+            "lastUpdatedProfile": self.modified,
+            "screenName": self.screen_name,
+            "name": {
+                "first": self.first_name,
+                "last": self.last_name,
+                "full": self.get_full_name(),
+            },
+            "phone": self.phone,
+            "state": self.get_state_display(),
+            # "picture": picture,
+            "memberType": {"name": self.member_type.name, "id": self.member_type_id,},
+            "groups": self.groups.all().values(),
+            "rfid": self.rfid,
+            "memberBucks": {
+                "balance": self.memberbucks_balance,
+                "lastPurchase": self.last_memberbucks_purchase,
+            },
+            "updateProfileRequired": self.must_update_profile,
+            "last_seen": self.last_seen,
+            "last_induction": self.last_induction,
+            "stripe": {
+                "cardExpiry": self.stripe_card_expiry,
+                "last4": self.stripe_card_last_digits,
+            },
+            "xero": {
+                "accountId": self.xero_account_id,
+                "accountNumber": self.xero_account_number,
+            },
+        }
+
     def get_access_permissions(self):
         """
         returns a dictionary of the user's access permissions
@@ -484,6 +525,7 @@ class Profile(models.Model):
 
         user_active = not (self.state == "inactive" or self.state == "noob")
 
+        # if the method got doors, use them, otherwise query them
         for door in Doors.objects.all():
             if door in self.doors.all() and user_active:
                 doors.append({"name": door.name, "access": True})
@@ -491,6 +533,7 @@ class Profile(models.Model):
             else:
                 doors.append({"name": door.name, "access": False})
 
+        # if the method got interlocks, use them, otherwise query them
         for interlock in Interlock.objects.all():
             if interlock in self.interlocks.all() and user_active:
                 interlocks.append({"name": interlock.name, "access": True})

@@ -15,6 +15,16 @@ urlpatterns = [
         views.MakeMember.as_view(),
         name="ActivateMember",
     ),
+    path(
+        "members/<int:member_id>/access/",
+        views.MemberAccess.as_view(),
+        name="MemberAccess",
+    ),
+    path(
+        "members/<int:member_id>/sendwelcome/",
+        views.MemberWelcomeEmail.as_view(),
+        name="MemberWelcomeEmail",
+    ),
     path("doors/", views.Doors.as_view(), name="Doors"),
     path("interlocks/", views.Interlocks.as_view(), name="Interlocks"),
 ]

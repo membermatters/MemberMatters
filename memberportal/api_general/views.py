@@ -439,6 +439,18 @@ class UserSiteSession(APIView):
         return Response(sessions.values()[0] if len(sessions) else False)
 
 
+class LoggedIn(APIView):
+    """
+    get: checks if the member is logged into the portal.
+    """
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            return Response(status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
 class Statistics(APIView):
     """
     get: gets site statistics.

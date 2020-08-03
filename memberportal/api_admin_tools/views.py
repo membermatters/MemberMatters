@@ -1,14 +1,17 @@
 from profile.models import User
-from group.models import Group
+from access import models as access_models
 from access import models
 from constance import config
 from profile.emailhelpers import send_single_email
 import requests
+import time
 
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+
+from django.db import connection, reset_queries
 
 
 class GetMembers(APIView):
@@ -19,52 +22,25 @@ class GetMembers(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def get(self, request):
-        members = User.objects.all()
+        reset_queries()
+        start_queries = len(connection.queries)
 
-        def get_member(user):
-            profile = user.profile
+        start_time = time.time()
+        members = User.objects.select_related("profile", "profile__member_type").all()
+        # doors = access_models.Doors.objects.filter(hidden=False)
+        # interlocks = access_models.Interlock.objects.filter(hidden=False)
 
-            return {
-                "id": user.id,
-                "admin": user.is_staff,
-                "superuser": user.is_admin,
-                "email": user.email,
-                "registrationDate": profile.created,
-                "lastUpdatedProfile": profile.modified,
-                "screenName": profile.screen_name,
-                "name": {
-                    "first": profile.first_name,
-                    "last": profile.last_name,
-                    "full": profile.get_full_name(),
-                },
-                "phone": profile.phone,
-                "state": profile.get_state_display(),
-                # "picture": picture,
-                "memberType": {
-                    "name": profile.member_type.name,
-                    "id": profile.member_type_id,
-                },
-                "groups": profile.groups.all().values(),
-                "rfid": profile.rfid,
-                "access": profile.get_access_permissions(),
-                "memberBucks": {
-                    "balance": profile.memberbucks_balance,
-                    "lastPurchase": profile.last_memberbucks_purchase,
-                },
-                "updateProfileRequired": profile.must_update_profile,
-                # "last_seen": profile.last_seen,
-                # "last_induction": profile.last_induction,
-                # "stripe": {
-                #     "cardExpiry": profile.stripe_card_expiry,
-                #     "last4": profile.stripe_card_last_digits,
-                # },
-                # "xero": {
-                #     "accountId": profile.xero_account_id,
-                #     "accountNumber": profile.xero_account_number,
-                # },
-            }
+        filtered = []
 
-        return Response(map(get_member, members))
+        for member in members:
+            filtered.append(member.profile.get_basic_profile())
+
+        print(time.time() - start_time)
+
+        end_queries = len(connection.queries)
+        print(f"Number of Queries : {end_queries - start_queries}")
+
+        return Response(filtered)
 
 
 class MemberState(APIView):
@@ -186,3 +162,30 @@ class Interlocks(APIView):
             }
 
         return Response(map(get_door, interlocks))
+
+
+class MemberAccess(APIView):
+    """
+    get: This method gets a member's access permissions.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request, member_id):
+        member = User.objects.get(id=member_id)
+
+        return Response(member.profile.get_access_permissions())
+
+
+class MemberWelcomeEmail(APIView):
+    """
+    get: This method sends a welcome email to the specified member.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def post(self, request, member_id):
+        member = User.objects.get(id=member_id)
+        member.email_welcome()
+
+        return Response()

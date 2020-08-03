@@ -100,7 +100,7 @@ export default {
   name: 'AccessList',
   components: { RefreshDataDialog },
   props: {
-    propData: {
+    access: {
       type: Object,
       default: null,
     },
@@ -122,10 +122,10 @@ export default {
   computed: {
     ...mapGetters('profile', ['doorAccess', 'interlockAccess']),
     doors() {
-      return this.propData ? this.propData.access.doors : this.doorAccess;
+      return this.access ? this.access.doors : this.doorAccess;
     },
     interlocks() {
-      return this.propData ? this.propData.access.interlocks : this.interlockAccess;
+      return this.access ? this.access.interlocks : this.interlockAccess;
     },
   },
 };

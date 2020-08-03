@@ -75,6 +75,20 @@ export default {
           .then((response) => {
             response.data.firstJoined = Moment(response.data.firstJoined).format('Do MMMM YYYY');
             commit('setProfile', response.data);
+            commit('setLoggedIn', true);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getLoggedIn({ commit }) {
+      return new Promise((resolve, reject) => {
+        Vue.prototype.$axios.get('/api/loggedin/')
+          .then(() => {
+            commit('setLoggedIn', true);
             resolve();
           })
           .catch((error) => {

@@ -25,6 +25,9 @@ class AccessControlledDevice(models.Model):
     exempt_signin = models.BooleanField(
         "Exempt this device from requiring a sign in", default=False
     )
+    hidden = models.BooleanField(
+        "Hidden from members in their access permissions screen", default=False
+    )
 
     def checkin(self):
         self.last_seen = timezone.now()
