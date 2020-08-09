@@ -348,6 +348,9 @@ class Profile(models.Model):
     stripe_card_last_digits = models.CharField(
         max_length=4, blank=True, null=True, default=""
     )
+    stripe_payment_method_id = models.CharField(
+        max_length=100, blank=True, null=True, default=""
+    )
     xero_account_id = models.CharField(
         max_length=100, blank=True, null=True, default=""
     )

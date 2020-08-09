@@ -157,9 +157,7 @@ LOGGING = {
             ),
         },
     },
-    "loggers": {
-        "django": {"handlers": ["file"], "level": "WARNING", "propagate": True,},
-    },
+    "loggers": {"django": {"handlers": ["file"], "level": "INFO", "propagate": True,},},
 }
 
 REST_FRAMEWORK = {

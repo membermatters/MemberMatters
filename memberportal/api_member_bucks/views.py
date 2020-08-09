@@ -190,11 +190,25 @@ class MemberBucksAddCard(APIView):
 
     def post(self, request):
         body = request.data
+        print(body["id"])
 
         profile = request.user.profile
         profile.stripe_card_last_digits = body["card"]["last4"]
         profile.stripe_card_expiry = (
             f"{str(body['card']['exp_month']).zfill(2)}/{str(body['card']['exp_year'])}"
         )
+        profile.stripe_payment_method_id = body["id"]
+        profile.save()
+        return Response()
+
+    def delete(self, request):
+        profile = request.user.profile
+
+        if profile.stripe_payment_method_id:
+            stripe.PaymentMethod.detach(profile.stripe_payment_method_id)
+
+        profile.stripe_payment_method_id = ""
+        profile.stripe_card_last_digits = ""
+        profile.stripe_card_expiry = ""
         profile.save()
         return Response()

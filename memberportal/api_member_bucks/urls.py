@@ -13,7 +13,7 @@ urlpatterns = [
         name="MemberBucksBalance",
     ),
     path(
-        "api/memberbucks/card/add/",
+        "api/memberbucks/card/",
         views.MemberBucksAddCard.as_view(),
         name="MemberBucksAddCard",
     ),

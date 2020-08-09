@@ -219,9 +219,12 @@ export default {
     manageBilling: 'Manage Billing',
     addCard: 'Add Card',
     addCardDescription: 'To add a new card please fill out the form. We do not store your credit card information (other than the last 4 digits and expiry) as our payment processor collects this for us.',
+    addCardError: 'There was an error adding your card. Please try again later.',
     saveCard: 'Save Card',
     savedCardTitle: 'Saved Card',
-    savedCardDescription: 'Your saved card details are below.',
+    savedCardDescription: 'Your saved card is shown below.',
+    removeCard: 'Remove Card',
+    removeCardError: 'There was an error removing your card. Please try again later.',
   },
   loginRfidCard: {
     swipeCard: 'Tap Card',

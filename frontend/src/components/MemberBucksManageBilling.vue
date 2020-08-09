@@ -22,11 +22,25 @@
             :brand="profile.financial.memberBucks.savedCard.brand"
             class="shadow-7"
           />
+
+          <div class="row q-pt-md">
+            <q-space />
+            <q-btn
+              :loading="removeLoading"
+              :disable="removeLoading"
+              @click="removeCard"
+              color="primary"
+              id="card-button"
+            >
+              {{ $t('memberbucks.removeCard') }}
+            </q-btn>
+            <q-space />
+          </div>
         </q-card-section>
       </template>
 
       <template v-else>
-        <member-bucks-add-card />
+        <member-bucks-add-card @hide="hide" />
       </template>
 
       <q-card-actions align="right">
@@ -43,13 +57,33 @@
 
 <script>
 import CreditCard from 'components/CreditCard';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import MemberBucksAddCard from 'components/MemberBucksAddCard';
 
 export default {
   name: 'MemberBucksManageBilling',
   components: { MemberBucksAddCard, CreditCard },
+  data() {
+    return {
+      removeLoading: false,
+    };
+  },
   methods: {
+    ...mapActions('profile', ['getProfile']),
+    removeCard() {
+      this.removeLoading = true;
+      this.$axios.delete('/api/memberbucks/card/')
+        .then(() => {
+          this.getProfile();
+          this.hide();
+        })
+        .catch(() => {
+          this.error = this.$t('memberbucks.removeCardError');
+        })
+        .finally(() => {
+          this.removeLoading = false;
+        });
+    },
     show() {
       this.$refs.dialog.show();
     },

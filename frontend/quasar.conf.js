@@ -108,7 +108,7 @@ module.exports = function (ctx) {
     animations: [],
 
     ssr: {
-      pwa: false,
+      pwa: true,
     },
 
     // https://quasar.dev/quasar-cli/developing-pwa/configuring-pwa

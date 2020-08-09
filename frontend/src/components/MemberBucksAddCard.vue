@@ -39,7 +39,7 @@
 
 <script>
 import icons from 'src/icons';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'MemberBucksAddCard',
@@ -61,6 +61,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions('profile', ['getProfile']),
     async setupStripe(stripePublishableKey) {
       this.stripe = await window.Stripe(stripePublishableKey);
 
@@ -70,7 +71,7 @@ export default {
 
       const cardButton = document.getElementById('card-button');
 
-      this.$axios.get('/api/memberbucks/card/add/')
+      this.$axios.get('/api/memberbucks/card/')
         .then((response) => {
           cardButton.addEventListener('click', async () => {
             this.disableStripeForm = true;
@@ -92,35 +93,23 @@ export default {
             if (error) {
               this.error = error.message;
             } else if (setupIntent.status === 'succeeded') {
-              this.$axios.post('/api/memberbucks/card/add/', setupIntent.payment_method)
+              this.$axios.post('/api/memberbucks/card/', setupIntent.payment_method)
                 .then(() => {
+                  this.getProfile();
                   this.hide();
                 })
                 .catch(() => {
-                  this.error = 'There was an error sending your card details to our server. Please try again later.';
+                  this.error = this.$t('memberbucks.addCardError');
                 });
             }
           });
         })
         .catch(() => {
-          this.error = 'There was an error retrieving your details from our server. Please try again later.';
+          this.error = this.$t('memberbucks.addCardError');
         });
     },
-    show() {
-      this.$refs.dialog.show();
-    },
     hide() {
-      this.$refs.dialog.hide();
-    },
-    onDialogHide() {
       this.$emit('hide');
-    },
-    onOKClick() {
-      this.$emit('ok');
-      this.hide();
-    },
-    onCancelClick() {
-      this.hide();
     },
   },
   computed: {
