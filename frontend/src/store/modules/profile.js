@@ -34,7 +34,7 @@ export default {
           },
           {
             element: document,
-            timeout: 1000 * 60,
+            timeout: 1000 * 20,
             loop: false,
           },
         );
