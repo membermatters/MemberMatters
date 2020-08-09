@@ -217,6 +217,9 @@ export default {
     noSavedBilling: 'Sorry, but you don\'t have any valid billing methods. Please add a new '
       + 'billing method by clicking the button below.',
     manageBilling: 'Manage Billing',
+    addCard: 'Add Card',
+    addCardDescription: 'To add a new card please fill out the form. We do not store your credit card information (other than the last 4 digits and expiry) as our payment processor collects this for us.',
+    saveCard: 'Save Card',
   },
   loginRfidCard: {
     swipeCard: 'Tap Card',

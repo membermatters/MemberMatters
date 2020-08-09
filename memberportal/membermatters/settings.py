@@ -287,6 +287,10 @@ CONSTANCE_CONFIG = {
     # Stripe config
     "STRIPE_PUBLISHABLE_KEY": ("", "Set this to your Stripe PUBLIC API key."),
     "STRIPE_SECRET_KEY": ("", "Set this to your Stripe PRIVATE API key."),
+    "STRIPE_MEMBERBUCKS_TOPUP_OPTIONS": (
+        "[1000, 2000, 3000]",
+        "This is a JSON array of top-up amounts in cents.",
+    ),
     "ENABLE_MEMBERBUCKS_STRIPE_INTEGRATION": (
         False,
         "Enable integration with stripe for adding memberbucks.",
@@ -376,6 +380,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "STRIPE_PUBLISHABLE_KEY",
                 "STRIPE_SECRET_KEY",
                 "ENABLE_MEMBERBUCKS_STRIPE_INTEGRATION",
+                "STRIPE_MEMBERBUCKS_TOPUP_OPTIONS",
             ),
         ),
         (

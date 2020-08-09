@@ -21,7 +21,7 @@
       </template>
 
       <template v-else>
-        You don't have any saved cards.
+        <member-bucks-add-card />
       </template>
 
       <q-card-actions align="right">
@@ -39,10 +39,11 @@
 <script>
 import CreditCard from 'components/CreditCard';
 import { mapGetters } from 'vuex';
+import MemberBucksAddCard from 'components/MemberBucksAddCard';
 
 export default {
   name: 'MemberBucksManageBilling',
-  components: { CreditCard },
+  components: { MemberBucksAddCard, CreditCard },
   methods: {
     show() {
       this.$refs.dialog.show();
