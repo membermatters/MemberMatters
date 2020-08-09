@@ -187,3 +187,14 @@ class MemberBucksAddCard(APIView):
             intent = stripe.SetupIntent.create(customer=profile.stripe_customer_id)
 
             return Response({"clientSecret": intent.client_secret})
+
+    def post(self, request):
+        body = request.data
+
+        profile = request.user.profile
+        profile.stripe_card_last_digits = body["card"]["last4"]
+        profile.stripe_card_expiry = (
+            f"{str(body['card']['exp_month']).zfill(2)}/{str(body['card']['exp_year'])}"
+        )
+        profile.save()
+        return Response()

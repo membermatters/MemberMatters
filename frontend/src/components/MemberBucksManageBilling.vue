@@ -6,7 +6,12 @@
     <q-card class="q-dialog-plugin">
       <template v-if="profile.financial.memberBucks.savedCard.last4">
         <q-card-section>
-          {{ $t('memberbucks.savedCard') }}
+          <div class="text-h6">
+            {{ $t('memberbucks.savedCardTitle') }}
+          </div>
+          <div class="text-subtitle2">
+            {{ $t('memberbucks.savedCardDescription') }}
+          </div>
         </q-card-section>
 
         <q-card-section>

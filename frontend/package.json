@@ -26,6 +26,7 @@
     "@quasar/extras": "^1.8.2",
     "@sentry/browser": "^5.16.1",
     "@sentry/integrations": "^5.16.1",
+    "@stripe/stripe-js": "^1.8.0",
     "address": "^1.1.2",
     "axios": "^0.19.2",
     "crypto-js": "^4.0.0",

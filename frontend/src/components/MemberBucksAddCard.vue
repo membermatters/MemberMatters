@@ -40,7 +40,6 @@
 <script>
 import icons from 'src/icons';
 import { mapGetters } from 'vuex';
-import { Dark } from 'quasar';
 
 export default {
   name: 'MemberBucksAddCard',
@@ -66,18 +65,7 @@ export default {
       this.stripe = await window.Stripe(stripePublishableKey);
 
       const elements = this.stripe.elements();
-      const cardElement = elements.create('card', {
-        style: {
-          base: {
-            fontWeight: 400,
-            fontFamily: 'Roboto, Open Sans, Segoe UI, sans-serif',
-            fontSmoothing: 'antialiased',
-            '::placeholder': {
-              color: Dark.isActive ? '#fff' : '#000',
-            },
-          },
-        },
-      });
+      const cardElement = elements.create('card', this.$stripeElementsStyle());
       cardElement.mount('#stripe-card-element');
 
       const cardButton = document.getElementById('card-button');
@@ -86,6 +74,7 @@ export default {
         .then((response) => {
           cardButton.addEventListener('click', async () => {
             this.disableStripeForm = true;
+            this.error = null;
             const { setupIntent, error } = await this.stripe.confirmCardSetup(
               response.data.clientSecret,
               {
@@ -101,24 +90,20 @@ export default {
             this.disableStripeForm = false;
 
             if (error) {
-              this.error = error;
+              this.error = error.message;
             } else if (setupIntent.status === 'succeeded') {
-            // The setup has succeeded. Display a success message. Send
-            // setupIntent.payment_method to your server to save the card to a Customer
-              console.log('success');
-
               this.$axios.post('/api/memberbucks/card/add/', setupIntent.payment_method)
                 .then(() => {
-                  console.log('Added card!');
+                  this.hide();
                 })
                 .catch(() => {
-                  console.log('There was an error sending your card details to our server.');
+                  this.error = 'There was an error sending your card details to our server. Please try again later.';
                 });
             }
           });
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(() => {
+          this.error = 'There was an error retrieving your details from our server. Please try again later.';
         });
     },
     show() {

@@ -220,6 +220,8 @@ export default {
     addCard: 'Add Card',
     addCardDescription: 'To add a new card please fill out the form. We do not store your credit card information (other than the last 4 digits and expiry) as our payment processor collects this for us.',
     saveCard: 'Save Card',
+    savedCardTitle: 'Saved Card',
+    savedCardDescription: 'Your saved card details are below.',
   },
   loginRfidCard: {
     swipeCard: 'Tap Card',
