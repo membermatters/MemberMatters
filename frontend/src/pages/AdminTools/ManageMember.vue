@@ -144,6 +144,11 @@ export default {
   mounted() {
     this.getMemberAccess();
   },
+  watch: {
+    member() {
+      this.getMemberAccess();
+    },
+  },
   methods: {
     sendWelcomeEmail() {
       this.welcomeLoading = true;

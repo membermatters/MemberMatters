@@ -114,10 +114,12 @@ export default {
     ...mapActions('profile', ['getAccess']),
   },
   mounted() {
-    this.getAccess()
-      .catch(() => {
-        this.errorLoading = true;
-      });
+    if (!this.access) {
+      this.getAccess()
+        .catch(() => {
+          this.errorLoading = true;
+        });
+    }
   },
   computed: {
     ...mapGetters('profile', ['doorAccess', 'interlockAccess']),
