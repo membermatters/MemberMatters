@@ -9,7 +9,7 @@
           {{ $t('memberbucks.addFunds') }}
         </div>
         <div class="text-subtitle2">
-          {{ $t('memberbucks.currentBalance') }} {{ $n(100, 'currency') }}
+          {{ $t('memberbucks.currentBalance') }} {{ balance }}
         </div>
       </q-card-section>
 
@@ -99,6 +99,9 @@ export default {
     ...mapGetters('profile', ['profile']),
     icons() {
       return icons;
+    },
+    balance() {
+      return this.$n(this.profile.financial.memberBucks.balance, 'currency');
     },
   },
 };

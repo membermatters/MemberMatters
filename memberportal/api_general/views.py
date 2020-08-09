@@ -229,6 +229,7 @@ class ProfileDetail(generics.GenericAPIView):
                 "xeroAccNumber": p.xero_account_number,
                 "memberBucks": {
                     "lastPurchase": p.last_memberbucks_purchase,
+                    "balance": p.memberbucks_balance,
                     "savedCard": {
                         "last4": p.stripe_card_last_digits,
                         "expiry": p.stripe_card_expiry,
