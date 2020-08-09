@@ -28,6 +28,7 @@ module.exports = function (ctx) {
       cssAddon: true,
       config: {
         dark: 'auto', // or Boolean true/false
+        loadingBar: { color: 'accent' },
       },
       iconSet: 'fontawesome-v5-pro', // Quasar icon set
       lang: 'en-us', // Quasar language pack
@@ -39,6 +40,7 @@ module.exports = function (ctx) {
 
       plugins: [
         'Dialog',
+        'LoadingBar',
       ],
     },
 
@@ -97,7 +99,7 @@ module.exports = function (ctx) {
       proxy: {
         // proxy all requests starting with /api to
         '/api': {
-          target: 'http://localhost:8000',
+          target: 'http://localhost:8001',
           changeOrigin: false,
         },
       },
