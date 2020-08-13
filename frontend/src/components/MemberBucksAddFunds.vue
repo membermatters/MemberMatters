@@ -9,22 +9,28 @@
           {{ $t('memberbucks.addFunds') }}
         </div>
         <div class="text-subtitle2">
-          {{ $t('memberbucks.currentBalance') }} {{ $n(100, 'currency') }}
+          {{ $t('memberbucks.currentBalance') }} {{ balance }}
         </div>
       </q-card-section>
 
       <template v-if="profile.financial.memberBucks.savedCard.last4">
         <q-card-section>
+          <p>
+            Adding funds is coming soon and is nearly finished!
+          </p>
           <q-btn
+            disable
             :label="$n(10, 'currency')"
             color="accent"
           />
           <q-btn
+            disable
             class="q-mx-sm"
             :label="$n(20, 'currency')"
             color="accent"
           />
           <q-btn
+            disable
             :label="$n(30, 'currency')"
             color="accent"
           />
@@ -99,6 +105,9 @@ export default {
     ...mapGetters('profile', ['profile']),
     icons() {
       return icons;
+    },
+    balance() {
+      return this.$n(this.profile.financial.memberBucks.balance, 'currency');
     },
   },
 };
