@@ -345,6 +345,11 @@ CONSTANCE_CONFIG = {
         "[]",
         "A JSON list of strings (URLs) to project sites like wikis, GitHub, etc.",
     ),
+    "MEMBERBUCKS_MAX_TOPUP": ("50", "The maximum topup allowed in dollars."),
+    "MEMBERBUCKS_CURRENCY": (
+        "aud",
+        "The currency to charge cards in - see Stripe documentation.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -360,6 +365,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ),
         ),
         ("URLs", ("SITE_URL", "MAIN_SITE_URL", "INDUCTION_URL")),
+        ("Memberbucks", ("MEMBERBUCKS_MAX_TOPUP", "MEMBERBUCKS_CURRENCY")),
         ("Images", ("SITE_LOGO", "SITE_FAVICON")),
         (
             "Group Localisation",

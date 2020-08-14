@@ -20,35 +20,40 @@
     :grid="$q.screen.xs"
   >
     <template v-slot:top-left>
-      <q-btn
-        color="accent"
-        :icon="icons.add"
-        :label="$t('memberbucks.addFunds')"
-        @click="addFunds()"
-        class="q-mb-sm q-mr-sm"
-      />
+      <div class="row">
+        <q-btn
+          color="accent"
+          :icon="icons.add"
+          :label="$t('memberbucks.addFunds')"
+          @click="addFunds()"
+          class="q-mb-sm q-mr-sm"
+        />
 
-      <q-btn
-        color="accent"
-        :icon="icons.billing"
-        :label="$t('memberbucks.manageBilling')"
-        @click="manageBilling()"
-        class="q-mb-sm q-mr-md"
-      />
+        <q-btn
+          color="accent"
+          :icon="icons.billing"
+          :label="$t('memberbucks.manageBilling')"
+          @click="manageBilling()"
+          class="q-mb-sm q-mr-md"
+        />
 
-      <q-input
-        v-if="$q.screen.xs"
-        outlined
-        dense
-        debounce="300"
-        v-model="filter"
-        placeholder="Search"
-        style="margin-top: -3px;"
-      >
-        <template v-slot:append>
-          <q-icon :name="icons.search" />
-        </template>
-      </q-input>
+        <q-input
+          v-if="$q.screen.xs"
+          outlined
+          dense
+          debounce="300"
+          v-model="filter"
+          placeholder="Search"
+          style="margin-top: -3px;"
+        >
+          <template v-slot:append>
+            <q-icon :name="icons.search" />
+          </template>
+        </q-input>
+      </div>
+      <div class="row">
+        {{ $t("memberbucks.currentBalance") }} {{ $n(memberBucksBalance, 'currency') }}
+      </div>
     </template>
 
     <template

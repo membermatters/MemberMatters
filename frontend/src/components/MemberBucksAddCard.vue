@@ -85,7 +85,6 @@ export default {
                     name: this.profile.fullName,
                   },
                 },
-                expand: ['payment_method'],
               },
             );
             this.disableStripeForm = false;
@@ -93,7 +92,7 @@ export default {
             if (error) {
               this.error = error.message;
             } else if (setupIntent.status === 'succeeded') {
-              this.$axios.post('/api/memberbucks/card/', setupIntent.payment_method)
+              this.$axios.post('/api/memberbucks/card/', { paymentMethodId: setupIntent.payment_method })
                 .then(() => {
                   this.getProfile();
                   this.hide();
