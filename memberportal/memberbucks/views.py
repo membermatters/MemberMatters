@@ -151,7 +151,6 @@ def memberbucks_group_donation(request, rfid=None, group_id=None, amount=None):
             time_dif = (
                 timezone.now() - profile.last_memberbucks_purchase
             ).total_seconds()
-            print(time_dif)
 
             if time_dif > 10:
                 transaction = MemberBucks()

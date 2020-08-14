@@ -19,20 +19,28 @@
             Adding funds is coming soon and is nearly finished!
           </p>
           <q-btn
-            disable
+            :disable="addingFunds"
             :label="$n(10, 'currency')"
             color="accent"
+            @click="addFunds(10)"
           />
           <q-btn
-            disable
+            :disable="addingFunds"
             class="q-mx-sm"
             :label="$n(20, 'currency')"
             color="accent"
+            @click="addFunds(20)"
           />
           <q-btn
-            disable
+            :disable="addingFunds"
             :label="$n(30, 'currency')"
             color="accent"
+            @click="addFunds(30)"
+          />
+          <br>
+          <q-spinner
+            v-if="addingFunds"
+            color="primary"
           />
         </q-card-section>
 
@@ -47,6 +55,19 @@
               </span>
             </template>
           </i18n>
+
+          <q-banner
+            v-if="addFundsError"
+            class="text-white bg-red"
+          >
+            {{ addFundsError }}
+          </q-banner>
+          <q-banner
+            v-if="addFundsSuccess"
+            class="text-white bg-success"
+          >
+            {{ $t("memberbucks.addFundsSuccess") }}
+          </q-banner>
         </q-card-section>
       </template>
 
@@ -79,11 +100,38 @@
 
 <script>
 import icons from 'src/icons';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'MemberBucksAddFunds',
+  data() {
+    return {
+      addFundsError: null,
+      addFundsSuccess: false,
+      addingFunds: false,
+    };
+  },
   methods: {
+    ...mapActions('profile', ['getProfile']),
+    ...mapActions('tools', ['getMemberBucksTransactions', 'getMemberBucksBalance']),
+    addFunds(amount) {
+      this.addingFunds = true;
+      this.addFundsSuccess = false;
+      this.addFundsError = false;
+      this.$axios.post(`/api/memberbucks/add/${amount}/`)
+        .then(() => {
+          this.getProfile();
+          this.getMemberBucksTransactions();
+          this.getMemberBucksBalance();
+          this.addFundsSuccess = true;
+        })
+        .catch(() => {
+          this.addFundsError = this.$t('memberbucks.addCardError');
+        })
+        .finally(() => {
+          this.addingFunds = false;
+        });
+    },
     show() {
       this.$refs.dialog.show();
     },

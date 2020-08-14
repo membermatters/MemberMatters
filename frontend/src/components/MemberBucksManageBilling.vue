@@ -6,7 +6,12 @@
     <q-card class="q-dialog-plugin">
       <template v-if="profile.financial.memberBucks.savedCard.last4">
         <q-card-section>
-          {{ $t('memberbucks.savedCard') }}
+          <div class="text-h6">
+            {{ $t('memberbucks.savedCardTitle') }}
+          </div>
+          <div class="text-subtitle2">
+            {{ $t('memberbucks.savedCardDescription') }}
+          </div>
         </q-card-section>
 
         <q-card-section>
@@ -17,11 +22,25 @@
             :brand="profile.financial.memberBucks.savedCard.brand"
             class="shadow-7"
           />
+
+          <div class="row q-pt-md">
+            <q-space />
+            <q-btn
+              :loading="removeLoading"
+              :disable="removeLoading"
+              @click="removeCard"
+              color="primary"
+              id="card-button"
+            >
+              {{ $t('memberbucks.removeCard') }}
+            </q-btn>
+            <q-space />
+          </div>
         </q-card-section>
       </template>
 
       <template v-else>
-        You don't have any saved cards.
+        <member-bucks-add-card @hide="hide" />
       </template>
 
       <q-card-actions align="right">
@@ -38,12 +57,33 @@
 
 <script>
 import CreditCard from 'components/CreditCard';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
+import MemberBucksAddCard from 'components/MemberBucksAddCard';
 
 export default {
   name: 'MemberBucksManageBilling',
-  components: { CreditCard },
+  components: { MemberBucksAddCard, CreditCard },
+  data() {
+    return {
+      removeLoading: false,
+    };
+  },
   methods: {
+    ...mapActions('profile', ['getProfile']),
+    removeCard() {
+      this.removeLoading = true;
+      this.$axios.delete('/api/memberbucks/card/')
+        .then(() => {
+          this.getProfile();
+          this.hide();
+        })
+        .catch(() => {
+          this.error = this.$t('memberbucks.removeCardError');
+        })
+        .finally(() => {
+          this.removeLoading = false;
+        });
+    },
     show() {
       this.$refs.dialog.show();
     },

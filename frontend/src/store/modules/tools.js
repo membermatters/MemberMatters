@@ -11,7 +11,7 @@ export default {
     proxies: [],
     members: [],
     memberBucksTransactions: [],
-    memberBucksBalance: [],
+    memberBucksBalance: '',
     statistics: {},
   },
   getters: {
@@ -155,7 +155,7 @@ export default {
       return new Promise((resolve, reject) => {
         Vue.prototype.$axios.get('/api/memberbucks/balance/')
           .then((result) => {
-            commit('setMemberBucksBalance', result.data);
+            commit('setMemberBucksBalance', result.data.balance);
             resolve();
           })
           .catch((error) => {

@@ -43,6 +43,9 @@ class GetConfig(APIView):
             "stripe": {
                 "enabled": len(config.STRIPE_PUBLISHABLE_KEY) > 0,
                 "memberBucksIntegration": config.ENABLE_MEMBERBUCKS_STRIPE_INTEGRATION,
+                "memberbucks_topup_options": json.loads(
+                    config.STRIPE_MEMBERBUCKS_TOPUP_OPTIONS
+                ),
             },
             "trelloIntegration": config.ENABLE_TRELLO_INTEGRATION,
         }

@@ -19,7 +19,7 @@ import { loadStripe } from '@stripe/stripe-js';
 
 import { mapActions, mapGetters, mapMutations } from 'vuex';
 import Vue from 'vue';
-import { colors, Platform } from 'quasar';
+import { colors, Dark, Platform } from 'quasar';
 import Settings from 'components/Settings';
 import store from './store/index';
 import LoginCard from './components/LoginCard';
@@ -59,6 +59,21 @@ if (Platform.is.electron) {
 
 colors.setBrand('dark', '#313131');
 
+Vue.prototype.$stripeElementsStyle = () => ({
+  style: {
+    base: {
+      color: Dark.isActive ? '#fff' : '#000',
+      iconColor: Dark.isActive ? '#fff' : '#000',
+      fontWeight: 400,
+      fontFamily: 'Roboto, Open Sans, Segoe UI, sans-serif',
+      fontSmoothing: 'antialiased',
+      '::placeholder': {
+        color: Dark.isActive ? '#fff' : '#000',
+      },
+    },
+  },
+});
+
 export default {
   name: 'App',
   components: { Settings, LoginCard },
@@ -94,22 +109,6 @@ export default {
           this.updatePageTitle();
           if (this.features.stripe.enabled) {
             Vue.prototype.$stripe = loadStripe(this.keys.stripePublishableKey);
-            Vue.prototype.$stripeElementsStyle = {
-              base: {
-                color: '#32325d',
-                fontFamily: '"Roboto", "-apple-system", "Helvetica Neue", Helvetica, Arial, '
-                + 'sans-serif',
-                fontSmoothing: 'antialiased',
-                fontSize: '16px',
-                '::placeholder': {
-                  color: '#aab7c4',
-                },
-              },
-              invalid: {
-                color: '#fa755a',
-                iconColor: '#fa755a',
-              },
-            };
           }
         })
         .catch((error) => {

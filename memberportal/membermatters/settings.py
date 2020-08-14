@@ -157,9 +157,7 @@ LOGGING = {
             ),
         },
     },
-    "loggers": {
-        "django": {"handlers": ["file"], "level": "WARNING", "propagate": True,},
-    },
+    "loggers": {"django": {"handlers": ["file"], "level": "INFO", "propagate": True,},},
 }
 
 REST_FRAMEWORK = {
@@ -287,6 +285,10 @@ CONSTANCE_CONFIG = {
     # Stripe config
     "STRIPE_PUBLISHABLE_KEY": ("", "Set this to your Stripe PUBLIC API key."),
     "STRIPE_SECRET_KEY": ("", "Set this to your Stripe PRIVATE API key."),
+    "STRIPE_MEMBERBUCKS_TOPUP_OPTIONS": (
+        "[1000, 2000, 3000]",
+        "This is a JSON array of top-up amounts in cents.",
+    ),
     "ENABLE_MEMBERBUCKS_STRIPE_INTEGRATION": (
         False,
         "Enable integration with stripe for adding memberbucks.",
@@ -343,6 +345,11 @@ CONSTANCE_CONFIG = {
         "[]",
         "A JSON list of strings (URLs) to project sites like wikis, GitHub, etc.",
     ),
+    "MEMBERBUCKS_MAX_TOPUP": ("50", "The maximum topup allowed in dollars."),
+    "MEMBERBUCKS_CURRENCY": (
+        "aud",
+        "The currency to charge cards in - see Stripe documentation.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -358,6 +365,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ),
         ),
         ("URLs", ("SITE_URL", "MAIN_SITE_URL", "INDUCTION_URL")),
+        ("Memberbucks", ("MEMBERBUCKS_MAX_TOPUP", "MEMBERBUCKS_CURRENCY")),
         ("Images", ("SITE_LOGO", "SITE_FAVICON")),
         (
             "Group Localisation",
@@ -376,6 +384,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "STRIPE_PUBLISHABLE_KEY",
                 "STRIPE_SECRET_KEY",
                 "ENABLE_MEMBERBUCKS_STRIPE_INTEGRATION",
+                "STRIPE_MEMBERBUCKS_TOPUP_OPTIONS",
             ),
         ),
         (
