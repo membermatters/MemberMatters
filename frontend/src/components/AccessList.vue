@@ -138,6 +138,7 @@ export default {
         });
     },
     authorise(type, memberId, deviceId) {
+      if (!this.memberId) return;
       const device = type === 'interlock' ? 'interlocks' : 'doors';
       this.$axios.put(`api/access/${device}/${deviceId}/authorise/${memberId}/`)
         .then(() => {
@@ -152,6 +153,7 @@ export default {
         });
     },
     revoke(type, memberId, deviceId) {
+      if (!this.memberId) return;
       const device = type === 'interlock' ? 'interlocks' : 'doors';
       this.$axios.put(`api/access/${device}/${deviceId}/revoke/${memberId}/`)
         .then(() => {
