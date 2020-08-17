@@ -287,9 +287,10 @@ export default {
     sendWelcomeEmail: 'Send Welcome Email',
     manageMember: 'Manage Member',
     makeMember: 'Make Member',
-    sendWelcomeEmailSuccess: 'Successfully resent the welcome email.',
+    sendWelcomeEmailSuccess: 'Successfully sent the welcome email.',
 
     access: 'Access',
+    accessDescription: 'Tap one of the icons below to change the device\'s authorisation status for this member.',
     log: 'Log',
   },
   doors: {

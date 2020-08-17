@@ -9,39 +9,43 @@
         {{ $t('access.doors') }}
       </q-item-label>
 
-      <q-item
+      <div
         v-for="door in doors"
         :key="door.name"
+        @click="door.access ? revoke('door', memberId, door.id) :
+          authorise('door', memberId, door.id)"
       >
-        <q-item-section
-          avatar
-          top
-        >
-          <q-avatar
-            icon="fad fa-door-open"
-            :color="door.access ? 'green' : 'red'"
-            text-color="white"
-          />
-        </q-item-section>
+        <q-item>
+          <q-item-section
+            avatar
+            top
+          >
+            <q-avatar
+              icon="fad fa-door-open"
+              :color="door.access ? 'green' : 'red'"
+              text-color="white"
+            />
+          </q-item-section>
 
-        <q-item-section>
-          <q-item-label lines="1">
-            {{ door.name }}
-          </q-item-label>
-          <q-item-label
-            caption
-            v-if="door.access === true"
-          >
-            {{ $t('access.authorised') }}
-          </q-item-label>
-          <q-item-label
-            caption
-            v-else
-          >
-            {{ $t('access.unauthorised') }}
-          </q-item-label>
-        </q-item-section>
-      </q-item>
+          <q-item-section>
+            <q-item-label lines="1">
+              {{ door.name }}
+            </q-item-label>
+            <q-item-label
+              caption
+              v-if="door.access === true"
+            >
+              {{ $t('access.authorised') }}
+            </q-item-label>
+            <q-item-label
+              caption
+              v-else
+            >
+              {{ $t('access.unauthorised') }}
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </div>
     </q-list>
 
     <q-list
@@ -53,39 +57,43 @@
         {{ $t('access.interlocks') }}
       </q-item-label>
 
-      <q-item
+      <div
         v-for="interlock in interlocks"
         :key="interlock.name"
+        @click="interlock.access ? revoke('interlock', memberId, interlock.id) :
+          authorise('interlock', memberId, interlock.id)"
       >
-        <q-item-section
-          avatar
-          top
-        >
-          <q-avatar
-            icon="fad fa-door-open"
-            :color="interlock.access ? 'green' : 'red'"
-            text-color="white"
-          />
-        </q-item-section>
+        <q-item>
+          <q-item-section
+            avatar
+            top
+          >
+            <q-avatar
+              icon="fad fa-tools"
+              :color="interlock.access ? 'green' : 'red'"
+              text-color="white"
+            />
+          </q-item-section>
 
-        <q-item-section>
-          <q-item-label lines="1">
-            {{ interlock.name }}
-          </q-item-label>
-          <q-item-label
-            caption
-            v-if="interlock.access === true"
-          >
-            {{ $t('access.authorised') }}
-          </q-item-label>
-          <q-item-label
-            caption
-            v-else
-          >
-            {{ $t('access.unauthorised') }}
-          </q-item-label>
-        </q-item-section>
-      </q-item>
+          <q-item-section>
+            <q-item-label lines="1">
+              {{ interlock.name }}
+            </q-item-label>
+            <q-item-label
+              caption
+              v-if="interlock.access === true"
+            >
+              {{ $t('access.authorised') }}
+            </q-item-label>
+            <q-item-label
+              caption
+              v-else
+            >
+              {{ $t('access.unauthorised') }}
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+      </div>
     </q-list>
 
     <refresh-data-dialog v-model="errorLoading" />
@@ -100,34 +108,83 @@ export default {
   name: 'AccessList',
   components: { RefreshDataDialog },
   props: {
-    access: {
-      type: Object,
+    memberId: {
+      type: Number,
       default: null,
     },
   },
   data() {
     return {
       errorLoading: false,
+      access: {},
     };
   },
   methods: {
     ...mapActions('profile', ['getAccess']),
+    /**
+     * this method returns a specific user's access permissions
+     */
+    getMemberAccess() {
+      this.$axios.get(`/api/admin/members/${this.memberId}/access/`)
+        .then((response) => {
+          this.access = response.data;
+        })
+        .catch((error) => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('error.requestFailed'),
+          });
+          throw error;
+        });
+    },
+    authorise(type, memberId, deviceId) {
+      const device = type === 'interlock' ? 'interlocks' : 'doors';
+      this.$axios.put(`api/access/${device}/${deviceId}/authorise/${memberId}/`)
+        .then(() => {
+          this.getMemberAccess();
+        })
+        .catch((error) => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('error.requestFailed'),
+          });
+          throw error;
+        });
+    },
+    revoke(type, memberId, deviceId) {
+      const device = type === 'interlock' ? 'interlocks' : 'doors';
+      this.$axios.put(`api/access/${device}/${deviceId}/revoke/${memberId}/`)
+        .then(() => {
+          this.getMemberAccess();
+        })
+        .catch((error) => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('error.requestFailed'),
+          });
+          throw error;
+        });
+    },
   },
   mounted() {
-    if (!this.access) {
-      this.getAccess()
-        .catch(() => {
-          this.errorLoading = true;
-        });
+    if (this.memberId) {
+      this.getMemberAccess();
+    } else {
+      this.getAccess();
     }
+  },
+  watch: {
+    memberId() {
+      this.getMemberAccess();
+    },
   },
   computed: {
     ...mapGetters('profile', ['doorAccess', 'interlockAccess']),
     doors() {
-      return this.access ? this.access.doors : this.doorAccess;
+      return this.memberId ? this.access.doors : this.doorAccess;
     },
     interlocks() {
-      return this.access ? this.access.interlocks : this.interlockAccess;
+      return this.memberId ? this.access.interlocks : this.interlockAccess;
     },
   },
 };

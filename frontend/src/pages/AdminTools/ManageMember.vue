@@ -97,8 +97,9 @@
         </q-tab-panel>
 
         <q-tab-panel name="access">
+          {{ $t('adminTools.accessDescription') }}
           <access-list
-            :access="{doors: access.doors, interlocks: access.interlocks}"
+            :member-id="selectedMemberFiltered.id"
           />
         </q-tab-panel>
 
@@ -141,14 +142,6 @@ export default {
       default: () => {},
     },
   },
-  mounted() {
-    this.getMemberAccess();
-  },
-  watch: {
-    member() {
-      this.getMemberAccess();
-    },
-  },
   methods: {
     sendWelcomeEmail() {
       this.welcomeLoading = true;
@@ -167,22 +160,6 @@ export default {
         })
         .finally(() => {
           this.welcomeLoading = false;
-        });
-    },
-    getMemberAccess() {
-      this.stateLoading = true;
-      this.$axios.get(`/api/admin/members/${this.member.id}/access/`)
-        .then((response) => {
-          this.access = response.data;
-        })
-        .catch(() => {
-          this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
-          });
-        })
-        .finally(() => {
-          this.stateLoading = false;
         });
     },
     setMemberState(state) {
@@ -230,3 +207,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.q-card {
+  max-width: 100%;
+}
+</style>
