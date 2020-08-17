@@ -145,7 +145,9 @@ export default {
       if (error.response.status === 401 && !error.response.config.url.includes('/api/login/')) {
         this.setLoggedIn(false);
         this.resetState();
-        this.$router.push('/login');
+        if (!window.location.pathname.includes('/profile/password/reset')) {
+          this.$router.push('/login');
+        }
       }
       return Promise.reject(error);
     });
