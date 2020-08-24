@@ -164,7 +164,11 @@ def api_reset_password(request):
 
     # If we get a reset token and no password, the token is being validated
     if body.get("token") and not body.get("password"):
-        user = User.objects.get(password_reset_key=body.get("token"))
+        try:
+            user = User.objects.get(password_reset_key=body.get("token"))
+
+        except User.DoesNotExist:
+            return JsonResponse({"success": False})
 
         if user and utc.localize(datetime.datetime.now()) < user.password_reset_expire:
             return JsonResponse({"success": True})
