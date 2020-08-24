@@ -117,7 +117,7 @@ class LoginKiosk(APIView):
 
         body = json.loads(request.body.decode("utf-8"))
 
-        if body.get("cardId") is None and body.get("kioskId") is None:
+        if body.get("cardId") is None or body.get("kioskId") is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         try:
