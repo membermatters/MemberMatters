@@ -179,6 +179,19 @@ export default {
     activateMember() {
       this.stateLoading = true;
       this.$axios.post(`/api/admin/members/${this.member.id}/makemember/`)
+        .then((response) => {
+          if (response.data.success) {
+            this.$q.dialog({
+              title: this.$t('adminTools.makeMemberSuccess'),
+              message: this.$t('adminTools.makeMemberSuccessDescription'),
+            });
+          } else {
+            this.$q.dialog({
+              title: this.$t('error.error'),
+              message: this.$t(response.data.message),
+            });
+          }
+        })
         .catch(() => {
           this.$q.dialog({
             title: this.$t('error.error'),

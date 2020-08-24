@@ -72,6 +72,7 @@ export default {
     close: 'Close',
     connect: 'Connect',
     disconnect: 'Disconnect',
+    add: 'Add',
   },
   loginCard: {
     login: 'Login',
@@ -287,6 +288,11 @@ export default {
     sendWelcomeEmail: 'Send Welcome Email',
     manageMember: 'Manage Member',
     makeMember: 'Make Member',
+    makeMemberSuccess: 'Successfully made into member and sent welcome email.',
+    makeMemberError: 'Unknown error while making into member.',
+    makeMemberErrorEmail: 'Error, couldn\'t send welcome email.',
+    makeMemberErrorExists: 'It looks like this person is already a member. To see their profile, change the filter to "all" members.',
+    makeMemberSuccessDescription: 'This person was made into a member and emailed their first invoice and welcome information. To see their profile, change the filter to "all" members.',
     sendWelcomeEmailSuccess: 'Successfully sent the welcome email.',
 
     access: 'Access',

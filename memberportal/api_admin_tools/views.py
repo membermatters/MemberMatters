@@ -96,10 +96,7 @@ class MakeMember(APIView):
 
             if "Error" not in xero and "Error" not in invoice and email:
                 return Response(
-                    {
-                        "success": True,
-                        "message": "Successfully added to Xero and sent welcome email.",
-                    }
+                    {"success": True, "message": "adminTools.makeMemberSuccess",}
                 )
 
             elif "Error" in xero:
@@ -110,18 +107,17 @@ class MakeMember(APIView):
 
             elif email is False:
                 return Response(
-                    {"success": False, "message": "Error, couldn't send welcome email."}
+                    {"success": False, "message": "adminTools.makeMemberErrorEmail"}
                 )
 
             else:
                 return Response(
-                    {
-                        "success": False,
-                        "message": "Unknown error while making into member.",
-                    }
+                    {"success": False, "message": "adminTools.makeMemberError",}
                 )
-
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(
+                {"success": False, "message": "adminTools.makeMemberErrorExists",}
+            )
 
 
 class Doors(APIView):
