@@ -41,6 +41,8 @@ export default {
   error: {
     error: 'Error',
     loginFailed: 'Your username or password was incorrect.',
+    accountAlreadyExists: 'Sorry, that email address has already been used.',
+    screenNameAlreadyExists: 'Sorry, that screen name has already been used.',
     requestFailed: 'Sorry, we\'re having trouble performing that action. Please try again later.',
     pageNotFound: 'Page not found',
     400: ' Sorry, there was an error with your request. (Error 400)',

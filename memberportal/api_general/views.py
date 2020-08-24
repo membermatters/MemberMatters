@@ -482,6 +482,18 @@ class Register(APIView):
     def post(self, request):
         body = request.data
 
+        if User.objects.filter(email=body.get("email").lower()).exists():
+            return Response(
+                {"message": "error.accountAlreadyExists"},
+                status=status.HTTP_409_CONFLICT,
+            )
+
+        if Profile.objects.filter(screen_name=body.get("screenName").lower()).exists():
+            return Response(
+                {"message": "error.screenNameAlreadyExists"},
+                status=status.HTTP_409_CONFLICT,
+            )
+
         new_user = User.objects.create(
             email=body.get("email").lower(), password=body.get("password")
         )

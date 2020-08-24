@@ -24,8 +24,8 @@ export default {
   mixins: [formMixin],
   props: {
     value: {
-      type: Object,
-      default: () => {},
+      type: Array,
+      default: () => [],
     },
   },
   data() {

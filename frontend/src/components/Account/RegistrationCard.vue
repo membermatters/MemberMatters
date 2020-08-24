@@ -94,24 +94,17 @@
           </q-input>
 
           <q-banner
-            v-if="complete"
-            class="bg-positive text-white"
-          >
-            {{ $t('loginCard.loginSuccess') }}
-          </q-banner>
-
-          <q-banner
-            v-if="failed"
-            class="bg-negative text-white"
-          >
-            {{ $t('error.loginFailed') }}
-          </q-banner>
-
-          <q-banner
             v-if="error"
             class="bg-negative text-white"
           >
             {{ $t('error.requestFailed') }}
+          </q-banner>
+
+          <q-banner
+            v-if="errorExists"
+            class="bg-negative text-white"
+          >
+            {{ $t(errorExists) }}
           </q-banner>
 
           <p class="text-caption">
@@ -153,6 +146,7 @@ export default {
     return {
       failed: false,
       error: false,
+      errorExists: false,
       complete: false,
       loading: false,
       isPwd: true,
@@ -172,14 +166,13 @@ export default {
   },
   methods: {
     /**
-     * Redirects to the dashboard page on successful login.
+     * Redirects to the dashboard page on successful registration.
      */
     redirectLoggedIn() {
       this.failed = false;
       this.error = false;
       this.complete = true;
 
-      this.$emit('registrationComplete');
       this.$router.push({ name: 'dashboard' });
     },
     onReset() {
@@ -190,11 +183,13 @@ export default {
       this.register();
     },
     /**
-     * This sends the login API request to log the user in.
+     * This sends the registration API request to register the user.
      */
     register() {
-      this.loginFailed = false;
+      this.errorExists = false;
+      this.error = false;
       this.buttonLoading = true;
+
       this.$axios.post('/api/register/', {
         firstName: this.form.firstName,
         lastName: this.form.lastName,
@@ -208,8 +203,13 @@ export default {
           this.redirectLoggedIn();
         })
         .catch((error) => {
-          this.error = true;
-          throw error;
+          if (error.response.status === 409) {
+            this.errorExists = error.response.data.message;
+            this.error = false;
+          } else {
+            this.error = true;
+            this.errorExists = false;
+          }
         })
         .finally(() => {
           this.loading = false;

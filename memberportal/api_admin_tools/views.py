@@ -23,22 +23,12 @@ class GetMembers(APIView):
 
     def get(self, request):
         reset_queries()
-        start_queries = len(connection.queries)
-
-        start_time = time.time()
         members = User.objects.select_related("profile", "profile__member_type").all()
-        # doors = access_models.Doors.objects.filter(hidden=False)
-        # interlocks = access_models.Interlock.objects.filter(hidden=False)
 
         filtered = []
 
         for member in members:
             filtered.append(member.profile.get_basic_profile())
-
-        print(time.time() - start_time)
-
-        end_queries = len(connection.queries)
-        print(f"Number of Queries : {end_queries - start_queries}")
 
         return Response(filtered)
 
