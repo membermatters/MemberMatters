@@ -350,6 +350,23 @@ CONSTANCE_CONFIG = {
         "aud",
         "The currency to charge cards in - see Stripe documentation.",
     ),
+    "ENABLE_THEME_SWIPE": (False, "Enable playing a member's theme song on a swipe.",),
+    "THEME_SWIPE_URL": (
+        "http://10.0.1.50/playmp3.php?nickname={}",
+        "The URL to send a GET request to on a swipe if enabled.",
+    ),
+    "ENABLE_DISCORD_INTEGRATION": (
+        False,
+        "Enable playing a member's theme song on a swipe.",
+    ),
+    "DISCORD_DOOR_WEBHOOK": (
+        "https://discordapp.com/api/webhooks/<token>",
+        "Discord URL to send webhook notifications to.",
+    ),
+    "DISCORD_INTERLOCK_WEBHOOK": (
+        "https://discordapp.com/api/webhooks/<token>",
+        "Discord URL to send webhook notifications to.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -415,6 +432,15 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SPACE_DIRECTORY_CONTACT_FACEBOOK",
                 "SPACE_DIRECTORY_CONTACT_PHONE",
                 "SPACE_DIRECTORY_PROJECTS",
+            ),
+        ),
+        ("Theme Swipe Integration", ("THEME_SWIPE_URL", "ENABLE_THEME_SWIPE")),
+        (
+            "Discord Integration",
+            (
+                "ENABLE_DISCORD_INTEGRATION",
+                "DISCORD_DOOR_WEBHOOK",
+                "DISCORD_INTERLOCK_WEBHOOK",
             ),
         ),
     ]

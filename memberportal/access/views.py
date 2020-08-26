@@ -1,11 +1,8 @@
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render
-from django.urls import reverse
 from membermatters.helpers import log_user_event
-from membermatters.decorators import no_noobs, staff_required, api_auth
+from membermatters.decorators import staff_required, api_auth
 from profile.models import User
 from .models import *
 from profile.models import Profile
@@ -14,140 +11,32 @@ from constance import config
 import pytz
 import time
 import requests
-import os
 from datetime import timedelta
-import datetime
 from django.utils import timezone
 import humanize
 import hashlib
 import urllib
+
+from services.discord import post_interlock_swipe_to_discord, post_door_swipe_to_discord
 
 utc = pytz.UTC
 request_timeout = settings.REQUEST_TIMEOUT
 
 
 def play_theme_song(user):
-    url = "http://10.0.1.50/playmp3.php?nickname="
-    url = url + urllib.parse.quote_plus(user.profile.screen_name)
-
-    try:
-        requests.get(url, timeout=request_timeout)
-    except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout):
-        return True
-
-    return False
-
-
-def post_door_swipe_to_discord(name, door, status):
-    if "PORTAL_DISCORD_DOOR_WEBHOOK" in os.environ:
-        url = os.environ.get("PORTAL_DISCORD_DOOR_WEBHOOK")
-
-        json_message = {"description": "", "embeds": []}
-
-        if status is True:
-            json_message["embeds"].append(
-                {
-                    "description": ":unlock: {} just **successfully** swiped at {} door.".format(
-                        name, door
-                    ),
-                    "color": 5025616,
-                }
-            )
-
-        elif status == "not_signed_in":
-            json_message["embeds"].append(
-                {
-                    "description": ":lock: {} swiped at {} door but was rejected because they "
-                    "aren't signed into site.".format(name, door),
-                    "color": 5025616,
-                }
-            )
-
-        else:
-            json_message["embeds"].append(
-                {
-                    "description": f"{name} just swiped at {door} door but was **rejected**. You can check your access [here]({config.SITE_URL}/profile/access/view/).",
-                    "color": 16007990,
-                }
-            )
+    if config.ENABLE_THEME_SWIPE:
+        url = config.config.THEME_SWIPE_URL.format(
+            urllib.parse.quote_plus(user.profile.screen_name)
+        )
 
         try:
-            requests.post(url, json=json_message, timeout=request_timeout)
-        except requests.exceptions.ReadTimeout:
+            requests.get(url, timeout=request_timeout)
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout):
             return True
 
-    return False
+        return False
 
-
-def post_interlock_swipe_to_discord(name, interlock, type, time=None):
-    if "PORTAL_DISCORD_INTERLOCK_WEBHOOK" in os.environ:
-        url = os.environ.get("PORTAL_DISCORD_INTERLOCK_WEBHOOK")
-
-        json_message = {"description": "", "embeds": []}
-
-        if type == "activated":
-            json_message["embeds"].append(
-                {
-                    "description": ":unlock: {} just **activated** the {}.".format(
-                        name, interlock
-                    ),
-                    "color": 5025616,
-                }
-            )
-
-        elif type == "rejected":
-            json_message["embeds"].append(
-                {
-                    "description": f"{name} tried to activate the {interlock} but was **rejected**. You can check your access [here]({config.SITE_URL}/profile/access/view/).",
-                    "color": 16007990,
-                }
-            )
-
-        elif type == "left_on":
-            json_message["embeds"].append(
-                {
-                    "description": ":lock: The {} was just turned off by the access system because it timed out (last used by {}). It was on for {}.".format(
-                        interlock, name, time
-                    ),
-                    "color": 16750592,
-                }
-            )
-
-        elif type == "deactivated":
-            json_message["embeds"].append(
-                {
-                    "description": ":lock: {} just **deactivated** the {}. It was on for {}.".format(
-                        name, interlock, time
-                    ),
-                    "color": 5025616,
-                }
-            )
-
-        elif type == "maintenance_lock_out":
-            json_message["embeds"].append(
-                {
-                    "description": "{} tried to access the {} but it is currently under a maintenance lockout".format(
-                        name, interlock
-                    ),
-                    "color": 16007990,
-                }
-            )
-
-        elif type == "not_signed_in":
-            json_message["embeds"].append(
-                {
-                    "description": ":lock: {} swiped at {} but was rejected because they "
-                    "aren't signed into site.".format(name, interlock),
-                    "color": 5025616,
-                }
-            )
-
-        try:
-            requests.post(url, json=json_message, timeout=request_timeout)
-        except requests.exceptions.ReadTimeout:
-            return True
-
-    return False
+    return True
 
 
 @api_auth

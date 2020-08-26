@@ -11,7 +11,7 @@ from django.contrib.auth import (
     logout,
 )
 from django.core.exceptions import ObjectDoesNotExist
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_POST
 from membermatters.decorators import login_required_401
 from django.views.decorators.csrf import csrf_exempt
 from constance import config
@@ -21,12 +21,11 @@ import datetime
 from pytz import UTC as utc
 from group.models import Group
 
-from rest_framework import status, permissions, generics, mixins
+from rest_framework import status, permissions, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import *
 from .models import Kiosk, SiteSession
-from django.core import serializers
 
 
 class GetConfig(APIView):
