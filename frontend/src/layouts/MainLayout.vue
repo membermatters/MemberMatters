@@ -89,7 +89,7 @@
       <div class="footer q-pt-md">
         <q-img
           contain
-          src="../assets/img/logo/HSBNE_logo.png"
+          src="../assets/img/logo/main-logo.png"
           style="max-height: 40px; cursor: pointer;"
           @click="aboutMemberMatters = true"
         />
