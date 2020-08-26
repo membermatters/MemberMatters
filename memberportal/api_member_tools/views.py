@@ -160,7 +160,12 @@ class IssueDetail(APIView):
             )
 
             if send_single_email(
-                request.user, config.EMAIL_ADMIN, subject, subject, description
+                request.user,
+                config.EMAIL_ADMIN,
+                subject,
+                subject,
+                description,
+                from_user=True,
             ):
                 return Response({"success": True}, status=status.HTTP_201_CREATED,)
 

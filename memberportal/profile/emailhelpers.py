@@ -12,7 +12,9 @@ def send_group_email(user, emails, subject, title, message):
     message = escape(message)
     message = message.replace("~br~", "<br>")
     email_vars = {"preheader": "", "title": title, "message": message}
-    email_string = render_to_string("email_without_button.html", {"email": email_vars, "config": config})
+    email_string = render_to_string(
+        "email_without_button.html", {"email": email_vars, "config": config}
+    )
     emails.append(config.EMAIL_ADMIN)
 
     if "PORTAL_SENDGRID_API_KEY" in os.environ:
@@ -38,20 +40,39 @@ def send_group_email(user, emails, subject, title, message):
         response = sg.send(mail)
 
         if response.status_code == 202:
-            log_user_event(user, "Sent email with subject: " + subject, "email", "Email content: " + email_string)
+            log_user_event(
+                user,
+                "Sent email with subject: " + subject,
+                "email",
+                "Email content: " + email_string,
+            )
             return True
         else:
-            log_user_event(user, "Failed to send email with subject: " + subject, "email", "Email content: " + email_string)
+            log_user_event(
+                user,
+                "Failed to send email with subject: " + subject,
+                "email",
+                "Email content: " + email_string,
+            )
             return False
     else:
         raise RuntimeError("No SendGrid API key found in environment variables.")
 
 
-def send_single_email(user: object, email: object, subject: object, title: object, message: object) -> object:
+def send_single_email(
+    user: object,
+    email: object,
+    subject: object,
+    title: object,
+    message: object,
+    from_user=False,
+) -> object:
     message = escape(message)
     message = message.replace("~br~", "<br>")
     email_vars = {"preheader": "", "title": title, "message": message}
-    email_string = render_to_string("email_without_button.html", {"email": email_vars, "config": config})
+    email_string = render_to_string(
+        "email_without_button.html", {"email": email_vars, "config": config}
+    )
 
     if "PORTAL_SENDGRID_API_KEY" in os.environ:
         sg = sendgrid.SendGridAPIClient(os.environ.get("PORTAL_SENDGRID_API_KEY"))
@@ -60,13 +81,27 @@ def send_single_email(user: object, email: object, subject: object, title: objec
         subject = subject
         content = Content("text/html", email_string)
         mail = Mail(from_email, to_email, subject, content)
+
+        if from_user:
+            mail.reply_to = ReplyTo(user.email, user.profile.get_full_name())
+
         response = sg.send(mail)
 
         if response.status_code == 202:
-            log_user_event(user, "Sent email with subject: " + subject, "email", "Email content: " + message)
+            log_user_event(
+                user,
+                "Sent email with subject: " + subject,
+                "email",
+                "Email content: " + message,
+            )
             return True
         else:
             return False
 
-    log_user_event(user, "Failed to send email with subject: " + subject, "email", "Email content: " + message)
+    log_user_event(
+        user,
+        "Failed to send email with subject: " + subject,
+        "email",
+        "Email content: " + message,
+    )
     raise RuntimeError("No SendGrid API key found in environment variables.")
