@@ -227,7 +227,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def email_disable_member(self):
         if self.email_notification(
-            f"Your {config.SITE_OWNER} site access has been disabled.",
+            f"{self.profile.first_name}, your {config.SITE_OWNER} site access has been disabled.",
             "Your access has been disabled.",
             f"Your {config.SITE_OWNER} site access has been disabled.",
             f"Your access to {config.SITE_OWNER} has been disabled. This could be due to overdue membership fees, a"
@@ -240,7 +240,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def email_enable_member(self):
         if self.email_notification(
-            f"Your {config.SITE_OWNER} site access has been enabled.",
+            f"{self.profile.first_name}, your {config.SITE_OWNER} site access has been enabled.",
             "Your access has been enabled.",
             f"Your {config.SITE_OWNER} site access has been enabled.",
             f"Great news! Your access to {config.SITE_OWNER} has been enabled.",
