@@ -1,17 +1,12 @@
 from profile.models import User
-from access import models as access_models
 from access import models
 from constance import config
 from profile.emailhelpers import send_single_email
-import requests
-import time
 
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-
-from django.db import connection, reset_queries
 
 
 class GetMembers(APIView):
@@ -22,7 +17,6 @@ class GetMembers(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def get(self, request):
-        reset_queries()
         members = User.objects.select_related("profile", "profile__member_type").all()
 
         filtered = []
@@ -83,6 +77,11 @@ class MakeMember(APIView):
                 "inactive"  # an admin should activate them when they pay their invoice
             )
             user.profile.save()
+
+            subject = f"{user.profile.get_full_name()} just got turned into a member!"
+            send_single_email(
+                request.user, config.EMAIL_ADMIN, subject, subject, subject
+            )
 
             if "Error" not in xero and "Error" not in invoice and email:
                 return Response(

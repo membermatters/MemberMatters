@@ -1,25 +1,22 @@
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_GET, require_POST
 from membermatters.decorators import login_required_401
-from access.models import DoorLog, InterlockLog
 from profile.models import User, Profile
 from group.models import Group
-from api_meeting.models import Meeting, ProxyVote
+from api_meeting.models import Meeting
 from constance import config
 from membermatters.helpers import log_user_event
 from profile.emailhelpers import send_single_email
 from random import shuffle
 import requests
-import json
 import datetime
 from django.utils import timezone
 
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework import status, permissions, generics, mixins
+from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import *
-from api_general.permissions import DjangoModelPermissionsWithRead
 
 
 class SwipesList(APIView):
