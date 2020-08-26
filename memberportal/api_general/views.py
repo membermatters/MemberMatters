@@ -26,6 +26,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import *
 from .models import Kiosk, SiteSession
+from services.discord import post_kiosk_swipe_to_discord
 
 
 class GetConfig(APIView):
@@ -415,6 +416,7 @@ class SiteSignIn(APIView):
         guests = body.get("guests")
 
         SiteSession.objects.create(user=request.user, guests=guests)
+        post_kiosk_swipe_to_discord(request.user.profile.get_full_name(), True)
 
         return Response()
 
@@ -429,6 +431,7 @@ class SiteSignOut(APIView):
             "-signin_date"
         )[0]
         session.signout()
+        post_kiosk_swipe_to_discord(request.user.profile.get_full_name(), False)
 
         return Response()
 

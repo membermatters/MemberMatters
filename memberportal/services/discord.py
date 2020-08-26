@@ -116,3 +116,24 @@ def post_interlock_swipe_to_discord(name, interlock, type, time=None):
 
     else:
         return True
+
+
+def post_kiosk_swipe_to_discord(name, sign_in):
+    if config.ENABLE_DISCORD_INTEGRATION:
+        url = config.DISCORD_DOOR_WEBHOOK
+
+        json_message = {"description": "", "embeds": []}
+
+        json_message["embeds"].append(
+            {
+                "description": f":book: {name} just signed {'in' if sign_in else 'out'} at a kiosk.",
+                "color": 5025616,
+            }
+        )
+
+        try:
+            requests.post(url, json=json_message, timeout=settings.REQUEST_TIMEOUT)
+        except requests.exceptions.ReadTimeout:
+            return True
+
+    return True
