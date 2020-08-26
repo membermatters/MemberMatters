@@ -1,12 +1,12 @@
 from .models import Meeting, ProxyVote
 from profile.models import Profile
-from django.utils.timezone import make_aware
+from django.utils.timezone import make_aware, localtime
 from datetime import datetime
 
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from api_general.permissions import DjangoModelPermissionsWithRead
+from profile.emailhelpers import send_single_email
 
 
 class Meetings(APIView):
@@ -108,10 +108,10 @@ class Proxies(APIView):
         member_city = body.get("memberCity")
         proxy_id = body.get("proxy")
         proxy_city = body.get("proxyCity")
-        meeting = body.get("meeting")
+        meeting_id = body.get("meeting")
 
         existing_proxies = ProxyVote.objects.filter(
-            user=request.user, meeting_id=meeting
+            user=request.user, meeting_id=meeting_id
         )
 
         # if the user already has a proxy for this meeting we'll override it
@@ -119,13 +119,27 @@ class Proxies(APIView):
             for proxy in existing_proxies:
                 proxy.delete()
 
-        if member_city and proxy_id and proxy_city and meeting:
+        if member_city and proxy_id and proxy_city and meeting_id:
+            meeting = Meeting.objects.get(pk=meeting_id)
+            proxy_user = Profile.objects.get(id=proxy_id).user
             ProxyVote.objects.create(
                 user=request.user,
                 user_city=member_city,
-                proxy_user=Profile.objects.get(id=proxy_id).user,
+                proxy_user=proxy_user,
                 proxy_city=proxy_city,
-                meeting_id=meeting,
+                meeting=meeting,
+            )
+
+            subject = (
+                f"{request.user.profile.get_full_name()} just assigned you as a proxy"
+            )
+            message = f"{request.user.profile.get_full_name()} just assigned you as a proxy for the {meeting.get_type()} meeting on {localtime(meeting.date)}."
+            send_single_email(request.user, proxy_user.email, subject, subject, message)
+
+            subject = f"{proxy_user.profile.get_full_name()} is confirmed as your proxy for the {meeting.get_type()} meeting"
+            message = f"{proxy_user.profile.get_full_name()} is confirmed as your proxy for the {meeting.get_type()} meeting on {localtime(meeting.date)}. You can manage this proxy from the member portal."
+            send_single_email(
+                request.user, request.user.email, subject, subject, message
             )
 
             return Response({"success": True})
@@ -138,6 +152,19 @@ class Proxies(APIView):
 
         if request.user == proxy.user:
             proxy.delete()
+            subject = (
+                f"{request.user.profile.get_full_name()} just removed you as a proxy"
+            )
+            message = f"{request.user.profile.get_full_name()} just removed you as a proxy for the {proxy.meeting.get_type()} meeting on {localtime(proxy.meeting.date)}."
+            send_single_email(
+                request.user, proxy.proxy_user.email, subject, subject, message
+            )
+
+            subject = f"{proxy.proxy_user.profile.get_full_name()} is no longer your proxy for the {proxy.meeting.get_type()} meeting"
+            message = f"{proxy.proxy_user.profile.get_full_name()} is no longer your proxy for the {proxy.meeting.get_type()} meeting on {localtime(proxy.meeting.date)}. You can manage this proxy from the member portal."
+            send_single_email(
+                request.user, request.user.email, subject, subject, message
+            )
             return Response()
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
