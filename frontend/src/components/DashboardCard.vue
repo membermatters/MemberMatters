@@ -26,7 +26,7 @@
       >
         <q-btn
           v-if="routerLink"
-          :to="linkLocation"
+          :to="routerLink"
           flat
         >
           {{ linkText }}
@@ -47,7 +47,7 @@
       >
         <q-btn
           v-if="routerLink"
-          :to="linkLocation"
+          :to="routerLink"
           flat
         >
           {{ linkText }}
@@ -90,11 +90,13 @@ export default {
     },
     linkLocation: {
       type: [String, Object],
-      required: true,
+      required: false,
+      default: null,
     },
     routerLink: {
-      type: Boolean,
-      required: true,
+      type: [Object, Boolean],
+      required: false,
+      default: null,
     },
   },
   computed: {
