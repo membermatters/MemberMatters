@@ -25,7 +25,7 @@ request_timeout = settings.REQUEST_TIMEOUT
 
 def play_theme_song(user):
     if config.ENABLE_THEME_SWIPE:
-        url = config.config.THEME_SWIPE_URL.format(
+        url = config.THEME_SWIPE_URL.format(
             urllib.parse.quote_plus(user.profile.screen_name)
         )
 
