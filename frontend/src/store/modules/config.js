@@ -11,6 +11,7 @@ export default {
     homepageCards: {},
     webcamLinks: {},
     groups: [],
+    memberTypes: [],
     keys: {},
     features: {},
     kioskId: null,
@@ -22,6 +23,7 @@ export default {
     homepageCards: (state) => state.homepageCards,
     webcamLinks: (state) => state.webcamLinks,
     groups: (state) => state.groups,
+    memberTypes: (state) => state.memberTypes,
     keys: (state) => state.keys,
     features: (state) => state.features,
     kioskId: (state) => state.kioskId,
@@ -42,6 +44,9 @@ export default {
     },
     setGroups(state, payload) {
       state.groups = payload;
+    },
+    setmemberTypes(state, payload) {
+      state.memberTypes = payload;
     },
     setKeys(state, payload) {
       state.keys = payload;
@@ -66,6 +71,7 @@ export default {
             commit('setHomepageCards', result.data.homepageCards);
             commit('setWebcamLinks', result.data.webcamLinks);
             commit('setGroups', result.data.groups);
+            commit('setmemberTypes', result.data.memberTypes);
             commit('setKeys', result.data.keys);
             commit('setFeatures', result.data.features);
             resolve();

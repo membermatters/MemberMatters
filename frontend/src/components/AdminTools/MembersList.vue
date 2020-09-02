@@ -97,7 +97,6 @@
 
       <template v-slot:header="props">
         <q-tr :props="props">
-          <q-th auto-width />
           <q-th
             v-for="col in props.cols"
             :key="col.name"
@@ -105,23 +104,17 @@
           >
             {{ col.label }}
           </q-th>
+          <q-th auto-width>
+            Manage
+          </q-th>
         </q-tr>
       </template>
 
       <template v-slot:body="props">
         <q-tr
           :props="props"
-          @click="props.expand = !props.expand"
+          @click="openManageMemberModal(props.row)"
         >
-          <q-td auto-width>
-            <q-btn
-              size="sm"
-              color="accent"
-              round
-              @click.stop="props.expand = !props.expand"
-              :icon="props.expand ? icons.down : icons.up"
-            />
-          </q-td>
           <q-td
             v-for="col in props.cols"
             :key="col.name"
@@ -129,21 +122,13 @@
           >
             {{ col.value }}
           </q-td>
-        </q-tr>
-        <q-tr
-          v-show="props.expand"
-          :props="props"
-        >
-          <q-td
-            colspan="100%"
-            class="td"
-          >
-            <div>
-              <manage-member
-                :member="props.row"
-                @updateMembers="getMembers"
-              />
-            </div>
+          <q-td auto-width>
+            <q-btn
+              size="sm"
+              color="accent"
+            >
+              Manage
+            </q-btn>
           </q-td>
         </q-tr>
       </template>

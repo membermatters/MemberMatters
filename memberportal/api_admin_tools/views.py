@@ -2,6 +2,7 @@ from profile.models import User
 from access import models
 from constance import config
 from profile.emailhelpers import send_single_email
+import json
 
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -172,5 +173,39 @@ class MemberWelcomeEmail(APIView):
     def post(self, request, member_id):
         member = User.objects.get(id=member_id)
         member.email_welcome()
+
+        return Response()
+
+
+class MemberProfile(APIView):
+    """
+    put: This method updates a member's profile.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def put(self, request, member_id):
+        if not member_id:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        body = json.loads(request.body)
+        member = User.objects.get(id=member_id)
+
+        member.email = body.get("email")
+        member.profile.first_name = body.get("firstName")
+        member.profile.last_name = body.get("lastName")
+        member.profile.rfid = body.get("rfidCard")
+        member.profile.phone = body.get("phone")
+        member.profile.screen_name = body.get("screenName")
+
+        groups = []
+
+        for x in body.get("groups"):
+            groups.append(x["id"])
+
+        member.profile.groups.set(groups)
+
+        member.save()
+        member.profile.save()
 
         return Response()

@@ -20,6 +20,7 @@ from django.utils.timezone import make_aware
 import datetime
 from pytz import UTC as utc
 from group.models import Group
+from profile.models import MemberTypes
 
 from rest_framework import status, permissions, generics
 from rest_framework.response import Response
@@ -38,6 +39,7 @@ class GetConfig(APIView):
 
     def get(self, request):
         groups = list(Group.objects.filter(hidden=False).values())
+        membership_types = list(MemberTypes.objects.values())
 
         features = {
             "stripe": {
@@ -66,6 +68,7 @@ class GetConfig(APIView):
             "homepageCards": json.loads(config.HOME_PAGE_CARDS),
             "webcamLinks": json.loads(config.WEBCAM_PAGE_URLS),
             "groups": groups,
+            "memberTypes": membership_types,
             "keys": keys,
             "features": features,
         }

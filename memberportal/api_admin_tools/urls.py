@@ -25,6 +25,11 @@ urlpatterns = [
         views.MemberWelcomeEmail.as_view(),
         name="MemberWelcomeEmail",
     ),
+    path(
+        "members/<int:member_id>/profile/",
+        views.MemberProfile.as_view(),
+        name="MemberProfile",
+    ),
     path("doors/", views.Doors.as_view(), name="Doors"),
     path("interlocks/", views.Interlocks.as_view(), name="Interlocks"),
 ]

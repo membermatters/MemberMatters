@@ -45,6 +45,7 @@ export default {
     screenNameAlreadyExists: 'Sorry, that screen name has already been used.',
     requestFailed: 'Sorry, we\'re having trouble performing that action. Please try again later.',
     pageNotFound: 'Page not found',
+    noValue: 'No Value',
     400: ' Sorry, there was an error with your request. (Error 400)',
     401: ' Sorry, you need to be logged in to access this page. (Error 401)',
     403: ' Sorry, you don\'t have permission to access this page. (Error 403)',
@@ -147,6 +148,7 @@ export default {
     allFieldsRequired: 'All fields are required.',
 
     email: 'Email',
+    rfidCard: 'RFID Card',
     firstName: 'First Name',
     lastName: 'Last Name',
     phone: 'Phone',
@@ -162,6 +164,10 @@ export default {
     ipAddress: 'IP Address',
     lastSeen: 'Last Seen',
     password: 'Password',
+    registrationDate: 'Registration Date',
+    state: 'State',
+    last_induction: 'Last Induction',
+    memberType: 'Membership Type',
   },
   digitalId: {
     title: 'Digital ID',
