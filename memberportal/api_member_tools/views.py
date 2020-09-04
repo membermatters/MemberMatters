@@ -29,9 +29,9 @@ class SwipesList(APIView):
     # TODO: refactor this into two separate API requests for each resource so it's more RESTful
 
     def get(self, request):
-        recent_doors = DoorLog.objects.all().order_by("date")[::-1][:50]
+        recent_doors = DoorLog.objects.all().order_by("date")[::-1][:300]
         recent_interlocks = InterlockLog.objects.all().order_by("last_heartbeat")[::-1][
-            :50
+            :300
         ]
 
         doors = []
