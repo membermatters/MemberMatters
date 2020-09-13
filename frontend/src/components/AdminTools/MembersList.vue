@@ -172,7 +172,7 @@
     </q-table>
 
     <q-dialog v-model="manageMemberModal">
-      <q-card>
+      <q-card class="manage-member-modal">
         <manage-member
           :members="members"
           :member="manageMemberModalMember"
@@ -197,7 +197,7 @@ import icons from '@icons';
 import formatMixin from '@mixins/formatMixin';
 import { exportFile } from 'quasar';
 import stringify from 'csv-stringify';
-import ManageMember from 'pages/AdminTools/ManageMember';
+import ManageMember from 'components/AdminTools/ManageMember';
 
 export default {
   name: 'MembersList',

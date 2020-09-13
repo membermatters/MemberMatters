@@ -463,6 +463,10 @@ class Profile(models.Model):
         self.last_seen = timezone.now()
         return self.save()
 
+    def update_last_induction(self):
+        self.last_seen = timezone.now()
+        return self.save()
+
     def get_xero_contact(self):
         return get_xero_contact(self)
 
@@ -487,8 +491,8 @@ class Profile(models.Model):
             "admin": self.user.is_staff,
             "superuser": self.user.is_admin,
             "email": self.user.email,
-            "registrationDate": self.created,
-            "lastUpdatedProfile": self.modified,
+            "registrationDate": self.created.strftime("%m/%d/%Y, %H:%M:%S"),
+            "lastUpdatedProfile": self.modified.strftime("%m/%d/%Y, %H:%M:%S"),
             "screenName": self.screen_name,
             "name": {
                 "first": self.first_name,
@@ -503,11 +507,11 @@ class Profile(models.Model):
             "rfid": self.rfid,
             "memberBucks": {
                 "balance": self.memberbucks_balance,
-                "lastPurchase": self.last_memberbucks_purchase,
+                "lastPurchase": self.last_memberbucks_purchase.strftime("%m/%d/%Y, %H:%M:%S") if self.last_memberbucks_purchase else None,
             },
             "updateProfileRequired": self.must_update_profile,
-            "last_seen": self.last_seen,
-            "last_induction": self.last_induction,
+            "lastSeen": self.last_seen.strftime("%m/%d/%Y, %H:%M:%S") if self.last_seen else None,
+            "lastInduction": self.last_induction.strftime("%m/%d/%Y, %H:%M:%S") if self.last_induction else None,
             "stripe": {
                 "cardExpiry": self.stripe_card_expiry,
                 "last4": self.stripe_card_last_digits,

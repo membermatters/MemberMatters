@@ -76,6 +76,7 @@ export default {
     connect: 'Connect',
     disconnect: 'Disconnect',
     add: 'Add',
+    tools: 'Tools',
   },
   loginCard: {
     login: 'Login',
@@ -168,6 +169,8 @@ export default {
     state: 'State',
     last_induction: 'Last Induction',
     memberType: 'Membership Type',
+    id: 'Member ID',
+    admin: 'Admin User',
   },
   digitalId: {
     title: 'Digital ID',
@@ -219,7 +222,8 @@ export default {
     delete: 'Are you sure you want to delete this proxy?',
   },
   memberbucks: {
-    currentBalance: 'Current Balance:',
+    currentBalance: 'Current Balance',
+    lastPurchase: 'Last Purchase',
     addFunds: 'Add Funds',
     addFundsDescription: 'Click one of the buttons above to top up your account. This will '
       + 'immediately charge your saved card ending in {savedCard}.',
@@ -278,6 +282,7 @@ export default {
   failed: 'Action failed',
   success: 'Action was successful',
   warning: 'Warning',
+  confirmAction: 'Confirm Action',
   edit: 'Edit',
   delete: 'Delete',
   dataRefreshWarning: 'There was an error fetching new data. Any data that you see may not be up '
@@ -302,10 +307,22 @@ export default {
     makeMemberErrorExists: 'It looks like this person is already a member. To see their profile, change the filter to "all" members.',
     makeMemberSuccessDescription: 'This person was made into a member and emailed their first invoice and welcome information. To see their profile, change the filter to "all" members.',
     sendWelcomeEmailSuccess: 'Successfully sent the welcome email.',
+    createInvoiceSuccess: 'Successfully created the new invoice.',
+    confirmInvoice: 'Are you sure you want to create a new invoice for this member?',
+    confirmInvoiceEmail: 'Would you like to email the new invoice to this member after it\'s created?',
 
     access: 'Access',
-    accessDescription: 'Tap one of the icons below to change the device\'s authorisation status for this member.',
+    accessDescription: 'Tap an icon below to change a member\'s access.',
     log: 'Log',
+    mainProfile: 'Main Profile',
+    otherAttributes: 'Other Attributes',
+    memberDates: 'Important Dates',
+    lastInduction: 'Last Induction',
+    lastUpdatedProfile: 'Last Updated Profile',
+    registrationDate: 'Registration Date',
+    lastSeen: 'Last Seen',
+    openXero: 'Open In Xero',
+    createInvoice: 'Create Invoice',
   },
   doors: {
     nodata: 'There are no doors in the system.',

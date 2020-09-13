@@ -1,9 +1,10 @@
 <template>
   <div class="column">
-    <q-card flat>
+    <q-card
+      flat
+    >
       <q-tabs
         v-model="tab"
-        dense
         align="justify"
         narrow-indicator
       >
@@ -65,14 +66,51 @@
               @click="setMemberState('inactive')"
               :loading="stateLoading"
             />
-            <q-btn
-              v-if="selectedMember.state!=='New'"
+
+            <q-btn-dropdown
+              style="min-width: 170px;"
               class="q-mr-sm q-mb-sm"
               color="primary"
-              :label="$t('adminTools.sendWelcomeEmail')"
-              @click="sendWelcomeEmail()"
-              :loading="welcomeLoading"
-            />
+              :label="$t('menuLink.adminTools')"
+            >
+              <q-list>
+                <q-item
+                  clickable
+                  v-close-popup
+                  @click="sendWelcomeEmail"
+                >
+                  <q-item-section>
+                    <q-item-label>{{ $t('adminTools.sendWelcomeEmail') }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <template v-if="selectedMember.xero.accountId">
+                  <q-item
+                    clickable
+                    v-close-popup
+                    @click="createInvoice()"
+                  >
+                    <q-item-section>
+                      <q-item-label>{{ $t('adminTools.createInvoice') }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item
+                    clickable
+                    v-close-popup
+                  >
+                    <q-item-section>
+                      <a
+                        :href="`https://go.xero.com/Contacts/View/${this.selectedMember.xero.accountId}`"
+                        target="_blank"
+                      >
+                        <q-item-label>{{ $t('adminTools.openXero') }}</q-item-label>
+                      </a>
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-list>
+            </q-btn-dropdown>
           </div>
 
 
@@ -84,6 +122,9 @@
               <q-form
                 ref="formRef"
               >
+                <h5 class="q-my-sm">
+                  {{ $t('adminTools.mainProfile') }}
+                </h5>
                 <q-input
                   outlined
                   @input="saveChange('email')"
@@ -232,28 +273,88 @@
               class="col-12 col-md-6"
               :class="{'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs}"
             >
+              <h5 class="q-my-sm">
+                {{ $t('menuLink.memberbucks') }}
+              </h5>
               <q-list
                 bordered
                 padding
                 class="rounded-borders"
-                style="max-width: 350px"
               >
-                <q-item-label header>
-                  Other Attributes
-                </q-item-label>
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{ selectedMember.memberBucks.balance ?
+                        $n(selectedMember.memberBucks.balance,
+                           'currency') : $t('error.noValue') }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`memberbucks.currentBalance`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{ selectedMember.memberBucks.lastPurchase ?
+                        selectedMember.memberBucks.lastPurchase : $t('error.noValue') }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`memberbucks.lastPurchase`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
 
+              <h5 class="q-my-sm">
+                {{ $t('adminTools.otherAttributes') }}
+              </h5>
+              <q-list
+                bordered
+                padding
+                class="rounded-borders"
+              >
                 <q-item
-                  clickable
-                  v-ripple
-                  v-for="item in ['registrationDate', 'state', 'last_induction']"
+                  v-for="item in ['id', 'state', 'admin']"
                   :key="item"
                 >
                   <q-item-section>
                     <q-item-label lines="1">
-                      {{ selectedMember[item] ? selectedMember[item] : $t('error.noValue') }}
+                      <template>
+                        {{ selectedMember[item] ? selectedMember[item] : $t('error.noValue') }}
+                      </template>
                     </q-item-label>
                     <q-item-label caption>
                       {{ $t(`form.${item}`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+
+              <h5 class="q-mb-sm q-mt-md">
+                {{ $t('adminTools.memberDates') }}
+              </h5>
+              <q-list
+                bordered
+                padding
+                class="rounded-borders"
+              >
+                <q-item
+                  v-for="item in ['lastInduction', 'registrationDate', 'lastUpdatedProfile',
+                                  'lastSeen']"
+                  :key="item"
+                >
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      <template v-if="item === 'registrationDate'">
+                        {{ selectedMember[item] ? selectedMember[item] : $t('error.noValue') }}
+                      </template>
+                      <template v-else>
+                        {{ selectedMember[item] ? selectedMember[item] : $t('error.noValue') }}
+                      </template>
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`adminTools.${item}`) }}
                     </q-item-label>
                   </q-item-section>
                 </q-item>
@@ -263,7 +364,11 @@
         </q-tab-panel>
 
         <q-tab-panel name="access">
-          {{ $t('adminTools.accessDescription') }}
+          <p
+            class="text-center q-mb-none q-mt-sm"
+          >
+            {{ $t('adminTools.accessDescription') }}
+          </p>
           <access-list
             :member-id="selectedMemberFiltered.id"
           />
@@ -387,6 +492,38 @@ export default {
           this.welcomeLoading = false;
         });
     },
+    createInvoice() {
+      let emailInvoice = false;
+      this.$q.dialog({
+        title: this.$t('confirmAction'),
+        message: this.$t('adminTools.confirmInvoice'),
+        ok: 'Ok',
+        cancel: 'Cancel',
+      }).onOk(() => {
+        this.$q.dialog({
+          title: this.$t('confirmAction'),
+          message: this.$t('adminTools.confirmInvoiceEmail'),
+          ok: 'Email Them',
+          cancel: 'Don\'t Email',
+        }).onOk(() => {
+          emailInvoice = true;
+        }).onDismiss(() => {
+          this.$axios.post(`/api/admin/members/${this.member.id}/invoice/${emailInvoice}/`)
+            .then(() => {
+              this.$q.dialog({
+                title: this.$t('success'),
+                message: this.$t('adminTools.createInvoiceSuccess'),
+              });
+            })
+            .catch(() => {
+              this.$q.dialog({
+                title: this.$t('error.error'),
+                message: this.$t('error.requestFailed'),
+              });
+            });
+        });
+      });
+    },
     setMemberState(state) {
       this.stateLoading = true;
       this.$axios.post(`/api/admin/members/${this.member.id}/state/${state}/`)
@@ -450,5 +587,10 @@ export default {
 <style lang="scss" scoped>
 .q-card {
   max-width: 100%;
+}
+
+a, a:visited, a:hover, a:active {
+  color: inherit;
+  text-decoration: none;
 }
 </style>

@@ -77,6 +77,7 @@ class MakeMember(APIView):
             user.profile.state = (
                 "inactive"  # an admin should activate them when they pay their invoice
             )
+            user.profile.update_last_induction()
             user.profile.save()
 
             subject = f"{user.profile.get_full_name()} just got turned into a member!"
@@ -207,5 +208,20 @@ class MemberProfile(APIView):
 
         member.save()
         member.profile.save()
+
+        return Response()
+
+
+class MemberCreateNewInvoice(APIView):
+    """
+    get: This method creates a new invoice for the specified member.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def post(self, request, member_id, send_email):
+        User.objects.get(pk=member_id).profile.create_membership_invoice(
+            email_invoice=send_email == "true"
+        )
 
         return Response()

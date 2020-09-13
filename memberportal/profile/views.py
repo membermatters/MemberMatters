@@ -44,29 +44,3 @@ def sync_xero_accounts(request):
 
     else:
         return JsonResponse({"message": "Couldn't sync xero accounts, unknown error."})
-
-
-@login_required
-@staff_required
-def add_to_xero(request, member_id):
-    return JsonResponse(
-        {"message": User.objects.get(pk=member_id).profile.add_to_xero()}
-    )
-
-
-@login_required
-def create_invoice(request, member_id, option=False):
-    email_invoice = False
-
-    if "email" == option:
-        email_invoice = True
-
-    if request.user.profile.can_generate_invoice:
-        response = User.objects.get(pk=member_id).profile.create_membership_invoice(
-            email_invoice=email_invoice
-        )
-
-        return JsonResponse({"message": response})
-
-    else:
-        return JsonResponse({"message": permission_message})
