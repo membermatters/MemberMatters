@@ -26,11 +26,6 @@ urlpatterns = [
         name="reset_default_access",
     ),
     path(
-        "api/interlock/<int:interlock_id>/reboot/",
-        views.reboot_interlock,
-        name="reboot_interlock",
-    ),
-    path(
         "api/interlock/<int:interlock_id>/check/<int:rfid_code>/",
         views.check_interlock_access,
         name="check_interlock_access",

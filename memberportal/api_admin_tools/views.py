@@ -123,6 +123,7 @@ class Doors(APIView):
 
         def get_door(door):
             return {
+                "id": door.id,
                 "name": door.name,
                 "lastSeen": door.last_seen,
                 "ipAddress": door.ip_address,
@@ -143,6 +144,7 @@ class Interlocks(APIView):
 
         def get_door(interlock):
             return {
+                "id": interlock.id,
                 "name": interlock.name,
                 "lastSeen": interlock.last_seen,
                 "ipAddress": interlock.ip_address,
@@ -225,3 +227,4 @@ class MemberCreateNewInvoice(APIView):
         )
 
         return Response()
+

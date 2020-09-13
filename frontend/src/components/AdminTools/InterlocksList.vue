@@ -2,6 +2,7 @@
   <q-table
     :data="interlocks"
     :columns="[
+      { name: 'id', label: 'ID', field: 'id', sortable: true },
       { name: 'name', label: 'Name', field: 'name', sortable: true },
       { name: 'ipAddress', label: 'IP', field: 'ipAddress', sortable: true },
       { name: 'lastSeen',
@@ -32,24 +33,52 @@
       </q-input>
     </template>
 
-    <!--    <template v-slot:header="props">-->
-    <!--      <q-tr :props="props">-->
-    <!--        <q-th auto-width />-->
-    <!--        <q-th-->
-    <!--          v-for="col in props.cols"-->
-    <!--          :key="col.name"-->
-    <!--          :props="props"-->
-    <!--        >-->
-    <!--          {{ col.label }}-->
-    <!--        </q-th>-->
-    <!--        <q-th auto-width>-->
-    <!--          {{ $t('edit') }}-->
-    <!--        </q-th>-->
-    <!--        <q-th auto-width>-->
-    <!--          {{ $t('delete') }}-->
-    <!--        </q-th>-->
-    <!--      </q-tr>-->
-    <!--    </template>-->
+    <template v-slot:header="props">
+      <q-tr :props="props">
+        <q-th
+          v-for="col in props.cols"
+          :key="col.name"
+          :props="props"
+        >
+          {{ col.label }}
+        </q-th>
+        <q-th auto-width>
+          Manage
+        </q-th>
+      </q-tr>
+    </template>
+
+    <template v-slot:body="props">
+      <q-tr
+        :props="props"
+      >
+        <q-td
+          v-for="col in props.cols"
+          :key="col.name"
+          :props="props"
+        >
+          {{ col.value }}
+        </q-td>
+        <q-td auto-width>
+          <q-btn
+            class="q-mr-sm"
+            size="sm"
+            color="accent"
+            @click="rebootInterlock(props.row.id)"
+          >
+            <q-icon :name="icons.reboot" />
+          </q-btn>
+
+          <q-btn
+            size="sm"
+            color="accent"
+            disabled
+          >
+            <q-icon :name="icons.settings" />
+          </q-btn>
+        </q-td>
+      </q-tr>
+    </template>
   </q-table>
 </template>
 
@@ -74,6 +103,15 @@ export default {
   },
   methods: {
     ...mapActions('adminTools', ['getInterlocks']),
+    rebootInterlock(interlockId) {
+      this.$axios.post(`/api/access/interlocks/${interlockId}/reboot/`)
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('error.requestFailed'),
+          });
+        });
+    },
   },
   mounted() {
     this.loading = true;

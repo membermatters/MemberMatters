@@ -14,7 +14,7 @@ export default {
   dashboard: pro ? 'fad fa-columns' : 'fal fa-columns',
   webcams: pro ? 'fad fa-webcam' : 'fal fa-webcam',
 
-  cogs: pro ? 'fad fa-cogs' : 'fal fa-cogs',
+  settings: pro ? 'fal fa-cog' : 'fal fa-cog',
   manageMembers: pro ? 'fad fa-users-cog' : 'fal fa-users-cog',
   meetings: pro ? 'fad fa-clipboard-list' : 'fal fa-clipboard-list',
   groups: pro ? 'fad fa-user-tag' : 'fal fa-user-tag',
@@ -23,6 +23,7 @@ export default {
   kiosks: pro ? 'fad fa-desktop' : 'fal fa-desktop',
 
   tools: pro ? 'fad fa-tools' : 'fal fa-tools',
+  admintools: pro ? 'fad fa-toolbox' : 'fal fa-toolbox',
   reportIssue: pro ? 'fad fa-exclamation-triangle' : 'fal fa-exclamation-triangle',
   submitProxy: pro ? 'fad fa-box-ballot' : 'fal fa-box-ballot',
   groupMembers: pro ? 'fad fa-user-friends' : 'fal fa-user-friends',
@@ -63,4 +64,5 @@ export default {
   membersOnSite: pro ? 'fad fa-address-book' : 'fal fa-address-book',
   export: pro ? 'fad fa-archive' : 'fal fa-archive',
   email: pro ? 'fad fa-mail-bulk' : 'fal fa-mail-bulk',
+  reboot: pro ? 'fad fa-power-off' : 'fal fa-power-off',
 };

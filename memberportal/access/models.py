@@ -56,7 +56,7 @@ class MemberbucksDevice(AccessControlledDevice):
     def reboot(self):
         import requests
 
-        r = requests.get("http://{}/reboot".format(self.ip_address))
+        r = requests.get("http://{}/reboot".format(self.ip_address), timeout=10)
         if r.status_code == 200:
             log_event(
                 self.name + " rebooted from admin interface.",
@@ -82,7 +82,7 @@ class Doors(AccessControlledDevice):
     def bump(self):
         import requests
 
-        r = requests.get("http://{}/bump".format(self.ip_address))
+        r = requests.get("http://{}/bump".format(self.ip_address), timeout=10)
         if r.status_code == 200:
             log_event(
                 self.name + " bumped from admin interface.",
@@ -101,7 +101,7 @@ class Doors(AccessControlledDevice):
     def reboot(self):
         import requests
 
-        r = requests.get("http://{}/reboot".format(self.ip_address))
+        r = requests.get("http://{}/reboot".format(self.ip_address), timeout=10)
         if r.status_code == 200:
             log_event(
                 self.name + " rebooted from admin interface.",
@@ -130,7 +130,7 @@ class Interlock(AccessControlledDevice):
     def lock(self):
         import requests
 
-        r = requests.get("http://{}/end".format(self.ip_address))
+        r = requests.get("http://{}/end".format(self.ip_address), timeout=10)
         if r.status_code == 200:
             log_event(
                 self.name + " locked from admin interface.",
@@ -169,7 +169,7 @@ class Interlock(AccessControlledDevice):
     def reboot(self):
         import requests
 
-        r = requests.get("http://{}/reboot".format(self.ip_address))
+        r = requests.get("http://{}/reboot".format(self.ip_address), timeout=10)
         if r.status_code == 200:
             log_event(
                 self.name + " rebooted from admin interface.",

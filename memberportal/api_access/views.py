@@ -85,3 +85,16 @@ class RevokeInterlock(APIView):
         member.profile.save()
 
         return Response()
+
+
+class RebootInterlock(APIView):
+    """
+    post: This method will reboot the specified interlock.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def post(self, request, interlock_id):
+        interlock = Interlock.objects.get(pk=interlock_id)
+
+        return Response({"success": interlock.reboot()})

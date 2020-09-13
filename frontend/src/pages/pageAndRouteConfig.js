@@ -27,7 +27,7 @@ const PageAndRouteConfig = [
     component: () => import('pages/Webcams'),
   },
   {
-    icon: icons.cogs,
+    icon: icons.admintools,
     name: 'adminTools',
     loggedIn: true,
     admin: true,

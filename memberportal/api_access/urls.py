@@ -27,4 +27,9 @@ urlpatterns = [
         views.RevokeInterlock.as_view(),
         name="RevokeInterlock",
     ),
+    path(
+        "api/access/interlocks/<int:interlock_id>/reboot/",
+        views.RebootInterlock.as_view(),
+        name="RebootInterlock",
+    ),
 ]
