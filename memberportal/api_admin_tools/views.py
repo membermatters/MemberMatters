@@ -200,6 +200,7 @@ class MemberProfile(APIView):
         member.profile.rfid = body.get("rfidCard")
         member.profile.phone = body.get("phone")
         member.profile.screen_name = body.get("screenName")
+        member.profile.member_type_id = body.get("memberType")["id"]
 
         groups = []
 
