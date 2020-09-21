@@ -123,7 +123,8 @@
               :label="$t('button.submit')"
               type="submit"
               color="primary-btn"
-              :loading="loading"
+              :loading="buttonLoading"
+              :disable="buttonLoading"
             />
           </div>
         </q-form>
@@ -148,7 +149,7 @@ export default {
       error: false,
       errorExists: false,
       complete: false,
-      loading: false,
+      buttonLoading: false,
       isPwd: true,
       form: {
         firstName: null,
@@ -162,19 +163,9 @@ export default {
     };
   },
   mounted() {
-    if (this.loggedIn) this.redirectLoggedIn();
+    if (this.loggedIn) this.$router.push({ name: 'dashboard' });
   },
   methods: {
-    /**
-     * Redirects to the dashboard page on successful registration.
-     */
-    redirectLoggedIn() {
-      this.failed = false;
-      this.error = false;
-      this.complete = true;
-
-      this.$router.push({ name: 'dashboard' });
-    },
     onReset() {
       this.email = null;
       this.password = null;
@@ -200,7 +191,11 @@ export default {
         password: this.form.password,
       })
         .then(() => {
-          this.redirectLoggedIn();
+          this.failed = false;
+          this.error = false;
+          this.complete = true;
+
+          this.$router.push({ name: 'registerSuccess' });
         })
         .catch((error) => {
           if (error.response.status === 409) {
@@ -212,7 +207,7 @@ export default {
           }
         })
         .finally(() => {
-          this.loading = false;
+          this.buttonLoading = false;
         });
     },
   },
