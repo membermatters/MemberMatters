@@ -155,7 +155,7 @@ class Login(APIView):
                     payload = base64.b64encode(urlencode(payload).encode("utf-8"))
                     computed_signature = hmac.new(secret, payload, digestmod=hashlib.sha256).hexdigest()
 
-                    return Response({"redirect": f"{discourse_redirect}?sso={payload.decode('utf-8')}&sig={computed_signature.decode('utf-8')}"}, status=status.HTTP_200_OK)
+                    return Response({"redirect": f"{discourse_redirect}?sso={payload.decode('utf-8')}&sig={computed_signature}"}, status=status.HTTP_200_OK)
 
                 else:
                     return Response(status=status.HTTP_200_OK)
