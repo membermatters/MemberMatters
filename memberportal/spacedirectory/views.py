@@ -27,7 +27,7 @@ def spacedirectory_status(request):
             "space": config.SITE_OWNER,
             "logo": config.SITE_URL + settings.MEDIA_URL + config.SITE_LOGO,
             "url": config.MAIN_SITE_URL,
-            "spacefed": {"spacenet": config.SPACE_DIRECTORY_FED_SPACENET, "spacesaml": config.SPACE_DIRECTORY_FED_SPACESAML},
+            "spacefed": {"spacenet": config.SPACE_DIRECTORY_FED_SPACENET, "spacesaml": config.SPACE_DIRECTORY_FED_SPACESAML, "spacephone": config.SPACE_DIRECTORY_FED_SPACEPHONE},
             "cam": json.loads(config.SPACE_DIRECTORY_CAMS),
             "contact": {
                 "email": config.SPACE_DIRECTORY_CONTACT_EMAIL,

@@ -327,14 +327,9 @@ CONSTANCE_CONFIG = {
     "SPACE_DIRECTORY_LOCATION_LON": (0, "Sets the longitude."),
     "SPACE_DIRECTORY_FED_SPACENET": (False, "Sets support for spacenet."),
     "SPACE_DIRECTORY_FED_SPACESAML": (False, "Sets support for spacesaml."),
-    "SPACE_DIRECTORY_CAMS": (
-        "[]",
-        "A JSON list of strings (URLs) that webcam snapshots of the space can be found.",
-    ),
-    "SPACE_DIRECTORY_CONTACT_EMAIL": (
-        "notset@example.com",
-        "Sets the general contact email.",
-    ),
+    "SPACE_DIRECTORY_FED_SPACEPHONE": (False, "Sets support for spacephone."),
+    "SPACE_DIRECTORY_CAMS": ("[]", "A JSON list of strings (URLs) that webcam snapshots of the space can be found."),
+    "SPACE_DIRECTORY_CONTACT_EMAIL": ("notset@example.com", "Sets the general contact email."),
     "SPACE_DIRECTORY_CONTACT_TWITTER": ("", "Sets the twitter handle."),
     "SPACE_DIRECTORY_CONTACT_FACEBOOK": ("", "Sets the Facebook page URL."),
     "SPACE_DIRECTORY_CONTACT_PHONE": (
