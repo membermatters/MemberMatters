@@ -263,6 +263,7 @@ export default {
       unverifiedEmail: false,
       buttonLoading: false,
       disableResetSubmitButton: false,
+      discourseSsoData: null,
       reset: {
         formDisabled: true,
         success: false,
@@ -277,7 +278,10 @@ export default {
     };
   },
   mounted() {
-    this.getLoggedIn();
+    if (this.$route.query.sso && this.$route.query.sig) {
+      this.discourseSsoData = this.$route.query;
+    }
+
     if (this.loggedIn) this.redirectLoggedIn();
     if (this.resetToken) {
       Loading.show({ message: 'Validating request...' });
@@ -302,8 +306,14 @@ export default {
     redirectLoggedIn() {
       this.loginFailed = false;
       this.loginError = false;
-      this.loginComplete = true;
 
+      if (this.discourseSsoData) {
+        console.log('already logged in!');
+        this.login();
+        return;
+      }
+
+      this.loginComplete = true;
       this.$emit('loginComplete');
       if (this.$route.query.redirect) this.$router.push(this.$route.query.redirect);
       else if (!this.noRedirect) {
@@ -327,30 +337,63 @@ export default {
       this.loginFailed = false;
       this.loginError = false;
       this.buttonLoading = true;
-      this.$axios.post('/api/login/', {
-        email: this.email,
-        password: this.password,
-      })
-        .then(() => {
-          this.redirectLoggedIn();
+
+      if (this.discourseSsoData) {
+        this.$axios.post('/api/login/', {
+          email: this.email,
+          password: this.password,
+          sso: this.discourseSsoData,
         })
-        .catch((error) => {
-          if (error.response.status === 401) {
-            this.loginFailed = true;
-            this.unverifiedEmail = false;
-          } else if (error.response.status === 403) {
-            this.unverifiedEmail = true;
+          .then((response) => {
             this.loginFailed = false;
-            throw error;
-          } else {
-            this.loginError = true;
-            this.unverifiedEmail = false;
-            throw error;
-          }
+            this.loginError = false;
+            this.loginComplete = true;
+
+            window.location = response.data.redirect;
+          })
+          .catch((error) => {
+            if (error.response.status === 401) {
+              this.loginFailed = true;
+              this.unverifiedEmail = false;
+            } else if (error.response.status === 403) {
+              this.unverifiedEmail = true;
+              this.loginFailed = false;
+              throw error;
+            } else {
+              this.loginError = true;
+              this.unverifiedEmail = false;
+              throw error;
+            }
+          })
+          .finally(() => {
+            this.buttonLoading = false;
+          });
+      } else {
+        this.$axios.post('/api/login/', {
+          email: this.email,
+          password: this.password,
         })
-        .finally(() => {
-          this.buttonLoading = false;
-        });
+          .then(() => {
+            this.redirectLoggedIn();
+          })
+          .catch((error) => {
+            if (error.response.status === 401) {
+              this.loginFailed = true;
+              this.unverifiedEmail = false;
+            } else if (error.response.status === 403) {
+              this.unverifiedEmail = true;
+              this.loginFailed = false;
+              throw error;
+            } else {
+              this.loginError = true;
+              this.unverifiedEmail = false;
+              throw error;
+            }
+          })
+          .finally(() => {
+            this.buttonLoading = false;
+          });
+      }
     },
     /**
      * This submits the password reset request so the user gets a reset link in their email.

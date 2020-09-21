@@ -25,11 +25,9 @@ export default ({ router, store }) => {
       }
     }
 
-    // If we're already logged in and try to hit the login page go to dashboard
-    if ((to.path === '/login' || to.path === '/') && store.getters['profile/loggedIn'] === true) {
-      next({ name: 'dashboard' });
+    // if we are authenticating via SSO then don't update the route
+    if (!from.query.sso) {
+      next();
     }
-
-    next();
   });
 };

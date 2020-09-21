@@ -28,6 +28,9 @@ from rest_framework.views import APIView
 from .serializers import *
 from .models import Kiosk, SiteSession, EmailVerificationToken
 from services.discord import post_kiosk_swipe_to_discord
+import base64
+from urllib.parse import parse_qs, urlencode
+import hmac, hashlib
 
 
 class GetConfig(APIView):
@@ -86,10 +89,49 @@ class Login(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        if request.user.is_authenticated:
-            return Response(status=status.HTTP_200_OK)
+        body = request.data
+        discourse_nonce = None
+        discourse_redirect = None
+        discourse_login = False
+        secret = config.DISCOURSE_SSO_PROTOCOL_SECRET_KEY.encode("utf-8")
 
-        body = json.loads(request.body.decode("utf-8"))
+        if body.get("sso") is not None:
+            if config.ENABLE_DISCOURSE_SSO_PROTOCOL:
+                sso_data = body.get("sso")
+                computed_signature = hmac.new(secret, sso_data['sso'].encode("utf-8"), digestmod=hashlib.sha256).hexdigest()
+
+                sso_payload = parse_qs(base64.b64decode(sso_data['sso']))
+                sig = sso_data['sig']
+
+                if computed_signature == sig:
+                    discourse_nonce = sso_payload[b'nonce'][0].decode("utf-8")
+                    discourse_redirect = sso_payload[b'return_sso_url'][0].decode("utf-8")
+                    discourse_login = True
+
+                else:
+                    # if the sig doesn't match then exit
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+            else:
+                # if sso is disabled then exit
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if request.user.is_authenticated:
+            if discourse_login:
+                payload = {
+                    "nonce": discourse_nonce,
+                    "email": request.user.email,
+                    "external_id": request.user.id,
+                    "username": request.user.profile.screen_name,
+                    "name": request.user.profile.get_full_name(),
+                }
+                payload = base64.b64encode(urlencode(payload).encode("utf-8"))
+                computed_signature = hmac.new(secret, payload, digestmod=hashlib.sha256).hexdigest()
+
+                return Response({"redirect": f"{discourse_redirect}?sso={payload.decode('utf-8')}&sig={computed_signature}"}, status=status.HTTP_200_OK)
+
+            else:
+                return Response(status=status.HTTP_200_OK)
 
         if body.get("email") is None or body.get("password") is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -101,7 +143,22 @@ class Login(APIView):
             # if their email is verified
             if user.email_verified:
                 login(request, user)
-                return Response(status=status.HTTP_200_OK)
+
+                if discourse_login:
+                    payload = {
+                        "nonce": discourse_nonce,
+                        "email": user.email,
+                        "external_id": user.id,
+                        "username": user.profile.screen_name,
+                        "name": user.profile.get_full_name(),
+                    }
+                    payload = base64.b64encode(urlencode(payload).encode("utf-8"))
+                    computed_signature = hmac.new(secret, payload, digestmod=hashlib.sha256).hexdigest()
+
+                    return Response({"redirect": f"{discourse_redirect}?sso={payload.decode('utf-8')}&sig={computed_signature.decode('utf-8')}"}, status=status.HTTP_200_OK)
+
+                else:
+                    return Response(status=status.HTTP_200_OK)
 
             else:
                 new_token = EmailVerificationToken.objects.create(user=user)

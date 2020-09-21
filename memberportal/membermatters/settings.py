@@ -362,6 +362,14 @@ CONSTANCE_CONFIG = {
         "https://discordapp.com/api/webhooks/<token>",
         "Discord URL to send webhook notifications to.",
     ),
+    "ENABLE_DISCOURSE_SSO_PROTOCOL": (
+        False,
+        "Enable support for the discourse SSO protocol.",
+    ),
+    "DISCOURSE_SSO_PROTOCOL_SECRET_KEY": (
+        "",
+        "Secret key for the discourse SSO protocol (if enabled).",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -376,6 +384,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SITE_MAIL_ADDRESS",
             ),
         ),
+        ("Discourse SSO Protocol", ("ENABLE_DISCOURSE_SSO_PROTOCOL", "DISCOURSE_SSO_PROTOCOL_SECRET_KEY")),
         ("URLs", ("SITE_URL", "MAIN_SITE_URL", "INDUCTION_URL")),
         ("Memberbucks", ("MEMBERBUCKS_MAX_TOPUP", "MEMBERBUCKS_CURRENCY")),
         ("Images", ("SITE_LOGO", "SITE_FAVICON")),
@@ -423,6 +432,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SPACE_DIRECTORY_FED_SPACESAML",
                 "SPACE_DIRECTORY_CAMS",
                 "SPACE_DIRECTORY_CONTACT_EMAIL",
+                "SPACE_DIRECTORY_FED_SPACEPHONE",
                 "SPACE_DIRECTORY_CONTACT_TWITTER",
                 "SPACE_DIRECTORY_CONTACT_FACEBOOK",
                 "SPACE_DIRECTORY_CONTACT_PHONE",
