@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.utils import timezone
 import pytz
 from django.conf import settings
+from uuid import uuid4
 
 utc = pytz.UTC
 
@@ -44,3 +45,9 @@ class SiteSession(models.Model):
 
     def __str__(self):
         return f"{self.user.profile.get_full_name()} - in: {self.signin_date} out: {self.signout_date}"
+
+
+class EmailVerificationToken(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    creation_date = models.DateTimeField(default=timezone.now)
+    verification_token = models.UUIDField(default=uuid4)

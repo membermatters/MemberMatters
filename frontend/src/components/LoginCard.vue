@@ -51,6 +51,13 @@
           </q-banner>
 
           <q-banner
+            v-if="unverifiedEmail"
+            class="bg-negative text-white"
+          >
+            {{ $t('loginCard.unverifiedEmail') }}
+          </q-banner>
+
+          <q-banner
             v-if="loginError"
             class="bg-negative text-white"
           >
@@ -253,6 +260,7 @@ export default {
       loginFailed: false,
       loginError: false,
       loginComplete: false,
+      unverifiedEmail: false,
       buttonLoading: false,
       disableResetSubmitButton: false,
       reset: {
@@ -329,8 +337,14 @@ export default {
         .catch((error) => {
           if (error.response.status === 401) {
             this.loginFailed = true;
+            this.unverifiedEmail = false;
+          } else if (error.response.status === 403) {
+            this.unverifiedEmail = true;
+            this.loginFailed = false;
+            throw error;
           } else {
             this.loginError = true;
+            this.unverifiedEmail = false;
             throw error;
           }
         })

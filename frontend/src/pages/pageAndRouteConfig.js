@@ -11,6 +11,15 @@ const PageAndRouteConfig = [
     component: () => import('pages/Login'), // which component to load as the page
   },
   {
+    icon: icons.signin, // specify the icon to use
+    to: '/registersuccess', // specify the URL route for this page
+    name: 'registerSuccess', // specify the name of this URL route
+    loggedIn: false, // only allow access to logged in users if true or logged out users if false
+    kiosk: false, // whether this page should show up in kiosk mode
+    hiddenMenu: true, // adds the route and page config, but don't show in the menu
+    component: () => import('pages/RegisterSuccess'), // which component to load as the page
+  },
+  {
     icon: icons.dashboard,
     to: '/dashboard',
     name: 'dashboard',
@@ -186,6 +195,7 @@ const PageAndRouteConfig = [
     component: () => import('pages/Registration'),
   },
 
+
   // These are endpoints that handle specific tasks and are not normally accessed.
   {
     icon: icons.signin, // specify the icon to use
@@ -193,6 +203,13 @@ const PageAndRouteConfig = [
     name: 'resetPassword', // specify the name of this URL route
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
     component: () => import('pages/Login'), // which component to load as the page
+  },
+  {
+    icon: icons.register, // specify the icon to use
+    to: '/profile/email/:verifyToken/verify', // specify the URL route for this page
+    name: 'verifyEmail', // specify the name of this URL route
+    hiddenMenu: true, // adds the route and page config, but don't show in the menu
+    component: () => import('pages/VerifyEmail'), // which component to load as the page
   },
   {
     icon: icons.signin, // specify the icon to use

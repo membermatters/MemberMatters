@@ -10,6 +10,7 @@ export default {
     resetPassword: 'Reset Password',
     logout: 'Logout',
     register: 'Register',
+    registerSuccess: 'Successfully Registered',
 
     adminTools: 'Admin Tools',
     groupMembers: 'Group Members',
@@ -96,6 +97,7 @@ export default {
     resetConfirm: 'Your password has been reset.',
     resetNotConfirm: 'There was a problem resetting your password.',
     backToLogin: 'Back to login page',
+    unverifiedEmail: 'Your email address is not verified. We just sent you another link so please try again.',
   },
   changePasswordCard: {
     pageTitle: 'Change Password',
@@ -334,5 +336,10 @@ export default {
     register: 'Register An Account',
     alreadyAMember: 'Already a member? ',
     loginHere: 'Login Here',
+    registrationComplete: 'Registration complete. Please check your email and click the link to verify your email address.',
+  },
+  verifyEmail: {
+    error: 'There was a problem verifying your email address. We just sent you another link so please try again.',
+    success: 'Your email was verified. You can now login.',
   },
 };

@@ -26,7 +26,7 @@ from rest_framework import status, permissions, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import *
-from .models import Kiosk, SiteSession
+from .models import Kiosk, SiteSession, EmailVerificationToken
 from services.discord import post_kiosk_swipe_to_discord
 
 
@@ -98,11 +98,22 @@ class Login(APIView):
 
         # correct login details
         if user is not None:
-            login(request, user)
-            return Response(status=status.HTTP_200_OK)
+            # if their email is verified
+            if user.email_verified:
+                login(request, user)
+                return Response(status=status.HTTP_200_OK)
 
-        else:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            else:
+                new_token = EmailVerificationToken.objects.create(user=user)
+
+                url = f"{config.SITE_URL}/profile/email/{new_token.verification_token}/verify/"
+                new_token.user.email_link("Action Required: Verify Email", "Verify Email", "Verify Email",
+                                          "Please verify your email address to activate your account.", url,
+                                          "Verify Now")
+
+                return Response({"message": "loginCard.emailNotVerified"}, status=status.HTTP_403_FORBIDDEN)
+
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class LoginKiosk(APIView):
@@ -134,6 +145,9 @@ class LoginKiosk(APIView):
         if not kiosk.authorised:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
+        if not user.email_verified:
+            return Response({"message": "error.emailNotVerified"}, status=status.HTTP_403_FORBIDDEN)
+
         # rfid matches a user so log them in
         if user is not None:
             login(request, user)
@@ -157,7 +171,7 @@ def Logout(request):
 
 
 @require_POST
-def api_reset_password(request):
+def ResetPassword(request):
     """
     WEB_ONLY
 
@@ -504,8 +518,13 @@ class Register(APIView):
             )
 
         new_user = User.objects.create(
-            email=body.get("email").lower(), password=body.get("password")
+            email=body.get("email").lower(),
+            email_verified=False,
         )
+
+        new_user.set_password(body.get("password"))
+        new_user.save()
+
         profile = Profile.objects.create(
             user=new_user,
             member_type_id=2,
@@ -520,14 +539,21 @@ class Register(APIView):
             profile.groups.add(Group.objects.get(id=group["id"]))
         profile.save()
 
+        verification_token = EmailVerificationToken.objects.create(user=new_user)
+
+        url = f"{config.SITE_URL}/profile/email/{verification_token.verification_token}/verify/"
+        verification_token.user.email_link("Action Required: Verify Email", "Verify Email", "Verify Email",
+                                           "Please verify your email address to activate your account.", url,
+                                           "Verify Now")
+
         profile.email_profile_to(config.EMAIL_ADMIN)
 
         new_user.email_link(
-            f"{config.SITE_OWNER} New Member Signup - Action Required",
+            f"Action Required: {config.SITE_OWNER} New Member Signup",
             "Next Step: Register for an Induction",
             "Important. Please read this email for details on how to "
             "register for an induction.",
-            "Hi {profile.first_name}, thanks for signing up! The next step to becoming a fully "
+            f"Hi {profile.first_name}, thanks for signing up! The next step to becoming a fully "
             "fledged member is to book in for an induction. During this "
             "induction we will go over the basic safety and operational "
             f"aspects of {config.SITE_OWNER}. To book in, click the link below.",
@@ -535,7 +561,39 @@ class Register(APIView):
             "Register for Induction",
         )
 
-        # for convenience, we should now log the user in
-        login(request, new_user)
-
         return Response()
+
+
+class VerifyEmail(APIView):
+    """
+    post: registers a new member.
+    """
+
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request, verify_token):
+        try:
+            verification_token = EmailVerificationToken.objects.get(verification_token=verify_token)
+
+        except EmailVerificationToken.DoesNotExist:
+            return Response({"message": "error.emailVerificationFailed"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if utc.localize(datetime.datetime.now()) < verification_token.creation_date + datetime.timedelta(hours=24):
+            verification_token.user.email_verified = True
+            verification_token.user.save()
+
+            verification_token.delete()
+
+            return Response()
+
+        else:
+            new_token = EmailVerificationToken.objects.create(user=verification_token.user)
+
+            url = f"{config.SITE_URL}/profile/email/{new_token.verification_token}/verify/"
+            new_token.user.email_link("Action Required: Verify Email", "Verify Email", "Verify Email",
+                                               "Please verify your email address to activate your account.", url,
+                                               "Verify Now")
+
+            verification_token.delete()
+
+            return Response({"message": "error.emailVerificationExpired"}, status=status.HTTP_403_FORBIDDEN)

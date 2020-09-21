@@ -102,6 +102,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
         verbose_name="email address", max_length=255, unique=True,
     )
+    email_verified = models.BooleanField(default=True)
     password_reset_key = models.UUIDField(default=None, blank=True, null=True)
     password_reset_expire = models.DateTimeField(default=None, blank=True, null=True)
     staff = models.BooleanField(default=False)  # an admin user for the portal
@@ -124,6 +125,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_admin(self):
         "Is the user a admin member?"
         return self.admin
+
 
     def __send_email(self, subject, body):
         if "PORTAL_SENDGRID_API_KEY" in os.environ:
