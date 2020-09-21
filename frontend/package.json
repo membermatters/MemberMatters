@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "0.0.1",
+  "version": "2.0.0",
   "description": "The new MemberMatters frontend",
   "productName": "MemberMatters",
   "cordovaId": "org.membermatters.app",
