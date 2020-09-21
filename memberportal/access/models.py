@@ -7,6 +7,7 @@ import pytz
 from django.conf import settings
 from django.contrib import auth
 import uuid
+
 User = auth.get_user_model()
 utc = pytz.UTC
 
@@ -14,11 +15,19 @@ utc = pytz.UTC
 class AccessControlledDevice(models.Model):
     name = models.CharField("Name", max_length=30, unique=True)
     description = models.CharField("Description/Location", max_length=100)
-    ip_address = models.GenericIPAddressField("IP Address of device", unique=True, null=True, blank=True)
+    ip_address = models.GenericIPAddressField(
+        "IP Address of device", unique=True, null=True, blank=True
+    )
     last_seen = models.DateTimeField(null=True)
     all_members = models.BooleanField("Members have access by default", default=False)
     locked_out = models.BooleanField("Maintenance lockout enabled", default=False)
     play_theme = models.BooleanField("Play theme on door swipe", default=False)
+    exempt_signin = models.BooleanField(
+        "Exempt this device from requiring a sign in", default=False
+    )
+    hidden = models.BooleanField(
+        "Hidden from members in their access permissions screen", default=False
+    )
 
     def checkin(self):
         self.last_seen = timezone.now()
@@ -30,8 +39,6 @@ class AccessControlledDevice(models.Model):
                 return True
 
         return False
-
-
 
     def __str__(self):
         return self.name
@@ -48,34 +55,66 @@ class MemberbucksDevice(AccessControlledDevice):
 
     def reboot(self):
         import requests
-        r = requests.get("http://{}/reboot".format(self.ip_address))
+
+        r = requests.get("http://{}/reboot".format(self.ip_address), timeout=10)
         if r.status_code == 200:
-            log_event(self.name + " rebooted from admin interface.", "memberbucks", "Status: {}. Content: {}".format(r.status_code, r.content))
+            log_event(
+                self.name + " rebooted from admin interface.",
+                "memberbucks",
+                "Status: {}. Content: {}".format(r.status_code, r.content),
+            )
             return True
         else:
-            log_event(self.name + " rebooted from admin interface failed.", "memberbucks", "Status: {}. Content: {}".format(r.status_code, r.content))
+            log_event(
+                self.name + " rebooted from admin interface failed.",
+                "memberbucks",
+                "Status: {}. Content: {}".format(r.status_code, r.content),
+            )
             return False
 
 
 class Doors(AccessControlledDevice):
+    class Meta:
+        permissions = [
+            ("manage_doors", "Can manage doors"),
+        ]
+
     def bump(self):
         import requests
-        r = requests.get("http://{}/bump".format(self.ip_address))
+
+        r = requests.get("http://{}/bump".format(self.ip_address), timeout=10)
         if r.status_code == 200:
-            log_event(self.name + " bumped from admin interface.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
+            log_event(
+                self.name + " bumped from admin interface.",
+                "door",
+                "Status: {}. Content: {}".format(r.status_code, r.content),
+            )
             return True
         else:
-            log_event(self.name + " bumped from admin interface failed.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
+            log_event(
+                self.name + " bumped from admin interface failed.",
+                "door",
+                "Status: {}. Content: {}".format(r.status_code, r.content),
+            )
             return False
 
     def reboot(self):
         import requests
-        r = requests.get("http://{}/reboot".format(self.ip_address))
+
+        r = requests.get("http://{}/reboot".format(self.ip_address), timeout=10)
         if r.status_code == 200:
-            log_event(self.name + " rebooted from admin interface.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
+            log_event(
+                self.name + " rebooted from admin interface.",
+                "door",
+                "Status: {}. Content: {}".format(r.status_code, r.content),
+            )
             return True
         else:
-            log_event(self.name + " rebooted from admin interface failed.", "door", "Status: {}. Content: {}".format(r.status_code, r.content))
+            log_event(
+                self.name + " rebooted from admin interface failed.",
+                "door",
+                "Status: {}. Content: {}".format(r.status_code, r.content),
+            )
             return False
 
     def log_access(self, member_id):
@@ -83,18 +122,38 @@ class Doors(AccessControlledDevice):
 
 
 class Interlock(AccessControlledDevice):
+    class Meta:
+        permissions = [
+            ("manage_interlocks", "Can manage interlocks"),
+        ]
+
     def lock(self):
         import requests
-        r = requests.get("http://{}/end".format(self.ip_address))
+
+        r = requests.get("http://{}/end".format(self.ip_address), timeout=10)
         if r.status_code == 200:
-            log_event(self.name + " locked from admin interface.", "interlock", "Status: {}. Content: {}".format(r.status_code, r.content))
+            log_event(
+                self.name + " locked from admin interface.",
+                "interlock",
+                "Status: {}. Content: {}".format(r.status_code, r.content),
+            )
             return True
         else:
-            log_event(self.name + " lock request from admin interface failed.", "interlock", "Status: {}. Content: {}".format(r.status_code, r.content))
+            log_event(
+                self.name + " lock request from admin interface failed.",
+                "interlock",
+                "Status: {}. Content: {}".format(r.status_code, r.content),
+            )
             return False
 
     def create_session(self, user):
-        session = InterlockLog.objects.create(id=uuid.uuid4(), user=user, interlock=self, first_heartbeat=timezone.now(), last_heartbeat=timezone.now())
+        session = InterlockLog.objects.create(
+            id=uuid.uuid4(),
+            user=user,
+            interlock=self,
+            first_heartbeat=timezone.now(),
+            last_heartbeat=timezone.now(),
+        )
 
         if session:
             return session
@@ -102,18 +161,30 @@ class Interlock(AccessControlledDevice):
         return False
 
     def get_last_active(self):
-        interlocklog = InterlockLog.objects.filter(interlock=self).latest("last_heartbeat")
+        interlocklog = InterlockLog.objects.filter(interlock=self).latest(
+            "last_heartbeat"
+        )
         return interlocklog.last_heartbeat
 
     def reboot(self):
         import requests
-        r = requests.get("http://{}/reboot".format(self.ip_address))
+
+        r = requests.get("http://{}/reboot".format(self.ip_address), timeout=10)
         if r.status_code == 200:
-            log_event(self.name + " rebooted from admin interface.", "interlock", "Status: {}. Content: {}".format(r.status_code, r.content))
+            log_event(
+                self.name + " rebooted from admin interface.",
+                "interlock",
+                "Status: {}. Content: {}".format(r.status_code, r.content),
+            )
             return True
         else:
-            log_event(self.name + " rebooted from admin interface failed.", "interlock", "Status: {}. Content: {}".format(r.status_code, r.content))
+            log_event(
+                self.name + " rebooted from admin interface failed.",
+                "interlock",
+                "Status: {}. Content: {}".format(r.status_code, r.content),
+            )
             return False
+
 
 class DoorLog(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -124,7 +195,13 @@ class DoorLog(models.Model):
 class InterlockLog(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    user_off = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True, related_name="user_off")
+    user_off = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name="user_off",
+    )
     interlock = models.ForeignKey(Interlock, on_delete=models.CASCADE)
     first_heartbeat = models.DateTimeField(default=timezone.now)
     last_heartbeat = models.DateTimeField(default=timezone.now)

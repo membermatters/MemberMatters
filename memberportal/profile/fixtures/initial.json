@@ -41,7 +41,6 @@
       "last_memberbucks_purchase": "2000-01-01T00:00:00.000Z",
       "must_update_profile": false,
       "last_seen": "2000-01-01T00:00:00.000Z",
-      "last_invoice": null,
       "stripe_customer_id": "",
       "stripe_card_expiry": "",
       "stripe_card_last_digits": "",

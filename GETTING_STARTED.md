@@ -1,5 +1,5 @@
- ### Getting Started
- > Note: MemberMatters only supports running in Docker on Linux. Installing Docker is outside the scope of this guide, 
+### Getting Started
+> Note: MemberMatters only supports running in Docker on Linux. Installing Docker is outside the scope of this guide, 
 >please consult your favourite search engine for tips.
  
  To get started, download the latest version from docker hub using the following command:
@@ -57,6 +57,15 @@ We recommend that you use nginx with let's encrypt.
 need reliable networking and internet to function. Please keep this in mind and make sure you perform thorough
 testing before relying on it.
 
+
+### Kiosk Mode
+MemberMatters also offers a kiosk mode. You can build this by running `npm run build:electron`. This
+will compile an electron based application that you can run on a machine set up as a kiosk. For
+security reasons, kiosk builds will only have limited profile functionality and are primarily meant
+to allow members to sign in/out of site, print out tickets and use basic features of MemberMatters.
+
+#### Linux
+You may need to install ffmpeg and a chromium run time.
 
 ### Updating your instance
 Docker containers are meant to be disposable, so you'll need to delete it and make a fresh one from the latest image. 

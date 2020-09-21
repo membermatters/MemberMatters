@@ -20,7 +20,8 @@ def get_xero_contact(user):
         with open(xero_rsa) as keyfile:
             rsa_key = keyfile.read()
         credentials = PrivateCredentials(
-            os.environ.get("PORTAL_XERO_CONSUMER_KEY"), rsa_key)
+            os.environ.get("PORTAL_XERO_CONSUMER_KEY"), rsa_key
+        )
         xero = Xero(credentials)
         email = xero.contacts.filter(EmailAddress=user.profile.email)
         name = xero.contacts.filter(Name=user.profile.get_full_name())
@@ -41,7 +42,10 @@ def generate_account_number(profile):
     if "PORTAL_XERO_CONSUMER_KEY" in os.environ:
         with open(xero_rsa) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get("PORTAL_XERO_CONSUMER_KEY", "/usr/src/data/xerkey.pem"), rsa_key)
+        credentials = PrivateCredentials(
+            os.environ.get("PORTAL_XERO_CONSUMER_KEY", "/usr/src/data/xerkey.pem"),
+            rsa_key,
+        )
         xero = Xero(credentials)
         contacts = xero.contacts.filter(includeArchived=True)
 
@@ -49,7 +53,9 @@ def generate_account_number(profile):
             account_number = profile.first_name[0] + profile.last_name[:2] + str(x)
             account_number = account_number.upper()
 
-            if not any(d.get("AccountNumber", None) == account_number for d in contacts):
+            if not any(
+                d.get("AccountNumber", None) == account_number for d in contacts
+            ):
                 profile.xero_account_number = account_number
                 profile.save()
                 print("Generated Xero Account: " + account_number)
@@ -65,7 +71,10 @@ def sync_xero_accounts(users):
     if "PORTAL_XERO_CONSUMER_KEY" in os.environ:
         with open(xero_rsa) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get("PORTAL_XERO_CONSUMER_KEY", "/usr/src/data/xerkey.pem"), rsa_key)
+        credentials = PrivateCredentials(
+            os.environ.get("PORTAL_XERO_CONSUMER_KEY", "/usr/src/data/xerkey.pem"),
+            rsa_key,
+        )
         xero = Xero(credentials)
         contacts = xero.contacts.filter(includeArchived=True)
         matches = []
@@ -74,29 +83,63 @@ def sync_xero_accounts(users):
         for user in users:
             profile = user.profile
             if profile.state == "noob":
-                print("Not syncing new member ({} {}).".format(user.profile.get_full_name(), user.email))
+                print(
+                    "Not syncing new member ({} {}).".format(
+                        user.profile.get_full_name(), user.email
+                    )
+                )
                 continue
             if profile.xero_account_id or profile.xero_account_number:
-                print("{} already has xero details ({} {})".format(user.profile.get_full_name(), profile.xero_account_number, profile.xero_account_id))
+                print(
+                    "{} already has xero details ({} {})".format(
+                        user.profile.get_full_name(),
+                        profile.xero_account_number,
+                        profile.xero_account_id,
+                    )
+                )
                 continue
             else:
-                contact = next((item for item in contacts if str(item["EmailAddress"]).lower() == str(user.email).lower()), None)
+                contact = next(
+                    (
+                        item
+                        for item in contacts
+                        if str(item["EmailAddress"]).lower() == str(user.email).lower()
+                    ),
+                    None,
+                )
                 if contact:
-                    print("Found match for {} ({})".format(profile.get_full_name(), user.email) + str(contact))
+                    print(
+                        "Found match for {} ({})".format(
+                            profile.get_full_name(), user.email
+                        )
+                        + str(contact)
+                    )
                     if "AccountNumber" not in contact:
                         if contact["ContactStatus"] == "ARCHIVED":
                             continue
                         else:
-                            raise FileNotFoundError("No account number exists for " + user.profile.get_full_name())
+                            raise FileNotFoundError(
+                                "No account number exists for "
+                                + user.profile.get_full_name()
+                            )
                     user.profile.xero_account_number = contact["AccountNumber"]
                     user.profile.xero_account_id = contact["ContactID"]
                     user.profile.save()
                     matches.append(user)
                 else:
-                    print("No match found for {} ({})".format(profile.get_full_name(), user.email))
+                    print(
+                        "No match found for {} ({})".format(
+                            profile.get_full_name(), user.email
+                        )
+                    )
                     non_matches.append(user)
 
-        message = "\nDone syncing {} users. Found {} matches and {} non-matches. {} users untouched.".format(len(users), len(matches), len(non_matches), str(len(users) - (len(matches)+len(non_matches))))
+        message = "\nDone syncing {} users. Found {} matches and {} non-matches. {} users untouched.".format(
+            len(users),
+            len(matches),
+            len(non_matches),
+            str(len(users) - (len(matches) + len(non_matches))),
+        )
         print(message)
         print("\nMatched Users:")
         for match in matches:
@@ -107,7 +150,9 @@ def sync_xero_accounts(users):
 
         non_matches_string = ""
         for non_match in non_matches:
-            non_matches_string += "{} ({}), ".format(non_match.profile.get_full_name(), non_match.email)
+            non_matches_string += "{} ({}), ".format(
+                non_match.profile.get_full_name(), non_match.email
+            )
 
         return message + "Non matches: " + non_matches_string
 
@@ -119,7 +164,10 @@ def add_to_xero(profile):
     if "PORTAL_XERO_CONSUMER_KEY" in os.environ:
         with open(xero_rsa) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get("PORTAL_XERO_CONSUMER_KEY", "/usr/src/data/xerkey.pem"), rsa_key)
+        credentials = PrivateCredentials(
+            os.environ.get("PORTAL_XERO_CONSUMER_KEY", "/usr/src/data/xerkey.pem"),
+            rsa_key,
+        )
         xero = Xero(credentials)
 
         contact = [
@@ -137,7 +185,7 @@ def add_to_xero(profile):
                         "Region": "",
                         "PostalCode": "",
                         "Country": "",
-                        "AttentionTo": ""
+                        "AttentionTo": "",
                     }
                 ],
                 "Phones": [
@@ -145,12 +193,12 @@ def add_to_xero(profile):
                         "PhoneType": "DEFAULT",
                         "PhoneNumber": profile.phone,
                         "PhoneAreaCode": "",
-                        "PhoneCountryCode": ""
+                        "PhoneCountryCode": "",
                     }
                 ],
                 "IsSupplier": False,
                 "IsCustomer": True,
-                "DefaultCurrency": "AU"
+                "DefaultCurrency": "AU",
             }
         ]
 
@@ -190,12 +238,13 @@ def create_membership_invoice(user, email_invoice=False):
 
     line_items = [
         {
-            "Description": f"{config.SITE_OWNER} Membership: " + user.profile.member_type.name,
+            "Description": f"{config.SITE_OWNER} Membership: "
+            + user.profile.member_type.name,
             "Quantity": "1",
             "ItemCode": user.profile.member_type.name,
             "UnitAmount": round(user.profile.member_type.cost * 0.7, 2),
             "TaxType": tax_type,
-            "AccountCode": "261"
+            "AccountCode": "261",
         }
     ]
 
@@ -210,15 +259,13 @@ def create_membership_invoice(user, email_invoice=False):
                 "ItemCode": group.item_code,
                 "UnitAmount": round(user.profile.member_type.cost * (0.3 / length), 2),
                 "TaxType": tax_type,
-                "AccountCode": group.account_code
+                "AccountCode": group.account_code,
             }
             line_items.append(item)
 
     payload = {
         "Type": "ACCREC",
-        "Contact": {
-            "ContactID": user.profile.xero_account_id
-        },
+        "Contact": {"ContactID": user.profile.xero_account_id},
         "DueDate": next_month_date,
         "LineAmountTypes": "Inclusive",
         "LineItems": line_items,
@@ -230,12 +277,17 @@ def create_membership_invoice(user, email_invoice=False):
     if "PORTAL_XERO_CONSUMER_KEY" in os.environ:
         with open(xero_rsa) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get("PORTAL_XERO_CONSUMER_KEY", "/usr/src/data/xerkey.pem"), rsa_key)
+        credentials = PrivateCredentials(
+            os.environ.get("PORTAL_XERO_CONSUMER_KEY", "/usr/src/data/xerkey.pem"),
+            rsa_key,
+        )
         xero = Xero(credentials)
 
         # Monkey patch the library to support online invoices.
         def get_onlineinvoice(id, headers=None, summarize_errors=None):
-            uri = "/".join([xero.invoices.base_url, xero.invoices.name, id, "OnlineInvoice"])
+            uri = "/".join(
+                [xero.invoices.base_url, xero.invoices.name, id, "OnlineInvoice"]
+            )
             params = {}
             if not summarize_errors:
                 params["summarizeErrors"] = "false"
@@ -252,20 +304,38 @@ def create_membership_invoice(user, email_invoice=False):
             invoice_id = result[0]["InvoiceID"]
             invoice_number = result[0]["InvoiceNumber"]
             invoice_reference = result[0]["Reference"]
-            invoice_link = xero.invoices.get_onlineinvoice(invoice_id)["OnlineInvoices"][0]["OnlineInvoiceUrl"]
+            invoice_link = xero.invoices.get_onlineinvoice(invoice_id)[
+                "OnlineInvoices"
+            ][0]["OnlineInvoiceUrl"]
 
             # if we're successful and email == True send it
             if email_invoice:
-                user.email_invoice(user.profile.first_name, user.profile.member_type.cost, invoice_number,
-                                   next_month_date.strftime("%d-%m-%Y"), invoice_reference, invoice_link)
+                user.email_invoice(
+                    user.profile.first_name,
+                    user.profile.member_type.cost,
+                    invoice_number,
+                    next_month_date.strftime("%d-%m-%Y"),
+                    invoice_reference,
+                    invoice_link,
+                )
 
-            log_user_event(user, "Created invoice for $" + str(user.profile.member_type.cost) + "(" + invoice_id + ")",
-                           "xero")
-            user.profile.last_invoice = timezone.now()
+            log_user_event(
+                user,
+                "Created invoice for $"
+                + str(user.profile.member_type.cost)
+                + "("
+                + invoice_id
+                + ")",
+                "xero",
+            )
             user.profile.save()
 
         except XeroBadRequest as e:
-            log_user_event(user, "Error creating invoice for $" + str(user.profile.member_type.cost), "xero")
+            log_user_event(
+                user,
+                "Error creating invoice for $" + str(user.profile.member_type.cost),
+                "xero",
+            )
             return "Error: " + str(e)
 
         if result:
@@ -288,7 +358,7 @@ def create_group_donation_invoice(user, group, amount):
             "ItemCode": f"{config.MEMBERBUCKS_NAME} Cause Donation",
             "UnitAmount": amount * -1,
             "TaxType": tax_type,
-            "AccountCode": "264"  # Memberbucks account in Xero
+            "AccountCode": "264",  # Memberbucks account in Xero
         },
         {
             "Description": "Credit funds to {}.".format(group.name),
@@ -296,15 +366,13 @@ def create_group_donation_invoice(user, group, amount):
             "ItemCode": group.item_code,
             "UnitAmount": amount,
             "TaxType": tax_type,
-            "AccountCode": group.account_code
-        }
+            "AccountCode": group.account_code,
+        },
     ]
 
     payload = {
         "Type": "ACCREC",
-        "Contact": {
-            "ContactID": user.profile.xero_account_id
-        },
+        "Contact": {"ContactID": user.profile.xero_account_id},
         "DueDate": datetime.datetime.today(),
         "LineAmountTypes": "Inclusive",
         "LineItems": line_items,
@@ -316,7 +384,10 @@ def create_group_donation_invoice(user, group, amount):
     if "PORTAL_XERO_CONSUMER_KEY" in os.environ:
         with open(xero_rsa) as keyfile:
             rsa_key = keyfile.read()
-        credentials = PrivateCredentials(os.environ.get("PORTAL_XERO_CONSUMER_KEY", "/usr/src/data/xerkey.pem"), rsa_key)
+        credentials = PrivateCredentials(
+            os.environ.get("PORTAL_XERO_CONSUMER_KEY", "/usr/src/data/xerkey.pem"),
+            rsa_key,
+        )
         xero = Xero(credentials)
 
         try:
@@ -326,10 +397,16 @@ def create_group_donation_invoice(user, group, amount):
             result = xero.invoices.put(payload)
             invoice_number = result[0]["InvoiceNumber"]
 
-            log_user_event(user, "Created invoice for donation to {}.".format(group.name), "xero")
+            log_user_event(
+                user, "Created invoice for donation to {}.".format(group.name), "xero"
+            )
 
         except XeroBadRequest as e:
-            log_user_event(user, "Error creating invoice for $" + str(user.profile.member_type.cost), "xero")
+            log_user_event(
+                user,
+                "Error creating invoice for $" + str(user.profile.member_type.cost),
+                "xero",
+            )
             return "Error: " + str(e)
 
         if result:

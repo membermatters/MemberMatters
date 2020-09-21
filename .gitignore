@@ -120,3 +120,17 @@ env.list
 
 node_modules
 webpack-stats.json
+frontend/src/statics/icons/
+
+frontend/src-capacitor/ios/App/App/Assets.xcassets/Splash.imageset/
+
+frontend/.npmrc
+memberportal/static/
+
+.vscode
+.local
+.npm
+.nvm
+.viminfo
+.config
+frontend/src-electron/icons/
