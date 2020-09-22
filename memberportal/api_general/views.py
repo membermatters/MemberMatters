@@ -74,6 +74,7 @@ class GetConfig(APIView):
             "memberTypes": membership_types,
             "keys": keys,
             "features": features,
+            "analyticsId": config.GOOGLE_ANALYTICS_PROPERTY_ID,
         }
 
         return Response(response)

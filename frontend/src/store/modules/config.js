@@ -74,6 +74,13 @@ export default {
             commit('setmemberTypes', result.data.memberTypes);
             commit('setKeys', result.data.keys);
             commit('setFeatures', result.data.features);
+            const { analyticsId } = result.data;
+
+            if (analyticsId) {
+              ga('create', analyticsId, 'auto');
+              // ga('send', 'pageview');
+            }
+
             resolve();
           })
           .catch((error) => {

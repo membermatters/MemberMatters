@@ -370,11 +370,15 @@ CONSTANCE_CONFIG = {
         "",
         "Secret key for the discourse SSO protocol (if enabled).",
     ),
+    "GOOGLE_ANALYTICS_PROPERTY_ID": (
+        "",
+        "Place you google analytics property ID here to enable Google analytics integration.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
     [
-        ("General", ("SITE_NAME", "SITE_OWNER", "ENTITY_TYPE",)),
+        ("General", ("SITE_NAME", "SITE_OWNER", "ENTITY_TYPE", "GOOGLE_ANALYTICS_PROPERTY_ID")),
         (
             "Contact Information",
             (
