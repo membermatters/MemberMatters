@@ -55,7 +55,7 @@ class MemberBucksAddCard(APIView):
     def get(self, request):
         profile = request.user.profile
 
-        if profile.stripe_customer_id is None:
+        if not profile.stripe_customer_id:
             try:
                 log_user_event(
                     request.user, "Attempting to create stripe customer.", "stripe"
