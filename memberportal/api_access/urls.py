@@ -32,4 +32,14 @@ urlpatterns = [
         views.RebootInterlock.as_view(),
         name="RebootInterlock",
     ),
+    path(
+        "api/access/doors/<int:door_id>/reboot/",
+        views.RebootDoor.as_view(),
+        name="RebootDoor",
+    ),
+    path(
+        "api/access/doors/<int:door_id>/unlock/",
+        views.UnlockDoor.as_view(),
+        name="UnlockDoor",
+    ),
 ]

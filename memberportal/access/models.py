@@ -79,7 +79,7 @@ class Doors(AccessControlledDevice):
             ("manage_doors", "Can manage doors"),
         ]
 
-    def bump(self):
+    def unlock(self):
         import requests
 
         r = requests.get("http://{}/bump".format(self.ip_address), timeout=10)

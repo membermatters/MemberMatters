@@ -374,11 +374,15 @@ CONSTANCE_CONFIG = {
         "",
         "Place you google analytics property ID here to enable Google analytics integration.",
     ),
+    "API_SECRET_KEY": (
+        "PLEASE_CHANGE_ME",
+        "The API key used by the internal access system for device authentication."
+    )
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
     [
-        ("General", ("SITE_NAME", "SITE_OWNER", "ENTITY_TYPE", "GOOGLE_ANALYTICS_PROPERTY_ID")),
+        ("General", ("SITE_NAME", "SITE_OWNER", "ENTITY_TYPE", "GOOGLE_ANALYTICS_PROPERTY_ID", "API_SECRET_KEY")),
         (
             "Contact Information",
             (

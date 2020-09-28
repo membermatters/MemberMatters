@@ -14,7 +14,6 @@
     row-key="id"
     :filter="filter"
     :pagination.sync="pagination"
-    :loading="loading"
     :grid="$q.screen.xs"
     :no-data-label="$t('doors.nodata')"
   >
@@ -32,24 +31,72 @@
       </q-input>
     </template>
 
-    <!--    <template v-slot:header="props">-->
-    <!--      <q-tr :props="props">-->
-    <!--        <q-th auto-width />-->
-    <!--        <q-th-->
-    <!--          v-for="col in props.cols"-->
-    <!--          :key="col.name"-->
-    <!--          :props="props"-->
-    <!--        >-->
-    <!--          {{ col.label }}-->
-    <!--        </q-th>-->
-    <!--        <q-th auto-width>-->
-    <!--          {{ $t('edit') }}-->
-    <!--        </q-th>-->
-    <!--        <q-th auto-width>-->
-    <!--          {{ $t('delete') }}-->
-    <!--        </q-th>-->
-    <!--      </q-tr>-->
-    <!--    </template>-->
+    <template v-slot:header="props">
+      <q-tr :props="props">
+        <q-th
+          v-for="col in props.cols"
+          :key="col.name"
+          :props="props"
+        >
+          {{ col.label }}
+        </q-th>
+        <q-th auto-width>
+          Manage
+        </q-th>
+      </q-tr>
+    </template>
+
+    <template v-slot:body="props">
+      <q-tr
+        :props="props"
+      >
+        <q-td
+          v-for="col in props.cols"
+          :key="col.name"
+          :props="props"
+        >
+          {{ col.value }}
+        </q-td>
+        <q-td auto-width>
+          <q-btn
+            :ref="`${props.row.id}-unlock`"
+            class="q-mr-sm"
+            size="sm"
+            color="accent"
+            @click="unlockDoor(props.row.id)"
+          >
+            <q-icon :name="icons.unlock" />
+            <q-tooltip>
+              {{ $t('button.unlockDoor') }}
+            </q-tooltip>
+          </q-btn>
+
+          <q-btn
+            :ref="`${props.row.id}-reboot`"
+            class="q-mr-sm"
+            size="sm"
+            color="accent"
+            @click="rebootDoor(props.row.id)"
+          >
+            <q-icon :name="icons.reboot" />
+            <q-tooltip>
+              {{ $t('button.rebootDevice') }}
+            </q-tooltip>
+          </q-btn>
+
+          <q-btn
+            size="sm"
+            color="accent"
+            disabled
+          >
+            <q-icon :name="icons.settings" />
+            <q-tooltip>
+              {{ $t('button.manage') }}
+            </q-tooltip>
+          </q-btn>
+        </q-td>
+      </q-tr>
+    </template>
   </q-table>
 </template>
 
@@ -63,7 +110,6 @@ export default {
   mixins: [formatMixin],
   data() {
     return {
-      loading: false,
       filter: '',
       pagination: {
         sortBy: 'lastSeen',
@@ -74,12 +120,34 @@ export default {
   },
   methods: {
     ...mapActions('adminTools', ['getDoors']),
+    rebootDoor(doorId) {
+      this.$refs[`${doorId}-reboot`].loading = true;
+      this.$axios.post(`/api/access/doors/${doorId}/reboot/`)
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('error.requestFailed'),
+          });
+        }).finally(() => {
+          this.$refs[`${doorId}-reboot`].loading = false;
+        });
+    },
+    unlockDoor(doorId) {
+      this.$refs[`${doorId}-unlock`].loading = true;
+      this.$axios.post(`/api/access/doors/${doorId}/unlock/`)
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('error.requestFailed'),
+          });
+        }).finally(() => {
+          this.$refs[`${doorId}-unlock`].loading = false;
+        });
+    },
   },
-  mounted() {
-    this.loading = true;
+  beforeMount() {
     this.getDoors()
-      .finally(() => {
-        this.loading = false;
+      .then(() => {
       });
   },
   computed: {

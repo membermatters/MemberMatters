@@ -98,3 +98,29 @@ class RebootInterlock(APIView):
         interlock = Interlock.objects.get(pk=interlock_id)
 
         return Response({"success": interlock.reboot()})
+
+
+class RebootDoor(APIView):
+    """
+    post: This method will reboot the specified door.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def post(self, request, door_id):
+        door = Doors.objects.get(pk=door_id)
+
+        return Response({"success": door.reboot()})
+
+
+class UnlockDoor(APIView):
+    """
+    post: This method will unlock the specified door.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def post(self, request, door_id):
+        door = Doors.objects.get(pk=door_id)
+
+        return Response({"success": door.unlock()})

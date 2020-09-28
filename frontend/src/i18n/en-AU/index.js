@@ -78,6 +78,9 @@ export default {
     disconnect: 'Disconnect',
     add: 'Add',
     tools: 'Tools',
+    rebootDevice: 'Reboot Device',
+    manage: 'Manage',
+    unlockDoor: 'Unlock Door',
   },
   loginCard: {
     login: 'Login',
