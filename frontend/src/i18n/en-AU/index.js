@@ -298,6 +298,7 @@ export default {
   success: 'Action was successful',
   warning: 'Warning',
   confirmAction: 'Confirm Action',
+  confirmRemove: 'Are you sure you want to remove this?',
   edit: 'Edit',
   delete: 'Delete',
   dataRefreshWarning: 'There was an error fetching new data. Any data that you see may not be up '

@@ -136,6 +136,12 @@ class Doors(APIView):
             }
 
         return Response(map(get_door, doors))
+    
+    def delete(self, request, door_id):
+        door = models.Doors.objects.get(pk=door_id)
+        door.delete()
+
+        return Response()
 
 
 class Interlocks(APIView):
@@ -163,6 +169,12 @@ class Interlocks(APIView):
             }
 
         return Response(map(get_interlock, interlocks))
+    
+    def delete(self, request, interlock_id):
+        interlock = models.Interlock.objects.get(pk=interlock_id)
+        interlock.delete()
+        
+        return Response()
 
 
 class MemberAccess(APIView):

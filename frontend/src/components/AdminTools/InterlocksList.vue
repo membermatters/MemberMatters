@@ -75,7 +75,7 @@
           <q-btn
             size="sm"
             color="accent"
-            disabled
+            :to="{name: 'manageInterlock', params: {interlockId: String(props.row.id)}}"
           >
             <q-icon :name="icons.settings" />
             <q-tooltip>

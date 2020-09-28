@@ -87,7 +87,7 @@
           <q-btn
             size="sm"
             color="accent"
-            disabled
+            :to="{name: 'manageDoor', params: {doorId: String(props.row.id)}}"
           >
             <q-icon :name="icons.settings" />
             <q-tooltip>

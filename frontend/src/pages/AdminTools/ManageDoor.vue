@@ -58,6 +58,9 @@
               color="primary"
               flat
               class="q-ml-sm"
+              :loading="removeLoading"
+              :disabled="removeLoading"
+              @click="removeDoor"
             />
           </div>
         </div>
@@ -80,6 +83,7 @@ export default {
   },
   data() {
     return {
+      removeLoading: false,
       door: {
         name: '',
         description: '',
@@ -109,6 +113,30 @@ export default {
   },
   methods: {
     ...mapActions('adminTools', ['getDoors']),
+    removeDoor() {
+      this.$q.dialog({
+        title: this.$t('confirmRemove'),
+        ok: 'Ok',
+        cancel: 'Cancel',
+      }).onOk(() => {
+        this.removeLoading = true;
+        this.$axios.delete(`/api/admin/doors/${this.doorId}/`)
+          .then(() => {
+            this.$router.push({ name: 'doors' });
+          })
+          .catch((error) => {
+            this.removeLoading = true;
+            this.$q.dialog({
+              title: this.$t('error.error'),
+              message: this.$t('error.requestFailed'),
+            });
+            throw error;
+          })
+          .finally(() => {
+            this.removeLoading = false;
+          });
+      });
+    },
   },
   computed: {
     ...mapGetters('adminTools', ['doors']),
