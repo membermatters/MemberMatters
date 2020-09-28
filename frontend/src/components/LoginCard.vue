@@ -308,7 +308,6 @@ export default {
       this.loginError = false;
 
       if (this.discourseSsoData) {
-        console.log('already logged in!');
         this.login();
         return;
       }

@@ -18,6 +18,7 @@ export default {
     members: 'Members',
     groups: 'Groups',
     doors: 'Doors',
+    manageDoor: 'Manage Door',
     interlocks: 'Interlocks',
     kiosks: 'Kiosks',
 
@@ -126,6 +127,11 @@ export default {
     doors: 'Doors',
     interlock: 'Interlock',
     interlocks: 'Interlocks',
+    defaultAccess: 'Members have access by default',
+    maintenanceLockout: 'Maintenance lockout is enabled',
+    playTheme: 'Play theme on swipe',
+    exemptSignin: 'Exempt from site sign in requirement (if enabled)',
+    hiddenToMembers: 'Hidden from members on their access permissions screen',
   },
   lastseen: {
     pageDescription: 'Here is a list of when each member last tapped their card.',
@@ -331,9 +337,14 @@ export default {
   },
   doors: {
     nodata: 'There are no doors in the system.',
+    name: 'Door Name',
+    description: 'Door Description',
+    ipAddress: 'Door IP Address',
   },
   interlocks: {
     nodata: 'There are no interlocks in the system.',
+    description: 'Interlock Description',
+    ipAddress: 'Interlock IP Address',
   },
   registrationCard: {
     register: 'Register An Account',

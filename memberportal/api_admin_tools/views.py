@@ -125,8 +125,14 @@ class Doors(APIView):
             return {
                 "id": door.id,
                 "name": door.name,
-                "lastSeen": door.last_seen,
+                "description": door.description,
                 "ipAddress": door.ip_address,
+                "lastSeen": door.last_seen,
+                "defaultAccess": door.all_members,
+                "maintenanceLockout": door.locked_out,
+                "playThemeOnSwipe": door.play_theme,
+                "exemptFromSignin": door.exempt_signin,
+                "hiddenToMembers": door.hidden,
             }
 
         return Response(map(get_door, doors))
