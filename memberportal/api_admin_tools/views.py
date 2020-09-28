@@ -148,15 +148,21 @@ class Interlocks(APIView):
     def get(self, request):
         interlocks = models.Interlock.objects.all()
 
-        def get_door(interlock):
+        def get_interlock(interlock):
             return {
                 "id": interlock.id,
                 "name": interlock.name,
-                "lastSeen": interlock.last_seen,
+                "description": interlock.description,
                 "ipAddress": interlock.ip_address,
+                "lastSeen": interlock.last_seen,
+                "defaultAccess": interlock.all_members,
+                "maintenanceLockout": interlock.locked_out,
+                "playThemeOnSwipe": interlock.play_theme,
+                "exemptFromSignin": interlock.exempt_signin,
+                "hiddenToMembers": interlock.hidden,
             }
 
-        return Response(map(get_door, interlocks))
+        return Response(map(get_interlock, interlocks))
 
 
 class MemberAccess(APIView):

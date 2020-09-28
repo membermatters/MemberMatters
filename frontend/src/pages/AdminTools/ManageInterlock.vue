@@ -3,7 +3,7 @@
     <q-card class="my-card">
       <q-card-section>
         <div class="text-h6">
-          {{ $t('menuLink.manageDoor') }}
+          {{ $t('menuLink.manageInterlock') }}
         </div>
       </q-card-section>
 
@@ -11,41 +11,41 @@
         <div class="column q-gutter-md q-px-sm">
           <q-input
             outlined
-            v-model="door.name"
-            :label="$t('doors.name')"
+            v-model="interlock.name"
+            :label="$t('interlocks.name')"
           />
 
           <q-input
             outlined
-            v-model="door.description"
-            :label="$t('doors.description')"
+            v-model="interlock.description"
+            :label="$t('interlocks.description')"
           />
 
           <q-input
             outlined
-            v-model="door.ipAddress"
+            v-model="interlock.ipAddress"
             :label="$t('form.ipAddress')"
           />
 
           <div class="column">
             <q-checkbox
-              v-model="door.defaultAccess"
+              v-model="interlock.defaultAccess"
               :label="$t('access.defaultAccess')"
             />
             <q-checkbox
-              v-model="door.maintenanceLockout"
+              v-model="interlock.maintenanceLockout"
               :label="$t('access.maintenanceLockout')"
             />
             <q-checkbox
-              v-model="door.playThemeOnSwipe"
+              v-model="interlock.playThemeOnSwipe"
               :label="$t('access.playTheme')"
             />
             <q-checkbox
-              v-model="door.exemptFromSignin"
+              v-model="interlock.exemptFromSignin"
               :label="$t('access.exemptSignin')"
             />
             <q-checkbox
-              v-model="door.hiddenToMembers"
+              v-model="interlock.hiddenToMembers"
               :label="$t('access.hiddenToMembers')"
             />
           </div>
@@ -53,7 +53,7 @@
           <div class="row">
             <q-space />
             <q-btn
-              :label="$t('doors.remove')"
+              :label="$t('interlocks.remove')"
               type="reset"
               color="primary"
               flat
@@ -71,16 +71,16 @@ import icons from '@icons';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  name: 'ManageDoorPage',
+  name: 'ManageInterlockPage',
   props: {
-    doorId: {
+    interlockId: {
       type: String,
       default: '',
     },
   },
   data() {
     return {
-      door: {
+      interlock: {
         name: '',
         description: '',
         ipAddress: '',
@@ -93,32 +93,32 @@ export default {
     };
   },
   mounted() {
-    this.getDoors()
+    this.getInterlocks()
       .then(() => {
-        if (this.currentDoor === false) this.$router.push({ name: 'Error404' });
+        if (this.currentInterlock === false) this.$router.push({ name: 'Error404' });
 
-        this.door.name = this.currentDoor.name;
-        this.door.description = this.currentDoor.description;
-        this.door.ipAddress = this.currentDoor.ipAddress;
-        this.door.defaultAccess = this.currentDoor.defaultAccess;
-        this.door.maintenanceLockout = this.currentDoor.maintenanceLockout;
-        this.door.playThemeOnSwipe = this.currentDoor.playThemeOnSwipe;
-        this.door.exemptFromSignin = this.currentDoor.exemptFromSignin;
-        this.door.hiddenToMembers = this.currentDoor.hiddenToMembers;
+        this.interlock.name = this.currentInterlock.name;
+        this.interlock.description = this.currentInterlock.description;
+        this.interlock.ipAddress = this.currentInterlock.ipAddress;
+        this.interlock.defaultAccess = this.currentInterlock.defaultAccess;
+        this.interlock.maintenanceLockout = this.currentInterlock.maintenanceLockout;
+        this.interlock.playThemeOnSwipe = this.currentInterlock.playThemeOnSwipe;
+        this.interlock.exemptFromSignin = this.currentInterlock.exemptFromSignin;
+        this.interlock.hiddenToMembers = this.currentInterlock.hiddenToMembers;
       });
   },
   methods: {
-    ...mapActions('adminTools', ['getDoors']),
+    ...mapActions('adminTools', ['getInterlocks']),
   },
   computed: {
-    ...mapGetters('adminTools', ['doors']),
+    ...mapGetters('adminTools', ['interlocks']),
     icons() {
       return icons;
     },
-    currentDoor() {
-      const door = this.doors.find((item) => String(item.id) === this.doorId);
+    currentInterlock() {
+      const interlock = this.interlocks.find((item) => String(item.id) === this.interlockId);
 
-      return door || false;
+      return interlock || false;
     },
   },
 };

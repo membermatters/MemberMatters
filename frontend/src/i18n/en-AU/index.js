@@ -19,6 +19,7 @@ export default {
     groups: 'Groups',
     doors: 'Doors',
     manageDoor: 'Manage Door',
+    manageInterlock: 'Manage Interlock',
     interlocks: 'Interlocks',
     kiosks: 'Kiosks',
 
@@ -31,6 +32,8 @@ export default {
     profile: 'Profile',
     checkAccess: 'Check Access',
     memberbucks: 'Spacebucks',
+
+    Error404: 'Page Not Found',
   },
   dashboard: {
     usefulResources: 'Useful Resources',
@@ -82,6 +85,7 @@ export default {
     rebootDevice: 'Reboot Device',
     manage: 'Manage',
     unlockDoor: 'Unlock Door',
+    remove: 'Remove',
   },
   loginCard: {
     login: 'Login',
@@ -340,11 +344,14 @@ export default {
     name: 'Door Name',
     description: 'Door Description',
     ipAddress: 'Door IP Address',
+    remove: 'Remove this door',
   },
   interlocks: {
     nodata: 'There are no interlocks in the system.',
+    name: 'Interlock Name',
     description: 'Interlock Description',
     ipAddress: 'Interlock IP Address',
+    remove: 'Remove this interlock',
   },
   registrationCard: {
     register: 'Register An Account',
