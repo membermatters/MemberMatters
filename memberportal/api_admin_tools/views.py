@@ -170,6 +170,15 @@ class Interlocks(APIView):
 
         return Response(map(get_interlock, interlocks))
     
+    def put(self, request, interlock_id):
+        interlock = models.Interlock.objects.get(pk=interlock_id)
+
+        data = request.data
+        
+        interlock.name = data.name
+        
+        return Response()
+    
     def delete(self, request, interlock_id):
         interlock = models.Interlock.objects.get(pk=interlock_id)
         interlock.delete()
