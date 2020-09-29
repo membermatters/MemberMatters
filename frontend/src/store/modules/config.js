@@ -78,7 +78,6 @@ export default {
 
             if (analyticsId) {
               ga('create', analyticsId, 'auto');
-              // ga('send', 'pageview');
             }
 
             resolve();
