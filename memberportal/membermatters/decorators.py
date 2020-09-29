@@ -52,7 +52,7 @@ def no_noobs(view):
 
 def api_auth(view):
     def wrap(request, *args, **kwargs):
-        secret_key = config.get("API_SECRET_KEY")
+        secret_key = config.API_SECRET_KEY
 
         if request.method == "GET" and request.GET.get("secret", "wrong") == secret_key:
             return view(request, *args, **kwargs)
