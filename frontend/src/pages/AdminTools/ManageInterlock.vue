@@ -30,13 +30,13 @@
               outlined
               v-model="interlock.description"
               :label="$t('interlocks.description')"
-              @input="saveChange('name')"
+              @input="saveChange('description')"
               :debounce="debounceLength"
             >
               <template v-slot:append>
                 <saved-notification
                   show-text
-                  v-model="saved.name"
+                  v-model="saved.description"
                   :error="saved.error"
                 />
               </template>
@@ -46,13 +46,13 @@
               outlined
               v-model="interlock.ipAddress"
               :label="$t('form.ipAddress')"
-              @input="saveChange('name')"
+              @input="saveChange('ipAddress')"
               :debounce="debounceLength"
             >
               <template v-slot:append>
                 <saved-notification
                   show-text
-                  v-model="saved.name"
+                  v-model="saved.ipAddress"
                   :error="saved.error"
                 />
               </template>

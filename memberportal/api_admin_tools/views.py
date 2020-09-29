@@ -175,7 +175,17 @@ class Interlocks(APIView):
 
         data = request.data
         
-        interlock.name = data.name
+        interlock.name = data.get("name")
+        interlock.description = data.get("description")
+        interlock.ip_address = data.get("ipAddress")
+
+        interlock.all_members = data.get("defaultAccess")
+        interlock.locked_out = data.get("maintenanceLockout")
+        interlock.play_theme = data.get("playThemeOnSwipe")
+        interlock.exempt_signin = data.get("exemptFromSignin")
+        interlock.hidden = data.get("hiddenToMembers")
+
+        interlock.save()
         
         return Response()
     
