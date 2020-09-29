@@ -15,7 +15,6 @@
     row-key="id"
     :filter="filter"
     :pagination.sync="pagination"
-    :loading="loading"
     :grid="$q.screen.xs"
     :no-data-label="$t('interlocks.nodata')"
   >
@@ -61,20 +60,27 @@
         </q-td>
         <q-td auto-width>
           <q-btn
+            :ref="`${props.row.id}-reboot`"
             class="q-mr-sm"
             size="sm"
             color="accent"
             @click="rebootInterlock(props.row.id)"
           >
             <q-icon :name="icons.reboot" />
+            <q-tooltip>
+              {{ $t('button.rebootDevice') }}
+            </q-tooltip>
           </q-btn>
 
           <q-btn
             size="sm"
             color="accent"
-            disabled
+            :to="{name: 'manageInterlock', params: {interlockId: String(props.row.id)}}"
           >
             <q-icon :name="icons.settings" />
+            <q-tooltip>
+              {{ $t('button.manage') }}
+            </q-tooltip>
           </q-btn>
         </q-td>
       </q-tr>
@@ -104,20 +110,22 @@ export default {
   methods: {
     ...mapActions('adminTools', ['getInterlocks']),
     rebootInterlock(interlockId) {
+      this.$refs[`${interlockId}-reboot`].loading = true;
       this.$axios.post(`/api/access/interlocks/${interlockId}/reboot/`)
         .catch(() => {
           this.$q.dialog({
             title: this.$t('error.error'),
             message: this.$t('error.requestFailed'),
           });
+        }).finally(() => {
+          this.$refs[`${interlockId}-reboot`].loading = false;
         });
     },
   },
   mounted() {
-    this.loading = true;
     this.getInterlocks()
       .finally(() => {
-        this.loading = false;
+
       });
   },
   computed: {

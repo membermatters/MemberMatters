@@ -1,0 +1,277 @@
+<template>
+  <q-page class="column flex justify-start items-center">
+    <q-card class="my-card">
+      <q-card-section>
+        <div class="text-h6">
+          {{ $t('menuLink.manageDoor') }}
+        </div>
+      </q-card-section>
+
+      <q-card-section>
+        <q-form ref="formRef">
+          <div class="column q-gutter-md q-px-sm">
+            <q-input
+              outlined
+              v-model="door.name"
+              :label="$t('doors.name')"
+              @input="saveChange('name')"
+              :debounce="debounceLength"
+            >
+              <template v-slot:append>
+                <saved-notification
+                  show-text
+                  v-model="saved.name"
+                  :error="saved.error"
+                />
+              </template>
+            </q-input>
+
+            <q-input
+              outlined
+              v-model="door.description"
+              :label="$t('doors.description')"
+              @input="saveChange('description')"
+              :debounce="debounceLength"
+            >
+              <template v-slot:append>
+                <saved-notification
+                  show-text
+                  v-model="saved.description"
+                  :error="saved.error"
+                />
+              </template>
+            </q-input>
+
+            <q-input
+              outlined
+              v-model="door.ipAddress"
+              :label="$t('form.ipAddress')"
+              @input="saveChange('ipAddress')"
+              :debounce="debounceLength"
+            >
+              <template v-slot:append>
+                <saved-notification
+                  show-text
+                  v-model="saved.ipAddress"
+                  :error="saved.error"
+                />
+              </template>
+            </q-input>
+
+            <div class="column">
+              <div class="row items-center">
+                <q-checkbox
+                  v-model="door.defaultAccess"
+                  :label="$t('access.defaultAccess')"
+                  @input="saveChange('defaultAccess')"
+                  :debounce="debounceLength"
+                />
+                <q-space />
+                <saved-notification
+                  show-text
+                  v-model="saved.defaultAccess"
+                  :error="saved.error"
+                />
+              </div>
+
+              <div class="row items-center">
+                <q-checkbox
+                  v-model="door.maintenanceLockout"
+                  :label="$t('access.maintenanceLockout')"
+                  @input="saveChange('maintenanceLockout')"
+                  :debounce="debounceLength"
+                />
+                <q-space />
+                <saved-notification
+                  show-text
+                  v-model="saved.maintenanceLockout"
+                  :error="saved.error"
+                />
+              </div>
+              <div class="row items-center">
+                <q-checkbox
+                  v-model="door.playThemeOnSwipe"
+                  :label="$t('access.playTheme')"
+                  @input="saveChange('playTheme')"
+                  :debounce="debounceLength"
+                />
+                <q-space />
+                <saved-notification
+                  show-text
+                  v-model="saved.playTheme"
+                  :error="saved.error"
+                />
+              </div>
+              <div class="row items-center">
+                <q-checkbox
+                  v-model="door.exemptFromSignin"
+                  :label="$t('access.exemptSignin')"
+                  @input="saveChange('exemptSignin')"
+                  :debounce="debounceLength"
+                />
+                <q-space />
+                <saved-notification
+                  show-text
+                  v-model="saved.exemptSignin"
+                  :error="saved.error"
+                />
+              </div>
+              <div class="row items-center q-gutter-sm">
+                <q-checkbox
+                  v-model="door.hiddenToMembers"
+                  :label="$t('access.hiddenToMembers')"
+                  @input="saveChange('hiddenToMembers')"
+                  :debounce="debounceLength"
+                />
+                <q-space />
+                <saved-notification
+                  show-text
+                  v-model="saved.hiddenToMembers"
+                  :error="saved.error"
+                />
+              </div>
+            </div>
+
+            <div class="row">
+              <q-space />
+              <q-btn
+                :label="$t('doors.remove')"
+                type="reset"
+                color="primary"
+                flat
+                class="q-ml-sm"
+                :loading="removeLoading"
+                :disabled="removeLoading"
+                @click="removeDoor"
+              />
+            </div>
+          </div>
+        </q-form>
+      </q-card-section>
+    </q-card>
+  </q-page>
+</template>
+
+<script>
+import icons from '@icons';
+import { mapGetters, mapActions } from 'vuex';
+import formMixin from '@mixins/formMixin';
+import SavedNotification from '@components/SavedNotification';
+
+export default {
+  name: 'ManageDoorPage',
+  mixins: [formMixin],
+  components: {
+    SavedNotification,
+  },
+  props: {
+    doorId: {
+      type: String,
+      default: '',
+    },
+  },
+  data() {
+    return {
+      removeLoading: false,
+      saved: {
+        // if there was an error saving the form
+        error: false,
+
+        name: false,
+        description: false,
+        ipAddress: false,
+        defaultAccess: false,
+        maintenanceLockout: false,
+        playThemeOnSwipe: false,
+        exemptFromSignin: false,
+        hiddenToMembers: false,
+      },
+      door: {
+        name: '',
+        description: '',
+        ipAddress: '',
+        defaultAccess: null,
+        maintenanceLockout: null,
+        playThemeOnSwipe: null,
+        exemptFromSignin: null,
+        hiddenToMembers: null,
+      },
+    };
+  },
+  mounted() {
+    this.getDoors()
+      .then(() => {
+        if (this.currentDoor === false) this.$router.push({ name: 'Error404' });
+
+        this.initForm();
+      });
+  },
+  methods: {
+    ...mapActions('adminTools', ['getDoors']),
+    initForm() {
+      this.door.name = this.currentDoor.name;
+      this.door.description = this.currentDoor.description;
+      this.door.ipAddress = this.currentDoor.ipAddress;
+      this.door.defaultAccess = this.currentDoor.defaultAccess;
+      this.door.maintenanceLockout = this.currentDoor.maintenanceLockout;
+      this.door.playThemeOnSwipe = this.currentDoor.playThemeOnSwipe;
+      this.door.exemptFromSignin = this.currentDoor.exemptFromSignin;
+      this.door.hiddenToMembers = this.currentDoor.hiddenToMembers;
+    },
+    removeDoor() {
+      this.$q.dialog({
+        title: this.$t('confirmRemove'),
+        ok: 'Ok',
+        cancel: 'Cancel',
+      }).onOk(() => {
+        this.removeLoading = true;
+        this.$axios.delete(`/api/admin/doors/${this.doorId}/`)
+          .then(() => {
+            this.$router.push({ name: 'doors' });
+          })
+          .catch((error) => {
+            this.removeLoading = true;
+            this.$q.dialog({
+              title: this.$t('error.error'),
+              message: this.$t('error.requestFailed'),
+            });
+            throw error;
+          })
+          .finally(() => {
+            this.removeLoading = false;
+          });
+      });
+    },
+    saveChange(field) {
+      this.$refs.formRef.validate(false).then(() => {
+        this.$refs.formRef.validate(false)
+          .then((result) => {
+            if (result) {
+              this.$axios.put(`/api/admin/doors/${this.doorId}/`, this.door)
+                .then(() => {
+                  this.saved.error = false;
+                  this.saved[field] = true;
+                })
+                .catch(() => {
+                  this.initForm();
+                  this.saved.error = true;
+                  this.saved[field] = true;
+                });
+            }
+          });
+      });
+    },
+  },
+  computed: {
+    ...mapGetters('adminTools', ['doors']),
+    icons() {
+      return icons;
+    },
+    currentDoor() {
+      const door = this.doors.find((item) => String(item.id) === this.doorId);
+
+      return door || false;
+    },
+  },
+};
+</script>

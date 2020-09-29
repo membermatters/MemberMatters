@@ -168,7 +168,7 @@ def bump_door(request, door_id):
         log_user_event(
             request.user, "Bumped {} door via API.".format(door.name), "door"
         )
-        return JsonResponse({"success": door.bump()})
+        return JsonResponse({"success": door.unlock()})
 
     return JsonResponse(
         {"success": False, "message": "You are not authorised to access that door."}

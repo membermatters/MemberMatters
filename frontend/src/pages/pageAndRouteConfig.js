@@ -196,7 +196,7 @@ const PageAndRouteConfig = [
   },
 
 
-  // These are endpoints that handle specific tasks and are not normally accessed.
+  // These are endpoints that handle specific tasks and are not directly accessed.
   {
     icon: icons.signin, // specify the icon to use
     to: '/profile/password/reset/:resetToken', // specify the URL route for this page
@@ -217,6 +217,31 @@ const PageAndRouteConfig = [
     name: 'Error403', // specify the name of this URL route
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
     component: () => import('pages/Error403'), // which component to load as the page
+  },
+  {
+    icon: icons.signin, // specify the icon to use
+    to: '/error/404', // specify the URL route for this page
+    name: 'Error404', // specify the name of this URL route
+    hiddenMenu: true, // adds the route and page config, but don't show in the menu
+    component: () => import('pages/Error404'), // which component to load as the page
+  },
+  {
+    icon: icons.doors,
+    to: '/manage/doors/:doorId',
+    name: 'manageDoor',
+    loggedIn: true,
+    admin: true,
+    hiddenMenu: true,
+    component: () => import('pages/AdminTools/ManageDoor'),
+  },
+  {
+    icon: icons.doors,
+    to: '/manage/interlocks/:interlockId',
+    name: 'manageInterlock',
+    loggedIn: true,
+    admin: true,
+    hiddenMenu: true,
+    component: () => import('pages/AdminTools/ManageInterlock'),
   },
 ];
 

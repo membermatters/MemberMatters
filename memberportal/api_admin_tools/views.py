@@ -125,11 +125,42 @@ class Doors(APIView):
             return {
                 "id": door.id,
                 "name": door.name,
-                "lastSeen": door.last_seen,
+                "description": door.description,
                 "ipAddress": door.ip_address,
+                "lastSeen": door.last_seen,
+                "defaultAccess": door.all_members,
+                "maintenanceLockout": door.locked_out,
+                "playThemeOnSwipe": door.play_theme,
+                "exemptFromSignin": door.exempt_signin,
+                "hiddenToMembers": door.hidden,
             }
 
         return Response(map(get_door, doors))
+
+    def put(self, request, door_id):
+        door = models.Doors.objects.get(pk=door_id)
+
+        data = request.data
+
+        door.name = data.get("name")
+        door.description = data.get("description")
+        door.ip_address = data.get("ipAddress")
+
+        door.all_members = data.get("defaultAccess")
+        door.locked_out = data.get("maintenanceLockout")
+        door.play_theme = data.get("playThemeOnSwipe")
+        door.exempt_signin = data.get("exemptFromSignin")
+        door.hidden = data.get("hiddenToMembers")
+
+        door.save()
+
+        return Response()
+
+    def delete(self, request, door_id):
+        door = models.Doors.objects.get(pk=door_id)
+        door.delete()
+
+        return Response()
 
 
 class Interlocks(APIView):
@@ -142,15 +173,46 @@ class Interlocks(APIView):
     def get(self, request):
         interlocks = models.Interlock.objects.all()
 
-        def get_door(interlock):
+        def get_interlock(interlock):
             return {
                 "id": interlock.id,
                 "name": interlock.name,
-                "lastSeen": interlock.last_seen,
+                "description": interlock.description,
                 "ipAddress": interlock.ip_address,
+                "lastSeen": interlock.last_seen,
+                "defaultAccess": interlock.all_members,
+                "maintenanceLockout": interlock.locked_out,
+                "playThemeOnSwipe": interlock.play_theme,
+                "exemptFromSignin": interlock.exempt_signin,
+                "hiddenToMembers": interlock.hidden,
             }
 
-        return Response(map(get_door, interlocks))
+        return Response(map(get_interlock, interlocks))
+    
+    def put(self, request, interlock_id):
+        interlock = models.Interlock.objects.get(pk=interlock_id)
+
+        data = request.data
+        
+        interlock.name = data.get("name")
+        interlock.description = data.get("description")
+        interlock.ip_address = data.get("ipAddress")
+
+        interlock.all_members = data.get("defaultAccess")
+        interlock.locked_out = data.get("maintenanceLockout")
+        interlock.play_theme = data.get("playThemeOnSwipe")
+        interlock.exempt_signin = data.get("exemptFromSignin")
+        interlock.hidden = data.get("hiddenToMembers")
+
+        interlock.save()
+        
+        return Response()
+    
+    def delete(self, request, interlock_id):
+        interlock = models.Interlock.objects.get(pk=interlock_id)
+        interlock.delete()
+        
+        return Response()
 
 
 class MemberAccess(APIView):

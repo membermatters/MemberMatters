@@ -99,15 +99,15 @@ module.exports = function (ctx) {
       proxy: {
         // proxy all requests starting with /api to
         '/api': {
-          target: 'http://localhost:8001',
+          target: 'http://localhost:8000',
           changeOrigin: false,
         },
         '/admin': {
-          target: 'http://localhost:8001',
+          target: 'http://localhost:8000',
           changeOrigin: true,
         },
         '/static': {
-          target: 'http://localhost:8001',
+          target: 'http://localhost:8000',
           changeOrigin: true,
         },
       },

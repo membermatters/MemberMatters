@@ -18,6 +18,8 @@ export default {
     members: 'Members',
     groups: 'Groups',
     doors: 'Doors',
+    manageDoor: 'Manage Door',
+    manageInterlock: 'Manage Interlock',
     interlocks: 'Interlocks',
     kiosks: 'Kiosks',
 
@@ -30,6 +32,8 @@ export default {
     profile: 'Profile',
     checkAccess: 'Check Access',
     memberbucks: 'Spacebucks',
+
+    Error404: 'Page Not Found',
   },
   dashboard: {
     usefulResources: 'Useful Resources',
@@ -78,6 +82,10 @@ export default {
     disconnect: 'Disconnect',
     add: 'Add',
     tools: 'Tools',
+    rebootDevice: 'Reboot Device',
+    manage: 'Manage',
+    unlockDoor: 'Unlock Door',
+    remove: 'Remove',
   },
   loginCard: {
     login: 'Login',
@@ -123,6 +131,11 @@ export default {
     doors: 'Doors',
     interlock: 'Interlock',
     interlocks: 'Interlocks',
+    defaultAccess: 'Members have access by default',
+    maintenanceLockout: 'Maintenance lockout is enabled',
+    playTheme: 'Play theme on swipe',
+    exemptSignin: 'Exempt from site sign in requirement (if enabled)',
+    hiddenToMembers: 'Hidden from members on their access permissions screen',
   },
   lastseen: {
     pageDescription: 'Here is a list of when each member last tapped their card.',
@@ -285,6 +298,7 @@ export default {
   success: 'Action was successful',
   warning: 'Warning',
   confirmAction: 'Confirm Action',
+  confirmRemove: 'Are you sure you want to remove this?',
   edit: 'Edit',
   delete: 'Delete',
   dataRefreshWarning: 'There was an error fetching new data. Any data that you see may not be up '
@@ -328,9 +342,17 @@ export default {
   },
   doors: {
     nodata: 'There are no doors in the system.',
+    name: 'Door Name',
+    description: 'Door Description',
+    ipAddress: 'Door IP Address',
+    remove: 'Remove this door',
   },
   interlocks: {
     nodata: 'There are no interlocks in the system.',
+    name: 'Interlock Name',
+    description: 'Interlock Description',
+    ipAddress: 'Interlock IP Address',
+    remove: 'Remove this interlock',
   },
   registrationCard: {
     register: 'Register An Account',

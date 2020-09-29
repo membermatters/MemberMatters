@@ -64,5 +64,6 @@ export default {
   membersOnSite: pro ? 'fad fa-address-book' : 'fal fa-address-book',
   export: pro ? 'fad fa-archive' : 'fal fa-archive',
   email: pro ? 'fad fa-mail-bulk' : 'fal fa-mail-bulk',
-  reboot: pro ? 'fad fa-power-off' : 'fal fa-power-off',
+  reboot: pro ? 'fad fa-sync' : 'fal fa-sync',
+  unlock: pro ? 'fad fa-unlock' : 'fal fa-unlock',
 };
