@@ -136,7 +136,26 @@ class Doors(APIView):
             }
 
         return Response(map(get_door, doors))
-    
+
+    def put(self, request, door_id):
+        door = models.Doors.objects.get(pk=door_id)
+
+        data = request.data
+
+        door.name = data.get("name")
+        door.description = data.get("description")
+        door.ip_address = data.get("ipAddress")
+
+        door.all_members = data.get("defaultAccess")
+        door.locked_out = data.get("maintenanceLockout")
+        door.play_theme = data.get("playThemeOnSwipe")
+        door.exempt_signin = data.get("exemptFromSignin")
+        door.hidden = data.get("hiddenToMembers")
+
+        door.save()
+
+        return Response()
+
     def delete(self, request, door_id):
         door = models.Doors.objects.get(pk=door_id)
         door.delete()
