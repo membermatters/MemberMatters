@@ -164,11 +164,6 @@ export default {
 
     // Get initial portal configuration data
     this.getPortalConfig();
-
-    // Every 60 seconds check for new config data. This also checks that we're logged in.
-    setInterval(() => {
-      this.getPortalConfig();
-    }, 60000);
   },
   computed: {
     ...mapGetters('config', ['siteName', 'keys', 'features']),
