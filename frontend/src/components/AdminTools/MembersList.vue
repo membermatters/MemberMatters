@@ -95,21 +95,6 @@
         </q-input>
       </template>
 
-      <template v-slot:header="props">
-        <q-tr :props="props">
-          <q-th
-            v-for="col in props.cols"
-            :key="col.name"
-            :props="props"
-          >
-            {{ col.label }}
-          </q-th>
-          <q-th auto-width>
-            Manage
-          </q-th>
-        </q-tr>
-      </template>
-
       <template v-slot:body="props">
         <q-tr
           :props="props"
@@ -119,16 +104,15 @@
             :key="col.name"
             :props="props"
           >
-            {{ col.value }}
-          </q-td>
-          <q-td auto-width>
-            <q-btn
-              size="sm"
-              color="accent"
+            <router-link
+              v-if="col.label === 'Name'"
               :to="{name: 'manageMember', params: { memberId: props.row.id }}"
             >
-              {{ $t('button.manage') }}
-            </q-btn>
+              {{ col.value }}
+            </router-link>
+            <template v-else>
+              {{ col.value }}
+            </template>
           </q-td>
         </q-tr>
       </template>
@@ -156,8 +140,6 @@
                     caption
                   >
                     <router-link
-                      tag="span"
-                      class="routerlink"
                       :to="{name: 'manageMember', params: {memberId: props.row.id}}"
                     >
                       {{ col.value }}
@@ -176,25 +158,6 @@
         </div>
       </template>
     </q-table>
-
-    <q-dialog v-model="manageMemberModal">
-      <q-card class="manage-member-modal">
-        <manage-member
-          :members="members"
-          :member="manageMemberModalMember"
-          @updateMembers="getMembers"
-        />
-        <div class="row justify-end">
-          <q-btn
-            flat
-            :label="$t('button.close')"
-            color="primary"
-            v-close-popup
-            @click="resetManageMemberModal()"
-          />
-        </div>
-      </q-card>
-    </q-dialog>
   </div>
 </template>
 
@@ -203,11 +166,9 @@ import icons from '@icons';
 import formatMixin from '@mixins/formatMixin';
 import { exportFile } from 'quasar';
 import stringify from 'csv-stringify';
-import ManageMember from 'components/AdminTools/ManageMember';
 
 export default {
   name: 'MembersList',
-  components: { ManageMember },
   mixins: [formatMixin],
   data() {
     return {
@@ -220,7 +181,7 @@ export default {
       pagination: {
         sortBy: 'date',
         descending: true,
-        rowsPerPage: this.$q.screen.xs ? 2 : 12,
+        rowsPerPage: this.$q.screen.xs ? 3 : 10,
       },
     };
   },

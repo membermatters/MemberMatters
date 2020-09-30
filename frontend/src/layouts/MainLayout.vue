@@ -25,7 +25,7 @@
           </template>
         </q-toolbar-title>
 
-        <q-space />
+        <q-space v-if="$q.platform.is.electron" />
 
         <q-icon
           v-if="$q.platform.is.electron"

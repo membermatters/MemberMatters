@@ -123,7 +123,7 @@ export default {
       pagination: {
         sortBy: 'date',
         descending: true,
-        rowsPerPage: this.$q.screen.xs ? 2 : 12,
+        rowsPerPage: this.$q.screen.xs ? 3 : 10,
       },
     };
   },

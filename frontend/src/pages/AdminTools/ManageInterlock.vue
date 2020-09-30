@@ -1,155 +1,159 @@
 <template>
   <q-page class="column flex justify-start items-center">
-    <q-card class="my-card">
-      <q-card-section>
-        <div class="text-h6">
-          {{ $t('menuLink.manageInterlock') }}
-        </div>
-      </q-card-section>
-
-      <q-card-section>
-        <q-form ref="formRef">
-          <div class="column q-gutter-md q-px-sm">
-            <q-input
-              outlined
-              v-model="interlock.name"
-              :label="$t('interlocks.name')"
-              @input="saveChange('name')"
-              :debounce="debounceLength"
-            >
-              <template v-slot:append>
-                <saved-notification
-                  show-text
-                  v-model="saved.name"
-                  :error="saved.error"
-                />
-              </template>
-            </q-input>
-
-            <q-input
-              outlined
-              v-model="interlock.description"
-              :label="$t('interlocks.description')"
-              @input="saveChange('description')"
-              :debounce="debounceLength"
-            >
-              <template v-slot:append>
-                <saved-notification
-                  show-text
-                  v-model="saved.description"
-                  :error="saved.error"
-                />
-              </template>
-            </q-input>
-
-            <q-input
-              outlined
-              v-model="interlock.ipAddress"
-              :label="$t('form.ipAddress')"
-              @input="saveChange('ipAddress')"
-              :debounce="debounceLength"
-            >
-              <template v-slot:append>
-                <saved-notification
-                  show-text
-                  v-model="saved.ipAddress"
-                  :error="saved.error"
-                />
-              </template>
-            </q-input>
-
-            <div class="column">
-              <div class="row items-center">
-                <q-checkbox
-                  v-model="interlock.defaultAccess"
-                  :label="$t('access.defaultAccess')"
-                  @input="saveChange('defaultAccess')"
-                  :debounce="debounceLength"
-                />
-                <q-space />
-                <saved-notification
-                  show-text
-                  v-model="saved.defaultAccess"
-                  :error="saved.error"
-                />
-              </div>
-
-              <div class="row items-center">
-                <q-checkbox
-                  v-model="interlock.maintenanceLockout"
-                  :label="$t('access.maintenanceLockout')"
-                  @input="saveChange('maintenanceLockout')"
-                  :debounce="debounceLength"
-                />
-                <q-space />
-                <saved-notification
-                  show-text
-                  v-model="saved.maintenanceLockout"
-                  :error="saved.error"
-                />
-              </div>
-              <div class="row items-center">
-                <q-checkbox
-                  v-model="interlock.playThemeOnSwipe"
-                  :label="$t('access.playTheme')"
-                  @input="saveChange('playTheme')"
-                  :debounce="debounceLength"
-                />
-                <q-space />
-                <saved-notification
-                  show-text
-                  v-model="saved.playTheme"
-                  :error="saved.error"
-                />
-              </div>
-              <div class="row items-center">
-                <q-checkbox
-                  v-model="interlock.exemptFromSignin"
-                  :label="$t('access.exemptSignin')"
-                  @input="saveChange('exemptSignin')"
-                  :debounce="debounceLength"
-                />
-                <q-space />
-                <saved-notification
-                  show-text
-                  v-model="saved.exemptSignin"
-                  :error="saved.error"
-                />
-              </div>
-              <div class="row items-center q-gutter-sm">
-                <q-checkbox
-                  v-model="interlock.hiddenToMembers"
-                  :label="$t('access.hiddenToMembers')"
-                  @input="saveChange('hiddenToMembers')"
-                  :debounce="debounceLength"
-                />
-                <q-space />
-                <saved-notification
-                  show-text
-                  v-model="saved.hiddenToMembers"
-                  :error="saved.error"
-                />
-              </div>
-            </div>
-
-            <div class="row">
-              <q-space />
-              <q-btn
-                :label="$t('interlocks.remove')"
-                type="reset"
-                color="primary"
-                flat
-                class="q-ml-sm"
-                :loading="removeLoading"
-                :disabled="removeLoading"
-                @click="removeInterlock"
-              />
-            </div>
+    <div>
+      <h3 class="q-mt-none q-mb-md">
+        {{ interlock.name }}
+      </h3>
+      <q-card class="my-card">
+        <q-card-section>
+          <div class="text-h6">
+            {{ $t('menuLink.manageInterlock') }}
           </div>
-        </q-form>
-      </q-card-section>
-    </q-card>
-    <saved-notification />
+        </q-card-section>
+
+        <q-card-section>
+          <q-form ref="formRef">
+            <div class="column q-gutter-md q-px-sm">
+              <q-input
+                outlined
+                v-model="interlock.name"
+                :label="$t('interlocks.name')"
+                @input="saveChange('name')"
+                :debounce="debounceLength"
+              >
+                <template v-slot:append>
+                  <saved-notification
+                    show-text
+                    v-model="saved.name"
+                    :error="saved.error"
+                  />
+                </template>
+              </q-input>
+
+              <q-input
+                outlined
+                v-model="interlock.description"
+                :label="$t('interlocks.description')"
+                @input="saveChange('description')"
+                :debounce="debounceLength"
+              >
+                <template v-slot:append>
+                  <saved-notification
+                    show-text
+                    v-model="saved.description"
+                    :error="saved.error"
+                  />
+                </template>
+              </q-input>
+
+              <q-input
+                outlined
+                v-model="interlock.ipAddress"
+                :label="$t('form.ipAddress')"
+                @input="saveChange('ipAddress')"
+                :debounce="debounceLength"
+              >
+                <template v-slot:append>
+                  <saved-notification
+                    show-text
+                    v-model="saved.ipAddress"
+                    :error="saved.error"
+                  />
+                </template>
+              </q-input>
+
+              <div class="column">
+                <div class="row items-center">
+                  <q-checkbox
+                    v-model="interlock.defaultAccess"
+                    :label="$t('access.defaultAccess')"
+                    @input="saveChange('defaultAccess')"
+                    :debounce="debounceLength"
+                  />
+                  <q-space />
+                  <saved-notification
+                    show-text
+                    v-model="saved.defaultAccess"
+                    :error="saved.error"
+                  />
+                </div>
+
+                <div class="row items-center">
+                  <q-checkbox
+                    v-model="interlock.maintenanceLockout"
+                    :label="$t('access.maintenanceLockout')"
+                    @input="saveChange('maintenanceLockout')"
+                    :debounce="debounceLength"
+                  />
+                  <q-space />
+                  <saved-notification
+                    show-text
+                    v-model="saved.maintenanceLockout"
+                    :error="saved.error"
+                  />
+                </div>
+                <div class="row items-center">
+                  <q-checkbox
+                    v-model="interlock.playThemeOnSwipe"
+                    :label="$t('access.playTheme')"
+                    @input="saveChange('playTheme')"
+                    :debounce="debounceLength"
+                  />
+                  <q-space />
+                  <saved-notification
+                    show-text
+                    v-model="saved.playTheme"
+                    :error="saved.error"
+                  />
+                </div>
+                <div class="row items-center">
+                  <q-checkbox
+                    v-model="interlock.exemptFromSignin"
+                    :label="$t('access.exemptSignin')"
+                    @input="saveChange('exemptSignin')"
+                    :debounce="debounceLength"
+                  />
+                  <q-space />
+                  <saved-notification
+                    show-text
+                    v-model="saved.exemptSignin"
+                    :error="saved.error"
+                  />
+                </div>
+                <div class="row items-center q-gutter-sm">
+                  <q-checkbox
+                    v-model="interlock.hiddenToMembers"
+                    :label="$t('access.hiddenToMembers')"
+                    @input="saveChange('hiddenToMembers')"
+                    :debounce="debounceLength"
+                  />
+                  <q-space />
+                  <saved-notification
+                    show-text
+                    v-model="saved.hiddenToMembers"
+                    :error="saved.error"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <q-space />
+                <q-btn
+                  :label="$t('interlocks.remove')"
+                  type="reset"
+                  color="primary"
+                  flat
+                  class="q-ml-sm"
+                  :loading="removeLoading"
+                  :disabled="removeLoading"
+                  @click="removeInterlock"
+                />
+              </div>
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </div>
   </q-page>
 </template>
 

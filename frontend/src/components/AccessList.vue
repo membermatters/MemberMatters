@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md row flex content-start items-start">
+  <div class="row flex content-start items-start">
     <q-list
       bordered
       padding

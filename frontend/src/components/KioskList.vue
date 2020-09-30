@@ -82,8 +82,8 @@
               <q-btn
                 size="sm"
                 color="accent"
-                @click="editKiosk(props.row.id)"
                 :icon="icons.edit"
+                disable
               />
             </q-item>
           </q-list>
@@ -183,7 +183,7 @@ export default {
       pagination: {
         sortBy: 'date',
         descending: true,
-        rowsPerPage: this.$q.screen.xs ? 2 : 12,
+        rowsPerPage: this.$q.screen.xs ? 3 : 10,
       },
     };
   },

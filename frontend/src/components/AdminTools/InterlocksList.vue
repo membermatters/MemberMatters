@@ -42,7 +42,7 @@
           {{ col.label }}
         </q-th>
         <q-th auto-width>
-          Manage
+          {{ $t('button.actions') }}
         </q-th>
       </q-tr>
     </template>
@@ -109,7 +109,15 @@
           :key="col.name"
           :props="props"
         >
-          {{ col.value }}
+          <router-link
+            v-if="col.label === 'Name'"
+            :to="{name: 'manageInterlock', params: {interlockId: String(props.row.id)}}"
+          >
+            {{ col.value }}
+          </router-link>
+          <template v-else>
+            {{ col.value }}
+          </template>
         </q-td>
         <q-td auto-width>
           <q-btn
@@ -122,17 +130,6 @@
             <q-icon :name="icons.reboot" />
             <q-tooltip>
               {{ $t('button.rebootDevice') }}
-            </q-tooltip>
-          </q-btn>
-
-          <q-btn
-            size="sm"
-            color="accent"
-            :to="{name: 'manageInterlock', params: {interlockId: String(props.row.id)}}"
-          >
-            <q-icon :name="icons.settings" />
-            <q-tooltip>
-              {{ $t('button.manage') }}
             </q-tooltip>
           </q-btn>
         </q-td>
@@ -156,7 +153,7 @@ export default {
       pagination: {
         sortBy: 'lastSeen',
         descending: true,
-        rowsPerPage: this.$q.screen.xs ? 2 : 12,
+        rowsPerPage: this.$q.screen.xs ? 3 : 10,
       },
     };
   },

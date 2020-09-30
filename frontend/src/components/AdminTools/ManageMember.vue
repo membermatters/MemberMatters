@@ -1,8 +1,12 @@
 <template>
   <div class="column">
+    <h3 class="q-mt-none q-mb-md">
+      {{ profileForm.firstName }} {{ profileForm.lastName }}
+    </h3>
     <q-card
-      class="q-mb-none q-pb-lg"
-      flat
+      class="q-mb-none"
+      style="background-color: transparent;"
+      :class="{'q-pb-lg': $q.screen.xs}"
     >
       <q-tabs
         v-model="tab"
@@ -307,7 +311,7 @@
                 </q-item>
               </q-list>
 
-              <h5 class="q-my-sm">
+              <h5 class="q-mt-md q-mb-sm">
                 {{ $t('adminTools.otherAttributes') }}
               </h5>
               <q-list
