@@ -43,12 +43,12 @@ this you will run into issues with sharing cookies etc across the different URIs
 this, the webpack dev server has been setup to proxy all requests to `/api` to `localhost:8000` so 
 you'll need to make sure the django dev server is running there.
 
-### Vue.js frontend 
-Please see the [readme](https://github.com/membermatters/MemberMatters/blob/master/frontend/README.md) file inside the `frontend` folder. This folder contains all of the source
+### Vue.js JavaScript frontend 
+Please see the [readme](frontend/README.md) file inside the `frontend` folder. This folder contains all of the source
 code and other assets needed by the frontend.
 
-### Django backend
-Please see the [readme](https://github.com/membermatters/MemberMatters/blob/master/memberportal/README.md) file inside the `memberportal` folder. This folder contains all of the source
+### Django Python backend
+Please see the [readme](memberportal/README.md) file inside the `memberportal` folder. This folder contains all of the source
 code and other assets needed by the backend.
  
  
@@ -64,7 +64,7 @@ code and other assets needed by the backend.
 
 See the [screenshots](screenshots) folder for more screenshots.
 
-### Contributing guidelines
+## Contributing guidelines
 By contributing any code, asset or any other resource to this repository to you agree to license it
 under the license in use by the project (currently MIT). Please use good coding practices, comment 
 your code well and ensure compliance with any code formatting or linting that's in place. Also 
