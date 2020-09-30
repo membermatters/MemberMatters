@@ -5,7 +5,12 @@ MemberMatters is an open source membership and access management solution.
 The official place for updates on the MemberMatters software is on the HSBNE Inc. forum. You can access the specific thread [here](https://forum.hsbne.org/t/membermatters-hsbne-portal-updates/3514). You will also find a changelog under each release [here](https://github.com/membermatters/MemberMatters/releases) on GitHub.
 
 ### Features
-* Member registration system (signup, login etc)
+* Supports all major browser versions released within the last few years (babel)
+* First class mobile support with native mobile app (capacitor)
+* Kiosk mode with site sign/sign out feature (electron)
+* Dark mode support with native OS detection and switching
+* Member registration system (signup, login, profile etc)
+* Single Sign On (SSO) system implemented with the discourse protocol (more coming soon)
 * Profile - members can update all their info in one place
 * Issue reporting tool
 * Access system built in
@@ -48,17 +53,20 @@ code and other assets needed by the backend.
  
  
 ## Screenshots
-[ Coming soon once the frontend rewrite is done ]
+### Mobile
+<img src="screenshots/m1.png" width="200"> <img src="screenshots/m2.png" width="200"> <img src="screenshots/m3.png" width="200"> <img src="screenshots/m4.png" width="200"> <img src="screenshots/m5.png" width="200">
+
+### Desktop
+<img src="screenshots/1.png" width="500"> <img src="screenshots/2.png" width="500"> <img src="screenshots/3.png" width="500"> <img src="screenshots/4.png" width="500"> <img src="screenshots/5.png" width="500">
+
+### Desktop (Dark Mode)
+<img src="screenshots/d1.png" width="500"> <img src="screenshots/d2.png" width="500"> <img src="screenshots/d3.png" width="500">
+
+See the [screenshots](screenshots) folder for more screenshots.
 
 ### Contributing guidelines
 By contributing any code, asset or any other resource to this repository to you agree to license it
 under the license in use by the project (currently MIT). Please use good coding practices, comment 
 your code well and ensure compliance with any code formatting or linting that's in place. Also 
 avoid "weird tricks" and optimisations that don't read easily - this is a web app not a high 
-performance algorithm. Your contributions *will* be rejected if you do not follow these guidelines.
-
-### Special note
-This software used to be called "hsbneportal". It was written by 
-[Jaimyn (@jabelone)](https://github.com/jabelone) and used by [HSBNE](https://hsbne.org) to manage 
-their membership. It has since been rewritten to be organisation agnostic so others can use it too. 
-If you find references to HSBNE, HSBNE Inc, or Space. this is why. :)
+performance algorithm. Your contributions *will* be rejected if you do not follow these guidelines so please be careful.
