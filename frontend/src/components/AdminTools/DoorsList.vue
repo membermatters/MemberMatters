@@ -2,6 +2,7 @@
   <q-table
     :data="doors"
     :columns="[
+      { name: 'id', label: 'ID', field: 'id', sortable: true },
       { name: 'name', label: 'Name', field: 'name', sortable: true },
       { name: 'ipAddress', label: 'IP', field: 'ipAddress', sortable: true },
       { name: 'lastSeen',
@@ -44,6 +45,71 @@
           Manage
         </q-th>
       </q-tr>
+    </template>
+
+    <template v-slot:item="props">
+      <div
+        class="q-pa-sm col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
+      >
+        <q-card class="q-py-sm">
+          <q-list dense>
+            <q-item
+              v-for="col in props.cols.filter(col => col.name !== 'desc')"
+              :key="col.name"
+            >
+              <q-item-section>
+                <q-item-label>{{ col.label }}</q-item-label>
+              </q-item-section>
+              <q-item-section side>
+                <q-item-label caption>
+                  {{ col.value }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-separator />
+
+            <q-item class="q-mt-sm row justify-center">
+              <q-btn
+                :ref="`${props.row.id}-unlock`"
+                class="q-mr-sm"
+                size="sm"
+                color="accent"
+                @click="unlockDoor(props.row.id)"
+              >
+                <q-icon :name="icons.unlock" />
+                <q-tooltip>
+                  {{ $t('button.unlockDoor') }}
+                </q-tooltip>
+              </q-btn>
+
+              <q-btn
+                :ref="`${props.row.id}-reboot`"
+                class="q-mr-sm"
+                size="sm"
+                color="accent"
+                @click="rebootDoor(props.row.id)"
+              >
+                <q-icon :name="icons.reboot" />
+                <q-tooltip>
+                  {{ $t('button.rebootDevice') }}
+                </q-tooltip>
+              </q-btn>
+
+              <q-btn
+                size="sm"
+                color="accent"
+                :to="{name: 'manageDoor', params: {doorId: String(props.row.id)}}"
+              >
+                <q-icon :name="icons.settings" />
+                <q-tooltip>
+                  {{ $t('button.manage') }}
+                </q-tooltip>
+              </q-btn>
+            </q-item>
+          </q-list>
+        </q-card>
+      </div>
     </template>
 
     <template v-slot:body="props">
