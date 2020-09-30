@@ -113,7 +113,6 @@
       <template v-slot:body="props">
         <q-tr
           :props="props"
-          @click="openManageMemberModal(props.row)"
         >
           <q-td
             v-for="col in props.cols"
@@ -126,8 +125,9 @@
             <q-btn
               size="sm"
               color="accent"
+              :to="{name: 'manageMember', params: { memberId: props.row.id }}"
             >
-              Manage
+              {{ $t('button.manage') }}
             </q-btn>
           </q-td>
         </q-tr>
@@ -151,19 +151,25 @@
                   <q-item-label>{{ col.label }}</q-item-label>
                 </q-item-section>
                 <q-item-section side>
-                  <q-item-label caption>
+                  <q-item-label
+                    v-if="col.label === 'Name'"
+                    caption
+                  >
+                    <router-link
+                      tag="span"
+                      class="routerlink"
+                      :to="{name: 'manageMember', params: {memberId: props.row.id}}"
+                    >
+                      {{ col.value }}
+                    </router-link>
+                  </q-item-label>
+                  <q-item-label
+                    v-else
+                    caption
+                  >
                     {{ col.value }}
                   </q-item-label>
                 </q-item-section>
-              </q-item>
-
-              <q-item>
-                <q-btn
-                  class="q-ma-sm full-width"
-                  color="primary"
-                  :label="$t('adminTools.manageMember')"
-                  @click="openManageMemberModal(props.row)"
-                />
               </q-item>
             </q-list>
           </q-card>

@@ -39,3 +39,18 @@
 .manage-member-modal {
   max-width: 700px!important;
 }
+
+.q-table__container {
+  max-width: 100%;
+}
+
+.q-item__section--side > .q-item__label {
+  max-width: 200px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.routerlink {
+text-decoration: underline;
+  cursor: pointer;
+}

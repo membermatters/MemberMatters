@@ -15,12 +15,6 @@
         label="Change Password"
         @click="changePassword = true"
       />
-      <q-btn
-        push
-        color="accent"
-        label="Memberbucks"
-        @click="$router.push({ name: 'memberbucks', params: {dialog: 'transactions'} })"
-      />
     </q-btn-group>
 
     <q-dialog v-model="digitalId">

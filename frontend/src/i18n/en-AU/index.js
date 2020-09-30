@@ -16,6 +16,7 @@ export default {
     groupMembers: 'Group Members',
     meetings: 'Meetings',
     members: 'Members',
+    manageMember: 'Manage Member',
     groups: 'Groups',
     doors: 'Doors',
     manageDoor: 'Manage Door',

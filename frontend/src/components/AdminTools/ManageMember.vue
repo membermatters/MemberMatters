@@ -1,6 +1,7 @@
 <template>
   <div class="column">
     <q-card
+      class="q-mb-none q-pb-lg"
       flat
     >
       <q-tabs

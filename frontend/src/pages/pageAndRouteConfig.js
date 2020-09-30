@@ -243,6 +243,15 @@ const PageAndRouteConfig = [
     hiddenMenu: true,
     component: () => import('pages/AdminTools/ManageInterlock'),
   },
+  {
+    icon: icons.members,
+    to: '/manage/members/:memberId',
+    name: 'manageMember',
+    loggedIn: true,
+    admin: true,
+    hiddenMenu: true,
+    component: () => import('pages/AdminTools/ManageMember'),
+  },
 ];
 
 export default PageAndRouteConfig;

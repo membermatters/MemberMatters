@@ -1,9 +1,5 @@
 <template>
   <div class="profile-form">
-    <p>
-      {{ $t('form.pageDescription') }}
-    </p>
-
     <q-form ref="formRef">
       <q-input
         outlined

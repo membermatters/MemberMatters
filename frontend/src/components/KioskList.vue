@@ -21,6 +21,7 @@
     :loading="loading"
     :grid="$q.screen.xs"
     :no-data-label="$t('kiosk.nodata')"
+    class="q-mx-sm"
   >
     <template v-slot:top-right>
       <q-input
@@ -53,6 +54,41 @@
           {{ $t('delete') }}
         </q-th>
       </q-tr>
+    </template>
+
+    <template v-slot:item="props">
+      <div
+        class="q-pa-sm col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
+      >
+        <q-card class="q-py-sm">
+          <q-list dense>
+            <q-item
+              v-for="col in props.cols.filter(col => col.name !== 'desc')"
+              :key="col.name"
+            >
+              <q-item-section>
+                <q-item-label>{{ col.label }}</q-item-label>
+              </q-item-section>
+              <q-item-section side>
+                <q-item-label caption>
+                  {{ col.value }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-separator />
+
+            <q-item class="q-mt-sm row justify-center">
+              <q-btn
+                size="sm"
+                color="accent"
+                @click="editKiosk(props.row.id)"
+                :icon="icons.edit"
+              />
+            </q-item>
+          </q-list>
+        </q-card>
+      </div>
     </template>
 
     <template v-slot:body="props">
