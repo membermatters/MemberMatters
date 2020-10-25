@@ -11,6 +11,7 @@ export default {
     logout: 'Logout',
     register: 'Register',
     registerSuccess: 'Successfully Registered',
+    plans: 'Membership Plans',
 
     adminTools: 'Admin Tools',
     groupMembers: 'Group Members',
