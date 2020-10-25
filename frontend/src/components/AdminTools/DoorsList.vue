@@ -9,7 +9,7 @@
         label: 'Last Seen',
         field: 'lastSeen',
         sortable: true,
-        format: (val, row) => this.formatDate(val)
+        format: (val) => formatDate(val)
       },
     ]"
     row-key="id"
@@ -20,10 +20,10 @@
   >
     <template v-slot:top-right>
       <q-input
+        v-model="filter"
         outlined
         dense
         debounce="300"
-        v-model="filter"
         placeholder="Search"
       >
         <template v-slot:append>
@@ -181,6 +181,15 @@ export default {
       },
     };
   },
+  computed: {
+    ...mapGetters('adminTools', ['doors']),
+    icons() {
+      return icons;
+    },
+  },
+  beforeMount() {
+    this.getDoors();
+  },
   methods: {
     ...mapActions('adminTools', ['getDoors']),
     rebootDoor(doorId) {
@@ -206,17 +215,6 @@ export default {
         }).finally(() => {
           this.$refs[`${doorId}-unlock`].loading = false;
         });
-    },
-  },
-  beforeMount() {
-    this.getDoors()
-      .then(() => {
-      });
-  },
-  computed: {
-    ...mapGetters('adminTools', ['doors']),
-    icons() {
-      return icons;
     },
   },
 };

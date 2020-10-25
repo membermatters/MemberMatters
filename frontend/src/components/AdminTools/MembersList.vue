@@ -23,8 +23,8 @@
               >
                 <q-list>
                   <q-item
-                    clickable
                     v-close-popup
+                    clickable
                     @click="exportCsv"
                   >
                     <q-item-section>
@@ -33,8 +33,8 @@
                   </q-item>
 
                   <q-item
-                    clickable
                     v-close-popup
+                    clickable
                     @click="exportEmails"
                   >
                     <q-item-section>
@@ -46,10 +46,10 @@
             </div>
             <div class="full-width">
               <q-select
+                v-model="memberState"
                 class="q-mb-xs-sm"
                 outlined
                 emit-value
-                v-model="memberState"
                 :options="filterOptions"
                 :label="$t('adminTools.filterOptions')"
                 dense
@@ -83,10 +83,10 @@
       </template>
       <template v-slot:top-right>
         <q-input
+          v-model="filter"
           outlined
           dense
           debounce="300"
-          v-model="filter"
           placeholder="Search"
         >
           <template v-slot:append>
@@ -185,61 +185,6 @@ export default {
       },
     };
   },
-  methods: {
-    resetManageMemberModal() {
-      this.manageMemberModal = false;
-      this.manageMemberModalMember = null;
-    },
-    openManageMemberModal(member) {
-      this.manageMemberModal = true;
-      this.manageMemberModalMember = member;
-    },
-    getMembers() {
-      this.loading = true;
-      this.$axios.get('/api/admin/members/')
-        .then((response) => {
-          this.members = response.data;
-        })
-        .catch(() => {
-          this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
-          });
-        })
-        .finally(() => {
-          this.loading = false;
-        });
-    },
-    exportCsv() {
-      stringify(this.displayMemberList, {
-        columns: ['name.full', 'email', 'state'],
-      }, (err, output) => {
-        const status = exportFile(
-          'member-export.csv',
-          output,
-          'text/csv',
-        );
-
-        if (status !== true) {
-          this.$q.notify({
-            message: 'Browser denied file download...',
-            color: 'negative',
-            icon: 'warning',
-          });
-        }
-      });
-    },
-    exportEmails() {
-      this.$q.dialog({
-        dark: true,
-        title: `${this.displayMemberList.length} Email Addresses`,
-        message: this.memberEmails,
-      });
-    },
-  },
-  mounted() {
-    this.getMembers();
-  },
   computed: {
     displayMemberList() {
       if (this.memberState === 'All') return this.members;
@@ -301,6 +246,61 @@ export default {
         sortable: true,
       },
       ];
+    },
+  },
+  mounted() {
+    this.getMembers();
+  },
+  methods: {
+    resetManageMemberModal() {
+      this.manageMemberModal = false;
+      this.manageMemberModalMember = null;
+    },
+    openManageMemberModal(member) {
+      this.manageMemberModal = true;
+      this.manageMemberModalMember = member;
+    },
+    getMembers() {
+      this.loading = true;
+      this.$axios.get('/api/admin/members/')
+        .then((response) => {
+          this.members = response.data;
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('error.requestFailed'),
+          });
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+    exportCsv() {
+      stringify(this.displayMemberList, {
+        columns: ['name.full', 'email', 'state'],
+      }, (err, output) => {
+        const status = exportFile(
+          'member-export.csv',
+          output,
+          'text/csv',
+        );
+
+        if (status !== true) {
+          this.$q.notify({
+            message: 'Browser denied file download...',
+            color: 'negative',
+            icon: 'warning',
+          });
+        }
+      });
+    },
+    exportEmails() {
+      this.$q.dialog({
+        dark: true,
+        title: `${this.displayMemberList.length} Email Addresses`,
+        message: this.memberEmails,
+      });
     },
   },
 };

@@ -1,9 +1,8 @@
 <template>
   <q-select
-    @input="$emit('input', groupsSelected)"
+    v-model="groupsSelected"
     outlined
     :label="$t('groups')"
-    v-model="groupsSelected"
     use-input
     use-chips
     multiple
@@ -11,6 +10,7 @@
     option-value="id"
     option-label="name"
     :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+    @input="$emit('input', groupsSelected)"
   />
 </template>
 

@@ -16,8 +16,8 @@ export default {
   name: 'KioskDetails',
   props: {
     kiosk: {
-      type: Object,
-      default: () => {},
+        type: Object,
+        default: () => {{}}
     },
   },
 };

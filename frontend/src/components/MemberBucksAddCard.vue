@@ -17,10 +17,10 @@
       <div class="row q-pa-sm">
         <q-space />
         <q-btn
+          id="card-button"
           :disable="disableStripeForm"
           :loading="disableStripeForm"
           color="primary"
-          id="card-button"
         >
           {{ $t('memberbucks.saveCard') }}
         </q-btn>
@@ -50,15 +50,15 @@ export default {
       error: null,
     };
   },
-  async mounted() {
-    if (!this.stripe && this.keys.stripePublishableKey) {
-      await this.setupStripe(this.keys.stripePublishableKey);
-    }
-  },
   watch: {
     async keys(value) {
       if (!this.stripe) await this.setupStripe(value.stripePublishableKey);
     },
+  },
+  async mounted() {
+    if (!this.stripe && this.keys.stripePublishableKey) {
+      await this.setupStripe(this.keys.stripePublishableKey);
+    }
   },
   methods: {
     ...mapActions('profile', ['getProfile']),

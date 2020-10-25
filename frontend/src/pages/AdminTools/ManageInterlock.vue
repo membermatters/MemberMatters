@@ -15,48 +15,48 @@
           <q-form ref="formRef">
             <div class="column q-gutter-md q-px-sm">
               <q-input
-                outlined
                 v-model="interlock.name"
+                outlined
                 :label="$t('interlocks.name')"
+                :debounce="debounceLength"
                 @input="saveChange('name')"
-                :debounce="debounceLength"
               >
                 <template v-slot:append>
                   <saved-notification
-                    show-text
                     v-model="saved.name"
+                    show-text
                     :error="saved.error"
                   />
                 </template>
               </q-input>
 
               <q-input
-                outlined
                 v-model="interlock.description"
+                outlined
                 :label="$t('interlocks.description')"
-                @input="saveChange('description')"
                 :debounce="debounceLength"
+                @input="saveChange('description')"
               >
                 <template v-slot:append>
                   <saved-notification
-                    show-text
                     v-model="saved.description"
+                    show-text
                     :error="saved.error"
                   />
                 </template>
               </q-input>
 
               <q-input
-                outlined
                 v-model="interlock.ipAddress"
+                outlined
                 :label="$t('form.ipAddress')"
-                @input="saveChange('ipAddress')"
                 :debounce="debounceLength"
+                @input="saveChange('ipAddress')"
               >
                 <template v-slot:append>
                   <saved-notification
-                    show-text
                     v-model="saved.ipAddress"
+                    show-text
                     :error="saved.error"
                   />
                 </template>
@@ -67,13 +67,13 @@
                   <q-checkbox
                     v-model="interlock.defaultAccess"
                     :label="$t('access.defaultAccess')"
-                    @input="saveChange('defaultAccess')"
                     :debounce="debounceLength"
+                    @input="saveChange('defaultAccess')"
                   />
                   <q-space />
                   <saved-notification
-                    show-text
                     v-model="saved.defaultAccess"
+                    show-text
                     :error="saved.error"
                   />
                 </div>
@@ -82,13 +82,13 @@
                   <q-checkbox
                     v-model="interlock.maintenanceLockout"
                     :label="$t('access.maintenanceLockout')"
-                    @input="saveChange('maintenanceLockout')"
                     :debounce="debounceLength"
+                    @input="saveChange('maintenanceLockout')"
                   />
                   <q-space />
                   <saved-notification
-                    show-text
                     v-model="saved.maintenanceLockout"
+                    show-text
                     :error="saved.error"
                   />
                 </div>
@@ -96,13 +96,13 @@
                   <q-checkbox
                     v-model="interlock.playThemeOnSwipe"
                     :label="$t('access.playTheme')"
-                    @input="saveChange('playTheme')"
                     :debounce="debounceLength"
+                    @input="saveChange('playTheme')"
                   />
                   <q-space />
                   <saved-notification
-                    show-text
                     v-model="saved.playTheme"
+                    show-text
                     :error="saved.error"
                   />
                 </div>
@@ -110,13 +110,13 @@
                   <q-checkbox
                     v-model="interlock.exemptFromSignin"
                     :label="$t('access.exemptSignin')"
-                    @input="saveChange('exemptSignin')"
                     :debounce="debounceLength"
+                    @input="saveChange('exemptSignin')"
                   />
                   <q-space />
                   <saved-notification
-                    show-text
                     v-model="saved.exemptSignin"
+                    show-text
                     :error="saved.error"
                   />
                 </div>
@@ -124,13 +124,13 @@
                   <q-checkbox
                     v-model="interlock.hiddenToMembers"
                     :label="$t('access.hiddenToMembers')"
-                    @input="saveChange('hiddenToMembers')"
                     :debounce="debounceLength"
+                    @input="saveChange('hiddenToMembers')"
                   />
                   <q-space />
                   <saved-notification
-                    show-text
                     v-model="saved.hiddenToMembers"
+                    show-text
                     :error="saved.error"
                   />
                 </div>
@@ -165,10 +165,10 @@ import SavedNotification from '@components/SavedNotification';
 
 export default {
   name: 'ManageInterlockPage',
-  mixins: [formMixin],
   components: {
     SavedNotification,
   },
+  mixins: [formMixin],
   props: {
     interlockId: {
       type: String,

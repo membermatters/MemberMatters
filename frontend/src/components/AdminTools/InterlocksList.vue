@@ -20,10 +20,10 @@
   >
     <template v-slot:top-right>
       <q-input
+        v-model="filter"
         outlined
         dense
         debounce="300"
-        v-model="filter"
         placeholder="Search"
       >
         <template v-slot:append>
@@ -157,6 +157,15 @@ export default {
       },
     };
   },
+  computed: {
+    ...mapGetters('adminTools', ['interlocks']),
+    icons() {
+      return icons;
+    },
+  },
+  mounted() {
+    this.getInterlocks();
+  },
   methods: {
     ...mapActions('adminTools', ['getInterlocks']),
     rebootInterlock(interlockId) {
@@ -170,18 +179,6 @@ export default {
         }).finally(() => {
           this.$refs[`${interlockId}-reboot`].loading = false;
         });
-    },
-  },
-  mounted() {
-    this.getInterlocks()
-      .finally(() => {
-
-      });
-  },
-  computed: {
-    ...mapGetters('adminTools', ['interlocks']),
-    icons() {
-      return icons;
     },
   },
 };

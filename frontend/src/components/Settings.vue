@@ -20,8 +20,8 @@
           <p>{{ $t('settings.rfidScanner.connectionStatus') }}: {{ connectionStatusDisplay }}</p>
 
           <q-input
-            outlined
             v-model="readerUrlInput"
+            outlined
             label="Reader URL"
           />
         </q-card-section>
@@ -40,18 +40,18 @@
 
         <q-card-actions align="right">
           <q-btn
+            v-close-popup
             flat
             :label="$t('button.close')"
             color="primary-btn"
-            v-close-popup
           />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
     <div
-      @click="settingsDialog = true"
       class="settings-button"
+      @click="settingsDialog = true"
     />
   </div>
 </template>
@@ -67,7 +67,7 @@ import formMixin from '../mixins/formMixin';
 let getCurrentWindow;
 
 if (Platform.is.electron) {
-  // eslint-disable-next-line global-require
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   getCurrentWindow = require('electron').remote.getCurrentWindow;
 }
 

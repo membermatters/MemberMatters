@@ -3,11 +3,11 @@
     <q-card-section class="row items-center q-pb-none">
       <q-space />
       <q-btn
+        v-close-popup
         :icon="icons.close"
         flat
         round
         dense
-        v-close-popup
       />
     </q-card-section>
 

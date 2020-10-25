@@ -26,11 +26,11 @@
           <div class="row q-pt-md">
             <q-space />
             <q-btn
+              id="card-button"
               :loading="removeLoading"
               :disable="removeLoading"
-              @click="removeCard"
               color="primary"
-              id="card-button"
+              @click="removeCard"
             >
               {{ $t('memberbucks.removeCard') }}
             </q-btn>

@@ -1,8 +1,8 @@
 <template>
   <div class="q-pa-md">
     <q-card
-      class="login-card"
       v-if="!resetToken"
+      class="login-card"
     >
       <h6 class="q-ma-none q-pa-md">
         {{ $t('loginCard.loginToContinue') }}
@@ -10,24 +10,24 @@
 
       <q-card-section>
         <q-form
+          class="q-gutter-md"
           @submit="onSubmit"
           @reset="onReset"
-          class="q-gutter-md"
         >
           <q-input
+            v-model="email"
             :autofocus="!$q.platform.is.electron"
             filled
             type="email"
-            v-model="email"
             label="Your email"
             lazy-rules
             :rules="[ val => validateEmail(val) || $t('validation.invalidEmail')]"
           />
 
           <q-input
+            v-model="password"
             filled
             type="password"
-            v-model="password"
             label="Your password"
             lazy-rules
             :rules="[
@@ -96,22 +96,22 @@
     </q-card>
 
     <q-card
-      class="login-card"
       v-else
+      class="login-card"
     >
       <h6 class="q-ma-none q-pa-md">
         {{ $t('loginCard.resetPassword') }}
       </h6>
       <q-card-section>
         <q-form
-          @submit="submitResetPassword"
           class="q-gutter-md"
+          @submit="submitResetPassword"
         >
           <q-input
+            v-model="reset.password"
             filled
             autofocus
             type="password"
-            v-model="reset.password"
             label="Your new password"
             lazy-rules
             :disable="this.reset.formDisabled"
@@ -121,9 +121,9 @@
           />
 
           <q-input
+            v-model="reset.password2"
             filled
             type="password"
-            v-model="reset.password2"
             label="Confirm password"
             lazy-rules
             :disable="this.reset.formDisabled"
@@ -192,8 +192,8 @@
 
         <q-card-section class="q-pt-none">
           <q-input
-            :label="$t('loginCard.emailLabel')"
             v-model="reset.email"
+            :label="$t('loginCard.emailLabel')"
             autofocus
             @keyup.enter="resetPassword()"
           />
@@ -218,9 +218,9 @@
           class="text-primary"
         >
           <q-btn
+            v-close-popup
             flat
             :label="this.reset.disableResetSubmitButton ? $t('button.close') : $t('button.cancel')"
-            v-close-popup
           />
           <q-btn
             flat

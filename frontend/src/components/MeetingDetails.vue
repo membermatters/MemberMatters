@@ -40,8 +40,8 @@
         </q-markup-table>
       </template>
       <div
-        class="q-pl-md"
         v-else
+        class="q-pl-md"
       >
         {{ $t('meetings.noProxies') }}
       </div>

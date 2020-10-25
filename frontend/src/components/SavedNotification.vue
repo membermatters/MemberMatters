@@ -38,11 +38,9 @@ export default {
       default: false,
     },
   },
-  methods: {
-    showNotification() {
-      setTimeout(() => {
-        this.$emit('input', false);
-      }, this.timeout);
+  computed: {
+    icons() {
+      return icons;
     },
   },
   watch: {
@@ -50,9 +48,11 @@ export default {
       if (value) this.showNotification();
     },
   },
-  computed: {
-    icons() {
-      return icons;
+  methods: {
+    showNotification() {
+      setTimeout(() => {
+        this.$emit('input', false);
+      }, this.timeout);
     },
   },
 };

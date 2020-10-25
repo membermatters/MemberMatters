@@ -13,11 +13,11 @@
 
       <q-card-actions align="right">
         <q-btn
+          v-close-popup
           flat
           :label="$t('button.ok')"
           color="primary"
           @click="close"
-          v-close-popup
         />
       </q-card-actions>
     </q-card>

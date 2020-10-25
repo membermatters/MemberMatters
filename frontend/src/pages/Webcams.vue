@@ -7,8 +7,8 @@
 
       <div
         v-for="link in webcamLinks"
-        class="col-xs-12 col-sm-6 q-pa-sm"
         :key="link[1]"
+        class="col-xs-12 col-sm-6 q-pa-sm"
       >
         <q-img
           :src="`${link[1]}?interval=${interval}`"

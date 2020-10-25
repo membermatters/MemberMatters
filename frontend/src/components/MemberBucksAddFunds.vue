@@ -80,8 +80,8 @@
             color="accent"
             :icon="icons.billing"
             :label="$t('memberbucks.manageBilling')"
-            @click="$router.push({ name: 'memberbucks', params: { dialog: 'billing' } })"
             class="q-mb-sm q-mr-md"
+            @click="$router.push({ name: 'memberbucks', params: { dialog: 'billing' } })"
           />
         </q-card-section>
       </template>

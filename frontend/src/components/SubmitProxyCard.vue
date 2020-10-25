@@ -7,13 +7,13 @@
 
       <q-card-section>
         <q-form
-          @submit="onSubmit"
           class="q-gutter-md"
+          @submit="onSubmit"
         >
           <q-input
+            v-model="title"
             filled
             type="text"
-            v-model="title"
             label="Issue Title"
             lazy-rules
             :rules="[
@@ -26,9 +26,9 @@
           </q-input>
 
           <q-input
+            v-model="description"
             filled
             type="textarea"
-            v-model="description"
             label="Issue Description"
             autogrow
             lazy-rules
@@ -76,7 +76,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import formMixin from '../mixins/formMixin';
 import icons from '../icons';
 
@@ -89,6 +88,11 @@ export default {
       submitError: false,
       buttonLoading: false,
     };
+  },
+  computed: {
+    icons() {
+      return icons;
+    },
   },
   mounted() {
     // if (this.loggedIn) this.reditectLoggedIn();
@@ -123,11 +127,6 @@ export default {
         .finally(() => {
           this.buttonLoading = false;
         });
-    },
-  },
-  computed: {
-    icons() {
-      return icons;
     },
   },
 };

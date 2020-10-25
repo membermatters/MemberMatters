@@ -9,48 +9,48 @@
           <q-form ref="formRef">
             <div class="column q-gutter-md q-px-sm">
               <q-input
-                outlined
                 v-model="door.name"
+                outlined
                 :label="$t('doors.name')"
+                :debounce="debounceLength"
                 @input="saveChange('name')"
-                :debounce="debounceLength"
               >
                 <template v-slot:append>
                   <saved-notification
-                    show-text
                     v-model="saved.name"
+                    show-text
                     :error="saved.error"
                   />
                 </template>
               </q-input>
 
               <q-input
-                outlined
                 v-model="door.description"
+                outlined
                 :label="$t('doors.description')"
-                @input="saveChange('description')"
                 :debounce="debounceLength"
+                @input="saveChange('description')"
               >
                 <template v-slot:append>
                   <saved-notification
-                    show-text
                     v-model="saved.description"
+                    show-text
                     :error="saved.error"
                   />
                 </template>
               </q-input>
 
               <q-input
-                outlined
                 v-model="door.ipAddress"
+                outlined
                 :label="$t('form.ipAddress')"
-                @input="saveChange('ipAddress')"
                 :debounce="debounceLength"
+                @input="saveChange('ipAddress')"
               >
                 <template v-slot:append>
                   <saved-notification
-                    show-text
                     v-model="saved.ipAddress"
+                    show-text
                     :error="saved.error"
                   />
                 </template>
@@ -61,13 +61,13 @@
                   <q-checkbox
                     v-model="door.defaultAccess"
                     :label="$t('access.defaultAccess')"
-                    @input="saveChange('defaultAccess')"
                     :debounce="debounceLength"
+                    @input="saveChange('defaultAccess')"
                   />
                   <q-space />
                   <saved-notification
-                    show-text
                     v-model="saved.defaultAccess"
+                    show-text
                     :error="saved.error"
                   />
                 </div>
@@ -76,13 +76,13 @@
                   <q-checkbox
                     v-model="door.maintenanceLockout"
                     :label="$t('access.maintenanceLockout')"
-                    @input="saveChange('maintenanceLockout')"
                     :debounce="debounceLength"
+                    @input="saveChange('maintenanceLockout')"
                   />
                   <q-space />
                   <saved-notification
-                    show-text
                     v-model="saved.maintenanceLockout"
+                    show-text
                     :error="saved.error"
                   />
                 </div>
@@ -90,13 +90,13 @@
                   <q-checkbox
                     v-model="door.playThemeOnSwipe"
                     :label="$t('access.playTheme')"
-                    @input="saveChange('playTheme')"
                     :debounce="debounceLength"
+                    @input="saveChange('playTheme')"
                   />
                   <q-space />
                   <saved-notification
-                    show-text
                     v-model="saved.playTheme"
+                    show-text
                     :error="saved.error"
                   />
                 </div>
@@ -104,13 +104,13 @@
                   <q-checkbox
                     v-model="door.exemptFromSignin"
                     :label="$t('access.exemptSignin')"
-                    @input="saveChange('exemptSignin')"
                     :debounce="debounceLength"
+                    @input="saveChange('exemptSignin')"
                   />
                   <q-space />
                   <saved-notification
-                    show-text
                     v-model="saved.exemptSignin"
+                    show-text
                     :error="saved.error"
                   />
                 </div>
@@ -118,13 +118,13 @@
                   <q-checkbox
                     v-model="door.hiddenToMembers"
                     :label="$t('access.hiddenToMembers')"
-                    @input="saveChange('hiddenToMembers')"
                     :debounce="debounceLength"
+                    @input="saveChange('hiddenToMembers')"
                   />
                   <q-space />
                   <saved-notification
-                    show-text
                     v-model="saved.hiddenToMembers"
+                    show-text
                     :error="saved.error"
                   />
                 </div>
@@ -159,10 +159,10 @@ import SavedNotification from '@components/SavedNotification';
 
 export default {
   name: 'ManageDoorPage',
-  mixins: [formMixin],
   components: {
     SavedNotification,
   },
+  mixins: [formMixin],
   props: {
     doorId: {
       type: String,

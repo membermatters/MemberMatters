@@ -43,10 +43,10 @@
           >
             <template v-slot:top-right>
               <q-input
+                v-model="filter"
                 outlined
                 dense
                 debounce="300"
-                v-model="filter"
                 placeholder="Search"
               >
                 <template v-slot:append>
@@ -88,10 +88,10 @@
           >
             <template v-slot:top-right>
               <q-input
+                v-model="filter"
                 outlined
                 dense
                 debounce="300"
-                v-model="filter"
                 placeholder="Search"
               >
                 <template v-slot:append>

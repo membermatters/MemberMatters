@@ -17,9 +17,9 @@
       >
         <div>
           <q-select
+            v-model="form.type"
             outlined
             :label="$t('form.meetingType')"
-            v-model="form.type"
             :options="meetingTypes"
             :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
             class="q-mb-md"
@@ -35,9 +35,9 @@
 
         <q-select
           v-if="form.type.value === 'group'"
+          v-model="form.group"
           outlined
           :label="$t('group')"
-          v-model="form.group"
           :options="groups"
           option-value="id"
           option-label="name"
@@ -54,8 +54,8 @@
             {{ $t('meetingForm.updatePastMeeting') }}
           </q-tooltip>
           <q-input
-            outlined
             v-model="form.date"
+            outlined
             :label="$t('form.dateTime')"
             mask="####-##-## ##:##"
             :rules="[
@@ -82,16 +82,16 @@
                   >
                     <div class="row items-center justify-end q-gutter-sm">
                       <q-btn
+                        v-close-popup
                         label="Cancel"
                         color="primary"
                         flat
-                        v-close-popup
                       />
                       <q-btn
+                        v-close-popup
                         label="OK"
                         color="primary"
                         flat
-                        v-close-popup
                       />
                     </div>
                   </q-date>
@@ -112,16 +112,16 @@
                   >
                     <div class="row items-center justify-end q-gutter-sm">
                       <q-btn
+                        v-close-popup
                         label="Cancel"
                         color="primary"
                         flat
-                        v-close-popup
                       />
                       <q-btn
+                        v-close-popup
                         label="OK"
                         color="primary"
                         flat
-                        v-close-popup
                       />
                     </div>
                   </q-time>
@@ -132,9 +132,9 @@
         </div>
 
         <q-input
+          v-model="form.chair"
           outlined
           :debounce="debounceLength"
-          v-model="form.chair"
           :label="$t('form.chair')"
           :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
           :disable="form.success"
@@ -155,15 +155,15 @@
         </q-banner>
 
         <q-card-actions
+          v-if="!form.success"
           align="right"
           class="text-primary"
-          v-if="!form.success"
         >
           <q-btn
+            v-close-popup
             flat
             :label="$t('button.cancel')"
             :disable="loading"
-            v-close-popup
           />
           <q-btn
             color="primary"
@@ -175,14 +175,14 @@
         </q-card-actions>
 
         <q-card-actions
+          v-else
           align="right"
           class="text-primary"
-          v-else
         >
           <q-btn
+            v-close-popup
             flat
             :label="$t('button.close')"
-            v-close-popup
           />
         </q-card-actions>
       </q-form>

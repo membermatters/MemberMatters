@@ -59,6 +59,11 @@ export default {
       default: false,
     },
   },
+  computed: {
+    icons() {
+      return icons;
+    },
+  },
   mounted() {
     this.$axios.post(`api/email/${this.verifyToken}/verify/`)
       .then(() => {
@@ -72,11 +77,6 @@ export default {
         this.verifyError = true;
         this.verifySuccess = false;
       });
-  },
-  computed: {
-    icons() {
-      return icons;
-    },
   },
 };
 </script>

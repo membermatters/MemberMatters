@@ -52,24 +52,24 @@
               class="q-mr-sm q-mb-sm"
               color="positive"
               :label="$t('adminTools.enableAccess')"
-              @click="setMemberState('active')"
               :loading="stateLoading"
+              @click="setMemberState('active')"
             />
             <q-btn
               v-else-if="selectedMember.state==='New'"
               class="q-mr-sm q-mb-sm"
               color="primary"
               :label="$t('adminTools.makeMember')"
-              @click="activateMember()"
               :loading="stateLoading"
+              @click="activateMember()"
             />
             <q-btn
               v-else
               class="q-mr-sm q-mb-sm"
               color="negative"
               :label="$t('adminTools.disableAccess')"
-              @click="setMemberState('inactive')"
               :loading="stateLoading"
+              @click="setMemberState('inactive')"
             />
 
             <q-btn-dropdown
@@ -80,8 +80,8 @@
             >
               <q-list>
                 <q-item
-                  clickable
                   v-close-popup
+                  clickable
                   @click="sendWelcomeEmail"
                 >
                   <q-item-section>
@@ -91,8 +91,8 @@
 
                 <template v-if="selectedMember.xero.accountId">
                   <q-item
-                    clickable
                     v-close-popup
+                    clickable
                     @click="createInvoice()"
                   >
                     <q-item-section>
@@ -101,8 +101,8 @@
                   </q-item>
 
                   <q-item
-                    clickable
                     v-close-popup
+                    clickable
                   >
                     <q-item-section>
                       <a
@@ -131,142 +131,142 @@
                   {{ $t('adminTools.mainProfile') }}
                 </h5>
                 <q-input
-                  outlined
-                  @input="saveChange('email')"
-                  :debounce="debounceLength"
                   v-model="profileForm.email"
+                  outlined
+                  :debounce="debounceLength"
                   :label="$t('form.email')"
                   :rules="[ val => validateEmail(val) || $t('validation.invalidEmail')]"
+                  @input="saveChange('email')"
                 >
                   <template v-slot:append>
                     <saved-notification
-                      show-text
                       v-model="saved.email"
+                      show-text
                       :error="saved.error"
                     />
                   </template>
                 </q-input>
 
                 <q-input
-                  outlined
-                  @input="saveChange('rfidCard')"
-                  :debounce="debounceLength"
                   v-model="profileForm.rfidCard"
+                  outlined
+                  :debounce="debounceLength"
                   :label="$t('form.rfidCard')"
                   :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+                  @input="saveChange('rfidCard')"
                 >
                   <template v-slot:append>
                     <saved-notification
-                      show-text
                       v-model="saved.rfidCard"
+                      show-text
                       :error="saved.error"
                     />
                   </template>
                 </q-input>
 
                 <q-input
-                  outlined
-                  @input="saveChange('firstName')"
-                  :debounce="debounceLength"
                   v-model="profileForm.firstName"
+                  outlined
+                  :debounce="debounceLength"
                   :label="$t('form.firstName')"
                   :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+                  @input="saveChange('firstName')"
                 >
                   <template v-slot:append>
                     <saved-notification
-                      show-text
                       v-model="saved.firstName"
+                      show-text
                       :error="saved.error"
                     />
                   </template>
                 </q-input>
 
                 <q-input
-                  outlined
-                  @input="saveChange('lastName')"
-                  :debounce="debounceLength"
                   v-model="profileForm.lastName"
+                  outlined
+                  :debounce="debounceLength"
                   :label="$t('form.lastName')"
                   :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+                  @input="saveChange('lastName')"
                 >
                   <template v-slot:append>
                     <saved-notification
-                      show-text
                       v-model="saved.lastName"
+                      show-text
                       :error="saved.error"
                     />
                   </template>
                 </q-input>
 
                 <q-input
-                  outlined
-                  @input="saveChange('phone')"
-                  :debounce="debounceLength"
                   v-model="profileForm.phone"
+                  outlined
+                  :debounce="debounceLength"
                   :label="$t('form.phone')"
                   :rules="[ val => validateNotEmpty(val) || $t('validation.invalidPhone')]"
+                  @input="saveChange('phone')"
                 >
                   <template v-slot:append>
                     <saved-notification
-                      show-text
                       v-model="saved.phone"
+                      show-text
                       :error="saved.error"
                     />
                   </template>
                 </q-input>
 
                 <q-input
-                  outlined
-                  @input="saveChange('screenName')"
-                  :debounce="debounceLength"
                   v-model="profileForm.screenName"
+                  outlined
+                  :debounce="debounceLength"
                   :label="$t('form.screenName')"
                   :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+                  @input="saveChange('screenName')"
                 >
                   <template v-slot:append>
                     <saved-notification
-                      show-text
                       v-model="saved.screenName"
+                      show-text
                       :error="saved.error"
                     />
                   </template>
                 </q-input>
 
                 <q-select
-                  @input="saveChange('groups')"
+                  v-model="profileForm.groups"
                   outlined
                   :label="$t('groups')"
-                  v-model="profileForm.groups"
                   use-chips
                   multiple
                   :options="groups"
                   option-value="id"
                   option-label="name"
                   :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+                  @input="saveChange('groups')"
                 >
                   <template v-slot:append>
                     <saved-notification
-                      show-text
                       v-model="saved.groups"
+                      show-text
                       :error="saved.error"
                     />
                   </template>
                 </q-select>
 
                 <q-select
-                  @input="saveChange('memberType')"
+                  v-model="profileForm.memberType"
                   outlined
                   :label="$t('form.memberType')"
-                  v-model="profileForm.memberType"
                   :options="memberTypes"
                   option-value="id"
                   option-label="name"
                   :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+                  @input="saveChange('memberType')"
                 >
                   <template v-slot:append>
                     <saved-notification
-                      show-text
                       v-model="saved.memberType"
+                      show-text
                       :error="saved.error"
                     />
                   </template>
@@ -404,6 +404,16 @@ export default {
   name: 'ManageMember',
   components: { AccessList, SavedNotification },
   mixins: [formMixin],
+  props: {
+    member: {
+        type: Object,
+        default: () => {{}}
+    },
+    members: {
+        type: Object,
+        default: () => {{}}
+    },
+  },
   data() {
     return {
       stateLoading: false,
@@ -434,16 +444,6 @@ export default {
         memberType: false,
       },
     };
-  },
-  props: {
-    member: {
-      type: Object,
-      default: () => {},
-    },
-    members: {
-      type: Array,
-      default: () => {},
-    },
   },
   beforeMount() {
     this.loadInitialForm();

@@ -16,6 +16,8 @@ module.exports = function (ctx) {
       'capacitor',
     ],
 
+    supportTS: true,
+
     css: [
       'app.scss',
     ],
@@ -34,6 +36,7 @@ module.exports = function (ctx) {
       lang: 'en-us', // Quasar language pack
 
       all: 'auto',
+
 
       components: [],
       directives: [],

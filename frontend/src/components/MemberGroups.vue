@@ -50,10 +50,10 @@
           >
             <template v-slot:top-right>
               <q-input
+                v-model="memberFilter"
                 outlined
                 dense
                 debounce="300"
-                v-model="memberFilter"
                 placeholder="Search"
               >
                 <template v-slot:append>
@@ -90,10 +90,10 @@
           >
             <template v-slot:top-right>
               <q-input
+                v-model="groupFilter"
                 outlined
                 dense
                 debounce="300"
-                v-model="groupFilter"
                 placeholder="Search"
               >
                 <template v-slot:append>

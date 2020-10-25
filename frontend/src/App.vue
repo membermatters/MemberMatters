@@ -1,6 +1,6 @@
 <template>
   <div id="q-app">
-    <router-view />
+    <router-view/>
 
     <q-dialog v-model="loginModal">
       <login-card
@@ -9,26 +9,24 @@
       />
     </q-dialog>
 
-    <settings v-if="$q.platform.is.electron" />
+    <settings v-if="$q.platform.is.electron"/>
   </div>
 </template>
 
 <script>
 // We should include Stripe everywhere to enable better fraud protection
-import { loadStripe } from '@stripe/stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
 
-import { mapActions, mapGetters, mapMutations } from 'vuex';
+import {mapActions, mapGetters, mapMutations} from 'vuex';
 import Vue from 'vue';
-import { colors, Dark, Platform } from 'quasar';
+import {colors, Dark, Platform} from 'quasar';
 import Settings from 'components/Settings';
 import store from './store/index';
 import LoginCard from './components/LoginCard';
-
+import {remote, webFrame} from 'electron';
 
 if (Platform.is.electron) {
-  // eslint-disable-next-line global-require
-  const { remote, webFrame } = require('electron');
-  const { getCurrentWebContents, Menu, MenuItem } = remote;
+  const {getCurrentWebContents, Menu, MenuItem} = remote;
   //
   let rightClickPosition;
   //
@@ -50,7 +48,7 @@ if (Platform.is.electron) {
     'contextmenu',
     (event) => {
       event.preventDefault();
-      rightClickPosition = { x: event.x, y: event.y };
+      rightClickPosition = {x: event.x, y: event.y};
       contextMenu.popup();
     },
     false,
@@ -76,12 +74,16 @@ Vue.prototype.$stripeElementsStyle = () => ({
 
 export default {
   name: 'App',
-  components: { Settings, LoginCard },
+  components: {Settings, LoginCard},
   store,
   data() {
     return {
       loginModal: false,
     };
+  },
+  computed: {
+    ...mapGetters('config', ['siteName', 'keys', 'features']),
+    ...mapGetters('profile', ['loggedIn']),
   },
   watch: {
     $route() {
@@ -91,6 +93,52 @@ export default {
       // if (!value) this.$router.push({ name: 'login' });
       if (value) this.getProfile();
     },
+  },
+  beforeCreate() {
+    if (Platform.is.electron) {
+      this.$axios.interceptors.request.use(async (config) => {
+          // Grab the csrf token
+          const cookies = await remote.session.defaultSession.cookies.get(
+            {url: process.env.apiBaseUrl},
+          );
+
+          if (!cookies.length) return config;
+
+          const [csrfToken] = cookies.filter((cookie) => cookie.name === 'csrftoken');
+
+          config.headers['X-CSRFTOKEN'] = csrfToken.value;
+
+          return config;
+        },
+        (error) => {
+          Promise.reject(error);
+        });
+    }
+
+    this.$axios.interceptors.response.use((response) => response, (error) => {
+      // Do something with response error
+      if (error.response.status === 401 && !error.response.config.url.includes('/api/login/')) {
+        this.setLoggedIn(false);
+        this.resetState();
+        if (!window.location.pathname.includes('/profile/password/reset')) {
+          this.$router.push('/login');
+        }
+      }
+      return Promise.reject(error);
+    });
+  },
+  mounted() {
+    if (Platform.is.electron) {
+      this.getKioskId()
+        .then(() => {
+          this.pushKioskId();
+        });
+    }
+
+    this.setCardId(null);
+
+    // Get initial portal configuration data
+    this.getPortalConfig();
   },
   methods: {
     ...mapMutations('config', ['setSiteName', 'setHomepageCards', 'setWebcamLinks']),
@@ -115,59 +163,6 @@ export default {
           throw error;
         });
     },
-  },
-  beforeCreate() {
-    if (Platform.is.electron) {
-      // eslint-disable-next-line global-require
-      const { remote } = require('electron');
-
-      this.$axios.interceptors.request.use(async (config) => {
-        // Grab the csrf token
-        const cookies = await remote.session.defaultSession.cookies.get(
-          { url: process.env.apiBaseUrl },
-        );
-
-        if (!cookies.length) return config;
-
-        const [csrfToken] = cookies.filter((cookie) => cookie.name === 'csrftoken');
-
-        config.headers['X-CSRFTOKEN'] = csrfToken.value;
-
-        return config;
-      },
-      (error) => {
-        Promise.reject(error);
-      });
-    }
-
-    this.$axios.interceptors.response.use((response) => response, (error) => {
-    // Do something with response error
-      if (error.response.status === 401 && !error.response.config.url.includes('/api/login/')) {
-        this.setLoggedIn(false);
-        this.resetState();
-        if (!window.location.pathname.includes('/profile/password/reset')) {
-          this.$router.push('/login');
-        }
-      }
-      return Promise.reject(error);
-    });
-  },
-  mounted() {
-    if (Platform.is.electron) {
-      this.getKioskId()
-        .then(() => {
-          this.pushKioskId();
-        });
-    }
-
-    this.setCardId(null);
-
-    // Get initial portal configuration data
-    this.getPortalConfig();
-  },
-  computed: {
-    ...mapGetters('config', ['siteName', 'keys', 'features']),
-    ...mapGetters('profile', ['loggedIn']),
   },
 };
 </script>

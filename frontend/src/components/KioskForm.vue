@@ -11,9 +11,9 @@
         @submit="updateKiosk()"
       >
         <q-input
+          v-model="form.name"
           outlined
           :debounce="debounceLength"
-          v-model="form.name"
           :label="$t('form.name')"
           :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
         />
@@ -47,17 +47,17 @@
           class="text-primary"
         >
           <q-btn
+            v-if="!form.success"
+            v-close-popup
             flat
             :label="$t('button.cancel')"
             :disable="loading"
-            v-if="!form.success"
-            v-close-popup
           />
           <q-btn
-            flat
-            :label="$t('button.close')"
             v-if="form.success"
             v-close-popup
+            flat
+            :label="$t('button.close')"
           />
           <q-btn
             color="primary"

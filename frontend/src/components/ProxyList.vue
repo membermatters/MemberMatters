@@ -21,8 +21,8 @@
         color="accent"
         :icon="icons.add"
         :label="$t('proxyForm.newProxy')"
-        @click="newProxy = true"
         class="q-mb-sm"
+        @click="newProxy = true"
       />
 
       <q-dialog
@@ -34,10 +34,10 @@
 
     <template v-slot:top-right>
       <q-input
+        v-model="filter"
         outlined
         dense
         debounce="300"
-        v-model="filter"
         placeholder="Search"
       >
         <template v-slot:append>
@@ -75,8 +75,8 @@
             size="sm"
             color="accent"
             round
-            @click="confirmDelete(props.row.id)"
             :icon="icons.delete"
+            @click="confirmDelete(props.row.id)"
           />
         </q-td>
       </q-tr>
@@ -106,9 +106,9 @@
               <q-btn
                 size="sm"
                 color="accent"
-                @click="confirmDelete(props.row.id)"
                 :icon="icons.delete"
                 class="q-mb-sm"
+                @click="confirmDelete(props.row.id)"
               >
                 Delete
               </q-btn>

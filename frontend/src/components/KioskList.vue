@@ -25,10 +25,10 @@
   >
     <template v-slot:top-right>
       <q-input
+        v-model="filter"
         outlined
         dense
         debounce="300"
-        v-model="filter"
         placeholder="Search"
       >
         <template v-slot:append>
@@ -98,8 +98,8 @@
             size="sm"
             color="accent"
             round
-            @click="props.expand = !props.expand"
             :icon="props.expand ? icons.down : icons.up"
+            @click="props.expand = !props.expand"
           />
         </q-td>
         <q-td
@@ -115,8 +115,8 @@
             size="sm"
             color="accent"
             round
-            @click="editKiosk(props.row.id)"
             :icon="icons.edit"
+            @click="editKiosk(props.row.id)"
           />
 
           <q-dialog v-model="editKioskDialog">
@@ -124,11 +124,11 @@
               <q-card-section class="row items-center q-pb-none dialog-close-button">
                 <q-space />
                 <q-btn
+                  v-close-popup
                   :icon="icons.close"
                   flat
                   round
                   dense
-                  v-close-popup
                 />
               </q-card-section>
 
@@ -144,8 +144,8 @@
             size="sm"
             color="accent"
             round
-            @click="deleteKiosk(props.row.id)"
             :icon="icons.delete"
+            @click="deleteKiosk(props.row.id)"
           />
         </q-td>
       </q-tr>
@@ -172,8 +172,8 @@ import formatMixin from '../mixins/formatMixin';
 
 export default {
   name: 'KioskList',
-  mixins: [formatMixin],
   components: { KioskForm, KioskDetails },
+  mixins: [formatMixin],
   data() {
     return {
       loading: false,

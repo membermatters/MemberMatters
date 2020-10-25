@@ -25,24 +25,24 @@
           color="accent"
           :icon="icons.add"
           :label="$t('memberbucks.addFunds')"
-          @click="addFunds()"
           class="q-mb-sm q-mr-sm"
+          @click="addFunds()"
         />
 
         <q-btn
           color="accent"
           :icon="icons.billing"
           :label="$t('memberbucks.manageBilling')"
-          @click="manageBilling()"
           class="q-mb-sm q-mr-md"
+          @click="manageBilling()"
         />
 
         <q-input
           v-if="$q.screen.xs"
+          v-model="filter"
           outlined
           dense
           debounce="300"
-          v-model="filter"
           placeholder="Search"
           style="margin-top: -3px;"
         >
@@ -61,10 +61,10 @@
       v-slot:top-right
     >
       <q-input
+        v-model="filter"
         outlined
         dense
         debounce="300"
-        v-model="filter"
         placeholder="Search"
         style="margin-top: -3px;"
       >
@@ -115,8 +115,7 @@ export default {
   methods: {
     ...mapActions('tools', ['getMemberBucksTransactions', 'getMemberBucksBalance']),
     closeBothDialogs() {
-      this.$router.push({ name: 'memberbucks', params: { dialog: 'transactions' } })
-        .catch(() => {});
+      this.$router.push({ name: 'memberbucks', params: { dialog: 'transactions' } });
     },
     openAddFundsDialog() {
       this.$q.dialog({
@@ -151,17 +150,6 @@ export default {
         });
     },
   },
-  mounted() {
-    this.loading = true;
-    Promise.all([this.getMemberBucksBalance(), this.getMemberBucksTransactions()]).finally(() => {
-      this.loading = false;
-    });
-    if (this.dialog === 'add') {
-      this.openAddFundsDialog();
-    } else if (this.dialog === 'billing') {
-      this.openManageBillingDialog();
-    }
-  },
   watch: {
     dialog(dialog) {
       if (dialog === 'add') {
@@ -172,6 +160,17 @@ export default {
         this.closeBothDialogs();
       }
     },
+  },
+  mounted() {
+    this.loading = true;
+    Promise.all([this.getMemberBucksBalance(), this.getMemberBucksTransactions()]).finally(() => {
+      this.loading = false;
+    });
+    if (this.dialog === 'add') {
+      this.openAddFundsDialog();
+    } else if (this.dialog === 'billing') {
+      this.openManageBillingDialog();
+    }
   },
   computed: {
     ...mapGetters('tools', ['memberBucksTransactions', 'memberBucksBalance']),

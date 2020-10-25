@@ -1,20 +1,20 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header
-      elevated
       v-if="loggedIn || ($q.platform.is.mobile && loggedIn)"
+      elevated
     >
       <q-toolbar
         class="bg-toolbar"
       >
         <q-btn
+          v-if="loggedIn && !Platform.is.electron"
           flat
           dense
           round
           icon="fal fa-bars"
           aria-label="Menu"
           @click="mainMenuOpen = !mainMenuOpen"
-          v-if="loggedIn && !Platform.is.electron"
         />
 
         <q-toolbar-title class="row">
@@ -36,10 +36,10 @@
     </q-header>
 
     <q-drawer
+      v-if="loggedIn"
       v-model="mainMenuOpen"
       bordered
       class="column"
-      v-if="loggedIn"
     >
       <router-link :to="{ name: 'profile' }">
         <q-img
@@ -128,10 +128,10 @@
 
         <q-card-actions align="right">
           <q-btn
+            v-close-popup
             flat
             label="OK"
             color="primary-btn"
-            v-close-popup
           />
         </q-card-actions>
       </q-card>
@@ -153,11 +153,11 @@ Vue.use(Transitions);
 
 export default {
   name: 'MainLayout',
-  mixins: [mainMixin],
   components: {
     EssentialLink,
     FadeTransition,
   },
+  mixins: [mainMixin],
   data() {
     return {
       mainMenuOpen: !!Platform.is.electron,

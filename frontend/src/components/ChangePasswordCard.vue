@@ -8,14 +8,14 @@
 
     <q-card-section>
       <q-form
-        @submit="onSubmit"
         class="q-gutter-md"
+        @submit="onSubmit"
       >
         <q-input
+          v-model="currentPassword"
           autofocus
           filled
           type="password"
-          v-model="currentPassword"
           label="Current password"
           lazy-rules
           :rules="[
@@ -24,9 +24,9 @@
         />
 
         <q-input
+          v-model="newPassword"
           filled
           type="password"
-          v-model="newPassword"
           label="New password"
           lazy-rules
           :rules="[
@@ -35,9 +35,9 @@
         />
 
         <q-input
+          v-model="newPassword2"
           filled
           type="password"
-          v-model="newPassword2"
           label="Confirm new password"
           lazy-rules
           :rules="[
@@ -72,8 +72,8 @@
           />
           <q-btn
             v-if="success"
-            :label="$t('button.close')"
             v-close-popup
+            :label="$t('button.close')"
             flat
           />
         </div>

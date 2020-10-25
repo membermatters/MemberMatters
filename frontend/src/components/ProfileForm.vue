@@ -2,95 +2,94 @@
   <div class="profile-form">
     <q-form ref="formRef">
       <q-input
-        outlined
-        @input="saveChange('email')"
-        :debounce="debounceLength"
         v-model="form.email"
+        outlined
+        :debounce="debounceLength"
         :label="$t('form.email')"
         :rules="[ val => validateEmail(val) || $t('validation.invalidEmail')]"
+        @input="saveChange('email')"
       >
         <template v-slot:append>
           <saved-notification
-            show-text
             v-model="saved.email"
+            show-text
             :error="saved.error"
           />
         </template>
       </q-input>
 
       <q-input
-        outlined
-        @input="saveChange('firstName')"
-        :debounce="debounceLength"
         v-model="form.firstName"
+        outlined
+        :debounce="debounceLength"
         :label="$t('form.firstName')"
         :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+        @input="saveChange('firstName')"
       >
         <template v-slot:append>
           <saved-notification
-            show-text
             v-model="saved.firstName"
+            show-text
             :error="saved.error"
           />
         </template>
       </q-input>
 
       <q-input
-        outlined
-        @input="saveChange('lastName')"
-        :debounce="debounceLength"
         v-model="form.lastName"
+        outlined
+        :debounce="debounceLength"
         :label="$t('form.lastName')"
         :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+        @input="saveChange('lastName')"
       >
         <template v-slot:append>
           <saved-notification
-            show-text
             v-model="saved.lastName"
+            show-text
             :error="saved.error"
           />
         </template>
       </q-input>
 
       <q-input
-        outlined
-        @input="saveChange('phone')"
-        :debounce="debounceLength"
         v-model="form.phone"
+        outlined
+        :debounce="debounceLength"
         :label="$t('form.phone')"
         :rules="[ val => validateNotEmpty(val) || $t('validation.invalidPhone')]"
+        @input="saveChange('phone')"
       >
         <template v-slot:append>
           <saved-notification
-            show-text
             v-model="saved.phone"
+            show-text
             :error="saved.error"
           />
         </template>
       </q-input>
 
       <q-input
-        outlined
-        @input="saveChange('screenName')"
-        :debounce="debounceLength"
         v-model="form.screenName"
+        outlined
+        :debounce="debounceLength"
         :label="$t('form.screenName')"
         :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+        @input="saveChange('screenName')"
       >
         <template v-slot:append>
           <saved-notification
-            show-text
             v-model="saved.screenName"
+            show-text
             :error="saved.error"
           />
         </template>
       </q-input>
 
       <q-select
-        @input="saveChange('groups')"
+        v-model="form.groups"
         outlined
         :label="$t('groups')"
-        v-model="form.groups"
         use-input
         use-chips
         multiple
@@ -98,11 +97,12 @@
         option-value="id"
         option-label="name"
         :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+        @input="saveChange('groups')"
       >
         <template v-slot:append>
           <saved-notification
-            show-text
             v-model="saved.groups"
+            show-text
             :error="saved.error"
           />
         </template>
@@ -119,10 +119,10 @@ import SavedNotification from './SavedNotification';
 
 export default {
   name: 'ProfileForm',
-  mixins: [formMixin],
   components: {
     SavedNotification,
   },
+  mixins: [formMixin],
   data() {
     return {
       form: {
@@ -176,13 +176,13 @@ export default {
       });
     },
   },
-  beforeMount() {
-    this.loadInitialForm();
-  },
   watch: {
     profile() {
       this.loadInitialForm();
     },
+  },
+  beforeMount() {
+    this.loadInitialForm();
   },
   computed: {
     ...mapGetters('profile', ['profile']),

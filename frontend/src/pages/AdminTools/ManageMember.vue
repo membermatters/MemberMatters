@@ -35,6 +35,16 @@ export default {
     this.getMembers();
     next();
   },
+  computed: {
+    icons() {
+      return icons;
+    },
+    currentMember() {
+      const member = this.members.find((item) => String(item.id) === String(this.memberId));
+
+      return member || false;
+    },
+  },
   created() {
     this.getMembers();
   },
@@ -50,16 +60,6 @@ export default {
             message: this.$t('error.requestFailed'),
           });
         });
-    },
-  },
-  computed: {
-    icons() {
-      return icons;
-    },
-    currentMember() {
-      const member = this.members.find((item) => String(item.id) === String(this.memberId));
-
-      return member || false;
     },
   },
 };

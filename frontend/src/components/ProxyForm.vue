@@ -28,26 +28,26 @@
 
             <div class="q-ma-md">
               <q-input
+                v-model="memberCity"
                 outlined
                 :label="$t('proxyForm.yourCity')"
-                v-model="memberCity"
                 :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
                 class="q-mb-sm"
               />
 
               <q-select
-                outlined
                 v-model="proxy.member"
+                outlined
                 use-input
                 fill-input
                 hide-selected
                 input-debounce="0"
                 :label="$t('proxyForm.proxyName')"
                 :options="memberNames"
-                @filter="filterNames"
                 option-value="id"
                 option-label="name"
                 class="q-mb-lg"
+                @filter="filterNames"
               >
                 <template v-slot:no-option>
                   <q-item>
@@ -59,16 +59,16 @@
               </q-select>
 
               <q-input
+                v-model="proxy.city"
                 outlined
                 :label="$t('proxyForm.proxyCity')"
-                v-model="proxy.city"
                 :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
                 class="q-mb-sm"
               />
 
               <q-select
-                outlined
                 v-model="meeting"
+                outlined
                 :label="$t('proxyForm.meeting')"
                 :options="displayUpcomingMeetings"
                 :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
@@ -101,15 +101,15 @@
               </q-banner>
 
               <q-card-actions
+                v-if="!form.success"
                 align="right"
                 class="text-primary"
-                v-if="!form.success"
               >
                 <q-btn
+                  v-close-popup
                   flat
                   :label="$t('button.cancel')"
                   :disable="loading"
-                  v-close-popup
                 />
                 <q-btn
                   color="primary"

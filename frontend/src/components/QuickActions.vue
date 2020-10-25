@@ -1,9 +1,9 @@
 <template>
   <div class="row">
     <div
-      class="q-pa-md col-12 col-sm-4"
       v-for="action in quickActions"
       :key="action.title"
+      class="q-pa-md col-12 col-sm-4"
     >
       <a
         @click="action.click"

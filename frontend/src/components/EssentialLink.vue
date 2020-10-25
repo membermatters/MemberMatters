@@ -27,10 +27,10 @@
       >
         <q-item
           v-for="child in visibleLinks"
+          :key="child.name"
           clickable
           :inset-level="1"
           :to="{ name: child.name, params: child.defaultParams }"
-          :key="child.name"
         >
           <q-item-section
             v-if="child.icon"
@@ -59,27 +59,22 @@ export default {
       type: String,
       default: '',
     },
-
     name: {
       type: [String, Object],
       default: '/',
     },
-
     defaultParams: {
-      type: [Object],
-      default: () => {},
+        type: Object,
+        default: () => {{}}
     },
-
     icon: {
       type: String,
       default: '',
     },
-
     children: {
       type: Array,
       default: null,
     },
-
     hiddenMenu: {
       type: Boolean,
       default: false,

@@ -32,14 +32,14 @@
               {{ door.name }}
             </q-item-label>
             <q-item-label
-              caption
               v-if="door.access === true"
+              caption
             >
               {{ $t('access.authorised') }}
             </q-item-label>
             <q-item-label
-              caption
               v-else
+              caption
             >
               {{ $t('access.unauthorised') }}
             </q-item-label>
@@ -80,14 +80,14 @@
               {{ interlock.name }}
             </q-item-label>
             <q-item-label
-              caption
               v-if="interlock.access === true"
+              caption
             >
               {{ $t('access.authorised') }}
             </q-item-label>
             <q-item-label
-              caption
               v-else
+              caption
             >
               {{ $t('access.unauthorised') }}
             </q-item-label>
@@ -118,6 +118,27 @@ export default {
       errorLoading: false,
       access: {},
     };
+  },
+  computed: {
+    ...mapGetters('profile', ['doorAccess', 'interlockAccess']),
+    doors() {
+      return this.memberId ? this.access.doors : this.doorAccess;
+    },
+    interlocks() {
+      return this.memberId ? this.access.interlocks : this.interlockAccess;
+    },
+  },
+  watch: {
+    memberId() {
+      this.getMemberAccess();
+    },
+  },
+  mounted() {
+    if (this.memberId) {
+      this.getMemberAccess();
+    } else {
+      this.getAccess();
+    }
   },
   methods: {
     ...mapActions('profile', ['getAccess']),
@@ -166,27 +187,6 @@ export default {
           });
           throw error;
         });
-    },
-  },
-  mounted() {
-    if (this.memberId) {
-      this.getMemberAccess();
-    } else {
-      this.getAccess();
-    }
-  },
-  watch: {
-    memberId() {
-      this.getMemberAccess();
-    },
-  },
-  computed: {
-    ...mapGetters('profile', ['doorAccess', 'interlockAccess']),
-    doors() {
-      return this.memberId ? this.access.doors : this.doorAccess;
-    },
-    interlocks() {
-      return this.memberId ? this.access.interlocks : this.interlockAccess;
     },
   },
 };

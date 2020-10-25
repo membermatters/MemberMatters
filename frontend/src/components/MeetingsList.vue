@@ -26,8 +26,8 @@
         color="accent"
         :icon="icons.add"
         :label="$t('meetingForm.newMeeting')"
-        @click="newMeeting = true"
         class="q-mb-sm"
+        @click="newMeeting = true"
       />
 
       <q-dialog
@@ -40,10 +40,10 @@
 
     <template v-slot:top-right>
       <q-input
+        v-model="filter"
         outlined
         dense
         debounce="300"
-        v-model="filter"
         placeholder="Search"
       >
         <template v-slot:append>
@@ -75,8 +75,8 @@
             size="sm"
             color="accent"
             round
-            @click.stop="props.expand = !props.expand"
             :icon="props.expand ? icons.down : icons.up"
+            @click.stop="props.expand = !props.expand"
           />
         </q-td>
         <q-td

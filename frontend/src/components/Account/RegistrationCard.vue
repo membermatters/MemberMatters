@@ -13,15 +13,15 @@
         </p>
 
         <q-form
+          class="q-gutter-md"
           @submit="onSubmit"
           @reset="onReset"
-          class="q-gutter-md"
         >
           <q-input
+            v-model="form.email"
             autofocus
             filled
             type="email"
-            v-model="form.email"
             :label="$t('form.email')"
             lazy-rules
             :rules="[ val => validateEmail(val) || $t('validation.invalidEmail')]"
@@ -29,9 +29,9 @@
 
           <div class="row items-start no-wrap">
             <q-input
+              v-model="form.firstName"
               class="q-pr-md"
               filled
-              v-model="form.firstName"
               :label="$t('form.firstName')"
               lazy-rules
               :rules="[
@@ -39,8 +39,8 @@
               ]"
             />
             <q-input
-              filled
               v-model="form.lastName"
+              filled
               :label="$t('form.lastName')"
               lazy-rules
               :rules="[
@@ -51,9 +51,9 @@
 
           <div class="row items-start no-wrap">
             <q-input
+              v-model="form.screenName"
               class="q-pr-md"
               filled
-              v-model="form.screenName"
               :label="$t('form.screenName')"
               lazy-rules
               :rules="[
@@ -61,8 +61,8 @@
               ]"
             />
             <q-input
-              filled
               v-model="form.mobile"
+              filled
               type="tel"
               :label="$t('form.mobile')"
               lazy-rules
@@ -75,8 +75,8 @@
           <group-select v-model="form.groups" />
 
           <q-input
-            :label="$t('form.password')"
             v-model="form.password"
+            :label="$t('form.password')"
             filled
             :type="isPwd ? 'password' : 'text'"
             lazy-rules
@@ -165,6 +165,12 @@ export default {
   mounted() {
     if (this.loggedIn) this.$router.push({ name: 'dashboard' });
   },
+  computed: {
+    ...mapGetters('profile', ['loggedIn']),
+    icons() {
+      return icons;
+    },
+  },
   methods: {
     onReset() {
       this.email = null;
@@ -209,12 +215,6 @@ export default {
         .finally(() => {
           this.buttonLoading = false;
         });
-    },
-  },
-  computed: {
-    ...mapGetters('profile', ['loggedIn']),
-    icons() {
-      return icons;
     },
   },
 };
