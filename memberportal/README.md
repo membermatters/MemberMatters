@@ -48,10 +48,13 @@ In production, we have an nginx reverse proxy setup. For development however, it
 development server. Navigate to the memberportal folder. (`cd memberportal` on bash or cmd) First we need to make 
 sure we have a local sqlite database with the correct migrations applied, and default database. 
 
-To do this run the following:
+You probably won't be able to create a log file and database in the default location. You should set a couple of 
+environment variables like below to create them locally when developing:
+
+To run the Django dev server:
 
 ```bash
-python3 manage.py migrate
+PORTAL_LOG_LOCATION=errors.log PORTAL_DB_LOCATION=db.sqlite3 python3 manage.py migrate
 ```
  
 After running that you should see something like this:

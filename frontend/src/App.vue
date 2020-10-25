@@ -23,9 +23,10 @@ import {colors, Dark, Platform} from 'quasar';
 import Settings from 'components/Settings';
 import store from './store/index';
 import LoginCard from './components/LoginCard';
-import {remote, webFrame} from 'electron';
 
 if (Platform.is.electron) {
+  let remote, webFrame;
+  ({remote, webFrame} = require('electron'));
   const {getCurrentWebContents, Menu, MenuItem} = remote;
   //
   let rightClickPosition;
