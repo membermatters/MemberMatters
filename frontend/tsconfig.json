@@ -4,7 +4,5 @@
     "baseUrl": ".",
     "strictNullChecks": false,
   },
-  "types": [
-  ],
   "noImplicitAny": false
 }

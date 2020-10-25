@@ -67,19 +67,19 @@
     "eslint-plugin-vue": "^6.1.2"
   },
   "engines": {
-    "node": ">= 10.18.1",
+    "node": ">= 12.0.0",
     "npm": ">= 6.13.4",
     "yarn": ">= 1.21.1"
   },
   "browserslist": [
-  "last 10 Chrome versions",
-  "last 10 Firefox versions",
-  "last 4 Edge versions",
-  "last 5 Safari versions",
-  "last 8 Android versions",
-  "last 8 ChromeAndroid versions",
-  "last 8 FirefoxAndroid versions",
-  "last 5 iOS versions",
-  "last 5 Opera versions"
+    "last 10 Chrome versions",
+    "last 10 Firefox versions",
+    "last 4 Edge versions",
+    "last 5 Safari versions",
+    "last 8 Android versions",
+    "last 8 ChromeAndroid versions",
+    "last 8 FirefoxAndroid versions",
+    "last 5 iOS versions",
+    "last 5 Opera versions"
   ]
 }

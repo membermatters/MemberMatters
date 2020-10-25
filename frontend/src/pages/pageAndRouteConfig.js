@@ -71,7 +71,7 @@ const PageAndRouteConfig = [
         name: 'plans',
         loggedIn: true,
         admin: true,
-        component: () => import('pages/AdminTools/Plans'),
+        component: () => import('pages/AdminTools/ManagePlans'),
       },
       {
         icon: icons.doors,
