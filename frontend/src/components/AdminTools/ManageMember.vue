@@ -138,7 +138,7 @@
                   :rules="[ val => validateEmail(val) || $t('validation.invalidEmail')]"
                   @input="saveChange('email')"
                 >
-                  <template v-slot:append>
+                  <template #append>
                     <saved-notification
                       v-model="saved.email"
                       show-text
@@ -155,7 +155,7 @@
                   :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
                   @input="saveChange('rfidCard')"
                 >
-                  <template v-slot:append>
+                  <template #append>
                     <saved-notification
                       v-model="saved.rfidCard"
                       show-text
@@ -172,7 +172,7 @@
                   :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
                   @input="saveChange('firstName')"
                 >
-                  <template v-slot:append>
+                  <template #append>
                     <saved-notification
                       v-model="saved.firstName"
                       show-text
@@ -189,7 +189,7 @@
                   :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
                   @input="saveChange('lastName')"
                 >
-                  <template v-slot:append>
+                  <template #append>
                     <saved-notification
                       v-model="saved.lastName"
                       show-text
@@ -206,7 +206,7 @@
                   :rules="[ val => validateNotEmpty(val) || $t('validation.invalidPhone')]"
                   @input="saveChange('phone')"
                 >
-                  <template v-slot:append>
+                  <template #append>
                     <saved-notification
                       v-model="saved.phone"
                       show-text
@@ -223,7 +223,7 @@
                   :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
                   @input="saveChange('screenName')"
                 >
-                  <template v-slot:append>
+                  <template #append>
                     <saved-notification
                       v-model="saved.screenName"
                       show-text
@@ -244,7 +244,7 @@
                   :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
                   @input="saveChange('groups')"
                 >
-                  <template v-slot:append>
+                  <template #append>
                     <saved-notification
                       v-model="saved.groups"
                       show-text
@@ -263,7 +263,7 @@
                   :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
                   @input="saveChange('memberType')"
                 >
-                  <template v-slot:append>
+                  <template #append>
                     <saved-notification
                       v-model="saved.memberType"
                       show-text
@@ -539,7 +539,7 @@ export default {
           });
         })
         .finally(() => {
-          this.$emit('updateMembers');
+          this.$emit('update-members');
           setTimeout(() => { this.stateLoading = false; }, 1200);
         });
     },
@@ -566,7 +566,7 @@ export default {
           });
         })
         .finally(() => {
-          this.$emit('updateMembers');
+          this.$emit('update-members');
           setTimeout(() => { this.stateLoading = false; }, 1200);
         });
     },

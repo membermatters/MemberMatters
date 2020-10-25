@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="value">
+  <q-dialog v-model="opened">
     <q-card>
       <q-card-section>
         <div class="text-h6">
@@ -32,6 +32,14 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  data() {
+    return {
+      opened: false,
+    };
+  },
+  created() {
+    this.opened = value;
   },
   methods: {
     close() {

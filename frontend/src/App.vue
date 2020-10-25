@@ -5,7 +5,7 @@
     <q-dialog v-model="loginModal">
       <login-card
         no-redirect
-        @loginComplete="loginModal = false"
+        @login-complete="loginModal = false"
       />
     </q-dialog>
 
@@ -25,8 +25,8 @@ import store from './store/index';
 import LoginCard from './components/LoginCard';
 
 if (Platform.is.electron) {
-  let remote, webFrame;
-  ({remote, webFrame} = require('electron'));
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { remote, webFrame } = require('electron');
   const {getCurrentWebContents, Menu, MenuItem} = remote;
   //
   let rightClickPosition;

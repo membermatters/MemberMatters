@@ -35,7 +35,7 @@ module.exports = function (ctx) {
       iconSet: 'fontawesome-v5-pro', // Quasar icon set
       lang: 'en-us', // Quasar language pack
 
-      all: 'auto',
+      importStrategy: 'auto',
 
 
       components: [],
@@ -47,9 +47,6 @@ module.exports = function (ctx) {
       ],
     },
 
-    // We do *not* support IE
-    supportIE: false,
-
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       env: {
@@ -58,7 +55,7 @@ module.exports = function (ctx) {
         proIcons: true,
 
         // When running with capacitor this value is used for the base URL for all API requests
-        apiBaseUrl: JSON.stringify(process.env.API_BASE_URL),
+        apiBaseUrl: process.env.API_BASE_URL,
       },
 
       vueRouterMode: 'history',
@@ -139,27 +136,27 @@ module.exports = function (ctx) {
         theme_color: '#7642FF',
         icons: [
           {
-            src: 'statics/icons/icon-128x128.png',
+            src: 'icons/icon-128x128.png',
             sizes: '128x128',
             type: 'image/png',
           },
           {
-            src: 'statics/icons/icon-192x192.png',
+            src: 'icons/icon-192x192.png',
             sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: 'statics/icons/icon-256x256.png',
+            src: 'icons/icon-256x256.png',
             sizes: '256x256',
             type: 'image/png',
           },
           {
-            src: 'statics/icons/icon-384x384.png',
+            src: 'icons/icon-384x384.png',
             sizes: '384x384',
             type: 'image/png',
           },
           {
-            src: 'statics/icons/icon-512x512.png',
+            src: 'icons/icon-512x512.png',
             sizes: '512x512',
             type: 'image/png',
           },

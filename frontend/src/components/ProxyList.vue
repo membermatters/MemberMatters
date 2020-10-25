@@ -16,7 +16,7 @@
     :loading="loading"
     :grid="$q.screen.xs"
   >
-    <template v-slot:top-left>
+    <template #top-left>
       <q-btn
         color="accent"
         :icon="icons.add"
@@ -28,11 +28,11 @@
       <q-dialog
         v-model="newProxy"
       >
-        <proxy-form @closeForm="proxySubmitted()" />
+        <proxy-form @close-form="proxySubmitted()" />
       </q-dialog>
     </template>
 
-    <template v-slot:top-right>
+    <template #top-right>
       <q-input
         v-model="filter"
         outlined
@@ -40,13 +40,13 @@
         debounce="300"
         placeholder="Search"
       >
-        <template v-slot:append>
+        <template #append>
           <q-icon :name="icons.search" />
         </template>
       </q-input>
     </template>
 
-    <template v-slot:header="props">
+    <template #header="props">
       <q-tr :props="props">
         <q-th
           v-for="col in props.cols"
@@ -61,7 +61,7 @@
       </q-tr>
     </template>
 
-    <template v-slot:body="props">
+    <template #body="props">
       <q-tr :props="props">
         <q-td
           v-for="col in props.cols"
@@ -82,7 +82,7 @@
       </q-tr>
     </template>
 
-    <template v-slot:item="props">
+    <template #item="props">
       <div
         class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
         :style="props.selected ? 'transform: scale(0.95);' : ''"

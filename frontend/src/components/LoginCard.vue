@@ -313,7 +313,7 @@ export default {
       }
 
       this.loginComplete = true;
-      this.$emit('loginComplete');
+      this.$emit('login-complete');
       if (this.$route.query.redirect) this.$router.push(this.$route.query.redirect);
       else if (!this.noRedirect) {
         setTimeout(() => {

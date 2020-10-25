@@ -67,7 +67,7 @@ export default {
           this.loginComplete = true;
           this.loginFailed = false;
           this.loginError = false;
-          this.$emit('loginComplete');
+          this.$emit('login-complete');
           setTimeout(() => {
             this.setLoggedIn(true);
             this.$router.push({ name: 'dashboard' });

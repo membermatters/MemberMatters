@@ -66,6 +66,14 @@ const PageAndRouteConfig = [
         component: () => import('pages/Error501'),
       },
       {
+        icon: icons.plans,
+        to: '/manage/plans',
+        name: 'plans',
+        loggedIn: true,
+        admin: true,
+        component: () => import('pages/AdminTools/Plans'),
+      },
+      {
         icon: icons.doors,
         to: '/manage/doors',
         name: 'doors',

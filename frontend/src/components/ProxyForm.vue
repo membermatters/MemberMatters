@@ -49,7 +49,7 @@
                 class="q-mb-lg"
                 @filter="filterNames"
               >
-                <template v-slot:no-option>
+                <template #no-option>
                   <q-item>
                     <q-item-section class="text-grey">
                       {{ $t('form.noResults') }}
@@ -77,7 +77,7 @@
                 style="width: 250px"
                 class="q-mb-md"
               >
-                <template v-slot:no-option>
+                <template #no-option>
                   <q-item>
                     <q-item-section class="text-grey">
                       {{ $t('proxyForm.noMeetings') }}
@@ -164,7 +164,7 @@ export default {
         proxyCity: this.proxy.city,
       })
         .then(() => {
-          this.$emit('closeForm');
+          this.$emit('close-form');
         })
         .finally(() => {
           this.loading = false;

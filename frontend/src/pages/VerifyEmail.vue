@@ -67,6 +67,7 @@ export default {
   mounted() {
     this.$axios.post(`api/email/${this.verifyToken}/verify/`)
       .then(() => {
+        /* eslint-disable */
         this.verifyError = false;
         this.verifySuccess = true;
         setTimeout(() => {
