@@ -24,38 +24,6 @@ import Settings from 'components/Settings';
 import store from './store/index';
 import LoginCard from './components/LoginCard';
 
-if (Platform.is.electron) {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { remote, webFrame } = require('electron');
-  const {getCurrentWebContents, Menu, MenuItem} = remote;
-  //
-  let rightClickPosition;
-  //
-  const contextMenu = new Menu();
-  const menuItem = new MenuItem(
-    {
-      label: 'Inspect Element',
-      click: () => {
-        const factor = webFrame.getZoomFactor();
-        const x = Math.round(rightClickPosition.x * factor);
-        const y = Math.round(rightClickPosition.y * factor);
-        getCurrentWebContents().inspectElement(x, y);
-      },
-    },
-  );
-  contextMenu.append(menuItem);
-
-  window.addEventListener(
-    'contextmenu',
-    (event) => {
-      event.preventDefault();
-      rightClickPosition = {x: event.x, y: event.y};
-      contextMenu.popup();
-    },
-    false,
-  );
-}
-
 colors.setBrand('dark', '#313131');
 
 Vue.prototype.$stripeElementsStyle = () => ({

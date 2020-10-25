@@ -1,6 +1,7 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
 
 // eslint-disable-next-line func-names,no-unused-vars
@@ -16,7 +17,11 @@ module.exports = function (ctx) {
       'capacitor',
     ],
 
-    supportTS: true,
+    supportTS: {
+      tsCheckerConfig: {
+        eslint: true,
+      },
+    },
 
     css: [
       'app.scss',
@@ -30,7 +35,7 @@ module.exports = function (ctx) {
       cssAddon: true,
       config: {
         dark: 'auto', // or Boolean true/false
-        loadingBar: { color: 'accent' },
+        loadingBar: {color: 'accent'},
       },
       iconSet: 'fontawesome-v5-pro', // Quasar icon set
       lang: 'en-us', // Quasar language pack
@@ -73,7 +78,7 @@ module.exports = function (ctx) {
           loader: 'eslint-loader',
           exclude: /node_modules/,
           options: {
-            // eslint-disable-next-line global-require
+            // eslint-disable-next-line global-require,@typescript-eslint/no-var-requires
             formatter: require('eslint')
               .CLIEngine
               .getFormatter('stylish'),

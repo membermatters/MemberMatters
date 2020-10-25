@@ -6,12 +6,16 @@
  */
 
 // Install `electron-debug` with `devtron`
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('electron-debug')({ showDevTools: true })
 
 // Install `vue-devtools`
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('electron').app.on('ready', () => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   let installExtension = require('electron-devtools-installer')
   installExtension.default(installExtension.VUEJS_DEVTOOLS)
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     .then(() => {})
     .catch(err => {
       console.log('Unable to install `vue-devtools`: \n', err)
