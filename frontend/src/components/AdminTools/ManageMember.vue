@@ -118,7 +118,6 @@
             </q-btn-dropdown>
           </div>
 
-
           <div class="row q-pt-md">
             <div
               class="col-12 col-md-6"
@@ -406,12 +405,12 @@ export default {
   mixins: [formMixin],
   props: {
     member: {
-        type: Object,
-        default: () => {{}}
+      type: Object,
+      default: () => { {} },
     },
     members: {
-        type: Object,
-        default: () => {{}}
+      type: Object,
+      default: () => { {} },
     },
   },
   data() {

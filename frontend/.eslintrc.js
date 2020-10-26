@@ -33,7 +33,6 @@ module.exports = {
     // ESLint typescript rules
     'plugin:@typescript-eslint/recommended',
     // consider disabling this class of rules if linting takes too long
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
 
     // Uncomment any of the lines below to choose desired strictness,
     // but leave only one uncommented!
@@ -42,8 +41,11 @@ module.exports = {
     // 'plugin:vue/strongly-recommended', // Priority B: Strongly Recommended (Improving Readability)
     // 'plugin:vue/recommended', // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
 
-    'airbnb-base'
-
+    // https://github.com/prettier/eslint-config-prettier#installation
+    // usage with Prettier, provided by 'eslint-config-prettier'.
+    'prettier',
+    'prettier/@typescript-eslint',
+    'prettier/vue'
   ],
 
   plugins: [
@@ -52,8 +54,11 @@ module.exports = {
 
     // https://eslint.vuejs.org/user-guide/#why-doesn-t-it-work-on-vue-file
     // required to lint *.vue files
-    'vue',
+    'vue'
 
+    // https://github.com/typescript-eslint/typescript-eslint/issues/389#issuecomment-509292674
+    // Prettier has not been included as plugin to avoid performance impact
+    // add it as an extension for your IDE
   ],
 
   globals: {
@@ -67,17 +72,6 @@ module.exports = {
 
   // add your custom rules here
   rules: {
-    'no-param-reassign': 'off',
-
-    'import/first': 'off',
-    'import/named': 'error',
-    'import/namespace': 'error',
-    'import/default': 'error',
-    'import/export': 'error',
-    'import/extensions': 'off',
-    'import/no-unresolved': 'off',
-    'import/no-extraneous-dependencies': 'off',
-    'import/prefer-default-export': 'off',
     'prefer-promise-reject-errors': 'off',
 
     // TypeScript
@@ -88,4 +82,4 @@ module.exports = {
     // allow debugger during development only
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   }
-}
+};

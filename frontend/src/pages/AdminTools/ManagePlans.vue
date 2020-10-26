@@ -4,7 +4,7 @@
   </q-page>
 </template>
 
-<script>
+<script lang="ts">
 import DoorsList from 'components/AdminTools/DoorsList';
 
 export default {

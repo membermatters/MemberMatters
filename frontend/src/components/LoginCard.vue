@@ -35,7 +35,6 @@
             ]"
           />
 
-
           <q-banner
             v-if="loginComplete"
             class="bg-positive text-white"
@@ -132,7 +131,6 @@
               val => val === this.reset.password || $t('validation.passwordNotMatch')
             ]"
           />
-
 
           <q-banner
             v-if="this.reset.confirmed"

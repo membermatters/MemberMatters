@@ -64,8 +64,8 @@ export default {
       default: '/',
     },
     defaultParams: {
-        type: Object,
-        default: () => {{}}
+      type: Object,
+      default: () => { {} },
     },
     icon: {
       type: String,

@@ -163,7 +163,7 @@
   </q-table>
 </template>
 
-<script>
+<script lang="js">
 import { mapActions, mapGetters } from 'vuex';
 import icons from '../../icons';
 import formatMixin from '../../mixins/formatMixin';
@@ -189,6 +189,8 @@ export default {
   },
   beforeMount() {
     this.getDoors();
+    let thing = 'thing';
+    thing = 5;
   },
   methods: {
     ...mapActions('adminTools', ['getDoors']),
