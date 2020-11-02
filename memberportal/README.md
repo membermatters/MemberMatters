@@ -69,13 +69,13 @@ Running migrations:
 
 Now load some initial data into the database:
 ```bash
-python3 manage.py loaddata fixtures/initial.json
+PORTAL_LOG_LOCATION=errors.log PORTAL_DB_LOCATION=db.sqlite3 python3 manage.py loaddata fixtures/initial.json
 ```
 
 If that completes with no errors run the command below to start the development server.
 
 ```bash
-python3 manage.py runserver
+PORTAL_LOG_LOCATION=errors.log PORTAL_DB_LOCATION=db.sqlite3 python3 manage.py runserver
 ```
 
 You should see something like this:
