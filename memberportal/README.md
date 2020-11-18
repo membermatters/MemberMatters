@@ -24,7 +24,7 @@ You will need to install and use virtualenv on Mac in order to get your environm
 brew install python3
 pip3 install virtualenv
 virtualenv venv 
-source venv\bin\activate
+source venv/bin/activate
 pip3 install -r requirements.txt
 ```
 
@@ -126,11 +126,5 @@ You will need to re-run the database migration every time the db models change. 
 
 To test all of the features you will need some api keys. Define these as environment variables:
 * PORTAL_SENDGRID_API_KEY
-* PORTAL_TRELLO_API_KEY
-* PORTAL_TRELLO_API_TOKEN
-* PORTAL_STRIPE_PUBLIC_KEY
-* PORTAL_STRIPE_SECRET_KEY
 * PORTAL_XERO_CONSUMER_KEY
 * PORTAL_XERO_RSA_FILE (path to the rsa key)
-* PORTAL_DISCORD_INTERLOCK_WEBHOOK
-* PORTAL_DISCORD_DOOR_WEBHOOK

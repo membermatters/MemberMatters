@@ -21,15 +21,6 @@ PORTAL_SENDGRID_API_KEY=sg.xxxx
 
 PORTAL_XERO_CONSUMER_KEY=
 PORTAL_XERO_RSA_FILE=/path/to/xerkey.pem
-
-PORTAL_STRIPE_SECRET_KEY=<stripe>
-PORTAL_STRIPE_PUBLIC_KEY=<stripe>
-
-PORTAL_TRELLO_API_KEY=<trello>
-PORTAL_TRELLO_API_TOKEN=<trello>
-
-PORTAL_DISCORD_INTERLOCK_WEBHOOK=https://discordapp.com/api/webhooks/xxxx/xxxxxx
-PORTAL_DISCORD_DOOR_WEBHOOK=https://discordapp.com/api/webhooks/xxxx/xxxxxx
 ```
 
 Once you've downloaded the docker image and configured your environment variables, you'll need to create a container:
