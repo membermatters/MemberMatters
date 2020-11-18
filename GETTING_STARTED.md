@@ -34,8 +34,7 @@ Email: default@example.com
 Password: MemberMatters!
 ```
 
-The first thing you should do is change the email address and password of the default admin account. You can do that 
-by navigating to `http://<instance_url>/admin/profile/user` and clicking on the user on that list.
+The first thing you should do is change the email address and password of the default admin account.
 
 Once you've done all this, your MemberMatters instance is ready for use. Read on below for tips on customising 
 and deploying it.
