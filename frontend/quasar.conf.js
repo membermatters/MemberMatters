@@ -101,10 +101,10 @@ module.exports = configure((ctx) => ({
 
       cfg.resolve.alias = {
         ...cfg.resolve.alias,
-        '@components': path.resolve(__dirname, './src/components'),
-        '@icons': path.resolve(__dirname, './src/icons'),
-        '@store': path.resolve(__dirname, './src/store'),
-        '@mixins': path.resolve(__dirname, './src/mixins'),
+        '@components': path.resolve(__dirname, 'src/components/'),
+        '@icons': path.resolve(__dirname, 'src/icons/'),
+        '@store': path.resolve(__dirname, 'src/store/'),
+        '@mixins': path.resolve(__dirname, 'src/mixins/'),
       };
     },
   },
