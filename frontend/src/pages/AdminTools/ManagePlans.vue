@@ -4,11 +4,14 @@
   </q-page>
 </template>
 
-<script>
-import DoorsList from 'components/AdminTools/DoorsList';
+<script lang="ts">
+import DoorsList from '@components/AdminTools/DoorsList.vue';
 
 export default {
   name: 'ManagePlans',
   components: { DoorsList },
+  mounted() {
+    let thing = 'lol';
+  },
 };
 </script>

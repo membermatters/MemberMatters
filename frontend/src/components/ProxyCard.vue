@@ -56,8 +56,8 @@ export default {
   name: 'ProxyCard',
   props: {
     proxyCardInfo: {
-        type: Object,
-        default: () => {{}}
+      type: Object,
+      default: () => { {} },
     },
   },
   computed: {

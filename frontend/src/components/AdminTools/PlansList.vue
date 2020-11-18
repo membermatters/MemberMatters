@@ -1,6 +1,6 @@
 <template>
   <q-table
-    :data="interlocks"
+    :data="doors"
     :columns="[
       { name: 'id', label: 'ID', field: 'id', sortable: true },
       { name: 'name', label: 'Name', field: 'name', sortable: true },
@@ -9,14 +9,14 @@
         label: 'Last Seen',
         field: 'lastSeen',
         sortable: true,
-        format: (val, row) => this.formatDate(val)
+        format: (val) => formatDate(val)
       },
     ]"
     row-key="id"
     :filter="filter"
     :pagination.sync="pagination"
     :grid="$q.screen.xs"
-    :no-data-label="$t('interlocks.nodata')"
+    :no-data-label="$t('doors.nodata')"
   >
     <template v-slot:top-right>
       <q-input
@@ -71,11 +71,24 @@
 
             <q-item class="q-mt-sm row justify-center">
               <q-btn
+                :ref="`${props.row.id}-unlock`"
+                class="q-mr-sm"
+                size="sm"
+                color="accent"
+                @click="unlockDoor(props.row.id)"
+              >
+                <q-icon :name="icons.unlock" />
+                <q-tooltip>
+                  {{ $t('button.unlockDoor') }}
+                </q-tooltip>
+              </q-btn>
+
+              <q-btn
                 :ref="`${props.row.id}-reboot`"
                 class="q-mr-sm"
                 size="sm"
                 color="accent"
-                @click="rebootInterlock(props.row.id)"
+                @click="rebootDoor(props.row.id)"
               >
                 <q-icon :name="icons.reboot" />
                 <q-tooltip>
@@ -86,7 +99,7 @@
               <q-btn
                 size="sm"
                 color="accent"
-                :to="{name: 'manageInterlock', params: {interlockId: String(props.row.id)}}"
+                :to="{name: 'manageDoor', params: {doorId: String(props.row.id)}}"
               >
                 <q-icon :name="icons.settings" />
                 <q-tooltip>
@@ -110,7 +123,7 @@
         >
           <router-link
             v-if="col.label === 'Name'"
-            :to="{name: 'manageInterlock', params: {interlockId: String(props.row.id)}}"
+            :to="{name: 'manageDoor', params: {doorId: String(props.row.id)}}"
           >
             {{ col.value }}
           </router-link>
@@ -120,11 +133,24 @@
         </q-td>
         <q-td auto-width>
           <q-btn
+            :ref="`${props.row.id}-unlock`"
+            class="q-mr-sm"
+            size="sm"
+            color="accent"
+            @click="unlockDoor(props.row.id)"
+          >
+            <q-icon :name="icons.unlock" />
+            <q-tooltip>
+              {{ $t('button.unlockDoor') }}
+            </q-tooltip>
+          </q-btn>
+
+          <q-btn
             :ref="`${props.row.id}-reboot`"
             class="q-mr-sm"
             size="sm"
             color="accent"
-            @click="rebootInterlock(props.row.id)"
+            @click="rebootDoor(props.row.id)"
           >
             <q-icon :name="icons.reboot" />
             <q-tooltip>
@@ -137,17 +163,16 @@
   </q-table>
 </template>
 
-<script>
+<script lang="js">
 import { mapActions, mapGetters } from 'vuex';
 import icons from '../../icons';
 import formatMixin from '../../mixins/formatMixin';
 
 export default {
-  name: 'InterlocksList',
+  name: 'DoorsList',
   mixins: [formatMixin],
   data() {
     return {
-      loading: false,
       filter: '',
       pagination: {
         sortBy: 'lastSeen',
@@ -157,26 +182,40 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('adminTools', ['interlocks']),
+    ...mapGetters('adminTools', ['doors']),
     icons() {
       return icons;
     },
   },
-  mounted() {
-    this.getInterlocks();
+  beforeMount() {
+    this.getDoors();
+    let thing = 'thing';
+    thing = 5;
   },
   methods: {
-    ...mapActions('adminTools', ['getInterlocks']),
-    rebootInterlock(interlockId) {
-      this.$refs[`${interlockId}-reboot`].loading = true;
-      this.$axios.post(`/api/access/interlocks/${interlockId}/reboot/`)
+    ...mapActions('adminTools', ['getDoors']),
+    rebootDoor(doorId) {
+      this.$refs[`${doorId}-reboot`].loading = true;
+      this.$axios.post(`/api/access/doors/${doorId}/reboot/`)
         .catch(() => {
           this.$q.dialog({
             title: this.$t('error.error'),
             message: this.$t('error.requestFailed'),
           });
         }).finally(() => {
-          this.$refs[`${interlockId}-reboot`].loading = false;
+          this.$refs[`${doorId}-reboot`].loading = false;
+        });
+    },
+    unlockDoor(doorId) {
+      this.$refs[`${doorId}-unlock`].loading = true;
+      this.$axios.post(`/api/access/doors/${doorId}/unlock/`)
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('error.requestFailed'),
+          });
+        }).finally(() => {
+          this.$refs[`${doorId}-unlock`].loading = false;
         });
     },
   },

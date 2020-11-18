@@ -749,7 +749,7 @@ def reset_default_interlock_access(request):
 
         return JsonResponse({"success": True})
 
-    except:
+    except Exception as e:
         return JsonResponse(
             {
                 "success": False,

@@ -46,7 +46,6 @@
           ]"
         />
 
-
         <q-banner
           v-if="success"
           class="bg-positive text-white"

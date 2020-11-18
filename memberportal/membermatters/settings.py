@@ -17,14 +17,14 @@ from datetime import timedelta
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-sentry_sdk.init(
-    dsn="https://2f4ae7b6c5444de7bc7093fdce72267e@o402264.ingest.sentry.io/5263074",
-    environment=os.environ.get("PORTAL_ENV")
-    if os.environ.get("PORTAL_ENV")
-    else "UNKNOWN",
-    integrations=[DjangoIntegration()],
-    send_default_pii=True,
-)
+# sentry_sdk.init(
+#     dsn="https://2f4ae7b6c5444de7bc7093fdce72267e@o402264.ingest.sentry.io/5263074",
+#     environment=os.environ.get("PORTAL_ENV")
+#     if os.environ.get("PORTAL_ENV")
+#     else "UNKNOWN",
+#     integrations=[DjangoIntegration()],
+#     send_default_pii=True,
+# )
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

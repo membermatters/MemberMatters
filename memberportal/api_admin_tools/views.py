@@ -1,5 +1,6 @@
 from profile.models import User
 from access import models
+from profile import models as profile_models
 from constance import config
 from profile.emailhelpers import send_single_email
 import json
@@ -113,7 +114,9 @@ class MakeMember(APIView):
 
 class Doors(APIView):
     """
-    get: This method returns a list of doors.
+    get: returns a list of doors.
+    put: updates a specific door.
+    delete: deletes a specific door.
     """
 
     permission_classes = (permissions.IsAdminUser,)
@@ -165,7 +168,9 @@ class Doors(APIView):
 
 class Interlocks(APIView):
     """
-    get: This method returns a list of interlocks.
+    get: returns a list of interlocks.
+    put: update a specific interlock.
+    delete: delete a specific interlock.
     """
 
     permission_classes = (permissions.IsAdminUser,)
@@ -230,7 +235,7 @@ class MemberAccess(APIView):
 
 class MemberWelcomeEmail(APIView):
     """
-    get: This method sends a welcome email to the specified member.
+    post: This method sends a welcome email to the specified member.
     """
 
     permission_classes = (permissions.IsAdminUser,)
@@ -291,3 +296,54 @@ class MemberCreateNewInvoice(APIView):
 
         return Response()
 
+
+class Plans(APIView):
+    """
+    get: returns a list of plans.
+    post: creates a new plan.
+    put: updates a specified plan.
+    delete: deletes a specified plan
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request):
+        plans = profile_models.MemberTypes.objects.all()
+
+        def get_plan(plan):
+            return plan.get_object()
+
+        return Response(map(get_plan, plans))
+
+    def post(self, request):
+        data = request.data
+
+        plan = profile_models.MemberTypes.objects.create(
+            name=data.get("name"),
+            description=data.get("description"),
+            conditions=data.get("conditions"),
+            cost=data.get("cost")
+        )
+
+        return Response(plan.get_object())
+
+
+    def put(self, request, plan_id):
+        plan = profile_models.MemberTypes.objects.get(pk=plan_id)
+
+        data = request.data
+
+        plan.name = data.get("name")
+        plan.description = data.get("description")
+        plan.conditions = data.get("conditions")
+        plan.cost = data.get("cost")
+
+        plan.save()
+
+        return Response()
+
+    def delete(self, request, plan_id):
+        plan = profile_models.MemberTypes.objects.get(pk=plan_id)
+        plan.delete()
+
+        return Response()

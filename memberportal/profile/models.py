@@ -269,6 +269,15 @@ class MemberTypes(models.Model):
     conditions = models.CharField("Membership Conditions", max_length=100)
     cost = models.IntegerField("Monthly Cost (cents)")
 
+    def get_object(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "conditions": self.conditions,
+            "cost": self.cost,
+        }
+
     def __str__(self):
         return self.name + " - ${} per mth. {}".format(self.cost, self.conditions)
 
