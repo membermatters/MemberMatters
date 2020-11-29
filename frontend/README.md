@@ -21,6 +21,20 @@ npm run lint
 ```bash
 npm run build
 ```
+
+### Generate app icons
+This will generate the app icons for every supported target of the MemberMatters portal (web, iOS, Android and Electron).
+
+With the icon overlayed on a plain white splashscreen.
+```bash
+npm run icons
+```
+
+With the icon overlayed on a gradient background for the splashscreen.
+```bash
+npm run icons:bg
+```
+
 ### Contributing Guidelines
 This frontend project uses the Quasar framework for components and building/config. All source code
 can be found in the `src` folder.
