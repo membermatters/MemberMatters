@@ -6,6 +6,7 @@ import config from './modules/config';
 import tools from './modules/tools';
 import adminTools from './modules/adminTools';
 import rfid from './modules/rfid';
+import auth from './modules/auth';
 
 Vue.use(Vuex);
 
@@ -20,6 +21,7 @@ export default new Vuex.Store({
     tools,
     adminTools,
     rfid,
+    auth
   },
   plugins: [vuexLocal.plugin],
 });

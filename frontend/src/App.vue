@@ -129,7 +129,7 @@ export default {
           }
         })
         .catch((error) => {
-          throw error;
+          console.error("Unable to get portal config!");
         });
     },
   },

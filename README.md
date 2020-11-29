@@ -71,7 +71,7 @@ your code well and ensure compliance with any code formatting or linting that's 
 avoid "weird tricks" and optimisations that don't read easily - this is a web app not a high 
 performance algorithm. Your contributions *will* be rejected if you do not follow these guidelines so please be careful.
 
-## People using MemberMatters
-Feel free to add your organisation to this list (via a pull request) if you're actively using MemberMatters. Make sure to include a link to your website and the date you added it.
+## Organisations using MemberMatters
+Feel free to add your organisation to this list (via a pull request) if you're actively using MemberMatters and are a not for profit or similar. Make sure to include a link to your website and the date you added it.
 
 * [HSBNE Inc](https://hsbne.org) (January 2020) - Australia's largest makerspace based in Brisbane, QLD.

@@ -235,7 +235,7 @@
 
 <script>
 import { mapMutations, mapGetters, mapActions } from 'vuex';
-import { Loading } from 'quasar';
+import { Loading, Platform } from 'quasar';
 import formMixin from '../mixins/formMixin';
 
 export default {
@@ -280,7 +280,7 @@ export default {
       this.discourseSsoData = this.$route.query;
     }
 
-    if (this.loggedIn) this.redirectLoggedIn();
+    if (this.loggedIn) this.redirectLoggedIn(delay=false);
     if (this.resetToken) {
       Loading.show({ message: 'Validating request...' });
 
@@ -298,10 +298,11 @@ export default {
   methods: {
     ...mapActions('profile', ['getLoggedIn']),
     ...mapMutations('profile', ['setLoggedIn']),
+    ...mapMutations('auth', ['setAuth']),
     /**
      * Redirects to the dashboard page on successful login.
      */
-    redirectLoggedIn() {
+    redirectLoggedIn(delay=true) {
       this.loginFailed = false;
       this.loginError = false;
 
@@ -313,11 +314,13 @@ export default {
       this.loginComplete = true;
       this.$emit('login-complete');
       if (this.$route.query.redirect) this.$router.push(this.$route.query.redirect);
-      else if (!this.noRedirect) {
+      else if (!this.noRedirect && delay) {
         setTimeout(() => {
           this.setLoggedIn(true);
           this.$router.push({ name: 'dashboard' });
         }, 1000);
+      } else {
+        this.$router.push({ name: 'dashboard' });
       }
     },
     onReset() {
@@ -365,12 +368,39 @@ export default {
           .finally(() => {
             this.buttonLoading = false;
           });
-      } else {
+      } else if (this.$q.platform.is.ios) {
+        this.$axios.post('/api/token/obtain/', {
+          email: this.email,
+          password: this.password,
+        })
+          .then((response) => {
+            this.setAuth(response.data);
+            this.redirectLoggedIn();
+          })
+          .catch((error) => {
+            if (error.response.status === 401) {
+              this.loginFailed = true;
+              this.unverifiedEmail = false;
+            } else if (error.response.status === 403) {
+              this.unverifiedEmail = true;
+              this.loginFailed = false;
+              throw error;
+            } else {
+              this.loginError = true;
+              this.unverifiedEmail = false;
+              throw error;
+            }
+          })
+          .finally(() => {
+            this.buttonLoading = false;
+          });
+      }
+      else {
         this.$axios.post('/api/login/', {
           email: this.email,
           password: this.password,
         })
-          .then(() => {
+          .then((response) => {
             this.redirectLoggedIn();
           })
           .catch((error) => {

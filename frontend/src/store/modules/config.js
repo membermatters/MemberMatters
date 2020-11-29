@@ -85,7 +85,6 @@ export default {
           })
           .catch((error) => {
             reject();
-            throw error;
           });
       });
     },
