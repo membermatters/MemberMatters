@@ -171,11 +171,6 @@ class MemberBucksAddCard(APIView):
                     status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 )
 
-            log_user_event(
-                request.user, "Successfully saved payment details.", "stripe"
-            )
-            return None
-
         else:
             intent = stripe.SetupIntent.create(customer=profile.stripe_customer_id)
 

@@ -16,7 +16,7 @@
     :filter="filter"
     :pagination.sync="pagination"
     :grid="$q.screen.xs"
-    :no-data-label="$t('doors.nodata')"
+    :no-data-label="$t('plans.nodata')"
   >
     <template v-slot:top-right>
       <q-input
