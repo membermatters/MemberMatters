@@ -18,7 +18,7 @@ sudo -H pip3 install -r requirements.txt
 ```
  
 #### macOS
-You will need to install and use virtualenv on Mac in order to get your environment correct as there are conflicts with built in python on macOS.
+You should install and use virtualenv on macOS.
  
 ```bash
 brew install python3
@@ -32,6 +32,12 @@ You should see (venv) $ at your command prompt, letting you know that you’re r
 
 ```bash
 deactivate
+```
+
+#####
+Notes: if you're running macOS Big Sur (and/or an Apple Silicon Mac), you may need to run this command to install the dependencies:
+```
+CFLAGS='-I/usr/local/opt/zlib/include -L/usr/local/opt/zlib/lib' pip3 install -r requirements.txt
 ```
 
 #### Windows
