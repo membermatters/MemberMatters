@@ -15,5 +15,5 @@ pre-commit~=2.6.0
 djangorestframework~=3.11.1
 markdown~=3.2.2
 django-filter~=2.3.0
-djangorestframework-simplejwt~=4.4.0
+djangorestframework-simplejwt>=4.0.0
 sentry_sdk
