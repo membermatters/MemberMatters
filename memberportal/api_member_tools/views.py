@@ -167,7 +167,10 @@ class IssueDetail(APIView):
                 description,
                 from_user=True,
             ):
-                return Response({"success": True}, status=status.HTTP_201_CREATED,)
+                return Response(
+                    {"success": True},
+                    status=status.HTTP_201_CREATED,
+                )
 
             else:
                 return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -225,7 +228,7 @@ class MeetingList(APIView):
     """
 
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = Meeting.objects.filter(date__gt=datetime.datetime.now())
+    queryset = Meeting.objects.filter(date__gt=timezone.now())
 
     def get(self, request):
         def get_meeting(meeting):

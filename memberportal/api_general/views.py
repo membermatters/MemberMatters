@@ -99,14 +99,18 @@ class Login(APIView):
         if body.get("sso") is not None:
             if config.ENABLE_DISCOURSE_SSO_PROTOCOL:
                 sso_data = body.get("sso")
-                computed_signature = hmac.new(secret, sso_data['sso'].encode("utf-8"), digestmod=hashlib.sha256).hexdigest()
+                computed_signature = hmac.new(
+                    secret, sso_data["sso"].encode("utf-8"), digestmod=hashlib.sha256
+                ).hexdigest()
 
-                sso_payload = parse_qs(base64.b64decode(sso_data['sso']))
-                sig = sso_data['sig']
+                sso_payload = parse_qs(base64.b64decode(sso_data["sso"]))
+                sig = sso_data["sig"]
 
                 if computed_signature == sig:
-                    discourse_nonce = sso_payload[b'nonce'][0].decode("utf-8")
-                    discourse_redirect = sso_payload[b'return_sso_url'][0].decode("utf-8")
+                    discourse_nonce = sso_payload[b"nonce"][0].decode("utf-8")
+                    discourse_redirect = sso_payload[b"return_sso_url"][0].decode(
+                        "utf-8"
+                    )
                     discourse_login = True
 
                 else:
@@ -127,9 +131,16 @@ class Login(APIView):
                     "name": request.user.profile.get_full_name(),
                 }
                 payload = base64.b64encode(urlencode(payload).encode("utf-8"))
-                computed_signature = hmac.new(secret, payload, digestmod=hashlib.sha256).hexdigest()
+                computed_signature = hmac.new(
+                    secret, payload, digestmod=hashlib.sha256
+                ).hexdigest()
 
-                return Response({"redirect": f"{discourse_redirect}?sso={payload.decode('utf-8')}&sig={computed_signature}"}, status=status.HTTP_200_OK)
+                return Response(
+                    {
+                        "redirect": f"{discourse_redirect}?sso={payload.decode('utf-8')}&sig={computed_signature}"
+                    },
+                    status=status.HTTP_200_OK,
+                )
 
             else:
                 return Response(status=status.HTTP_200_OK)
@@ -154,9 +165,16 @@ class Login(APIView):
                         "name": user.profile.get_full_name(),
                     }
                     payload = base64.b64encode(urlencode(payload).encode("utf-8"))
-                    computed_signature = hmac.new(secret, payload, digestmod=hashlib.sha256).hexdigest()
+                    computed_signature = hmac.new(
+                        secret, payload, digestmod=hashlib.sha256
+                    ).hexdigest()
 
-                    return Response({"redirect": f"{discourse_redirect}?sso={payload.decode('utf-8')}&sig={computed_signature}"}, status=status.HTTP_200_OK)
+                    return Response(
+                        {
+                            "redirect": f"{discourse_redirect}?sso={payload.decode('utf-8')}&sig={computed_signature}"
+                        },
+                        status=status.HTTP_200_OK,
+                    )
 
                 else:
                     return Response(status=status.HTTP_200_OK)
@@ -165,12 +183,21 @@ class Login(APIView):
                 new_token = EmailVerificationToken.objects.create(user=user)
 
                 url = f"{config.SITE_URL}/profile/email/{new_token.verification_token}/verify/"
-                new_token.user.email_link("Action Required: Verify Email", "Verify Email", "Verify Email",
-                                          "Please verify your email address to activate your account.", url,
-                                          "Verify Now")
+                new_token.user.email_link(
+                    "Action Required: Verify Email",
+                    "Verify Email",
+                    "Verify Email",
+                    "Please verify your email address to activate your account.",
+                    url,
+                    "Verify Now",
+                )
 
-                return Response({"message": "loginCard.emailNotVerified"}, status=status.HTTP_403_FORBIDDEN)
+                return Response(
+                    {"message": "loginCard.emailNotVerified"},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
 
+        print("user was None")
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
@@ -204,7 +231,9 @@ class LoginKiosk(APIView):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         if not user.email_verified:
-            return Response({"message": "error.emailNotVerified"}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"message": "error.emailNotVerified"}, status=status.HTTP_403_FORBIDDEN
+            )
 
         # rfid matches a user so log them in
         if user is not None:
@@ -585,7 +614,7 @@ class Register(APIView):
 
         profile = Profile.objects.create(
             user=new_user,
-            member_type_id=2,
+            member_type_id=1,
             first_name=body.get("firstName"),
             last_name=body.get("lastName"),
             screen_name=body.get("screenName"),
@@ -600,9 +629,14 @@ class Register(APIView):
         verification_token = EmailVerificationToken.objects.create(user=new_user)
 
         url = f"{config.SITE_URL}/profile/email/{verification_token.verification_token}/verify/"
-        verification_token.user.email_link("Action Required: Verify Email", "Verify Email", "Verify Email",
-                                           "Please verify your email address to activate your account.", url,
-                                           "Verify Now")
+        verification_token.user.email_link(
+            "Action Required: Verify Email",
+            "Verify Email",
+            "Verify Email",
+            "Please verify your email address to activate your account.",
+            url,
+            "Verify Now",
+        )
 
         profile.email_profile_to(config.EMAIL_ADMIN)
 
@@ -631,12 +665,19 @@ class VerifyEmail(APIView):
 
     def post(self, request, verify_token):
         try:
-            verification_token = EmailVerificationToken.objects.get(verification_token=verify_token)
+            verification_token = EmailVerificationToken.objects.get(
+                verification_token=verify_token
+            )
 
         except EmailVerificationToken.DoesNotExist:
-            return Response({"message": "error.emailVerificationFailed"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"message": "error.emailVerificationFailed"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
-        if utc.localize(datetime.datetime.now()) < verification_token.creation_date + datetime.timedelta(hours=24):
+        if utc.localize(
+            datetime.datetime.now()
+        ) < verification_token.creation_date + datetime.timedelta(hours=24):
             verification_token.user.email_verified = True
             verification_token.user.save()
 
@@ -645,13 +686,23 @@ class VerifyEmail(APIView):
             return Response()
 
         else:
-            new_token = EmailVerificationToken.objects.create(user=verification_token.user)
+            new_token = EmailVerificationToken.objects.create(
+                user=verification_token.user
+            )
 
             url = f"{config.SITE_URL}/profile/email/{new_token.verification_token}/verify/"
-            new_token.user.email_link("Action Required: Verify Email", "Verify Email", "Verify Email",
-                                               "Please verify your email address to activate your account.", url,
-                                               "Verify Now")
+            new_token.user.email_link(
+                "Action Required: Verify Email",
+                "Verify Email",
+                "Verify Email",
+                "Please verify your email address to activate your account.",
+                url,
+                "Verify Now",
+            )
 
             verification_token.delete()
 
-            return Response({"message": "error.emailVerificationExpired"}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"message": "error.emailVerificationExpired"},
+                status=status.HTTP_403_FORBIDDEN,
+            )

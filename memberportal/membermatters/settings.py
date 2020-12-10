@@ -72,6 +72,8 @@ if os.environ.get("PORTAL_ENV") == "Production":
 
 # Application definition
 INSTALLED_APPS = [
+    "constance",
+    "constance.backends.database",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -88,7 +90,6 @@ INSTALLED_APPS = [
     "api_access",
     "api_meeting",
     "api_admin_tools",
-    "constance",
     "corsheaders",
     "rest_framework",
 ]
@@ -140,9 +141,15 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
 ]
 
 LOGGING = {
@@ -157,7 +164,13 @@ LOGGING = {
             ),
         },
     },
-    "loggers": {"django": {"handlers": ["file"], "level": "INFO", "propagate": True,},},
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
 }
 
 REST_FRAMEWORK = {
@@ -271,7 +284,7 @@ CONSTANCE_CONFIG = {
         "You can specify a different name for your admin group like executive or management committee.",
     ),
     "WEBCAM_PAGE_URLS": (
-        "",
+        "[]",
         "A JSON serialised array of URLs to pull webcam images from.",
     ),
     "HOME_PAGE_CARDS": (
@@ -279,7 +292,7 @@ CONSTANCE_CONFIG = {
         "You can specify cards that go on the home page with JSON. See https://github.com/MemberMatters/MemberMatters/blob/master/GETTING_STARTED.md.",
     ),
     "WELCOME_EMAIL_CARDS": (
-        "",
+        "[]",
         "Same syntax as HOME_PAGE_CARDS but icons are not used. If nothing is specified we will use HOME_PAGE_CARDS.",
     ),
     # Stripe config
@@ -328,8 +341,14 @@ CONSTANCE_CONFIG = {
     "SPACE_DIRECTORY_FED_SPACENET": (False, "Sets support for spacenet."),
     "SPACE_DIRECTORY_FED_SPACESAML": (False, "Sets support for spacesaml."),
     "SPACE_DIRECTORY_FED_SPACEPHONE": (False, "Sets support for spacephone."),
-    "SPACE_DIRECTORY_CAMS": ("[]", "A JSON list of strings (URLs) that webcam snapshots of the space can be found."),
-    "SPACE_DIRECTORY_CONTACT_EMAIL": ("notset@example.com", "Sets the general contact email."),
+    "SPACE_DIRECTORY_CAMS": (
+        "[]",
+        "A JSON list of strings (URLs) that webcam snapshots of the space can be found.",
+    ),
+    "SPACE_DIRECTORY_CONTACT_EMAIL": (
+        "notset@example.com",
+        "Sets the general contact email.",
+    ),
     "SPACE_DIRECTORY_CONTACT_TWITTER": ("", "Sets the twitter handle."),
     "SPACE_DIRECTORY_CONTACT_FACEBOOK": ("", "Sets the Facebook page URL."),
     "SPACE_DIRECTORY_CONTACT_PHONE": (
@@ -345,7 +364,10 @@ CONSTANCE_CONFIG = {
         "aud",
         "The currency to charge cards in - see Stripe documentation.",
     ),
-    "ENABLE_THEME_SWIPE": (False, "Enable playing a member's theme song on a swipe.",),
+    "ENABLE_THEME_SWIPE": (
+        False,
+        "Enable playing a member's theme song on a swipe.",
+    ),
     "THEME_SWIPE_URL": (
         "http://10.0.1.50/playmp3.php?nickname={}",
         "The URL to send a GET request to on a swipe if enabled.",
@@ -376,13 +398,22 @@ CONSTANCE_CONFIG = {
     ),
     "API_SECRET_KEY": (
         "PLEASE_CHANGE_ME",
-        "The API key used by the internal access system for device authentication."
-    )
+        "The API key used by the internal access system for device authentication.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
     [
-        ("General", ("SITE_NAME", "SITE_OWNER", "ENTITY_TYPE", "GOOGLE_ANALYTICS_PROPERTY_ID", "API_SECRET_KEY")),
+        (
+            "General",
+            (
+                "SITE_NAME",
+                "SITE_OWNER",
+                "ENTITY_TYPE",
+                "GOOGLE_ANALYTICS_PROPERTY_ID",
+                "API_SECRET_KEY",
+            ),
+        ),
         (
             "Contact Information",
             (
@@ -392,7 +423,10 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SITE_MAIL_ADDRESS",
             ),
         ),
-        ("Discourse SSO Protocol", ("ENABLE_DISCOURSE_SSO_PROTOCOL", "DISCOURSE_SSO_PROTOCOL_SECRET_KEY")),
+        (
+            "Discourse SSO Protocol",
+            ("ENABLE_DISCOURSE_SSO_PROTOCOL", "DISCOURSE_SSO_PROTOCOL_SECRET_KEY"),
+        ),
         ("URLs", ("SITE_URL", "MAIN_SITE_URL", "INDUCTION_URL")),
         ("Memberbucks", ("MEMBERBUCKS_MAX_TOPUP", "MEMBERBUCKS_CURRENCY")),
         ("Images", ("SITE_LOGO", "SITE_FAVICON")),
