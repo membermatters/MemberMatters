@@ -1,7 +1,13 @@
 # MemberMatters (frontend)
 
-The new MemberMatters frontend
+The new MemberMatters frontend. You'll need the backend API to use this UI. Please check the [memberportal](/memberportal) folder for instructions.
 
+The frontend software is a modern JavaScript SPA. It utilises Vue.js, Webpack, NPM, Capacitor and Electron. It also uses eslint for code formatting and linting.
+The frontend can be built into a normal SPA web app, a semi native iOS and Android app, and a desktop "kiosk" mode.
+
+# Getting Started
+
+Ensure you have nvm (node version manager) installed.
 ## Install the dependencies
 ```bash
 npm install
@@ -11,6 +17,11 @@ npm install
 ```bash
 npm run dev
 ```
+
+Take note of the IP and port. In this case, open your favourite browser and go to `http://127.0.0.1:8080/`. You should 
+be presented with the home page of the web app. Assuming you loaded the database fixtures in the backend, you can login with the username "default@example.com" and password 
+"MemberMatters!". You should create a new account, then use the default account to give your new account admin rights. You 
+should change the password of the default admin account or remove it.
 
 ### Lint the files
 ```bash
@@ -34,6 +45,7 @@ With the icon overlayed on a gradient background for the splashscreen.
 ```bash
 npm run icons:bg
 ```
+
 
 ### Contributing Guidelines
 This frontend project uses the Quasar framework for components and building/config. All source code

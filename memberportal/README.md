@@ -91,10 +91,7 @@ Django version 2.0.7, using settings 'membermatters.settings'
 Starting development server at http://127.0.0.1:8000/
 ```
 
-Take note of the IP and port. In this case, open your favourite browser and go to `http://127.0.0.1:8000/`. You should 
-be presented with the home page of the web app. You can login with the username "default@example.com" and password 
-"MemberMatters!". You should create a new account, then use the default account to give your new account admin rights. You 
-should change the password of the default admin account.
+Now that the backend API is running, you can head over to the [frontend](/frontend) folder and follow those instructions to get the frontend UI running.
 
 #### Pre-commit hooks
 Finally, you need to install the git pre-commit hooks:
