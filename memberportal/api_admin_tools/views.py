@@ -1,5 +1,6 @@
 from profile.models import User
 from access import models
+from .models import MemberTier, PaymentPlan
 from profile import models as profile_models
 from constance import config
 from profile.emailhelpers import send_single_email
@@ -306,52 +307,53 @@ class MemberCreateNewInvoice(APIView):
         return Response()
 
 
-class Plans(APIView):
+class MemberTier(APIView):
     """
-    get: returns a list of plans.
-    post: creates a new plan.
-    put: updates a specified plan.
-    delete: deletes a specified plan
+    get: gets a list of all member tiers.
+    post: creates a new member tier.
+    put: updates a new member tier.
+    delete: a member tier.
     """
 
     permission_classes = (permissions.IsAdminUser,)
 
     def get(self, request):
-        plans = profile_models.MemberTypes.objects.all()
+        tiers = MemberTier.objects.all()
 
-        def get_plan(plan):
-            return plan.get_object()
-
-        return Response(map(get_plan, plans))
+        return Response(tiers)
 
     def post(self, request):
-        data = request.data
+        profile = request.user.profile
+        payment_method_id = request.data.get("paymentMethodId")
 
-        plan = profile_models.MemberTypes.objects.create(
-            name=data.get("name"),
-            description=data.get("description"),
-            conditions=data.get("conditions"),
-            cost=data.get("cost"),
+        payment_method = stripe.PaymentMethod.retrieve(payment_method_id)
+
+        profile.stripe_card_last_digits = payment_method["card"]["last4"]
+        profile.stripe_card_expiry = f"{str(payment_method['card']['exp_month']).zfill(2)}/{str(payment_method['card']['exp_year'])}"
+        profile.stripe_payment_method_id = payment_method_id
+        profile.save()
+
+        subject = f"You just added a payment card to your {config.SITE_OWNER} account."
+        request.user.email_notification(
+            subject,
+            subject,
+            subject,
+            "Don't worry, your card details are stored safe "
+            "with Stripe and are not on our servers. You "
+            "can remove this card at any time via the "
+            f"{config.SITE_NAME}.",
         )
-
-        return Response(plan.get_object())
-
-    def put(self, request, plan_id):
-        plan = profile_models.MemberTypes.objects.get(pk=plan_id)
-
-        data = request.data
-
-        plan.name = data.get("name")
-        plan.description = data.get("description")
-        plan.conditions = data.get("conditions")
-        plan.cost = data.get("cost")
-
-        plan.save()
 
         return Response()
 
-    def delete(self, request, plan_id):
-        plan = profile_models.MemberTypes.objects.get(pk=plan_id)
-        plan.delete()
+    def delete(self, request):
+        profile = request.user.profile
 
+        if profile.stripe_payment_method_id:
+            stripe.PaymentMethod.detach(profile.stripe_payment_method_id)
+
+        profile.stripe_payment_method_id = ""
+        profile.stripe_card_last_digits = ""
+        profile.stripe_card_expiry = ""
+        profile.save()
         return Response()

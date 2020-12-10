@@ -41,6 +41,6 @@ urlpatterns = [
     path(
         "interlocks/<int:interlock_id>/", views.Interlocks.as_view(), name="Interlocks"
     ),
-    path("plans/", views.Plans.as_view(), name="Plans"),
-    path("plans/<int:plan_id>/", views.Plans.as_view(), name="Plans"),
+    path("tiers/", views.MemberTier.as_view(), name="MemberTier"),
+    path("tiers/:tier_id", views.MemberTier.as_view(), name="MemberTier"),
 ]
