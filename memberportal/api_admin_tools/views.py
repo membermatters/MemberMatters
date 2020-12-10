@@ -88,7 +88,10 @@ class MakeMember(APIView):
 
             if "Error" not in xero and "Error" not in invoice and email:
                 return Response(
-                    {"success": True, "message": "adminTools.makeMemberSuccess",}
+                    {
+                        "success": True,
+                        "message": "adminTools.makeMemberSuccess",
+                    }
                 )
 
             elif "Error" in xero:
@@ -104,11 +107,17 @@ class MakeMember(APIView):
 
             else:
                 return Response(
-                    {"success": False, "message": "adminTools.makeMemberError",}
+                    {
+                        "success": False,
+                        "message": "adminTools.makeMemberError",
+                    }
                 )
         else:
             return Response(
-                {"success": False, "message": "adminTools.makeMemberErrorExists",}
+                {
+                    "success": False,
+                    "message": "adminTools.makeMemberErrorExists",
+                }
             )
 
 
@@ -193,12 +202,12 @@ class Interlocks(APIView):
             }
 
         return Response(map(get_interlock, interlocks))
-    
+
     def put(self, request, interlock_id):
         interlock = models.Interlock.objects.get(pk=interlock_id)
 
         data = request.data
-        
+
         interlock.name = data.get("name")
         interlock.description = data.get("description")
         interlock.ip_address = data.get("ipAddress")
@@ -210,13 +219,13 @@ class Interlocks(APIView):
         interlock.hidden = data.get("hiddenToMembers")
 
         interlock.save()
-        
+
         return Response()
-    
+
     def delete(self, request, interlock_id):
         interlock = models.Interlock.objects.get(pk=interlock_id)
         interlock.delete()
-        
+
         return Response()
 
 
@@ -322,11 +331,10 @@ class Plans(APIView):
             name=data.get("name"),
             description=data.get("description"),
             conditions=data.get("conditions"),
-            cost=data.get("cost")
+            cost=data.get("cost"),
         )
 
         return Response(plan.get_object())
-
 
     def put(self, request, plan_id):
         plan = profile_models.MemberTypes.objects.get(pk=plan_id)

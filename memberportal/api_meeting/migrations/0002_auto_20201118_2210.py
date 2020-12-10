@@ -10,30 +10,41 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('api_meeting', '0001_initial'),
+        ("api_meeting", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('group', '0001_initial'),
+        ("group", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='proxyvote',
-            name='proxy_user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='held_proxies', to=settings.AUTH_USER_MODEL),
+            model_name="proxyvote",
+            name="proxy_user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="held_proxies",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
-            model_name='proxyvote',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="proxyvote",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
-            model_name='meeting',
-            name='attendees',
+            model_name="meeting",
+            name="attendees",
             field=models.ManyToManyField(to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
-            model_name='meeting',
-            name='group',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='group.Group'),
+            model_name="meeting",
+            name="group",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="group.Group",
+            ),
         ),
     ]

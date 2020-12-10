@@ -10,34 +10,48 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('access', '0001_initial'),
+        ("access", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='interlocklog',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="interlocklog",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
-            model_name='interlocklog',
-            name='user_off',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='user_off', to=settings.AUTH_USER_MODEL),
+            model_name="interlocklog",
+            name="user_off",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="user_off",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
-            model_name='doorlog',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="doorlog",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
-            model_name='interlocklog',
-            name='interlock',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='access.Interlock'),
+            model_name="interlocklog",
+            name="interlock",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="access.Interlock"
+            ),
         ),
         migrations.AddField(
-            model_name='doorlog',
-            name='door',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='access.Doors'),
+            model_name="doorlog",
+            name="door",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="access.Doors"
+            ),
         ),
     ]

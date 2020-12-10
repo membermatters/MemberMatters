@@ -10,66 +10,165 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='AccessControlledDevice',
+            name="AccessControlledDevice",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30, unique=True, verbose_name='Name')),
-                ('description', models.CharField(max_length=100, verbose_name='Description/Location')),
-                ('ip_address', models.GenericIPAddressField(blank=True, null=True, unique=True, verbose_name='IP Address of device')),
-                ('last_seen', models.DateTimeField(null=True)),
-                ('all_members', models.BooleanField(default=False, verbose_name='Members have access by default')),
-                ('locked_out', models.BooleanField(default=False, verbose_name='Maintenance lockout enabled')),
-                ('play_theme', models.BooleanField(default=False, verbose_name='Play theme on door swipe')),
-                ('exempt_signin', models.BooleanField(default=False, verbose_name='Exempt this device from requiring a sign in')),
-                ('hidden', models.BooleanField(default=False, verbose_name='Hidden from members in their access permissions screen')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(max_length=30, unique=True, verbose_name="Name"),
+                ),
+                (
+                    "description",
+                    models.CharField(
+                        max_length=100, verbose_name="Description/Location"
+                    ),
+                ),
+                (
+                    "ip_address",
+                    models.GenericIPAddressField(
+                        blank=True,
+                        null=True,
+                        unique=True,
+                        verbose_name="IP Address of device",
+                    ),
+                ),
+                ("last_seen", models.DateTimeField(null=True)),
+                (
+                    "all_members",
+                    models.BooleanField(
+                        default=False, verbose_name="Members have access by default"
+                    ),
+                ),
+                (
+                    "locked_out",
+                    models.BooleanField(
+                        default=False, verbose_name="Maintenance lockout enabled"
+                    ),
+                ),
+                (
+                    "play_theme",
+                    models.BooleanField(
+                        default=False, verbose_name="Play theme on door swipe"
+                    ),
+                ),
+                (
+                    "exempt_signin",
+                    models.BooleanField(
+                        default=False,
+                        verbose_name="Exempt this device from requiring a sign in",
+                    ),
+                ),
+                (
+                    "hidden",
+                    models.BooleanField(
+                        default=False,
+                        verbose_name="Hidden from members in their access permissions screen",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='DoorLog',
+            name="DoorLog",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateTimeField(default=django.utils.timezone.now)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date", models.DateTimeField(default=django.utils.timezone.now)),
             ],
         ),
         migrations.CreateModel(
-            name='InterlockLog',
+            name="InterlockLog",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, primary_key=True, serialize=False)),
-                ('first_heartbeat', models.DateTimeField(default=django.utils.timezone.now)),
-                ('last_heartbeat', models.DateTimeField(default=django.utils.timezone.now)),
-                ('session_complete', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4, primary_key=True, serialize=False
+                    ),
+                ),
+                (
+                    "first_heartbeat",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                (
+                    "last_heartbeat",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                ("session_complete", models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
-            name='Doors',
+            name="Doors",
             fields=[
-                ('accesscontrolleddevice_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='access.AccessControlledDevice')),
+                (
+                    "accesscontrolleddevice_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="access.AccessControlledDevice",
+                    ),
+                ),
             ],
             options={
-                'permissions': [('manage_doors', 'Can manage doors')],
+                "permissions": [("manage_doors", "Can manage doors")],
             },
-            bases=('access.accesscontrolleddevice',),
+            bases=("access.accesscontrolleddevice",),
         ),
         migrations.CreateModel(
-            name='Interlock',
+            name="Interlock",
             fields=[
-                ('accesscontrolleddevice_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='access.AccessControlledDevice')),
+                (
+                    "accesscontrolleddevice_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="access.AccessControlledDevice",
+                    ),
+                ),
             ],
             options={
-                'permissions': [('manage_interlocks', 'Can manage interlocks')],
+                "permissions": [("manage_interlocks", "Can manage interlocks")],
             },
-            bases=('access.accesscontrolleddevice',),
+            bases=("access.accesscontrolleddevice",),
         ),
         migrations.CreateModel(
-            name='MemberbucksDevice',
+            name="MemberbucksDevice",
             fields=[
-                ('accesscontrolleddevice_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='access.AccessControlledDevice')),
+                (
+                    "accesscontrolleddevice_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="access.AccessControlledDevice",
+                    ),
+                ),
             ],
-            bases=('access.accesscontrolleddevice',),
+            bases=("access.accesscontrolleddevice",),
         ),
     ]

@@ -9,37 +9,92 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='EmailVerificationToken',
+            name="EmailVerificationToken",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('creation_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('verification_token', models.UUIDField(default=uuid.uuid4)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "creation_date",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                ("verification_token", models.UUIDField(default=uuid.uuid4)),
             ],
         ),
         migrations.CreateModel(
-            name='Kiosk',
+            name="Kiosk",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30, unique=True, verbose_name='Name')),
-                ('kiosk_id', models.CharField(max_length=70, unique=True, verbose_name='Kiosk Id')),
-                ('ip_address', models.GenericIPAddressField(blank=True, null=True, unique=True, verbose_name='IP Address of device')),
-                ('last_seen', models.DateTimeField(null=True)),
-                ('play_theme', models.BooleanField(default=False, verbose_name='Play theme on door swipe')),
-                ('authorised', models.BooleanField(default=False, verbose_name='Is this kiosk authorised?')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(max_length=30, unique=True, verbose_name="Name"),
+                ),
+                (
+                    "kiosk_id",
+                    models.CharField(
+                        max_length=70, unique=True, verbose_name="Kiosk Id"
+                    ),
+                ),
+                (
+                    "ip_address",
+                    models.GenericIPAddressField(
+                        blank=True,
+                        null=True,
+                        unique=True,
+                        verbose_name="IP Address of device",
+                    ),
+                ),
+                ("last_seen", models.DateTimeField(null=True)),
+                (
+                    "play_theme",
+                    models.BooleanField(
+                        default=False, verbose_name="Play theme on door swipe"
+                    ),
+                ),
+                (
+                    "authorised",
+                    models.BooleanField(
+                        default=False, verbose_name="Is this kiosk authorised?"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='SiteSession',
+            name="SiteSession",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('signin_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('signout_date', models.DateTimeField(blank=True, null=True)),
-                ('guests', models.TextField(default='[]')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "signin_date",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                ("signout_date", models.DateTimeField(blank=True, null=True)),
+                ("guests", models.TextField(default="[]")),
             ],
         ),
     ]

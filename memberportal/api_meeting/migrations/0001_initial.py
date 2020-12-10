@@ -8,27 +8,65 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Meeting',
+            name="Meeting",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateTimeField(verbose_name='Date and time of meeting')),
-                ('type', models.CharField(choices=[('general', 'General'), ('agm', 'Annual General'), ('group', 'Group'), ('other', 'Other')], max_length=10, verbose_name='Meeting Type')),
-                ('chair', models.CharField(blank=True, max_length=20, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date", models.DateTimeField(verbose_name="Date and time of meeting")),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("general", "General"),
+                            ("agm", "Annual General"),
+                            ("group", "Group"),
+                            ("other", "Other"),
+                        ],
+                        max_length=10,
+                        verbose_name="Meeting Type",
+                    ),
+                ),
+                ("chair", models.CharField(blank=True, max_length=20, null=True)),
             ],
         ),
         migrations.CreateModel(
-            name='ProxyVote',
+            name="ProxyVote",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('user_city', models.CharField(blank=True, max_length=30, null=True)),
-                ('proxy_city', models.CharField(blank=True, max_length=30, null=True)),
-                ('created_date', models.DateTimeField(auto_now_add=True, verbose_name='Date proxy was created')),
-                ('meeting', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api_meeting.Meeting')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("user_city", models.CharField(blank=True, max_length=30, null=True)),
+                ("proxy_city", models.CharField(blank=True, max_length=30, null=True)),
+                (
+                    "created_date",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="Date proxy was created"
+                    ),
+                ),
+                (
+                    "meeting",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="api_meeting.Meeting",
+                    ),
+                ),
             ],
         ),
     ]

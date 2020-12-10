@@ -82,7 +82,10 @@ class UserManager(BaseUserManager):
         """
         Creates and saves a staff user with the given email and password.
         """
-        user = self.create_user(email, password=password,)
+        user = self.create_user(
+            email,
+            password=password,
+        )
         user.staff = True
         user.save(using=self._db)
         return user
@@ -91,7 +94,11 @@ class UserManager(BaseUserManager):
         """
         Creates and saves a superuser with the given email and password.
         """
-        user = self.create_user(email, password=password, is_superuser=True,)
+        user = self.create_user(
+            email,
+            password=password,
+            is_superuser=True,
+        )
         user.staff = True
         user.admin = True
         user.save(using=self._db)
@@ -100,7 +107,9 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
-        verbose_name="email address", max_length=255, unique=True,
+        verbose_name="email address",
+        max_length=255,
+        unique=True,
     )
     email_verified = models.BooleanField(default=True)
     password_reset_key = models.UUIDField(default=None, blank=True, null=True)
@@ -125,7 +134,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_admin(self):
         "Is the user a admin member?"
         return self.admin
-
 
     def __send_email(self, subject, body):
         if "PORTAL_SENDGRID_API_KEY" in os.environ:
@@ -514,16 +522,27 @@ class Profile(models.Model):
             "phone": self.phone,
             "state": self.get_state_display(),
             # "picture": picture,
-            "memberType": {"name": self.member_type.name, "id": self.member_type_id,},
+            "memberType": {
+                "name": self.member_type.name,
+                "id": self.member_type_id,
+            },
             "groups": self.groups.all().values(),
             "rfid": self.rfid,
             "memberBucks": {
                 "balance": self.memberbucks_balance,
-                "lastPurchase": self.last_memberbucks_purchase.strftime("%m/%d/%Y, %H:%M:%S") if self.last_memberbucks_purchase else None,
+                "lastPurchase": self.last_memberbucks_purchase.strftime(
+                    "%m/%d/%Y, %H:%M:%S"
+                )
+                if self.last_memberbucks_purchase
+                else None,
             },
             "updateProfileRequired": self.must_update_profile,
-            "lastSeen": self.last_seen.strftime("%m/%d/%Y, %H:%M:%S") if self.last_seen else None,
-            "lastInduction": self.last_induction.strftime("%m/%d/%Y, %H:%M:%S") if self.last_induction else None,
+            "lastSeen": self.last_seen.strftime("%m/%d/%Y, %H:%M:%S")
+            if self.last_seen
+            else None,
+            "lastInduction": self.last_induction.strftime("%m/%d/%Y, %H:%M:%S")
+            if self.last_induction
+            else None,
             "stripe": {
                 "cardExpiry": self.stripe_card_expiry,
                 "last4": self.stripe_card_last_digits,

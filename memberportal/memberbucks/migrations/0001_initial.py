@@ -7,19 +7,48 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='MemberBucks',
+            name="MemberBucks",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amount', models.FloatField(verbose_name='Amount')),
-                ('transaction_type', models.CharField(choices=[('stripe', 'Stripe Payment'), ('bank', 'Bank Transfer'), ('card', 'Membership Card'), ('web', 'Internal Web Payment')], max_length=10, verbose_name='Transaction Type')),
-                ('description', models.CharField(max_length=100, verbose_name='Description of Transaction')),
-                ('date', models.DateTimeField(auto_now_add=True)),
-                ('logging_info', models.TextField(blank=True, verbose_name='Detailed logging info from stripe.')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("amount", models.FloatField(verbose_name="Amount")),
+                (
+                    "transaction_type",
+                    models.CharField(
+                        choices=[
+                            ("stripe", "Stripe Payment"),
+                            ("bank", "Bank Transfer"),
+                            ("card", "Membership Card"),
+                            ("web", "Internal Web Payment"),
+                        ],
+                        max_length=10,
+                        verbose_name="Transaction Type",
+                    ),
+                ),
+                (
+                    "description",
+                    models.CharField(
+                        max_length=100, verbose_name="Description of Transaction"
+                    ),
+                ),
+                ("date", models.DateTimeField(auto_now_add=True)),
+                (
+                    "logging_info",
+                    models.TextField(
+                        blank=True, verbose_name="Detailed logging info from stripe."
+                    ),
+                ),
             ],
         ),
     ]

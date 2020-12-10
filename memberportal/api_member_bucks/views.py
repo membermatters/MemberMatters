@@ -92,7 +92,10 @@ class MemberBucksAddCard(APIView):
                 )
 
                 return Response(
-                    {"success": False, "message": err,},
+                    {
+                        "success": False,
+                        "message": err,
+                    },
                     status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 )
 
@@ -102,7 +105,10 @@ class MemberBucksAddCard(APIView):
                 )
 
                 return Response(
-                    {"success": False, "message": e,},
+                    {
+                        "success": False,
+                        "message": e,
+                    },
                     status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 )
 
@@ -115,7 +121,10 @@ class MemberBucksAddCard(APIView):
                 )
 
                 return Response(
-                    {"success": False, "message": e,},
+                    {
+                        "success": False,
+                        "message": e,
+                    },
                     status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 )
 
@@ -127,7 +136,10 @@ class MemberBucksAddCard(APIView):
                 )
 
                 return Response(
-                    {"success": False, "message": e,},
+                    {
+                        "success": False,
+                        "message": e,
+                    },
                     status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 )
 
@@ -139,7 +151,10 @@ class MemberBucksAddCard(APIView):
                 )
 
                 return Response(
-                    {"success": False, "message": e,},
+                    {
+                        "success": False,
+                        "message": e,
+                    },
                     status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 )
 
@@ -152,7 +167,10 @@ class MemberBucksAddCard(APIView):
                 )
 
                 return Response(
-                    {"success": False, "message": e,},
+                    {
+                        "success": False,
+                        "message": e,
+                    },
                     status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 )
 

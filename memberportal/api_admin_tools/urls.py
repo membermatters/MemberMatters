@@ -38,7 +38,9 @@ urlpatterns = [
     path("doors/", views.Doors.as_view(), name="Doors"),
     path("interlocks/", views.Interlocks.as_view(), name="Interlocks"),
     path("doors/<int:door_id>/", views.Doors.as_view(), name="Doors"),
-    path("interlocks/<int:interlock_id>/", views.Interlocks.as_view(), name="Interlocks"),
+    path(
+        "interlocks/<int:interlock_id>/", views.Interlocks.as_view(), name="Interlocks"
+    ),
     path("plans/", views.Plans.as_view(), name="Plans"),
     path("plans/<int:plan_id>/", views.Plans.as_view(), name="Plans"),
 ]
