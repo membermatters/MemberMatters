@@ -1,0 +1,194 @@
+<template>
+  <div>
+    <q-dialog v-model="addTierDialog" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm">{{$t("tiers.add")}}</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-form
+        ref="formRef"
+        @submit="submitTier()"
+      >
+
+        <q-input
+          v-model="form.name"
+          outlined
+          :debounce="debounceLength"
+          :label="$t('form.name')"
+          :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+          :disable="form.success"
+        />
+
+        <q-input
+          v-model="form.description"
+          outlined
+          :debounce="debounceLength"
+          :label="$t('form.description')"
+          :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+          :disable="form.success"
+        />
+
+        <q-checkbox v-model="form.visible"  :label="$t('form.visibleToMembers')" />
+
+        <q-banner
+          v-if="form.success"
+          class="bg-positive text-white q-my-md"
+        >
+          {{ $t('tierForm.success') }}
+        </q-banner>
+
+        <q-banner
+          v-if="form.error"
+          class="bg-negative text-white q-my-md"
+        >
+          {{ $t('tierForm.fail') }}
+        </q-banner>
+
+        <q-card-actions
+          v-if="!form.success"
+          align="right"
+          class="text-primary"
+        >
+          <q-btn
+            v-close-popup
+            flat
+            :label="$t('button.cancel')"
+            :disable="loading"
+          />
+          <q-btn
+            color="primary"
+            :label="$t('button.submit')"
+            :loading="loading"
+            :disable="loading"
+            type="submit"
+          />
+        </q-card-actions>
+
+        <q-card-actions
+          v-else
+          align="right"
+          class="text-primary"
+        >
+          <q-btn
+            v-close-popup
+            flat
+            :label="$t('button.close')"
+            @click="resetForm()"
+          />
+        </q-card-actions>
+      </q-form>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <q-table
+      :data="tiers"
+      :columns="[
+        { name: 'name', label: 'Name', field: 'name', sortable: true },
+        { name: 'description',
+          label: 'Description',
+          field: 'description'
+        },
+      ]"
+      row-key="name"
+      :filter="filter"
+      :pagination.sync="pagination"
+      :grid="$q.screen.xs"
+      :no-data-label="$t('tiers.nodata')"
+    >
+      <template v-slot:top-right>
+        <q-input
+          v-model="filter"
+          outlined
+          dense
+          debounce="300"
+          placeholder="Search"
+        >
+          <template v-slot:append>
+            <q-icon :name="icons.search" />
+          </template>
+        </q-input>
+      </template>
+      <template v-slot:top-left>
+        <q-btn @click="addTierDialog = true;" round color="primary" :icon="icons.addAlternative">
+          <q-tooltip :delay="500">{{$t("tiers.add")}}</q-tooltip>
+        </q-btn>
+      </template>
+    </q-table>
+  </div>
+</template>
+
+<script lang="js">
+import { mapActions, mapGetters } from 'vuex';
+import icons from '../../icons';
+import formatMixin from '../../mixins/formatMixin';
+import formMixin from '../../mixins/formMixin';
+
+export default {
+  name: 'TiersList',
+  mixins: [formatMixin, formMixin],
+  data() {
+    return {
+      addTierDialog: false,
+      loading: false,
+      form: {
+        error: false,
+        success: false,
+        name: '',
+        description: '',
+        visible: false,
+      },
+      filter: '',
+      pagination: {
+        sortBy: 'name',
+        descending: true,
+        rowsPerPage: this.$q.screen.xs ? 3 : 10,
+      },
+    };
+  },
+  computed: {
+    ...mapGetters('adminTools', ['tiers']),
+    icons() {
+      return icons;
+    },
+  },
+  beforeMount() {
+    this.getTiers();
+  },
+  methods: {
+    ...mapActions('adminTools', ['getTiers']),
+    submitTier() {
+      this.loading = true;
+
+      this.$axios.post('/api/admin/tiers/', this.form)
+        .then(() => {
+          this.form.error = false;
+          this.form.success = true;
+          this.getTiers();
+        })
+        .catch(() => {
+          this.form.error = true;
+        })
+        .finally(() => { this.loading = false; });
+    },
+    resetForm() {
+      this.form = {
+        error: false,
+        success: false,
+        name: '',
+        description: '',
+        visible: false,
+      };
+      this.loading = false;
+    }
+  },
+};
+</script>
+
+<style lang="stylus" scoped>
+  @media (max-width: $breakpoint-xs-max)
+    .access-list
+      width: 100%;
+</style>

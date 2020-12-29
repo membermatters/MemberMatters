@@ -9,6 +9,7 @@ export default {
     kiosks: [],
     doors: [],
     interlocks: [],
+    tiers: [],
   },
   getters: {
     meetings: (state) => state.meetings,
@@ -16,6 +17,7 @@ export default {
     kiosks: (state) => state.kiosks,
     doors: (state) => state.doors,
     interlocks: (state) => state.interlocks,
+    tiers: (state) => state.tiers,
   },
   mutations: {
     setMeetings(state, payload) {
@@ -32,6 +34,9 @@ export default {
     },
     setInterlocks(state, payload) {
       state.interlocks = payload;
+    },
+    setTiers(state, payload) {
+      state.tiers = payload;
     },
   },
   actions: {
@@ -97,6 +102,19 @@ export default {
         Vue.prototype.$axios.get('/api/admin/interlocks/')
           .then((result) => {
             commit('setInterlocks', result.data);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getTiers({ commit }) {
+      return new Promise((resolve, reject) => {
+        Vue.prototype.$axios.get('/api/admin/tiers/')
+          .then((result) => {
+            commit('setTiers', result.data);
             resolve();
           })
           .catch((error) => {

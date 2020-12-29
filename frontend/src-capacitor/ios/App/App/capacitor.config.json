@@ -3,8 +3,5 @@
   "appName": "MemberMatters",
   "bundledWebRuntime": false,
   "npmClient": "npm",
-  "webDir": "www",
-  "server": {
-    "url": "http://192.168.0.203:8080"
-  }
+  "webDir": "www"
 }

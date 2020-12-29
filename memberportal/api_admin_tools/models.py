@@ -1,9 +1,10 @@
 from django.db import models
 
 
+# This is a Strie Product
 class MemberTier(models.Model):
-    """[A membership tier that a member can be billed for.]
-    """
+    """[A membership tier that a member can be billed for.]"""
+
     name = models.CharField("Name", max_length=30, unique=True)
     description = models.CharField("Description", max_length=50, unique=True)
     stripe_id = models.CharField("Stripe Id", max_length=100, unique=True)
@@ -13,14 +14,11 @@ class MemberTier(models.Model):
         return self.name
 
 
+# This is a Stripe Price
 class PaymentPlan(models.Model):
-    """[A payment plan that specifies how a member is billed for a member tier.]
-    """
-    BILLING_PERIODS = [
-        ("Months", "months"),
-        ("Weeks", "weeks"),
-        ("Days", "days")
-    ]
+    """[A payment plan that specifies how a member is billed for a member tier.]"""
+
+    BILLING_PERIODS = [("Months", "months"), ("Weeks", "weeks"), ("Days", "days")]
 
     name = models.CharField("Name", max_length=30, unique=True)
     stripe_id = models.CharField("Stripe Id", max_length=100, unique=True)
@@ -28,7 +26,9 @@ class PaymentPlan(models.Model):
     visible = models.BooleanField("Is this plan visible to members?", default=True)
 
     cost = models.IntegerField("The cost in cents for this payment plan.")
-    interval = models.IntegerField("The interval the price is charged at (per billing period).")
+    interval = models.IntegerField(
+        "The interval the price is charged at (per billing period)."
+    )
     period = models.CharField(choices=BILLING_PERIODS, max_length=10)
 
     def __str__(self):
