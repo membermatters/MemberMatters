@@ -11,7 +11,7 @@ export default {
     logout: 'Logout',
     register: 'Register',
     registerSuccess: 'Successfully Registered',
-    plans: 'Membership Plans',
+    tiers: 'Membership Tiers',
 
     adminTools: 'Admin Tools',
     groupMembers: 'Group Members',
@@ -179,6 +179,7 @@ export default {
     meetingType: 'Meeting Type',
     meetingDate: 'Meeting Date',
     name: 'Name',
+    description: 'Description',
     playTheme: 'Play Theme Song',
     ipAddress: 'IP Address',
     lastSeen: 'Last Seen',
@@ -189,6 +190,7 @@ export default {
     memberType: 'Membership Type',
     id: 'Member ID',
     admin: 'Admin User',
+    visibleToMembers: "Visible to members?",
   },
   digitalId: {
     title: 'Digital ID',
@@ -350,11 +352,23 @@ export default {
     ipAddress: 'Door IP Address',
     remove: 'Remove this door',
   },
-  plans: {
-    nodata: 'There are no plans in the system.',
+  paymentPlans: {
+    nodata: 'There are no payment plans available.',
     name: 'Plan Name',
-    description: 'Plan Description',
-    remove: 'Remove this plan',
+    description: 'Payment Plan Description',
+    remove: 'Remove this payment plan',
+    add: 'Add a new payment plan',
+  },
+  tiers: {
+    nodata: 'There are no membership tiers in the system.',
+    name: 'Tier Name',
+    description: 'Tier Description',
+    remove: 'Remove this tier',
+    add: 'Add a new tier',
+  },
+  tierForm: {
+    fail: "Failed to add a new tier.",
+    success: "Successfully added new tier."
   },
   interlocks: {
     nodata: 'There are no interlocks in the system.',

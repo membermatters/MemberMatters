@@ -5,6 +5,9 @@ from profile import models as profile_models
 from constance import config
 from profile.emailhelpers import send_single_email
 import json
+import stripe
+
+stripe.api_key = config.STRIPE_SECRET_KEY
 
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -307,7 +310,7 @@ class MemberCreateNewInvoice(APIView):
         return Response()
 
 
-class MemberTier(APIView):
+class MemberTiers(APIView):
     """
     get: gets a list of all member tiers.
     post: creates a new member tier.
@@ -319,20 +322,33 @@ class MemberTier(APIView):
 
     def get(self, request):
         tiers = MemberTier.objects.all()
+        formatted_tiers = []
 
-        return Response(tiers)
+        for tier in tiers:
+            formatted_tiers.append(
+                {
+                    "id": tier.id,
+                    "name": tier.name,
+                    "description": tier.description,
+                    "visible": tier.visible,
+                }
+            )
+
+        return Response(formatted_tiers)
 
     def post(self, request):
-        print(request.data["name"])
-        name = request.data["name"]
-        description = request.data["description"]
-        stripe_id = request.data["stripeId"]
-        visible = request.data["visible"]
-
-        tier = MemberTier.objects.create()
+        body = request.data
+        product = stripe.Product.create(
+            name=body["name"], description=body["description"]
+        )
+        tier = MemberTier.objects.create(
+            name=body["name"],
+            description=body["description"],
+            visible=body["visible"],
+            stripe_id=product.id,
+        )
 
         return Response()
 
     def delete(self, request):
-        tier = MemberTier.objects.get(pk=request.data["id"])
         return Response()

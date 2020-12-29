@@ -273,7 +273,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class MemberTypes(models.Model):
     name = models.CharField("Member Type Name", max_length=20)
-    description = models.CharField("Description", null=True, blank=True, max_length=100)
     conditions = models.CharField("Membership Conditions", max_length=100)
     cost = models.IntegerField("Monthly Cost (cents)")
 

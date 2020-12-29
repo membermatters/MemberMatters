@@ -67,11 +67,11 @@ const PageAndRouteConfig = [
       },
       {
         icon: icons.plans,
-        to: '/manage/plans',
-        name: 'plans',
+        to: '/manage/tiers',
+        name: 'tiers',
         loggedIn: true,
         admin: true,
-        component: () => import('pages/AdminTools/ManagePlans'),
+        component: () => import('pages/AdminTools/ManageTiers'),
       },
       {
         icon: icons.doors,
