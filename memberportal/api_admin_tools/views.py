@@ -323,37 +323,16 @@ class MemberTier(APIView):
         return Response(tiers)
 
     def post(self, request):
-        profile = request.user.profile
-        payment_method_id = request.data.get("paymentMethodId")
+        print(request.data["name"])
+        name = request.data["name"]
+        description = request.data["description"]
+        stripe_id = request.data["stripeId"]
+        visible = request.data["visible"]
 
-        payment_method = stripe.PaymentMethod.retrieve(payment_method_id)
-
-        profile.stripe_card_last_digits = payment_method["card"]["last4"]
-        profile.stripe_card_expiry = f"{str(payment_method['card']['exp_month']).zfill(2)}/{str(payment_method['card']['exp_year'])}"
-        profile.stripe_payment_method_id = payment_method_id
-        profile.save()
-
-        subject = f"You just added a payment card to your {config.SITE_OWNER} account."
-        request.user.email_notification(
-            subject,
-            subject,
-            subject,
-            "Don't worry, your card details are stored safe "
-            "with Stripe and are not on our servers. You "
-            "can remove this card at any time via the "
-            f"{config.SITE_NAME}.",
-        )
+        tier = MemberTier.objects.create()
 
         return Response()
 
     def delete(self, request):
-        profile = request.user.profile
-
-        if profile.stripe_payment_method_id:
-            stripe.PaymentMethod.detach(profile.stripe_payment_method_id)
-
-        profile.stripe_payment_method_id = ""
-        profile.stripe_card_last_digits = ""
-        profile.stripe_card_expiry = ""
-        profile.save()
+        tier = MemberTier.objects.get(pk=request.data["id"])
         return Response()

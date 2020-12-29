@@ -1,15 +1,15 @@
 <template>
   <q-page class="column flex content-center justify-start">
-    <plans-list />
+    <member-tiers-lst/>
   </q-page>
 </template>
 
 <script lang="ts">
-import PlansList from '@components/AdminTools/PlansList.vue';
+import MemberTiersList from '@components/AdminTools/MemberTiersList.vue';
 
 export default {
   name: 'ManagePlans',
-  components: { PlansList },
+  components: { MemberTiersList },
   mounted() {
     let thing = 'lol';
   },
