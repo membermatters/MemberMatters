@@ -350,6 +350,12 @@ export default {
     ipAddress: 'Door IP Address',
     remove: 'Remove this door',
   },
+  plans: {
+    nodata: 'There are no plans in the system.',
+    name: 'Plan Name',
+    description: 'Plan Description',
+    remove: 'Remove this plan',
+  },
   interlocks: {
     nodata: 'There are no interlocks in the system.',
     name: 'Interlock Name',

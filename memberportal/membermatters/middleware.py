@@ -4,7 +4,7 @@ from django.middleware.csrf import get_token
 
 class ForceCsrfCookieMiddleware(MiddlewareMixin):
     """
-        This makes the CSRF cookie included in every page.
+    This makes the CSRF cookie included in every page.
     """
 
     def process_request(self, request):

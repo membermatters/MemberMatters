@@ -15,7 +15,11 @@ urlpatterns = [
     path("api/login/", views.Login.as_view(), name="login"),
     path("api/loggedin/", views.LoggedIn.as_view(), name="loggedin"),
     path("api/register/", views.Register.as_view(), name="register"),
-    path("api/email/<uuid:verify_token>/verify/", views.VerifyEmail.as_view(), name="verify_email"),
+    path(
+        "api/email/<uuid:verify_token>/verify/",
+        views.VerifyEmail.as_view(),
+        name="verify_email",
+    ),
     path("api/login/kiosk/", views.LoginKiosk.as_view(), name="login_kiosk"),
     path("api/password/reset/", views.ResetPassword, name="api_reset_password"),
     path("api/logout/", views.Logout, name="api_logout"),
@@ -36,6 +40,10 @@ urlpatterns = [
         views.UserSiteSession.as_view(),
         name="api_user_site_session",
     ),
-    path("api/statistics/", views.Statistics.as_view(), name="api_statistics",),
+    path(
+        "api/statistics/",
+        views.Statistics.as_view(),
+        name="api_statistics",
+    ),
     path("api/kiosks/<int:id>/", views.Kiosks.as_view(), name="api_kiosks"),
 ]

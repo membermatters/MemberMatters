@@ -17,7 +17,12 @@ class Meeting(models.Model):
 
     date = models.DateTimeField("Date and time of meeting")
     type = models.CharField("Meeting Type", max_length=10, choices=MEETING_TYPES)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True,)
+    group = models.ForeignKey(
+        Group,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
     chair = models.CharField(max_length=20, null=True, blank=True)
     attendees = models.ManyToManyField(settings.AUTH_USER_MODEL)
 

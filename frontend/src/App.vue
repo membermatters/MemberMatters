@@ -15,46 +15,14 @@
 
 <script>
 // We should include Stripe everywhere to enable better fraud protection
-import {loadStripe} from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
-import {mapActions, mapGetters, mapMutations} from 'vuex';
+import { mapActions, mapGetters, mapMutations } from 'vuex';
 import Vue from 'vue';
-import {colors, Dark, Platform} from 'quasar';
+import { colors, Dark, Platform } from 'quasar';
 import Settings from 'components/Settings';
 import store from './store/index';
 import LoginCard from './components/LoginCard';
-
-if (Platform.is.electron) {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { remote, webFrame } = require('electron');
-  const {getCurrentWebContents, Menu, MenuItem} = remote;
-  //
-  let rightClickPosition;
-  //
-  const contextMenu = new Menu();
-  const menuItem = new MenuItem(
-    {
-      label: 'Inspect Element',
-      click: () => {
-        const factor = webFrame.getZoomFactor();
-        const x = Math.round(rightClickPosition.x * factor);
-        const y = Math.round(rightClickPosition.y * factor);
-        getCurrentWebContents().inspectElement(x, y);
-      },
-    },
-  );
-  contextMenu.append(menuItem);
-
-  window.addEventListener(
-    'contextmenu',
-    (event) => {
-      event.preventDefault();
-      rightClickPosition = {x: event.x, y: event.y};
-      contextMenu.popup();
-    },
-    false,
-  );
-}
 
 colors.setBrand('dark', '#313131');
 
@@ -75,7 +43,7 @@ Vue.prototype.$stripeElementsStyle = () => ({
 
 export default {
   name: 'App',
-  components: {Settings, LoginCard},
+  components: { Settings, LoginCard },
   store,
   data() {
     return {
@@ -98,22 +66,22 @@ export default {
   beforeCreate() {
     if (Platform.is.electron) {
       this.$axios.interceptors.request.use(async (config) => {
-          // Grab the csrf token
-          const cookies = await remote.session.defaultSession.cookies.get(
-            {url: process.env.apiBaseUrl},
-          );
+        // Grab the csrf token
+        const cookies = await remote.session.defaultSession.cookies.get(
+          { url: process.env.apiBaseUrl },
+        );
 
-          if (!cookies.length) return config;
+        if (!cookies.length) return config;
 
-          const [csrfToken] = cookies.filter((cookie) => cookie.name === 'csrftoken');
+        const [csrfToken] = cookies.filter((cookie) => cookie.name === 'csrftoken');
 
-          config.headers['X-CSRFTOKEN'] = csrfToken.value;
+        config.headers['X-CSRFTOKEN'] = csrfToken.value;
 
-          return config;
-        },
-        (error) => {
-          Promise.reject(error);
-        });
+        return config;
+      },
+      (error) => {
+        Promise.reject(error);
+      });
     }
 
     this.$axios.interceptors.response.use((response) => response, (error) => {
@@ -161,7 +129,7 @@ export default {
           }
         })
         .catch((error) => {
-          throw error;
+          console.error("Unable to get portal config!");
         });
     },
   },

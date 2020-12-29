@@ -134,3 +134,4 @@ memberportal/static/
 .viminfo
 .config
 frontend/src-electron/icons/
+.eslintcache

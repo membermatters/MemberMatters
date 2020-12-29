@@ -1,8 +1,12 @@
 {
-  "extends": "@quasar/app/tsconfig-preset",
   "compilerOptions": {
-    "baseUrl": ".",
-    "strictNullChecks": false,
+    "target": "es5",
+    "strict": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "baseUrl": "./src",
+    "paths": {
+      "@components/*": ["components/*"],
   },
-  "noImplicitAny": false
+  }
 }

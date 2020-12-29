@@ -48,17 +48,7 @@
       "xero_account_number": "",
       "groups": [],
       "doors": [],
-      "interlocks": [],
-      "can_manage_access": true,
-      "can_disable_members": true,
-      "can_see_members_personal_details": true,
-      "can_see_members_memberbucks": true,
-      "can_see_members_logs": true,
-      "can_manage_doors": true,
-      "can_manage_interlocks": true,
-      "can_manage_groups": true,
-      "can_add_group": true,
-      "can_generate_invoice": true
+      "interlocks": []
     }
   }
 ]

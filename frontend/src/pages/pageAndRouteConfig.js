@@ -203,7 +203,6 @@ const PageAndRouteConfig = [
     component: () => import('pages/Registration'),
   },
 
-
   // These are endpoints that handle specific tasks and are not directly accessed.
   {
     icon: icons.signin, // specify the icon to use

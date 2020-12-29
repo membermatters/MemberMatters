@@ -1,5 +1,7 @@
 from profile.models import User
 from access import models
+from .models import MemberTier, PaymentPlan
+from profile import models as profile_models
 from constance import config
 from profile.emailhelpers import send_single_email
 import json
@@ -87,7 +89,10 @@ class MakeMember(APIView):
 
             if "Error" not in xero and "Error" not in invoice and email:
                 return Response(
-                    {"success": True, "message": "adminTools.makeMemberSuccess",}
+                    {
+                        "success": True,
+                        "message": "adminTools.makeMemberSuccess",
+                    }
                 )
 
             elif "Error" in xero:
@@ -103,17 +108,25 @@ class MakeMember(APIView):
 
             else:
                 return Response(
-                    {"success": False, "message": "adminTools.makeMemberError",}
+                    {
+                        "success": False,
+                        "message": "adminTools.makeMemberError",
+                    }
                 )
         else:
             return Response(
-                {"success": False, "message": "adminTools.makeMemberErrorExists",}
+                {
+                    "success": False,
+                    "message": "adminTools.makeMemberErrorExists",
+                }
             )
 
 
 class Doors(APIView):
     """
-    get: This method returns a list of doors.
+    get: returns a list of doors.
+    put: updates a specific door.
+    delete: deletes a specific door.
     """
 
     permission_classes = (permissions.IsAdminUser,)
@@ -165,7 +178,9 @@ class Doors(APIView):
 
 class Interlocks(APIView):
     """
-    get: This method returns a list of interlocks.
+    get: returns a list of interlocks.
+    put: update a specific interlock.
+    delete: delete a specific interlock.
     """
 
     permission_classes = (permissions.IsAdminUser,)
@@ -188,12 +203,12 @@ class Interlocks(APIView):
             }
 
         return Response(map(get_interlock, interlocks))
-    
+
     def put(self, request, interlock_id):
         interlock = models.Interlock.objects.get(pk=interlock_id)
 
         data = request.data
-        
+
         interlock.name = data.get("name")
         interlock.description = data.get("description")
         interlock.ip_address = data.get("ipAddress")
@@ -205,13 +220,13 @@ class Interlocks(APIView):
         interlock.hidden = data.get("hiddenToMembers")
 
         interlock.save()
-        
+
         return Response()
-    
+
     def delete(self, request, interlock_id):
         interlock = models.Interlock.objects.get(pk=interlock_id)
         interlock.delete()
-        
+
         return Response()
 
 
@@ -230,7 +245,7 @@ class MemberAccess(APIView):
 
 class MemberWelcomeEmail(APIView):
     """
-    get: This method sends a welcome email to the specified member.
+    post: This method sends a welcome email to the specified member.
     """
 
     permission_classes = (permissions.IsAdminUser,)
@@ -291,3 +306,54 @@ class MemberCreateNewInvoice(APIView):
 
         return Response()
 
+
+class MemberTier(APIView):
+    """
+    get: gets a list of all member tiers.
+    post: creates a new member tier.
+    put: updates a new member tier.
+    delete: a member tier.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request):
+        tiers = MemberTier.objects.all()
+
+        return Response(tiers)
+
+    def post(self, request):
+        profile = request.user.profile
+        payment_method_id = request.data.get("paymentMethodId")
+
+        payment_method = stripe.PaymentMethod.retrieve(payment_method_id)
+
+        profile.stripe_card_last_digits = payment_method["card"]["last4"]
+        profile.stripe_card_expiry = f"{str(payment_method['card']['exp_month']).zfill(2)}/{str(payment_method['card']['exp_year'])}"
+        profile.stripe_payment_method_id = payment_method_id
+        profile.save()
+
+        subject = f"You just added a payment card to your {config.SITE_OWNER} account."
+        request.user.email_notification(
+            subject,
+            subject,
+            subject,
+            "Don't worry, your card details are stored safe "
+            "with Stripe and are not on our servers. You "
+            "can remove this card at any time via the "
+            f"{config.SITE_NAME}.",
+        )
+
+        return Response()
+
+    def delete(self, request):
+        profile = request.user.profile
+
+        if profile.stripe_payment_method_id:
+            stripe.PaymentMethod.detach(profile.stripe_payment_method_id)
+
+        profile.stripe_payment_method_id = ""
+        profile.stripe_card_last_digits = ""
+        profile.stripe_card_expiry = ""
+        profile.save()
+        return Response()

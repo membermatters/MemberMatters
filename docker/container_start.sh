@@ -10,7 +10,7 @@ cd memberportal
 python manage.py migrate
 
 if [ ! -f /usr/src/data/setupcomplete ]; then
-    echo "WARNING: Setup has not completed. Populating database with defaults."
+    echo "INFO: Detected a first time run. Populating the database with defaults."
     python manage.py loaddata initial
     touch /usr/src/data/setupcomplete
 fi

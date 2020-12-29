@@ -4,4 +4,4 @@
 /src-cordova
 /.quasar
 /node_modules
-.eslintrc.js
+/src-ssr
