@@ -50,6 +50,16 @@ const PageAndRouteConfig = [
         component: () => import("pages/AdminTools/Members"),
       },
       {
+        icon: icons.members,
+        to: "/manage/members/:memberId",
+        name: "manageMember",
+        loggedIn: true,
+        admin: true,
+        hiddenMenu: true,
+        backButton: true,
+        component: () => import("pages/AdminTools/ManageMember"),
+      },
+      {
         icon: icons.meetings,
         to: "/manage/meetings",
         name: "meetings",
@@ -68,7 +78,7 @@ const PageAndRouteConfig = [
       {
         icon: icons.plans,
         to: "/manage/tiers",
-        name: "tiers",
+        name: "manageTiers",
         loggedIn: true,
         admin: true,
         component: () => import("pages/AdminTools/ManageTiers"),
@@ -76,10 +86,11 @@ const PageAndRouteConfig = [
       {
         icon: icons.members,
         to: "/manage/tiers/:tierId",
-        name: "tier",
+        name: "manageTier",
         loggedIn: true,
         admin: true,
         hiddenMenu: true,
+        backButton: true,
         component: () => import("pages/AdminTools/ManageTier"),
       },
       {
@@ -91,12 +102,32 @@ const PageAndRouteConfig = [
         component: () => import("pages/AdminTools/Doors"),
       },
       {
+        icon: icons.doors,
+        to: "/manage/doors/:doorId",
+        name: "manageDoor",
+        loggedIn: true,
+        admin: true,
+        hiddenMenu: true,
+        backButton: true,
+        component: () => import("pages/AdminTools/ManageDoor"),
+      },
+      {
         icon: icons.interlocks,
         to: "/manage/interlocks",
         name: "interlocks",
         loggedIn: true,
         admin: true,
         component: () => import("pages/AdminTools/Interlocks"),
+      },
+      {
+        icon: icons.interlocks,
+        to: "/manage/interlocks/:interlockId",
+        name: "manageInterlock",
+        loggedIn: true,
+        admin: true,
+        hiddenMenu: true,
+        backButton: true,
+        component: () => import("pages/AdminTools/ManageInterlock"),
       },
       {
         icon: icons.kiosks,
@@ -240,33 +271,6 @@ const PageAndRouteConfig = [
     name: "Error404", // specify the name of this URL route
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
     component: () => import("pages/Error404"), // which component to load as the page
-  },
-  {
-    icon: icons.doors,
-    to: "/manage/doors/:doorId",
-    name: "manageDoor",
-    loggedIn: true,
-    admin: true,
-    hiddenMenu: true,
-    component: () => import("pages/AdminTools/ManageDoor"),
-  },
-  {
-    icon: icons.doors,
-    to: "/manage/interlocks/:interlockId",
-    name: "manageInterlock",
-    loggedIn: true,
-    admin: true,
-    hiddenMenu: true,
-    component: () => import("pages/AdminTools/ManageInterlock"),
-  },
-  {
-    icon: icons.members,
-    to: "/manage/members/:memberId",
-    name: "manageMember",
-    loggedIn: true,
-    admin: true,
-    hiddenMenu: true,
-    component: () => import("pages/AdminTools/ManageMember"),
   },
 ];
 

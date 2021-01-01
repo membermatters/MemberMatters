@@ -11,7 +11,8 @@ export default {
     logout: "Logout",
     register: "Register",
     registerSuccess: "Successfully Registered",
-    tiers: "Membership Tiers",
+    manageTiers: "Membership Tiers",
+    manageTier: "Manage Tier",
 
     adminTools: "Admin Tools",
     groupMembers: "Group Members",

@@ -14,7 +14,7 @@ const menuRoutes = mainMenu.map((menuItem) => {
           : () => import("pages/Error404.vue"),
         name: child.name ? child.name : null,
         props: true,
-        meta: { title: child.name, loggedIn: child.loggedIn, kiosk: child.kiosk },
+        meta: { title: child.name, loggedIn: child.loggedIn, kiosk: child.kiosk, backButton: child.backButton },
       });
     });
 
@@ -26,7 +26,7 @@ const menuRoutes = mainMenu.map((menuItem) => {
         : () => import("pages/Error404.vue"),
       name: menuItem.name ? menuItem.name : null,
       props: true,
-      meta: { title: menuItem.name, loggedIn: menuItem.loggedIn, kiosk: menuItem.kiosk },
+      meta: { title: menuItem.name, loggedIn: menuItem.loggedIn, kiosk: menuItem.kiosk, backButton: menuItem.backButton },
     };
   }
 
@@ -38,7 +38,7 @@ const menuRoutes = mainMenu.map((menuItem) => {
       : () => import("pages/Error404.vue"),
     name: menuItem.name ? menuItem.name : null,
     props: true,
-    meta: { title: menuItem.name, loggedIn: menuItem.loggedIn, kiosk: menuItem.kiosk },
+    meta: { title: menuItem.name, loggedIn: menuItem.loggedIn, kiosk: menuItem.kiosk, backButton: menuItem.backButton },
   };
 });
 
