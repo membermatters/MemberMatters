@@ -6,7 +6,7 @@
         outlined
         :debounce="debounceLength"
         :label="$t('form.email')"
-        :rules="[ val => validateEmail(val) || $t('validation.invalidEmail')]"
+        :rules="[(val) => validateEmail(val) || $t('validation.invalidEmail')]"
         @input="saveChange('email')"
       >
         <template v-slot:append>
@@ -23,7 +23,9 @@
         outlined
         :debounce="debounceLength"
         :label="$t('form.firstName')"
-        :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+        :rules="[
+          (val) => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+        ]"
         @input="saveChange('firstName')"
       >
         <template v-slot:append>
@@ -40,7 +42,9 @@
         outlined
         :debounce="debounceLength"
         :label="$t('form.lastName')"
-        :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+        :rules="[
+          (val) => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+        ]"
         @input="saveChange('lastName')"
       >
         <template v-slot:append>
@@ -57,7 +61,9 @@
         outlined
         :debounce="debounceLength"
         :label="$t('form.phone')"
-        :rules="[ val => validateNotEmpty(val) || $t('validation.invalidPhone')]"
+        :rules="[
+          (val) => validateNotEmpty(val) || $t('validation.invalidPhone'),
+        ]"
         @input="saveChange('phone')"
       >
         <template v-slot:append>
@@ -74,7 +80,9 @@
         outlined
         :debounce="debounceLength"
         :label="$t('form.screenName')"
-        :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+        :rules="[
+          (val) => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+        ]"
         @input="saveChange('screenName')"
       >
         <template v-slot:append>
@@ -96,7 +104,9 @@
         :options="groups"
         option-value="id"
         option-label="name"
-        :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+        :rules="[
+          (val) => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+        ]"
         @input="saveChange('groups')"
       >
         <template v-slot:append>
@@ -112,13 +122,13 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import icons from '../icons';
-import formMixin from '../mixins/formMixin';
-import SavedNotification from './SavedNotification';
+import { mapGetters, mapActions } from "vuex";
+import icons from "../icons";
+import formMixin from "../mixins/formMixin";
+import SavedNotification from "./SavedNotification";
 
 export default {
-  name: 'ProfileForm',
+  name: "ProfileForm",
   components: {
     SavedNotification,
   },
@@ -126,11 +136,11 @@ export default {
   data() {
     return {
       form: {
-        email: '',
-        firstName: '',
-        lastName: '',
-        phone: '',
-        screenName: '',
+        email: "",
+        firstName: "",
+        lastName: "",
+        phone: "",
+        screenName: "",
         groups: [],
       },
       saved: {
@@ -147,7 +157,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions('profile', ['getProfile']),
+    ...mapActions("profile", ["getProfile"]),
     loadInitialForm() {
       this.form.email = this.profile.email;
       this.form.firstName = this.profile.firstName;
@@ -158,21 +168,21 @@ export default {
     },
     saveChange(field) {
       this.$refs.formRef.validate(false).then(() => {
-        this.$refs.formRef.validate(false)
-          .then((result) => {
-            if (result) {
-              this.$axios.put('/api/profile/', this.form)
-                .then(() => {
-                  this.saved.error = false;
-                  this.saved[field] = true;
-                  this.getProfile();
-                })
-                .catch(() => {
-                  this.saved.error = true;
-                  this.saved[field] = true;
-                });
-            }
-          });
+        this.$refs.formRef.validate(false).then((result) => {
+          if (result) {
+            this.$axios
+              .put("/api/profile/", this.form)
+              .then(() => {
+                this.saved.error = false;
+                this.saved[field] = true;
+                this.getProfile();
+              })
+              .catch(() => {
+                this.saved.error = true;
+                this.saved[field] = true;
+              });
+          }
+        });
       });
     },
   },
@@ -185,8 +195,8 @@ export default {
     this.loadInitialForm();
   },
   computed: {
-    ...mapGetters('profile', ['profile']),
-    ...mapGetters('config', ['groups']),
+    ...mapGetters("profile", ["profile"]),
+    ...mapGetters("config", ["groups"]),
     icons() {
       return icons;
     },
@@ -195,7 +205,7 @@ export default {
 </script>
 
 <style lang="sass">
-  .profile-form
-    max-width: $maxWidthMedium
-    width: 100%
+.profile-form
+  max-width: $maxWidthMedium
+  width: 100%
 </style>

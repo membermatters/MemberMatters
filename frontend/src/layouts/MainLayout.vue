@@ -140,19 +140,19 @@
 </template>
 
 <script>
-import EssentialLink from 'components/EssentialLink';
-import { mapActions, mapGetters } from 'vuex';
-import Transitions, { FadeTransition } from 'vue2-transitions';
-import Vue from 'vue';
-import { Platform } from 'quasar';
-import icons from '../icons';
-import MainMenu from '../pages/pageAndRouteConfig';
-import mainMixin from '../mixins/mainMixin';
+import EssentialLink from "components/EssentialLink";
+import { mapActions, mapGetters } from "vuex";
+import Transitions, { FadeTransition } from "vue2-transitions";
+import Vue from "vue";
+import { Platform } from "quasar";
+import icons from "../icons";
+import MainMenu from "../pages/pageAndRouteConfig";
+import mainMixin from "../mixins/mainMixin";
 
 Vue.use(Transitions);
 
 export default {
-  name: 'MainLayout',
+  name: "MainLayout",
   components: {
     EssentialLink,
     FadeTransition,
@@ -166,22 +166,22 @@ export default {
     };
   },
   methods: {
-    ...mapActions('profile', ['getProfile']),
+    ...mapActions("profile", ["getProfile"]),
   },
   computed: {
     Platform() {
       return Platform;
     },
-    ...mapGetters('profile', ['loggedIn', 'profile']),
-    ...mapGetters('config', ['siteName']),
-    ...mapGetters('rfid', ['connected']),
+    ...mapGetters("profile", ["loggedIn", "profile"]),
+    ...mapGetters("config", ["siteName"]),
+    ...mapGetters("rfid", ["connected"]),
     icons() {
       return icons;
     },
     toolbarTitle() {
       const nameKey = `menuLink.${this.$route.meta.title}`;
       const name = `${this.$t(nameKey)}`;
-      return this.$route.meta.title ? name : this.$t('error.pageNotFound');
+      return this.$route.meta.title ? name : this.$t("error.pageNotFound");
     },
     filteredLinks() {
       return this.essentialLinks.filter((link) => {

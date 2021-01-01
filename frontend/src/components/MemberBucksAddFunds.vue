@@ -99,11 +99,11 @@
 </template>
 
 <script>
-import icons from 'src/icons';
-import { mapGetters, mapActions } from 'vuex';
+import icons from "src/icons";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
-  name: 'MemberBucksAddFunds',
+  name: "MemberBucksAddFunds",
   data() {
     return {
       addFundsError: null,
@@ -112,8 +112,8 @@ export default {
     };
   },
   methods: {
-    ...mapActions('profile', ['getProfile']),
-    ...mapActions('tools', ['getMemberBucksTransactions', 'getMemberBucksBalance']),
+    ...mapActions("profile", ["getProfile"]),
+    ...mapActions("tools", ["getMemberBucksTransactions", "getMemberBucksBalance"]),
     addFunds(amount) {
       this.addingFunds = true;
       this.addFundsSuccess = false;
@@ -126,7 +126,7 @@ export default {
           this.addFundsSuccess = true;
         })
         .catch(() => {
-          this.addFundsError = this.$t('memberbucks.addCardError');
+          this.addFundsError = this.$t("memberbucks.addCardError");
         })
         .finally(() => {
           this.addingFunds = false;
@@ -139,10 +139,10 @@ export default {
       this.$refs.dialog.hide();
     },
     onDialogHide() {
-      this.$emit('hide');
+      this.$emit("hide");
     },
     onOKClick() {
-      this.$emit('ok');
+      this.$emit("ok");
       this.hide();
     },
     onCancelClick() {
@@ -150,12 +150,12 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('profile', ['profile']),
+    ...mapGetters("profile", ["profile"]),
     icons() {
       return icons;
     },
     balance() {
-      return this.$n(this.profile.financial.memberBucks.balance, 'currency');
+      return this.$n(this.profile.financial.memberBucks.balance, "currency");
     },
   },
 };

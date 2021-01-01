@@ -13,7 +13,7 @@
 
 <script>
 export default {
-  name: 'KioskDetails',
+  name: "KioskDetails",
   props: {
     kiosk: {
       type: Object,

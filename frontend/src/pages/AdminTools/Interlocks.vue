@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import InterlocksList from 'components/AdminTools/InterlocksList';
+import InterlocksList from "components/AdminTools/InterlocksList";
 
 export default {
-  name: 'ManageDoors',
+  name: "ManageDoors",
   components: { InterlocksList },
 };
 </script>

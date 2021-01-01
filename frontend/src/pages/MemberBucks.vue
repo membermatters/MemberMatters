@@ -5,11 +5,11 @@
 </template>
 
 <script>
-import ManageMemberBucks from 'components/MemberBucks';
-import icons from '../icons';
+import ManageMemberBucks from "components/MemberBucks";
+import icons from "../icons";
 
 export default {
-  name: 'MemberBucks',
+  name: "MemberBucks",
   components: { ManageMemberBucks },
   props: {
     dialog: {
@@ -19,7 +19,7 @@ export default {
   },
   data() {
     return {
-      text: '',
+      text: "",
     };
   },
   computed: {

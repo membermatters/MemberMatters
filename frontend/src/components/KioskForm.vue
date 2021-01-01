@@ -73,12 +73,12 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import icons from '../icons';
-import formMixin from '../mixins/formMixin';
+import { mapGetters, mapActions } from "vuex";
+import icons from "../icons";
+import formMixin from "../mixins/formMixin";
 
 export default {
-  name: 'KioskForm',
+  name: "KioskForm",
   mixins: [formMixin],
   props: {
     kioskId: {
@@ -93,7 +93,7 @@ export default {
         error: false,
         success: false,
 
-        name: '',
+        name: "",
         authorised: false,
         playTheme: false,
         kioskId: null,
@@ -101,7 +101,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions('adminTools', ['getKiosks']),
+    ...mapActions("adminTools", ["getKiosks"]),
     updateKiosk() {
       this.loading = true;
 
@@ -125,7 +125,7 @@ export default {
     this.form.kioskId = kioskInfo.kioskId;
   },
   computed: {
-    ...mapGetters('adminTools', ['kiosks']),
+    ...mapGetters("adminTools", ["kiosks"]),
     icons() {
       return icons;
     },

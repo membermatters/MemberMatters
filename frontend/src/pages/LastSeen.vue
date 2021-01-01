@@ -8,10 +8,10 @@
 </template>
 
 <script>
-import LastSeenList from '../components/LastSeenList';
+import LastSeenList from "../components/LastSeenList";
 
 export default {
-  name: 'LastSeenPage',
+  name: "LastSeenPage",
   components: { LastSeenList },
 };
 </script>

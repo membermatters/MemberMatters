@@ -394,13 +394,13 @@
 </template>
 
 <script>
-import AccessList from 'components/AccessList';
-import formMixin from 'src/mixins/formMixin';
-import SavedNotification from 'components/SavedNotification';
-import { mapGetters } from 'vuex';
+import AccessList from "components/AccessList";
+import formMixin from "src/mixins/formMixin";
+import SavedNotification from "components/SavedNotification";
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'ManageMember',
+  name: "ManageMember",
   components: { AccessList, SavedNotification },
   mixins: [formMixin],
   props: {
@@ -417,17 +417,17 @@ export default {
     return {
       stateLoading: false,
       welcomeLoading: false,
-      tab: 'profile',
+      tab: "profile",
       access: {},
       profileForm: {
-        email: '',
-        rfidCard: '',
-        firstName: '',
-        lastName: '',
-        phone: '',
-        screenName: '',
+        email: "",
+        rfidCard: "",
+        firstName: "",
+        lastName: "",
+        phone: "",
+        screenName: "",
         groups: [],
-        memberType: '',
+        memberType: "",
       },
       saved: {
         // if there was an error saving the form
@@ -482,14 +482,14 @@ export default {
       this.$axios.post(`/api/admin/members/${this.member.id}/sendwelcome/`)
         .then(() => {
           this.$q.dialog({
-            title: this.$t('success'),
-            message: this.$t('adminTools.sendWelcomeEmailSuccess'),
+            title: this.$t("success"),
+            message: this.$t("adminTools.sendWelcomeEmailSuccess"),
           });
         })
         .catch(() => {
           this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
+            title: this.$t("error.error"),
+            message: this.$t("error.requestFailed"),
           });
         })
         .finally(() => {
@@ -499,30 +499,30 @@ export default {
     createInvoice() {
       let emailInvoice = false;
       this.$q.dialog({
-        title: this.$t('confirmAction'),
-        message: this.$t('adminTools.confirmInvoice'),
-        ok: 'Ok',
-        cancel: 'Cancel',
+        title: this.$t("confirmAction"),
+        message: this.$t("adminTools.confirmInvoice"),
+        ok: "Ok",
+        cancel: "Cancel",
       }).onOk(() => {
         this.$q.dialog({
-          title: this.$t('confirmAction'),
-          message: this.$t('adminTools.confirmInvoiceEmail'),
-          ok: 'Email Them',
-          cancel: 'Don\'t Email',
+          title: this.$t("confirmAction"),
+          message: this.$t("adminTools.confirmInvoiceEmail"),
+          ok: "Email Them",
+          cancel: "Don't Email",
         }).onOk(() => {
           emailInvoice = true;
         }).onDismiss(() => {
           this.$axios.post(`/api/admin/members/${this.member.id}/invoice/${emailInvoice}/`)
             .then(() => {
               this.$q.dialog({
-                title: this.$t('success'),
-                message: this.$t('adminTools.createInvoiceSuccess'),
+                title: this.$t("success"),
+                message: this.$t("adminTools.createInvoiceSuccess"),
               });
             })
             .catch(() => {
               this.$q.dialog({
-                title: this.$t('error.error'),
-                message: this.$t('error.requestFailed'),
+                title: this.$t("error.error"),
+                message: this.$t("error.requestFailed"),
               });
             });
         });
@@ -533,12 +533,12 @@ export default {
       this.$axios.post(`/api/admin/members/${this.member.id}/state/${state}/`)
         .catch(() => {
           this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
+            title: this.$t("error.error"),
+            message: this.$t("error.requestFailed"),
           });
         })
         .finally(() => {
-          this.$emit('update-members');
+          this.$emit("update-members");
           setTimeout(() => { this.stateLoading = false; }, 1200);
         });
     },
@@ -548,30 +548,30 @@ export default {
         .then((response) => {
           if (response.data.success) {
             this.$q.dialog({
-              title: this.$t('adminTools.makeMemberSuccess'),
-              message: this.$t('adminTools.makeMemberSuccessDescription'),
+              title: this.$t("adminTools.makeMemberSuccess"),
+              message: this.$t("adminTools.makeMemberSuccessDescription"),
             });
           } else {
             this.$q.dialog({
-              title: this.$t('error.error'),
+              title: this.$t("error.error"),
               message: this.$t(response.data.message),
             });
           }
         })
         .catch(() => {
           this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
+            title: this.$t("error.error"),
+            message: this.$t("error.requestFailed"),
           });
         })
         .finally(() => {
-          this.$emit('update-members');
+          this.$emit("update-members");
           setTimeout(() => { this.stateLoading = false; }, 1200);
         });
     },
   },
   computed: {
-    ...mapGetters('config', ['groups', 'memberTypes']),
+    ...mapGetters("config", ["groups", "memberTypes"]),
     selectedMember() {
       if (this.members) {
         return this.members.find((e) => e.id === this.member.id);

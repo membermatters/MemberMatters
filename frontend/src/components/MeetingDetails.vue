@@ -71,10 +71,10 @@
 </template>
 
 <script>
-import formatMixin from '../mixins/formatMixin';
+import formatMixin from "../mixins/formatMixin";
 
 export default {
-  name: 'MeetingsDetails',
+  name: "MeetingsDetails",
   mixins: [formatMixin],
   props: {
     attendees: {

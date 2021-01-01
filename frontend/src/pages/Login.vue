@@ -22,11 +22,11 @@
 </template>
 
 <script>
-import LoginRfidCard from 'components/LoginRfidCard';
-import LoginCard from '../components/LoginCard';
+import LoginRfidCard from "components/LoginRfidCard";
+import LoginCard from "../components/LoginCard";
 
 export default {
-  name: 'LoginPage',
+  name: "LoginPage",
   components: {
     LoginRfidCard,
     LoginCard,

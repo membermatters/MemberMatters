@@ -28,17 +28,17 @@
 </template>
 
 <script>
-import ProfileForm from '../components/ProfileForm';
-import icons from '../icons';
-import DigitalIdCard from '../components/DigitalIdCard';
-import ChangePasswordCard from '../components/ChangePasswordCard';
+import ProfileForm from "../components/ProfileForm";
+import icons from "../icons";
+import DigitalIdCard from "../components/DigitalIdCard";
+import ChangePasswordCard from "../components/ChangePasswordCard";
 
 export default {
-  name: 'ProfilePage',
+  name: "ProfilePage",
   components: { ChangePasswordCard, DigitalIdCard, ProfileForm },
   data() {
     return {
-      text: '',
+      text: "",
       digitalId: false,
       changePassword: false,
     };

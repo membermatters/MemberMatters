@@ -1,5 +1,5 @@
-import enAU from './en-AU';
+import enAU from "./en-AU";
 
 export default {
-  'en-AU': enAU,
+  "en-AU": enAU,
 };

@@ -85,37 +85,37 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import MemberBucksAddFunds from 'components/MemberBucksAddFunds';
-import MemberBucksManageBilling from 'components/MemberBucksManageBilling';
-import icons from '../icons';
-import formatMixin from '../mixins/formatMixin';
+import { mapActions, mapGetters } from "vuex";
+import MemberBucksAddFunds from "components/MemberBucksAddFunds";
+import MemberBucksManageBilling from "components/MemberBucksManageBilling";
+import icons from "../icons";
+import formatMixin from "../mixins/formatMixin";
 
 export default {
-  name: 'MemberBucks',
+  name: "MemberBucks",
   mixins: [formatMixin],
   props: {
     dialog: {
       type: String,
-      default: 'transactions',
+      default: "transactions",
     },
   },
   data() {
     return {
-      filter: '',
+      filter: "",
       loading: false,
       pagination: {
-        sortBy: 'date',
+        sortBy: "date",
         descending: true,
         rowsPerPage: this.$q.screen.xs ? 3 : 12,
       },
-      testDialog: '',
+      testDialog: "",
     };
   },
   methods: {
-    ...mapActions('tools', ['getMemberBucksTransactions', 'getMemberBucksBalance']),
+    ...mapActions("tools", ["getMemberBucksTransactions", "getMemberBucksBalance"]),
     closeBothDialogs() {
-      this.$router.push({ name: 'memberbucks', params: { dialog: 'transactions' } });
+      this.$router.push({ name: "memberbucks", params: { dialog: "transactions" } });
     },
     openAddFundsDialog() {
       this.$q.dialog({
@@ -130,9 +130,9 @@ export default {
       });
     },
     addFunds() {
-      this.$router.push({ name: 'memberbucks', params: { dialog: 'add' } })
+      this.$router.push({ name: "memberbucks", params: { dialog: "add" } })
         .catch((error) => {
-          if (error.name === 'NavigationDuplicated') {
+          if (error.name === "NavigationDuplicated") {
             this.openAddFundsDialog();
           } else {
             throw error;
@@ -140,9 +140,9 @@ export default {
         });
     },
     manageBilling() {
-      this.$router.push({ name: 'memberbucks', params: { dialog: 'billing' } })
+      this.$router.push({ name: "memberbucks", params: { dialog: "billing" } })
         .catch((error) => {
-          if (error.name === 'NavigationDuplicated') {
+          if (error.name === "NavigationDuplicated") {
             this.openManageBillingDialog();
           } else {
             throw error;
@@ -152,9 +152,9 @@ export default {
   },
   watch: {
     dialog(dialog) {
-      if (dialog === 'add') {
+      if (dialog === "add") {
         this.openAddFundsDialog();
-      } else if (dialog === 'billing') {
+      } else if (dialog === "billing") {
         this.openManageBillingDialog();
       } else {
         this.closeBothDialogs();
@@ -166,14 +166,14 @@ export default {
     Promise.all([this.getMemberBucksBalance(), this.getMemberBucksTransactions()]).finally(() => {
       this.loading = false;
     });
-    if (this.dialog === 'add') {
+    if (this.dialog === "add") {
       this.openAddFundsDialog();
-    } else if (this.dialog === 'billing') {
+    } else if (this.dialog === "billing") {
       this.openManageBillingDialog();
     }
   },
   computed: {
-    ...mapGetters('tools', ['memberBucksTransactions', 'memberBucksBalance']),
+    ...mapGetters("tools", ["memberBucksTransactions", "memberBucksBalance"]),
     icons() {
       return icons;
     },

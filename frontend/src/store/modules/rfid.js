@@ -2,7 +2,7 @@ export default {
   namespaced: true,
   state: {
     connected: false,
-    readerUrl: 'ws://cardreader.local:81',
+    readerUrl: "ws://cardreader.local:81",
     cardId: null,
   },
   getters: {

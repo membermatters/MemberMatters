@@ -134,13 +134,13 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import GroupSelect from 'components/FormElements/GroupSelect';
-import formMixin from '../../mixins/formMixin';
-import icons from '../../icons';
+import { mapGetters } from "vuex";
+import GroupSelect from "components/FormElements/GroupSelect";
+import formMixin from "../../mixins/formMixin";
+import icons from "../../icons";
 
 export default {
-  name: 'RegistrationCard',
+  name: "RegistrationCard",
   components: { GroupSelect },
   mixins: [formMixin],
   data() {
@@ -163,10 +163,10 @@ export default {
     };
   },
   mounted() {
-    if (this.loggedIn) this.$router.push({ name: 'dashboard' });
+    if (this.loggedIn) this.$router.push({ name: "dashboard" });
   },
   computed: {
-    ...mapGetters('profile', ['loggedIn']),
+    ...mapGetters("profile", ["loggedIn"]),
     icons() {
       return icons;
     },
@@ -187,7 +187,7 @@ export default {
       this.error = false;
       this.buttonLoading = true;
 
-      this.$axios.post('/api/register/', {
+      this.$axios.post("/api/register/", {
         firstName: this.form.firstName,
         lastName: this.form.lastName,
         email: this.form.email,
@@ -201,7 +201,7 @@ export default {
           this.error = false;
           this.complete = true;
 
-          this.$router.push({ name: 'registerSuccess' });
+          this.$router.push({ name: "registerSuccess" });
         })
         .catch((error) => {
           if (error.response.status === 409) {

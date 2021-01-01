@@ -36,30 +36,30 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import QRCode from 'qrcode';
-import Moment from 'moment';
-import icons from '../../icons';
+import { mapGetters } from "vuex";
+import QRCode from "qrcode";
+import Moment from "moment";
+import icons from "../../icons";
 
 export default {
-  name: 'ExtendedGreenTicket',
+  name: "ExtendedGreenTicket",
   props: {
     approvedBy: {
       type: String,
-      default: 'No Name',
+      default: "No Name",
     },
     date: {
       type: String,
-      default: '',
+      default: "",
     },
     qrCodeId: {
       type: String,
-      default: '0',
+      default: "0",
     },
   },
   data() {
     return {
-      qrcode: '',
+      qrcode: "",
     };
   },
   mounted() {
@@ -67,22 +67,22 @@ export default {
   },
   methods: {
     getQrCode() {
-      QRCode.toDataURL(`4,${this.qrCodeId}`, { errorCorrectionLevel: 'H' }, async (err, url) => {
+      QRCode.toDataURL(`4,${this.qrCodeId}`, { errorCorrectionLevel: "H" }, async (err, url) => {
         this.qrcode = url;
       });
     },
   },
   computed: {
-    ...mapGetters('config', ['siteOwner']),
-    ...mapGetters('profile', ['profile']),
+    ...mapGetters("config", ["siteOwner"]),
+    ...mapGetters("profile", ["profile"]),
     icons() {
       return icons;
     },
     dateApproved() {
-      return this.date.length ? Moment(this.date).format('DD/MM/YY') : Moment().format('DD/MM/YY');
+      return this.date.length ? Moment(this.date).format("DD/MM/YY") : Moment().format("DD/MM/YY");
     },
     dateExpires() {
-      return this.date.length ? Moment(this.date).add(1, 'month').format('DD/MM/YY') : Moment().add(1, 'month').format('DD/MM/YY');
+      return this.date.length ? Moment(this.date).add(1, "month").format("DD/MM/YY") : Moment().add(1, "month").format("DD/MM/YY");
     },
   },
 };

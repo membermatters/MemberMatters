@@ -234,12 +234,12 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapActions } from 'vuex';
-import { Loading, Platform } from 'quasar';
-import formMixin from '../mixins/formMixin';
+import { mapMutations, mapGetters, mapActions } from "vuex";
+import { Loading, Platform } from "quasar";
+import formMixin from "../mixins/formMixin";
 
 export default {
-  name: 'LoginCard',
+  name: "LoginCard",
   mixins: [formMixin],
   props: {
     resetToken: {
@@ -253,8 +253,8 @@ export default {
   },
   data() {
     return {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
       loginFailed: false,
       loginError: false,
       loginComplete: false,
@@ -268,8 +268,8 @@ export default {
         failed: false,
         loading: false,
         prompt: false,
-        password: '',
-        password2: '',
+        password: "",
+        password2: "",
         confirmed: false,
         invalidToken: false,
       },
@@ -282,7 +282,7 @@ export default {
 
     if (this.loggedIn) this.redirectLoggedIn(delay=false);
     if (this.resetToken) {
-      Loading.show({ message: 'Validating request...' });
+      Loading.show({ message: "Validating request..." });
 
       this.validatePasswordReset()
         .then(() => {
@@ -296,9 +296,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions('profile', ['getLoggedIn']),
-    ...mapMutations('profile', ['setLoggedIn']),
-    ...mapMutations('auth', ['setAuth']),
+    ...mapActions("profile", ["getLoggedIn"]),
+    ...mapMutations("profile", ["setLoggedIn"]),
+    ...mapMutations("auth", ["setAuth"]),
     /**
      * Redirects to the dashboard page on successful login.
      */
@@ -312,15 +312,15 @@ export default {
       }
 
       this.loginComplete = true;
-      this.$emit('login-complete');
+      this.$emit("login-complete");
       if (this.$route.query.redirect) this.$router.push(this.$route.query.redirect);
       else if (!this.noRedirect && delay) {
         setTimeout(() => {
           this.setLoggedIn(true);
-          this.$router.push({ name: 'dashboard' });
+          this.$router.push({ name: "dashboard" });
         }, 1000);
       } else {
-        this.$router.push({ name: 'dashboard' });
+        this.$router.push({ name: "dashboard" });
       }
     },
     onReset() {
@@ -339,7 +339,7 @@ export default {
       this.buttonLoading = true;
 
       if (this.discourseSsoData) {
-        this.$axios.post('/api/login/', {
+        this.$axios.post("/api/login/", {
           email: this.email,
           password: this.password,
           sso: this.discourseSsoData,
@@ -369,7 +369,7 @@ export default {
             this.buttonLoading = false;
           });
       } else if (this.$q.platform.is.ios) {
-        this.$axios.post('/api/token/obtain/', {
+        this.$axios.post("/api/token/obtain/", {
           email: this.email,
           password: this.password,
         })
@@ -396,7 +396,7 @@ export default {
           });
       }
       else {
-        this.$axios.post('/api/login/', {
+        this.$axios.post("/api/login/", {
           email: this.email,
           password: this.password,
         })
@@ -430,7 +430,7 @@ export default {
       this.reset.success = false;
       this.reset.loading = true;
 
-      this.$axios.post('/api/password/reset/', {
+      this.$axios.post("/api/password/reset/", {
         email: this.reset.email,
       })
         .then((response) => {
@@ -456,7 +456,7 @@ export default {
      */
     validatePasswordReset() {
       return new Promise((resolve, reject) => {
-        this.$axios.post('/api/password/reset/', {
+        this.$axios.post("/api/password/reset/", {
           token: this.resetToken,
         })
           .then((response) => {
@@ -479,7 +479,7 @@ export default {
       this.reset.success = false;
       this.reset.loading = true;
 
-      this.$axios.post('/api/password/reset/', {
+      this.$axios.post("/api/password/reset/", {
         password: this.reset.password,
         token: this.resetToken,
       })
@@ -490,7 +490,7 @@ export default {
             this.reset.formDisabled = true;
             setTimeout(() => {
               // eslint-disable-next-line no-restricted-globals
-              location.href = '/login';
+              location.href = "/login";
             }, 3000);
           } else {
             this.reset.confirmed = false;
@@ -508,7 +508,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('profile', ['loggedIn']),
+    ...mapGetters("profile", ["loggedIn"]),
   },
 };
 </script>

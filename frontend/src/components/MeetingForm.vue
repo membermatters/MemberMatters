@@ -191,15 +191,15 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import Moment from 'moment';
-import icons from '../icons';
-import formMixin from '../mixins/formMixin';
+import { mapGetters, mapActions } from "vuex";
+import Moment from "moment";
+import icons from "../icons";
+import formMixin from "../mixins/formMixin";
 
 let m = Moment();
 
 export default {
-  name: 'MeetingForm',
+  name: "MeetingForm",
   mixins: [formMixin],
   props: {
     meetingId: {
@@ -214,15 +214,15 @@ export default {
         error: false,
         success: false,
 
-        type: '',
-        group: '',
-        date: m.minute() || m.second() || m.millisecond() ? m.add(1, 'hour').startOf('hour').format('YYYY-MM-DD HH:mm') : m.startOf('hour').format('YYYY-MM-DD HH:mm'),
-        chair: '',
+        type: "",
+        group: "",
+        date: m.minute() || m.second() || m.millisecond() ? m.add(1, "hour").startOf("hour").format("YYYY-MM-DD HH:mm") : m.startOf("hour").format("YYYY-MM-DD HH:mm"),
+        chair: "",
       },
     };
   },
   methods: {
-    ...mapActions('adminTools', ['getMeetings', 'getMeetingTypes']),
+    ...mapActions("adminTools", ["getMeetings", "getMeetingTypes"]),
     updateMeeting() {
       this.loading = true;
 
@@ -240,7 +240,7 @@ export default {
     submitMeeting() {
       this.loading = true;
 
-      this.$axios.post('/api/meetings/', this.form)
+      this.$axios.post("/api/meetings/", this.form)
         .then(() => {
           this.form.error = false;
           this.form.success = true;
@@ -267,8 +267,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('adminTools', ['meetings', 'meetingTypes']),
-    ...mapGetters('config', ['groups']),
+    ...mapGetters("adminTools", ["meetings", "meetingTypes"]),
+    ...mapGetters("config", ["groups"]),
     pastMeeting() {
       return Moment(this.form.date) < Moment();
     },

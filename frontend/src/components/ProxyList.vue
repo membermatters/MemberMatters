@@ -121,45 +121,45 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import icons from '../icons';
-import formatMixin from '../mixins/formatMixin';
-import ProxyForm from './ProxyForm';
+import { mapActions, mapGetters } from "vuex";
+import icons from "../icons";
+import formatMixin from "../mixins/formatMixin";
+import ProxyForm from "./ProxyForm";
 
 export default {
-  name: 'ProxyList',
+  name: "ProxyList",
   components: { ProxyForm },
   mixins: [formatMixin],
   data() {
     return {
-      filter: '',
+      filter: "",
       loading: false,
       newProxy: false,
       pagination: {
-        sortBy: 'date',
+        sortBy: "date",
         descending: true,
         rowsPerPage: this.$q.screen.xs ? 4 : 12,
       },
     };
   },
   methods: {
-    ...mapActions('tools', ['getProxies']),
+    ...mapActions("tools", ["getProxies"]),
     proxySubmitted() {
       this.newProxy = false;
       this.getProxies();
     },
     confirmDelete(id) {
       this.$q.dialog({
-        title: this.$t('proxyForm.deleteTitle'),
-        message: this.$t('proxyForm.delete'),
+        title: this.$t("proxyForm.deleteTitle"),
+        message: this.$t("proxyForm.delete"),
         persistent: true,
         ok: {
-          label: this.$t('button.ok'),
-          color: 'primary',
+          label: this.$t("button.ok"),
+          color: "primary",
         },
         cancel: {
-          label: this.$t('button.cancel'),
-          color: 'primary',
+          label: this.$t("button.cancel"),
+          color: "primary",
           flat: true,
         },
       }).onOk(() => {
@@ -178,7 +178,7 @@ export default {
       });
   },
   computed: {
-    ...mapGetters('tools', ['proxies']),
+    ...mapGetters("tools", ["proxies"]),
     icons() {
       return icons;
     },

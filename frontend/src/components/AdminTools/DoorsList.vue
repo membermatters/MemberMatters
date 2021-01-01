@@ -164,25 +164,25 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import icons from '../../icons';
-import formatMixin from '../../mixins/formatMixin';
+import { mapActions, mapGetters } from "vuex";
+import icons from "../../icons";
+import formatMixin from "../../mixins/formatMixin";
 
 export default {
-  name: 'DoorsList',
+  name: "DoorsList",
   mixins: [formatMixin],
   data() {
     return {
-      filter: '',
+      filter: "",
       pagination: {
-        sortBy: 'lastSeen',
+        sortBy: "lastSeen",
         descending: true,
         rowsPerPage: this.$q.screen.xs ? 3 : 10,
       },
     };
   },
   computed: {
-    ...mapGetters('adminTools', ['doors']),
+    ...mapGetters("adminTools", ["doors"]),
     icons() {
       return icons;
     },
@@ -191,14 +191,14 @@ export default {
     this.getDoors();
   },
   methods: {
-    ...mapActions('adminTools', ['getDoors']),
+    ...mapActions("adminTools", ["getDoors"]),
     rebootDoor(doorId) {
       this.$refs[`${doorId}-reboot`].loading = true;
       this.$axios.post(`/api/access/doors/${doorId}/reboot/`)
         .catch(() => {
           this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
+            title: this.$t("error.error"),
+            message: this.$t("error.requestFailed"),
           });
         }).finally(() => {
           this.$refs[`${doorId}-reboot`].loading = false;
@@ -209,8 +209,8 @@ export default {
       this.$axios.post(`/api/access/doors/${doorId}/unlock/`)
         .catch(() => {
           this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
+            title: this.$t("error.error"),
+            message: this.$t("error.requestFailed"),
           });
         }).finally(() => {
           this.$refs[`${doorId}-unlock`].loading = false;

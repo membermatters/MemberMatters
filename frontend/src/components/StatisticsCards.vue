@@ -42,11 +42,11 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import icons from '@icons';
+import { mapGetters, mapActions } from "vuex";
+import icons from "@icons";
 
 export default {
-  name: 'StatisticsCards',
+  name: "StatisticsCards",
   data() {
     return {
       refreshInterval: null,
@@ -63,11 +63,11 @@ export default {
     clearInterval(this.refreshInterval);
   },
   methods: {
-    ...mapActions('profile', ['getSiteSignedIn']),
-    ...mapActions('tools', ['getStatistics']),
+    ...mapActions("profile", ["getSiteSignedIn"]),
+    ...mapActions("tools", ["getStatistics"]),
   },
   computed: {
-    ...mapGetters('tools', ['statistics']),
+    ...mapGetters("tools", ["statistics"]),
     icons() {
       return icons;
     },

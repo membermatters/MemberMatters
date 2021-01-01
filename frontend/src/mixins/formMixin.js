@@ -1,4 +1,4 @@
-import Moment from 'moment';
+import Moment from "moment";
 
 export default {
   methods: {
@@ -7,7 +7,7 @@ export default {
       return re.test(String(email).toLowerCase());
     },
     validateNotEmpty(value) {
-      return value !== null && value !== '';
+      return value !== null && value !== "";
     },
     validatePassword(value) {
       return value.length > 7;
@@ -16,14 +16,14 @@ export default {
       return current === newField;
     },
     validateFutureDate(date) {
-      return date >= Moment().format('YYYY/MM/DD');
+      return date >= Moment().format("YYYY/MM/DD");
     },
     validateFutureTime(time) {
-      return time >= Moment().format('HH:MM');
+      return time >= Moment().format("HH:MM");
     },
     validateFutureDateTime(date, disable) {
       if (disable) return true;
-      return date >= Moment().format('YYYY-MM-DD HH:MM');
+      return date >= Moment().format("YYYY-MM-DD HH:MM");
     },
   },
   computed: {

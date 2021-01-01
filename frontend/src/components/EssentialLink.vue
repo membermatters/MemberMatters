@@ -50,18 +50,18 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'EssentialLink',
+  name: "EssentialLink",
   props: {
     caption: {
       type: String,
-      default: '',
+      default: "",
     },
     name: {
       type: [String, Object],
-      default: '/',
+      default: "/",
     },
     defaultParams: {
       type: Object,
@@ -69,7 +69,7 @@ export default {
     },
     icon: {
       type: String,
-      default: '',
+      default: "",
     },
     children: {
       type: Array,
@@ -81,7 +81,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('profile', ['loggedIn']),
+    ...mapGetters("profile", ["loggedIn"]),
     visibleLinks() {
       return this.children.filter((link) => {
         if (link.loggedIn === true) {

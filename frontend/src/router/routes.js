@@ -1,4 +1,4 @@
-import mainMenu from 'pages/pageAndRouteConfig';
+import mainMenu from "pages/pageAndRouteConfig";
 
 const childRoutes = [];
 
@@ -7,11 +7,11 @@ const menuRoutes = mainMenu.map((menuItem) => {
     // eslint-disable-next-line array-callback-return
     menuItem.children.map((child) => {
       childRoutes.push({
-        path: child.to ? child.to : '/no-route', // this means we didn't get a path and shouldn't route there
+        path: child.to ? child.to : "/no-route", // this means we didn't get a path and shouldn't route there
         alias: child.alias,
         component: child.component
           ? child.component
-          : () => import('pages/Error404.vue'),
+          : () => import("pages/Error404.vue"),
         name: child.name ? child.name : null,
         props: true,
         meta: { title: child.name, loggedIn: child.loggedIn, kiosk: child.kiosk },
@@ -19,11 +19,11 @@ const menuRoutes = mainMenu.map((menuItem) => {
     });
 
     return {
-      path: menuItem.to ? menuItem.to : '/no-route', // this means we didn't get a path and shouldn't route there
+      path: menuItem.to ? menuItem.to : "/no-route", // this means we didn't get a path and shouldn't route there
       alias: menuItem.alias,
       component: menuItem.component
         ? menuItem.component
-        : () => import('pages/Error404.vue'),
+        : () => import("pages/Error404.vue"),
       name: menuItem.name ? menuItem.name : null,
       props: true,
       meta: { title: menuItem.name, loggedIn: menuItem.loggedIn, kiosk: menuItem.kiosk },
@@ -35,7 +35,7 @@ const menuRoutes = mainMenu.map((menuItem) => {
     alias: menuItem.alias,
     component: menuItem.component
       ? menuItem.component
-      : () => import('pages/Error404.vue'),
+      : () => import("pages/Error404.vue"),
     name: menuItem.name ? menuItem.name : null,
     props: true,
     meta: { title: menuItem.name, loggedIn: menuItem.loggedIn, kiosk: menuItem.kiosk },
@@ -44,14 +44,14 @@ const menuRoutes = mainMenu.map((menuItem) => {
 
 const routes = [
   {
-    path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    path: "/",
+    component: () => import("layouts/MainLayout.vue"),
     children: [
       ...menuRoutes,
       ...childRoutes,
       {
-        path: '*',
-        component: () => import('pages/Error404.vue'),
+        path: "*",
+        component: () => import("pages/Error404.vue"),
       },
     ],
   },
@@ -59,8 +59,8 @@ const routes = [
 
 // Always leave this as last one
 routes.push({
-  path: '*',
-  component: () => import('pages/Error404.vue'),
+  path: "*",
+  component: () => import("pages/Error404.vue"),
 });
 
 export default routes;

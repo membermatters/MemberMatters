@@ -9,10 +9,10 @@
 </template>
 
 <script>
-import icons from '../icons';
+import icons from "../icons";
 
 export default {
-  name: 'SadFace',
+  name: "SadFace",
   computed: {
     icons() {
       return icons;

@@ -1,12 +1,12 @@
 export default {
-  'en-AU': {
+  "en-AU": {
     currency: {
-      style: 'currency', currency: 'AUD',
+      style: "currency", currency: "AUD",
     },
   },
-  'en-US': {
+  "en-US": {
     currency: {
-      style: 'currency', currency: 'USD',
+      style: "currency", currency: "USD",
     },
   },
 };

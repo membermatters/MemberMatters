@@ -23,10 +23,10 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapMutations } from "vuex";
 
 export default {
-  name: 'LogoutPage',
+  name: "LogoutPage",
   data() {
     return {
       error: false,
@@ -35,7 +35,7 @@ export default {
   },
   mounted() {
     this.$axios
-      .post('/api/logout/')
+      .post("/api/logout/")
       .then(() => {
         this.completeLogout();
       })
@@ -49,14 +49,14 @@ export default {
       });
   },
   methods: {
-    ...mapMutations('profile', ['setLoggedIn', 'resetState']),
+    ...mapMutations("profile", ["setLoggedIn", "resetState"]),
     completeLogout() {
       this.resetState();
       this.setLoggedIn(false);
       this.error = false;
       this.spinner = false;
       setTimeout(() => {
-        this.$router.push({ name: 'login' });
+        this.$router.push({ name: "login" });
       }, 2000);
     },
   },

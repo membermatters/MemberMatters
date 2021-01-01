@@ -16,10 +16,10 @@
 </template>
 
 <script>
-import icons from '../icons';
+import icons from "../icons";
 
 export default {
-  name: 'SavedNotification',
+  name: "SavedNotification",
   props: {
     value: {
       type: Boolean,
@@ -51,7 +51,7 @@ export default {
   methods: {
     showNotification() {
       setTimeout(() => {
-        this.$emit('input', false);
+        this.$emit("input", false);
       }, this.timeout);
     },
   },

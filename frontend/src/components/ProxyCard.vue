@@ -48,12 +48,12 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import Moment from 'moment';
-import icons from '../icons';
+import { mapGetters } from "vuex";
+import Moment from "moment";
+import icons from "../icons";
 
 export default {
-  name: 'ProxyCard',
+  name: "ProxyCard",
   props: {
     proxyCardInfo: {
       type: Object,
@@ -61,10 +61,10 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('config', ['siteOwner']),
-    ...mapGetters('profile', ['profile']),
+    ...mapGetters("config", ["siteOwner"]),
+    ...mapGetters("profile", ["profile"]),
     currentDate() {
-      return Moment().format('Do MMMM YYYY');
+      return Moment().format("Do MMMM YYYY");
     },
     icons() {
       return icons;

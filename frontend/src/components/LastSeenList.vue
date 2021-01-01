@@ -29,29 +29,29 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import Moment from 'moment';
-import icons from '../icons';
-import RefreshDataDialog from './RefreshDataDialog';
+import { mapActions, mapGetters } from "vuex";
+import Moment from "moment";
+import icons from "../icons";
+import RefreshDataDialog from "./RefreshDataDialog";
 
 export default {
-  name: 'LastSeenList',
+  name: "LastSeenList",
   components: { RefreshDataDialog },
   data() {
     return {
-      filter: '',
+      filter: "",
       loading: false,
       errorLoading: false,
       updateInterval: null,
       pagination: {
-        sortBy: 'desc',
+        sortBy: "desc",
         descending: false,
         rowsPerPage: this.$q.screen.xs ? 5 : 10,
       },
     };
   },
   methods: {
-    ...mapActions('tools', ['getLastSeen']),
+    ...mapActions("tools", ["getLastSeen"]),
   },
   mounted() {
     this.loading = true;
@@ -70,13 +70,13 @@ export default {
     clearInterval(this.updateInterval);
   },
   computed: {
-    ...mapGetters('tools', ['lastSeen']),
+    ...mapGetters("tools", ["lastSeen"]),
     icons() {
       return icons;
     },
     humanLastSeen() {
       return this.lastSeen.map((value) => {
-        const humanReadable = Moment.utc(value.date).local().format('Do MMM YYYY, h:mm a');
+        const humanReadable = Moment.utc(value.date).local().format("Do MMM YYYY, h:mm a");
         return {
           id: value.id, user: value.user, date: humanReadable, never: value.never,
         };

@@ -9,8 +9,8 @@
 /* eslint func-names: 0 */
 /* eslint global-require: 0 */
 /* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('path');
-const { configure } = require('quasar/wrappers');
+const path = require("path");
+const { configure } = require("quasar/wrappers");
 
 module.exports = configure((ctx) => ({
   // https://quasar.dev/quasar-cli/supporting-ts
@@ -27,17 +27,17 @@ module.exports = configure((ctx) => ({
   // --> boot files are part of "main.js"
   // https://quasar.dev/quasar-cli/boot-files
   boot: [
-    'sentry',
-    'i18n',
-    'axios',
-    'fontawesome-pro',
-    'routeGuards',
-    'capacitor',
+    "sentry",
+    "i18n",
+    "axios",
+    "fontawesome-pro",
+    "routeGuards",
+    "capacitor",
   ],
 
   // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
   css: [
-    'app.scss',
+    "app.scss",
   ],
 
   // https://github.com/quasarframework/quasar/tree/dev/extras
@@ -50,13 +50,13 @@ module.exports = configure((ctx) => ({
     // 'line-awesome',
     // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
-    'roboto-font', // optional, you are not bound to it
+    "roboto-font", // optional, you are not bound to it
     // 'material-icons', // optional, you are not bound to it
   ],
 
   // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
   build: {
-    vueRouterMode: 'hash', // available values: 'hash', 'history'
+    vueRouterMode: "hash", // available values: 'hash', 'history'
     env: {
       // Set this to false to disable fontawesome pro icons. You need to configure your .npmrc
       // file as per the font awesome pro instructions to download and use FA pro icons.
@@ -92,19 +92,19 @@ module.exports = configure((ctx) => ({
       // linting is slow in TS projects, we execute it only for production builds
       if (ctx.prod) {
         cfg.module.rules.push({
-          enforce: 'pre',
+          enforce: "pre",
           test: /\.(js|vue)$/,
-          loader: 'eslint-loader',
+          loader: "eslint-loader",
           exclude: /node_modules/,
         });
       }
 
       cfg.resolve.alias = {
         ...cfg.resolve.alias,
-        '@components': path.resolve(__dirname, 'src/components/'),
-        '@icons': path.resolve(__dirname, 'src/icons/'),
-        '@store': path.resolve(__dirname, 'src/store/'),
-        '@mixins': path.resolve(__dirname, 'src/mixins/'),
+        "@components": path.resolve(__dirname, "src/components/"),
+        "@icons": path.resolve(__dirname, "src/icons/"),
+        "@store": path.resolve(__dirname, "src/store/"),
+        "@mixins": path.resolve(__dirname, "src/mixins/"),
       };
     },
   },
@@ -116,16 +116,16 @@ module.exports = configure((ctx) => ({
     open: true, // opens browser window automatically
     proxy: {
       // proxy all requests starting with /api to
-      '/api': {
-        target: 'http://localhost:8000',
+      "/api": {
+        target: "http://localhost:8000",
         changeOrigin: false,
       },
-      '/admin': {
-        target: 'http://localhost:8000',
+      "/admin": {
+        target: "http://localhost:8000",
         changeOrigin: true,
       },
-      '/static': {
-        target: 'http://localhost:8000',
+      "/static": {
+        target: "http://localhost:8000",
         changeOrigin: true,
       },
     },
@@ -133,17 +133,17 @@ module.exports = configure((ctx) => ({
 
   // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
   framework: {
-    lang: 'en-us', // Quasar language pack
+    lang: "en-us", // Quasar language pack
     config: {
-      dark: 'auto', // or Boolean true/false
-      loadingBar: { color: 'accent' },
+      dark: "auto", // or Boolean true/false
+      loadingBar: { color: "accent" },
     },
-    iconSet: 'fontawesome-v5-pro', // Quasar icon set
+    iconSet: "fontawesome-v5-pro", // Quasar icon set
 
     // Possible values for "importStrategy":
     // * 'auto' - (DEFAULT) Auto-import needed Quasar components & directives
     // * 'all'  - Manually specify what to import
-    importStrategy: 'auto',
+    importStrategy: "auto",
 
     // For special cases outside of where "auto" importStrategy can have an impact
     // (like functional components as one of the examples),
@@ -154,8 +154,8 @@ module.exports = configure((ctx) => ({
 
     // Quasar plugins
     plugins: [
-      'Dialog',
-      'LoadingBar',
+      "Dialog",
+      "LoadingBar",
     ],
   },
 
@@ -170,41 +170,41 @@ module.exports = configure((ctx) => ({
 
   // https://quasar.dev/quasar-cli/developing-pwa/configuring-pwa
   pwa: {
-    workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
+    workboxPluginMode: "GenerateSW", // 'GenerateSW' or 'InjectManifest'
     workboxOptions: {}, // only for GenerateSW
     manifest: {
-      name: 'MemberMatters',
-      short_name: 'MemberMatters',
-      description: 'The MemberMatters frontend',
-      display: 'standalone',
-      orientation: 'portrait',
-      background_color: '#ffffff',
-      theme_color: '#7642FF',
+      name: "MemberMatters",
+      short_name: "MemberMatters",
+      description: "The MemberMatters frontend",
+      display: "standalone",
+      orientation: "portrait",
+      background_color: "#ffffff",
+      theme_color: "#7642FF",
       icons: [
         {
-          src: 'icons/icon-128x128.png',
-          sizes: '128x128',
-          type: 'image/png',
+          src: "icons/icon-128x128.png",
+          sizes: "128x128",
+          type: "image/png",
         },
         {
-          src: 'icons/icon-192x192.png',
-          sizes: '192x192',
-          type: 'image/png',
+          src: "icons/icon-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
         },
         {
-          src: 'icons/icon-256x256.png',
-          sizes: '256x256',
-          type: 'image/png',
+          src: "icons/icon-256x256.png",
+          sizes: "256x256",
+          type: "image/png",
         },
         {
-          src: 'icons/icon-384x384.png',
-          sizes: '384x384',
-          type: 'image/png',
+          src: "icons/icon-384x384.png",
+          sizes: "384x384",
+          type: "image/png",
         },
         {
-          src: 'icons/icon-512x512.png',
-          sizes: '512x512',
-          type: 'image/png',
+          src: "icons/icon-512x512.png",
+          sizes: "512x512",
+          type: "image/png",
         },
       ],
     },
@@ -223,7 +223,7 @@ module.exports = configure((ctx) => ({
 
   // Full list of options: https://quasar.dev/quasar-cli/developing-electron-apps/configuring-electron
   electron: {
-    bundler: 'packager', // 'packager' or 'builder'
+    bundler: "packager", // 'packager' or 'builder'
 
     packager: {
       // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
@@ -241,7 +241,7 @@ module.exports = configure((ctx) => ({
     builder: {
       // https://www.electron.build/configuration/configuration
 
-      appId: 'membermatters',
+      appId: "membermatters",
     },
 
     // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration

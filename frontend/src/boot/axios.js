@@ -1,11 +1,11 @@
-import axios from 'axios';
+import axios from "axios";
 
 export default ({ Vue, store }) => {
   const instance = axios.create({
-    baseURL: process.env.apiBaseUrl || '',
+    baseURL: process.env.apiBaseUrl || "",
     // withCredentials: true,
-    xsrfCookieName: 'csrftoken',
-    xsrfHeaderName: 'X-CSRFTOKEN',
+    xsrfCookieName: "csrftoken",
+    xsrfHeaderName: "X-CSRFTOKEN",
   });
 
   // This interceptor adds the JWT to the request if it exists (ie mobile app)

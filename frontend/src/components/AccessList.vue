@@ -101,11 +101,11 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import RefreshDataDialog from './RefreshDataDialog';
+import { mapActions, mapGetters } from "vuex";
+import RefreshDataDialog from "./RefreshDataDialog";
 
 export default {
-  name: 'AccessList',
+  name: "AccessList",
   components: { RefreshDataDialog },
   props: {
     memberId: {
@@ -120,7 +120,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('profile', ['doorAccess', 'interlockAccess']),
+    ...mapGetters("profile", ["doorAccess", "interlockAccess"]),
     doors() {
       return this.memberId ? this.access.doors : this.doorAccess;
     },
@@ -141,7 +141,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('profile', ['getAccess']),
+    ...mapActions("profile", ["getAccess"]),
     /**
      * this method returns a specific user's access permissions
      */
@@ -152,38 +152,38 @@ export default {
         })
         .catch((error) => {
           this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
+            title: this.$t("error.error"),
+            message: this.$t("error.requestFailed"),
           });
           throw error;
         });
     },
     authorise(type, memberId, deviceId) {
       if (!this.memberId) return;
-      const device = type === 'interlock' ? 'interlocks' : 'doors';
+      const device = type === "interlock" ? "interlocks" : "doors";
       this.$axios.put(`api/access/${device}/${deviceId}/authorise/${memberId}/`)
         .then(() => {
           this.getMemberAccess();
         })
         .catch((error) => {
           this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
+            title: this.$t("error.error"),
+            message: this.$t("error.requestFailed"),
           });
           throw error;
         });
     },
     revoke(type, memberId, deviceId) {
       if (!this.memberId) return;
-      const device = type === 'interlock' ? 'interlocks' : 'doors';
+      const device = type === "interlock" ? "interlocks" : "doors";
       this.$axios.put(`api/access/${device}/${deviceId}/revoke/${memberId}/`)
         .then(() => {
           this.getMemberAccess();
         })
         .catch((error) => {
           this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
+            title: this.$t("error.error"),
+            message: this.$t("error.requestFailed"),
           });
           throw error;
         });

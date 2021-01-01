@@ -1,4 +1,4 @@
-import { defineCustomElements } from '@ionic/pwa-elements/loader';
+import { defineCustomElements } from "@ionic/pwa-elements/loader";
 
 export default () => {
   defineCustomElements(window);

@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue from "vue";
 
 export default {
   namespaced: true,
@@ -11,7 +11,7 @@ export default {
     proxies: [],
     members: [],
     memberBucksTransactions: [],
-    memberBucksBalance: '',
+    memberBucksBalance: "",
     statistics: {},
   },
   getters: {
@@ -61,9 +61,9 @@ export default {
   actions: {
     getLastSeen({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/tools/lastseen/')
+        Vue.prototype.$axios.get("/api/tools/lastseen/")
           .then((result) => {
-            commit('setLastSeen', result.data);
+            commit("setLastSeen", result.data);
             resolve();
           })
           .catch((error) => {
@@ -74,9 +74,9 @@ export default {
     },
     getRecentSwipes({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/tools/swipes/')
+        Vue.prototype.$axios.get("/api/tools/swipes/")
           .then((result) => {
-            commit('setRecentSwipes', result.data);
+            commit("setRecentSwipes", result.data);
             resolve();
           })
           .catch((error) => {
@@ -87,10 +87,10 @@ export default {
     },
     getMemberGroups({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/tools/groups/')
+        Vue.prototype.$axios.get("/api/tools/groups/")
           .then((result) => {
-            commit('setGroupList', result.data.groups);
-            commit('setMemberList', result.data.members);
+            commit("setGroupList", result.data.groups);
+            commit("setMemberList", result.data.members);
             resolve();
           })
           .catch((error) => {
@@ -101,9 +101,9 @@ export default {
     },
     getUpcomingMeetings({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/tools/meetings/')
+        Vue.prototype.$axios.get("/api/tools/meetings/")
           .then((result) => {
-            commit('setUpcomingMeetings', result.data);
+            commit("setUpcomingMeetings", result.data);
             resolve();
           })
           .catch((error) => {
@@ -114,9 +114,9 @@ export default {
     },
     getProxies({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/proxies/')
+        Vue.prototype.$axios.get("/api/proxies/")
           .then((result) => {
-            commit('setProxies', result.data);
+            commit("setProxies", result.data);
             resolve();
           })
           .catch((error) => {
@@ -127,9 +127,9 @@ export default {
     },
     getMembers({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/tools/members/')
+        Vue.prototype.$axios.get("/api/tools/members/")
           .then((result) => {
-            commit('setMembers', result.data);
+            commit("setMembers", result.data);
             resolve();
           })
           .catch((error) => {
@@ -140,9 +140,9 @@ export default {
     },
     getMemberBucksTransactions({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/memberbucks/transactions/')
+        Vue.prototype.$axios.get("/api/memberbucks/transactions/")
           .then((result) => {
-            commit('setMemberBucksTransactions', result.data);
+            commit("setMemberBucksTransactions", result.data);
             resolve();
           })
           .catch((error) => {
@@ -153,9 +153,9 @@ export default {
     },
     getMemberBucksBalance({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/memberbucks/balance/')
+        Vue.prototype.$axios.get("/api/memberbucks/balance/")
           .then((result) => {
-            commit('setMemberBucksBalance', result.data.balance);
+            commit("setMemberBucksBalance", result.data.balance);
             resolve();
           })
           .catch((error) => {
@@ -166,9 +166,9 @@ export default {
     },
     getStatistics({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/statistics/')
+        Vue.prototype.$axios.get("/api/statistics/")
           .then((result) => {
-            commit('setStatistics', result.data);
+            commit("setStatistics", result.data);
             resolve();
           })
           .catch((error) => {

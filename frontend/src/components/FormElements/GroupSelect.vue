@@ -15,12 +15,12 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import icons from '../../icons';
-import formMixin from '../../mixins/formMixin';
+import { mapGetters } from "vuex";
+import icons from "../../icons";
+import formMixin from "../../mixins/formMixin";
 
 export default {
-  name: 'GroupSelect',
+  name: "GroupSelect",
   mixins: [formMixin],
   props: {
     value: {
@@ -37,7 +37,7 @@ export default {
     this.groupsSelected = this.value;
   },
   computed: {
-    ...mapGetters('config', ['groups']),
+    ...mapGetters("config", ["groups"]),
     icons() {
       return icons;
     },

@@ -162,24 +162,24 @@
 </template>
 
 <script>
-import icons from '@icons';
-import formatMixin from '@mixins/formatMixin';
-import { exportFile } from 'quasar';
-import stringify from 'csv-stringify';
+import icons from "@icons";
+import formatMixin from "@mixins/formatMixin";
+import { exportFile } from "quasar";
+import stringify from "csv-stringify";
 
 export default {
-  name: 'MembersList',
+  name: "MembersList",
   mixins: [formatMixin],
   data() {
     return {
       manageMemberModal: false,
       manageMemberModalMember: null,
       members: [],
-      filter: '',
-      memberState: 'Active',
+      filter: "",
+      memberState: "Active",
       loading: false,
       pagination: {
-        sortBy: 'date',
+        sortBy: "date",
         descending: true,
         rowsPerPage: this.$q.screen.xs ? 3 : 10,
       },
@@ -187,62 +187,62 @@ export default {
   },
   computed: {
     displayMemberList() {
-      if (this.memberState === 'All') return this.members;
+      if (this.memberState === "All") return this.members;
       return this.members.filter((member) => member.state === this.memberState);
     },
     memberEmails() {
       return this.displayMemberList.map((member) => member.email)
-        .join(',');
+        .join(",");
     },
     icons() {
       return icons;
     },
     filterOptions() {
       return [
-        { label: this.$t('adminTools.all'), value: 'All' },
-        { label: this.$t('adminTools.active'), value: 'Active' },
-        { label: this.$t('adminTools.inactive'), value: 'Inactive' },
-        { label: this.$t('adminTools.new'), value: 'New' },
+        { label: this.$t("adminTools.all"), value: "All" },
+        { label: this.$t("adminTools.active"), value: "Active" },
+        { label: this.$t("adminTools.inactive"), value: "Inactive" },
+        { label: this.$t("adminTools.new"), value: "New" },
       ];
     },
     columns() {
       return [{
-        name: 'name',
-        label: 'Name',
+        name: "name",
+        label: "Name",
         field: (row) => row.name.full,
         sortable: true,
         format: (val, row) => `${val} (${row.screenName})`,
       },
       {
-        name: 'rfid',
-        label: 'RFID',
-        field: 'rfid',
+        name: "rfid",
+        label: "RFID",
+        field: "rfid",
         sortable: true,
       },
       {
-        name: 'email',
-        label: 'Email',
-        field: 'email',
+        name: "email",
+        label: "Email",
+        field: "email",
         sortable: true,
       },
       {
-        name: 'memberType',
-        label: 'Member Type',
+        name: "memberType",
+        label: "Member Type",
         field: (row) => row.memberType.name,
         sortable: true,
       },
       {
-        name: 'groups',
-        label: 'Groups',
-        field: 'groups',
+        name: "groups",
+        label: "Groups",
+        field: "groups",
         sortable: true,
         format: (val, row) => row.groups.map(((group) => group.name))
-          .join(', '),
+          .join(", "),
       },
       {
-        name: 'status',
-        label: 'Status',
-        field: 'state',
+        name: "status",
+        label: "Status",
+        field: "state",
         sortable: true,
       },
       ];
@@ -262,14 +262,14 @@ export default {
     },
     getMembers() {
       this.loading = true;
-      this.$axios.get('/api/admin/members/')
+      this.$axios.get("/api/admin/members/")
         .then((response) => {
           this.members = response.data;
         })
         .catch(() => {
           this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
+            title: this.$t("error.error"),
+            message: this.$t("error.requestFailed"),
           });
         })
         .finally(() => {
@@ -278,19 +278,19 @@ export default {
     },
     exportCsv() {
       stringify(this.displayMemberList, {
-        columns: ['name.full', 'email', 'state'],
+        columns: ["name.full", "email", "state"],
       }, (err, output) => {
         const status = exportFile(
-          'member-export.csv',
+          "member-export.csv",
           output,
-          'text/csv',
+          "text/csv",
         );
 
         if (status !== true) {
           this.$q.notify({
-            message: 'Browser denied file download...',
-            color: 'negative',
-            icon: 'warning',
+            message: "Browser denied file download...",
+            color: "negative",
+            icon: "warning",
           });
         }
       });

@@ -1,4 +1,4 @@
-import Moment from 'moment';
+import Moment from "moment";
 
 export default {
   methods: {
@@ -9,8 +9,8 @@ export default {
       });
     },
     formatDate(date, time = true) {
-      if (time) return Moment.utc(date).local().format('Do MMM YYYY, h:mm a');
-      return Moment.utc(date).local().format('Do MMM YYYY');
+      if (time) return Moment.utc(date).local().format("Do MMM YYYY, h:mm a");
+      return Moment.utc(date).local().format("Do MMM YYYY");
     },
     formatWhen(date) {
       return Moment.utc(date).local().fromNow();
