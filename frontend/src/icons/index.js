@@ -68,4 +68,6 @@ export default {
   email: pro ? 'fad fa-mail-bulk' : 'fal fa-mail-bulk',
   reboot: pro ? 'fad fa-sync' : 'fal fa-sync',
   unlock: pro ? 'fad fa-unlock' : 'fal fa-unlock',
+  submit: pro ? 'fad fa-arrow-right' : 'fal fa-arrow-right',
+  donate: pro ? 'fad fa-donate' : 'fal fa-donate',
 };

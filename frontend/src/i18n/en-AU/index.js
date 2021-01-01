@@ -70,8 +70,8 @@ export default {
   about: {
     title: 'About MemberMatters',
     description: 'This is an open source, full featured membership portal. It is designed for '
-    + 'HSBNE (Hackerspace Brisbane). It was created by Jaimyn Mayer, with a little help from some '
-    + 'HSBNE members.',
+      + 'HSBNE (Hackerspace Brisbane). It was created by Jaimyn Mayer, with a little help from some '
+      + 'HSBNE members.',
     linkText: 'on GitHub',
   },
   button: {
@@ -249,7 +249,7 @@ export default {
       + 'immediately charge your saved card ending in {savedCard}.',
     noSavedBilling: 'Sorry, but you don\'t have any valid billing methods. Please add a new '
       + 'billing method by clicking the button below.',
-    manageBilling: 'Manage Billing',
+    manageBilling: 'Saved Card',
     addCard: 'Add Card',
     addCardDescription: 'To add a new card please fill out the form. We do not store your credit card information (other than the last 4 digits and expiry) as our payment processor collects this for us.',
     addCardError: 'There was an error adding your card. Please try again later.',
@@ -259,6 +259,12 @@ export default {
     removeCard: 'Remove Card',
     removeCardError: 'There was an error removing your card. Please try again later.',
     addFundsSuccess: 'Successfully added funds to your memberbucks account.',
+    donateFunds: 'Donate Funds',
+    quickAdd: 'Quick Add',
+    totalAmount: 'Total Amount',
+    donateFundsDescription: 'Click the quick add buttons or enter an amount above, then click "donate funds". You can use this to pay for things that don\'t have a payment terminal.',
+    donateFundsSuccess: 'Successfully donated funds.',
+    donateFundsError: 'There was an error donating your funds, check your balance or try again later.',
   },
   loginRfidCard: {
     swipeCard: 'Tap Card',
