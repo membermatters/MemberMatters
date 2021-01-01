@@ -27,6 +27,7 @@ module.exports = configure((ctx) => ({
   // --> boot files are part of "main.js"
   // https://quasar.dev/quasar-cli/boot-files
   boot: [
+    "vueCompositionApi",
     "sentry",
     "i18n",
     "axios",
@@ -66,17 +67,17 @@ module.exports = configure((ctx) => ({
       apiBaseUrl: process.env.API_BASE_URL,
     },
 
-    showProgress: false,
+    showProgress: true,
 
     sourceMap: true,
     minify: true,
 
-    // transpile: false,
+    transpile: true,
 
     // Add dependencies for transpiling with Babel (Array of string/regex)
     // (from node_modules, which are by default not transpiled).
     // Applies only if "transpile" is set to true.
-    // transpileDependencies: [],
+    transpileDependencies: ["vuex-composition-helpers"],
 
     // rtl: false, // https://quasar.dev/options/rtl-support
     // preloadChunks: true,
@@ -88,7 +89,7 @@ module.exports = configure((ctx) => ({
     // extractCSS: false,
 
     // https://quasar.dev/quasar-cli/handling-webpack
-    extendWebpack(cfg) {
+    extendWebpack (cfg) {
       // linting is slow in TS projects, we execute it only for production builds
       if (ctx.prod) {
         cfg.module.rules.push({
@@ -247,7 +248,7 @@ module.exports = configure((ctx) => ({
     // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
     nodeIntegration: true,
 
-    extendWebpack(/* cfg */) {
+    extendWebpack (/* cfg */) {
       // do something with Electron main process Webpack cfg
       // chainWebpack also available besides this extendWebpack
     },

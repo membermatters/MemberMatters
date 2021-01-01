@@ -10,8 +10,5 @@ import PlansList from "@components/AdminTools/TiersList.vue";
 export default {
   name: "ManageTier",
   components: { PlansList },
-  mounted() {
-    let thing = "lol";
-  },
 };
 </script>

@@ -122,14 +122,25 @@
 </template>
 
 <script lang="ts">
-import { mapActions, mapGetters } from "vuex";
+import { defineComponent } from "@vue/composition-api";
+import { createNamespacedHelpers } from "vuex-composition-helpers";
 import icons from "../../icons";
 import formatMixin from "../../mixins/formatMixin";
 import formMixin from "../../mixins/formMixin";
 
-export default {
+export default defineComponent({
   name: "TiersList",
   mixins: [formatMixin, formMixin],
+  setup() {
+    const { useGetters, useActions } = createNamespacedHelpers("adminTools");
+    const { getTiers } = useActions(["getTiers"]);
+    const { tiers } = useGetters(["tiers"]);
+
+    return {
+      getTiers,
+      tiers,
+    };
+  },
   data() {
     return {
       addTierDialog: false,
@@ -145,21 +156,18 @@ export default {
       pagination: {
         sortBy: "name",
         descending: true,
-        rowsPerPage: this.$q.screen.xs ? 3 : 10,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        rowsPerPage: (this as any).$q.screen.xs ? 3 : 10,
       },
     };
   },
   computed: {
-    ...mapGetters("adminTools", ["tiers"]),
     icons() {
       return icons;
     },
   },
-  beforeMount() {
-    this.getTiers();
-  },
   methods: {
-    ...mapActions("adminTools", ["getTiers"]),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     manageTier(evt: InputEvent, row: any) {
       console.log(row);
     },
@@ -171,7 +179,7 @@ export default {
         .then(() => {
           this.form.error = false;
           this.form.success = true;
-          this.getTiers();
+          // this.getTiers();
         })
         .catch(() => {
           this.form.error = true;
@@ -191,7 +199,7 @@ export default {
       this.loading = false;
     },
   },
-};
+});
 </script>
 
 <style lang="stylus" scoped>

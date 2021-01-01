@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios, { AxiosStatic } from "axios";
 
-export default ({ Vue, store }) => {
+export default ({ Vue }: { Vue: any }, {store}: { store: any }) => {
   const instance = axios.create({
     baseURL: process.env.apiBaseUrl || "",
     // withCredentials: true,
@@ -18,3 +18,9 @@ export default ({ Vue, store }) => {
 
   Vue.prototype.$axios = instance;
 };
+
+declare module "vue/types/vue" {
+  interface Vue {
+    $axios: AxiosStatic;
+  }
+}

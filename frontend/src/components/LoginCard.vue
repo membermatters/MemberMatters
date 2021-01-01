@@ -1,19 +1,12 @@
 <template>
   <div class="q-pa-md">
-    <q-card
-      v-if="!resetToken"
-      class="login-card"
-    >
+    <q-card v-if="!resetToken" class="login-card">
       <h6 class="q-ma-none q-pa-md">
-        {{ $t('loginCard.loginToContinue') }}
+        {{ $t("loginCard.loginToContinue") }}
       </h6>
 
       <q-card-section>
-        <q-form
-          class="q-gutter-md"
-          @submit="onSubmit"
-          @reset="onReset"
-        >
+        <q-form class="q-gutter-md" @submit="onSubmit" @reset="onReset">
           <q-input
             v-model="email"
             :autofocus="!$q.platform.is.electron"
@@ -21,7 +14,9 @@
             type="email"
             label="Your email"
             lazy-rules
-            :rules="[ val => validateEmail(val) || $t('validation.invalidEmail')]"
+            :rules="[
+              (val) => validateEmail(val) || $t('validation.invalidEmail'),
+            ]"
           />
 
           <q-input
@@ -31,45 +26,34 @@
             label="Your password"
             lazy-rules
             :rules="[
-              val => validateNotEmpty(val) || $t('validation.invalidPassword'),
+              (val) =>
+                validateNotEmpty(val) || $t('validation.invalidPassword'),
             ]"
           />
 
-          <q-banner
-            v-if="loginComplete"
-            class="bg-positive text-white"
-          >
-            {{ $t('loginCard.loginSuccess') }}
+          <q-banner v-if="loginComplete" class="bg-positive text-white">
+            {{ $t("loginCard.loginSuccess") }}
           </q-banner>
 
-          <q-banner
-            v-if="loginFailed"
-            class="bg-negative text-white"
-          >
-            {{ $t('error.loginFailed') }}
+          <q-banner v-if="loginFailed" class="bg-negative text-white">
+            {{ $t("error.loginFailed") }}
           </q-banner>
 
-          <q-banner
-            v-if="unverifiedEmail"
-            class="bg-negative text-white"
-          >
-            {{ $t('loginCard.unverifiedEmail') }}
+          <q-banner v-if="unverifiedEmail" class="bg-negative text-white">
+            {{ $t("loginCard.unverifiedEmail") }}
           </q-banner>
 
-          <q-banner
-            v-if="loginError"
-            class="bg-negative text-white"
-          >
-            {{ $t('error.requestFailed') }}
+          <q-banner v-if="loginError" class="bg-negative text-white">
+            {{ $t("error.requestFailed") }}
           </q-banner>
 
           <p class="text-caption">
-            {{ $t('loginCard.notAMember') }}
+            {{ $t("loginCard.notAMember") }}
             <router-link
               :to="{ name: 'register' }"
               :class="$q.dark.isActive ? 'text-white' : 'text-black'"
             >
-              {{ $t('loginCard.registerHere') }}
+              {{ $t("loginCard.registerHere") }}
             </router-link>
           </p>
 
@@ -94,18 +78,12 @@
       </q-card-section>
     </q-card>
 
-    <q-card
-      v-else
-      class="login-card"
-    >
+    <q-card v-else class="login-card">
       <h6 class="q-ma-none q-pa-md">
-        {{ $t('loginCard.resetPassword') }}
+        {{ $t("loginCard.resetPassword") }}
       </h6>
       <q-card-section>
-        <q-form
-          class="q-gutter-md"
-          @submit="submitResetPassword"
-        >
+        <q-form class="q-gutter-md" @submit="submitResetPassword">
           <q-input
             v-model="reset.password"
             filled
@@ -115,7 +93,8 @@
             lazy-rules
             :disable="this.reset.formDisabled"
             :rules="[
-              val => validateNotEmpty(val) || $t('validation.invalidPassword'),
+              (val) =>
+                validateNotEmpty(val) || $t('validation.invalidPassword'),
             ]"
           />
 
@@ -127,30 +106,27 @@
             lazy-rules
             :disable="this.reset.formDisabled"
             :rules="[
-              val => validateNotEmpty(val) || $t('validation.invalidPassword'),
-              val => val === this.reset.password || $t('validation.passwordNotMatch')
+              (val) =>
+                validateNotEmpty(val) || $t('validation.invalidPassword'),
+              (val) =>
+                val === this.reset.password ||
+                $t('validation.passwordNotMatch'),
             ]"
           />
 
-          <q-banner
-            v-if="this.reset.confirmed"
-            class="bg-positive text-white"
-          >
-            {{ $t('loginCard.resetConfirm') }}
+          <q-banner v-if="this.reset.confirmed" class="bg-positive text-white">
+            {{ $t("loginCard.resetConfirm") }}
           </q-banner>
 
           <q-banner
             v-if="this.reset.invalidToken"
             class="bg-negative text-white"
           >
-            {{ $t('loginCard.resetInvalid') }}
+            {{ $t("loginCard.resetInvalid") }}
           </q-banner>
 
-          <q-banner
-            v-if="this.reset.failed"
-            class="bg-negative text-white"
-          >
-            {{ $t('loginCard.resetNotConfirm') }}
+          <q-banner v-if="this.reset.failed" class="bg-negative text-white">
+            {{ $t("loginCard.resetNotConfirm") }}
           </q-banner>
 
           <div class="row">
@@ -174,17 +150,14 @@
       </q-card-section>
     </q-card>
 
-    <q-dialog
-      v-model="reset.prompt"
-      persistent
-    >
+    <q-dialog v-model="reset.prompt" persistent>
       <q-card style="max-width: 350px">
         <q-card-section>
           <div class="text-h6">
-            {{ $t('loginCard.forgottenPassword') }}
+            {{ $t("loginCard.forgottenPassword") }}
           </div>
           <div>
-            {{ $t('loginCard.forgottenPasswordDescription') }}
+            {{ $t("loginCard.forgottenPasswordDescription") }}
           </div>
         </q-card-section>
 
@@ -197,28 +170,23 @@
           />
         </q-card-section>
 
-        <q-banner
-          v-if="reset.success"
-          class="bg-positive text-white q-mx-md"
-        >
-          {{ $t('loginCard.resetSuccess') }}
+        <q-banner v-if="reset.success" class="bg-positive text-white q-mx-md">
+          {{ $t("loginCard.resetSuccess") }}
         </q-banner>
 
-        <q-banner
-          v-if="reset.failed"
-          class="bg-negative text-white q-mx-md"
-        >
-          {{ $t('loginCard.resetFailed') }}
+        <q-banner v-if="reset.failed" class="bg-negative text-white q-mx-md">
+          {{ $t("loginCard.resetFailed") }}
         </q-banner>
 
-        <q-card-actions
-          align="right"
-          class="text-primary"
-        >
+        <q-card-actions align="right" class="text-primary">
           <q-btn
             v-close-popup
             flat
-            :label="this.reset.disableResetSubmitButton ? $t('button.close') : $t('button.cancel')"
+            :label="
+              this.reset.disableResetSubmitButton
+                ? $t('button.close')
+                : $t('button.cancel')
+            "
           />
           <q-btn
             flat
@@ -235,7 +203,7 @@
 
 <script>
 import { mapMutations, mapGetters, mapActions } from "vuex";
-import { Loading, Platform } from "quasar";
+import { Loading } from "quasar";
 import formMixin from "../mixins/formMixin";
 
 export default {
@@ -280,7 +248,7 @@ export default {
       this.discourseSsoData = this.$route.query;
     }
 
-    if (this.loggedIn) this.redirectLoggedIn(delay=false);
+    if (this.loggedIn) this.redirectLoggedIn((delay = false));
     if (this.resetToken) {
       Loading.show({ message: "Validating request..." });
 
@@ -302,7 +270,7 @@ export default {
     /**
      * Redirects to the dashboard page on successful login.
      */
-    redirectLoggedIn(delay=true) {
+    redirectLoggedIn(delay = true) {
       this.loginFailed = false;
       this.loginError = false;
 
@@ -313,7 +281,8 @@ export default {
 
       this.loginComplete = true;
       this.$emit("login-complete");
-      if (this.$route.query.redirect) this.$router.push(this.$route.query.redirect);
+      if (this.$route.query.redirect)
+        this.$router.push(this.$route.query.redirect);
       else if (!this.noRedirect && delay) {
         setTimeout(() => {
           this.setLoggedIn(true);
@@ -339,11 +308,12 @@ export default {
       this.buttonLoading = true;
 
       if (this.discourseSsoData) {
-        this.$axios.post("/api/login/", {
-          email: this.email,
-          password: this.password,
-          sso: this.discourseSsoData,
-        })
+        this.$axios
+          .post("/api/login/", {
+            email: this.email,
+            password: this.password,
+            sso: this.discourseSsoData,
+          })
           .then((response) => {
             this.loginFailed = false;
             this.loginError = false;
@@ -369,10 +339,11 @@ export default {
             this.buttonLoading = false;
           });
       } else if (this.$q.platform.is.ios) {
-        this.$axios.post("/api/token/obtain/", {
-          email: this.email,
-          password: this.password,
-        })
+        this.$axios
+          .post("/api/token/obtain/", {
+            email: this.email,
+            password: this.password,
+          })
           .then((response) => {
             this.setAuth(response.data);
             this.redirectLoggedIn();
@@ -394,13 +365,13 @@ export default {
           .finally(() => {
             this.buttonLoading = false;
           });
-      }
-      else {
-        this.$axios.post("/api/login/", {
-          email: this.email,
-          password: this.password,
-        })
-          .then((response) => {
+      } else {
+        this.$axios
+          .post("/api/login/", {
+            email: this.email,
+            password: this.password,
+          })
+          .then(() => {
             this.redirectLoggedIn();
           })
           .catch((error) => {
@@ -430,9 +401,10 @@ export default {
       this.reset.success = false;
       this.reset.loading = true;
 
-      this.$axios.post("/api/password/reset/", {
-        email: this.reset.email,
-      })
+      this.$axios
+        .post("/api/password/reset/", {
+          email: this.reset.email,
+        })
         .then((response) => {
           if (response.data.success === true) {
             this.reset.success = true;
@@ -456,9 +428,10 @@ export default {
      */
     validatePasswordReset() {
       return new Promise((resolve, reject) => {
-        this.$axios.post("/api/password/reset/", {
-          token: this.resetToken,
-        })
+        this.$axios
+          .post("/api/password/reset/", {
+            token: this.resetToken,
+          })
           .then((response) => {
             if (response.data.success) {
               resolve();
@@ -479,10 +452,11 @@ export default {
       this.reset.success = false;
       this.reset.loading = true;
 
-      this.$axios.post("/api/password/reset/", {
-        password: this.reset.password,
-        token: this.resetToken,
-      })
+      this.$axios
+        .post("/api/password/reset/", {
+          password: this.reset.password,
+          token: this.resetToken,
+        })
         .then((response) => {
           if (response.data.success === true) {
             this.reset.confirmed = true;
@@ -514,7 +488,7 @@ export default {
 </script>
 
 <style scoped>
-  .login-card {
-    width: 320px;
-  }
+.login-card {
+  width: 320px;
+}
 </style>

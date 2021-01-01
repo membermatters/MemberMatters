@@ -10,8 +10,5 @@ import TiersList from "@components/AdminTools/TiersList.vue";
 export default {
   name: "ManageTiers",
   components: { TiersList },
-  mounted() {
-    let thing = "lol";
-  },
 };
 </script>
