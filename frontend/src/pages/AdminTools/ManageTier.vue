@@ -1,14 +1,14 @@
 <template>
   <q-page class="column flex content-center justify-start">
-    <plans-list />
+    <manage-tier />
   </q-page>
 </template>
 
 <script lang="ts">
-import PlansList from "@components/AdminTools/TiersList.vue";
+import ManageTier from "@components/AdminTools/ManageTier.vue";
 
 export default {
-  name: "ManageTier",
-  components: { PlansList },
+  name: "ManageTierPage",
+  components: { ManageTier },
 };
 </script>

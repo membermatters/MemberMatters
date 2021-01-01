@@ -354,11 +354,14 @@ export default {
     remove: "Remove this door",
   },
   paymentPlans: {
+    title: "Payment Plans",
     nodata: "There are no payment plans available.",
     name: "Plan Name",
     description: "Payment Plan Description",
     remove: "Remove this payment plan",
     add: "Add a new payment plan",
+    success: "Successfully added a new payment plan.",
+    fail: "Failed to add a new payment plan."
   },
   tiers: {
     nodata: "There are no membership tiers in the system.",

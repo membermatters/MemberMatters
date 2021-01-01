@@ -352,3 +352,47 @@ class MemberTiers(APIView):
 
     def delete(self, request):
         return Response()
+
+
+class ManageMemberTier(APIView):
+    """
+    get: gets a member tier.
+    put: updates a member tier.
+    delete: deletes a member tier.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request, tier_id):
+        body = request.data
+
+        tier = MemberTier.objects.get(pk=tier_id)
+
+        formatted_tier = {
+            "id": tier.id,
+            "name": tier.name,
+            "description": tier.description,
+            "visible": tier.visible,
+        }
+
+        return Response(formatted_tier)
+
+    def put(self, request, tier_id):
+        body = request.data
+
+        tier = MemberTier.objects.get(pk=tier_id)
+
+        tier.name = body["name"]
+        tier.description = body["description"]
+        tier.visible = body["visible"]
+        tier.save()
+
+        return Response()
+
+    def delete(self, request, tier_id):
+        body = request.data
+
+        tier = MemberTier.objects.get(pk=tier_id)
+        tier.delete()
+
+        return Response()

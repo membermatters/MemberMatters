@@ -169,7 +169,7 @@ export default defineComponent({
   methods: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     manageTier(evt: InputEvent, row: any) {
-      console.log(row);
+      this.$router.push({ name: "manageTier", params: { tierId: row.id } });
     },
     submitTier() {
       this.loading = true;

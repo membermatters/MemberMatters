@@ -1,6 +1,8 @@
-import axios, { AxiosStatic } from "axios";
+import axios, {AxiosStatic} from "axios";
 
-export default ({ Vue }: { Vue: any }, {store}: { store: any }) => {
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default ({ Vue, store }: {Vue: any, store: any}) => {
   const instance = axios.create({
     baseURL: process.env.apiBaseUrl || "",
     // withCredentials: true,

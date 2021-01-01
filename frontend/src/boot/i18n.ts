@@ -12,6 +12,7 @@ const i18n = new VueI18n({
   messages,
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default ({ app }: { app: any}) => {
   // Set i18n instance on app
   app.i18n = i18n;
