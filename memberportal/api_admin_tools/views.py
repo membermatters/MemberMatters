@@ -5,6 +5,9 @@ from profile import models as profile_models
 from constance import config
 from profile.emailhelpers import send_single_email
 import json
+import stripe
+
+stripe.api_key = config.STRIPE_SECRET_KEY
 
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -307,7 +310,7 @@ class MemberCreateNewInvoice(APIView):
         return Response()
 
 
-class MemberTier(APIView):
+class MemberTiers(APIView):
     """
     get: gets a list of all member tiers.
     post: creates a new member tier.
@@ -319,41 +322,33 @@ class MemberTier(APIView):
 
     def get(self, request):
         tiers = MemberTier.objects.all()
+        formatted_tiers = []
 
-        return Response(tiers)
+        for tier in tiers:
+            formatted_tiers.append(
+                {
+                    "id": tier.id,
+                    "name": tier.name,
+                    "description": tier.description,
+                    "visible": tier.visible,
+                }
+            )
+
+        return Response(formatted_tiers)
 
     def post(self, request):
-        profile = request.user.profile
-        payment_method_id = request.data.get("paymentMethodId")
-
-        payment_method = stripe.PaymentMethod.retrieve(payment_method_id)
-
-        profile.stripe_card_last_digits = payment_method["card"]["last4"]
-        profile.stripe_card_expiry = f"{str(payment_method['card']['exp_month']).zfill(2)}/{str(payment_method['card']['exp_year'])}"
-        profile.stripe_payment_method_id = payment_method_id
-        profile.save()
-
-        subject = f"You just added a payment card to your {config.SITE_OWNER} account."
-        request.user.email_notification(
-            subject,
-            subject,
-            subject,
-            "Don't worry, your card details are stored safe "
-            "with Stripe and are not on our servers. You "
-            "can remove this card at any time via the "
-            f"{config.SITE_NAME}.",
+        body = request.data
+        product = stripe.Product.create(
+            name=body["name"], description=body["description"]
+        )
+        tier = MemberTier.objects.create(
+            name=body["name"],
+            description=body["description"],
+            visible=body["visible"],
+            stripe_id=product.id,
         )
 
         return Response()
 
     def delete(self, request):
-        profile = request.user.profile
-
-        if profile.stripe_payment_method_id:
-            stripe.PaymentMethod.detach(profile.stripe_payment_method_id)
-
-        profile.stripe_payment_method_id = ""
-        profile.stripe_card_last_digits = ""
-        profile.stripe_card_expiry = ""
-        profile.save()
         return Response()

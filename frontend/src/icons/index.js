@@ -49,6 +49,7 @@ export default {
   success: pro ? 'fad fa-check' : 'fal fa-check',
   fail: pro ? 'fad fa-times' : 'fal fa-times',
   add: pro ? 'fad fa-plus-circle' : 'fal fa-plus-circle',
+  addAlternative: pro ? 'fad fa-plus' : 'fal fa-plus',
   remove: pro ? 'fad fa-times-circle' : 'fal fa-times-circle',
   up: pro ? 'fad fa-chevron-down' : 'fal fa-chevron-down',
   down: pro ? 'fad fa-chevron-up' : 'fal fa-chevron-up',
