@@ -138,26 +138,26 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import icons from '../../icons';
-import formatMixin from '../../mixins/formatMixin';
+import { mapActions, mapGetters } from "vuex";
+import icons from "../../icons";
+import formatMixin from "../../mixins/formatMixin";
 
 export default {
-  name: 'InterlocksList',
+  name: "InterlocksList",
   mixins: [formatMixin],
   data() {
     return {
       loading: false,
-      filter: '',
+      filter: "",
       pagination: {
-        sortBy: 'lastSeen',
+        sortBy: "lastSeen",
         descending: true,
         rowsPerPage: this.$q.screen.xs ? 3 : 10,
       },
     };
   },
   computed: {
-    ...mapGetters('adminTools', ['interlocks']),
+    ...mapGetters("adminTools", ["interlocks"]),
     icons() {
       return icons;
     },
@@ -166,14 +166,14 @@ export default {
     this.getInterlocks();
   },
   methods: {
-    ...mapActions('adminTools', ['getInterlocks']),
+    ...mapActions("adminTools", ["getInterlocks"]),
     rebootInterlock(interlockId) {
       this.$refs[`${interlockId}-reboot`].loading = true;
       this.$axios.post(`/api/access/interlocks/${interlockId}/reboot/`)
         .catch(() => {
           this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
+            title: this.$t("error.error"),
+            message: this.$t("error.requestFailed"),
           });
         }).finally(() => {
           this.$refs[`${interlockId}-reboot`].loading = false;

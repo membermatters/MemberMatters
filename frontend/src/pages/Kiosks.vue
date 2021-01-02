@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import KioskList from '../components/KioskList';
+import KioskList from "../components/KioskList";
 
 export default {
-  name: 'KiosksPage',
+  name: "KiosksPage",
   components: { KioskList },
 };
 </script>

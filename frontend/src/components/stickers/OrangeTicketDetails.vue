@@ -24,15 +24,15 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import icons from '../../icons';
+import { mapGetters } from "vuex";
+import icons from "../../icons";
 
 export default {
-  name: 'OrangeTicketDetails',
+  name: "OrangeTicketDetails",
   props: {
     description: {
       type: String,
-      default: 'No Further Details',
+      default: "No Further Details",
     },
     safe: {
       type: Boolean,
@@ -40,13 +40,13 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('config', ['siteOwner']),
-    ...mapGetters('profile', ['profile']),
+    ...mapGetters("config", ["siteOwner"]),
+    ...mapGetters("profile", ["profile"]),
     icons() {
       return icons;
     },
     safeToUse() {
-      return this.safe ? 'This MAY be safe to use, proceed with caution.' : 'This is NOT safe to use currently.';
+      return this.safe ? "This MAY be safe to use, proceed with caution." : "This is NOT safe to use currently.";
     },
   },
 };

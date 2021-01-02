@@ -152,13 +152,13 @@
 </template>
 
 <script>
-import icons from '@icons';
-import { mapGetters, mapActions } from 'vuex';
-import formMixin from '@mixins/formMixin';
-import SavedNotification from '@components/SavedNotification';
+import icons from "@icons";
+import { mapGetters, mapActions } from "vuex";
+import formMixin from "@mixins/formMixin";
+import SavedNotification from "@components/SavedNotification";
 
 export default {
-  name: 'ManageDoorPage',
+  name: "ManageDoorPage",
   components: {
     SavedNotification,
   },
@@ -166,7 +166,7 @@ export default {
   props: {
     doorId: {
       type: String,
-      default: '',
+      default: "",
     },
   },
   data() {
@@ -186,9 +186,9 @@ export default {
         hiddenToMembers: false,
       },
       door: {
-        name: '',
-        description: '',
-        ipAddress: '',
+        name: "",
+        description: "",
+        ipAddress: "",
         defaultAccess: null,
         maintenanceLockout: null,
         playThemeOnSwipe: null,
@@ -200,13 +200,13 @@ export default {
   mounted() {
     this.getDoors()
       .then(() => {
-        if (this.currentDoor === false) this.$router.push({ name: 'Error404' });
+        if (this.currentDoor === false) this.$router.push({ name: "Error404" });
 
         this.initForm();
       });
   },
   methods: {
-    ...mapActions('adminTools', ['getDoors']),
+    ...mapActions("adminTools", ["getDoors"]),
     initForm() {
       this.door.name = this.currentDoor.name;
       this.door.description = this.currentDoor.description;
@@ -219,20 +219,20 @@ export default {
     },
     removeDoor() {
       this.$q.dialog({
-        title: this.$t('confirmRemove'),
-        ok: 'Ok',
-        cancel: 'Cancel',
+        title: this.$t("confirmRemove"),
+        ok: "Ok",
+        cancel: "Cancel",
       }).onOk(() => {
         this.removeLoading = true;
         this.$axios.delete(`/api/admin/doors/${this.doorId}/`)
           .then(() => {
-            this.$router.push({ name: 'doors' });
+            this.$router.push({ name: "doors" });
           })
           .catch((error) => {
             this.removeLoading = true;
             this.$q.dialog({
-              title: this.$t('error.error'),
-              message: this.$t('error.requestFailed'),
+              title: this.$t("error.error"),
+              message: this.$t("error.requestFailed"),
             });
             throw error;
           })
@@ -262,7 +262,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('adminTools', ['doors']),
+    ...mapGetters("adminTools", ["doors"]),
     icons() {
       return icons;
     },

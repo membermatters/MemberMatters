@@ -158,13 +158,13 @@
 </template>
 
 <script>
-import icons from '@icons';
-import { mapGetters, mapActions } from 'vuex';
-import formMixin from '@mixins/formMixin';
-import SavedNotification from '@components/SavedNotification';
+import icons from "@icons";
+import { mapGetters, mapActions } from "vuex";
+import formMixin from "@mixins/formMixin";
+import SavedNotification from "@components/SavedNotification";
 
 export default {
-  name: 'ManageInterlockPage',
+  name: "ManageInterlockPage",
   components: {
     SavedNotification,
   },
@@ -172,7 +172,7 @@ export default {
   props: {
     interlockId: {
       type: String,
-      default: '',
+      default: "",
     },
   },
   data() {
@@ -192,9 +192,9 @@ export default {
         hiddenToMembers: false,
       },
       interlock: {
-        name: '',
-        description: '',
-        ipAddress: '',
+        name: "",
+        description: "",
+        ipAddress: "",
         defaultAccess: null,
         maintenanceLockout: null,
         playThemeOnSwipe: null,
@@ -206,13 +206,13 @@ export default {
   mounted() {
     this.getInterlocks()
       .then(() => {
-        if (this.currentInterlock === false) this.$router.push({ name: 'Error404' });
+        if (this.currentInterlock === false) this.$router.push({ name: "Error404" });
 
         this.initForm();
       });
   },
   methods: {
-    ...mapActions('adminTools', ['getInterlocks']),
+    ...mapActions("adminTools", ["getInterlocks"]),
     initForm() {
       this.interlock.name = this.currentInterlock.name;
       this.interlock.description = this.currentInterlock.description;
@@ -225,20 +225,20 @@ export default {
     },
     removeInterlock() {
       this.$q.dialog({
-        title: this.$t('confirmRemove'),
-        ok: 'Ok',
-        cancel: 'Cancel',
+        title: this.$t("confirmRemove"),
+        ok: "Ok",
+        cancel: "Cancel",
       }).onOk(() => {
         this.removeLoading = true;
         this.$axios.delete(`/api/admin/interlocks/${this.interlockId}/`)
           .then(() => {
-            this.$router.push({ name: 'interlocks' });
+            this.$router.push({ name: "interlocks" });
           })
           .catch((error) => {
             this.removeLoading = true;
             this.$q.dialog({
-              title: this.$t('error.error'),
-              message: this.$t('error.requestFailed'),
+              title: this.$t("error.error"),
+              message: this.$t("error.requestFailed"),
             });
             throw error;
           })
@@ -268,7 +268,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('adminTools', ['interlocks']),
+    ...mapGetters("adminTools", ["interlocks"]),
     icons() {
       return icons;
     },

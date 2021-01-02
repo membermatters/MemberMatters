@@ -38,11 +38,11 @@
 </template>
 
 <script>
-import icons from 'src/icons';
-import { mapGetters, mapMutations } from 'vuex';
+import icons from "src/icons";
+import { mapGetters, mapMutations } from "vuex";
 
 export default {
-  name: 'LoginRfidCard',
+  name: "LoginRfidCard",
   data() {
     return {
       loginComplete: false,
@@ -51,26 +51,26 @@ export default {
     };
   },
   methods: {
-    ...mapMutations('profile', ['setLoggedIn']),
+    ...mapMutations("profile", ["setLoggedIn"]),
   },
   computed: {
-    ...mapGetters('rfid', ['cardId', 'connected']),
-    ...mapGetters('config', ['kioskId']),
+    ...mapGetters("rfid", ["cardId", "connected"]),
+    ...mapGetters("config", ["kioskId"]),
     icons() {
       return icons;
     },
   },
   watch: {
     cardId(card) {
-      this.$axios.post('/api/login/kiosk/', { cardId: card, kioskId: this.kioskId })
+      this.$axios.post("/api/login/kiosk/", { cardId: card, kioskId: this.kioskId })
         .then(() => {
           this.loginComplete = true;
           this.loginFailed = false;
           this.loginError = false;
-          this.$emit('login-complete');
+          this.$emit("login-complete");
           setTimeout(() => {
             this.setLoggedIn(true);
-            this.$router.push({ name: 'dashboard' });
+            this.$router.push({ name: "dashboard" });
           }, 1000);
         })
         .catch((error) => {

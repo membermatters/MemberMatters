@@ -1,13 +1,13 @@
-import address from 'address';
-import sha256 from 'crypto-js/sha256';
-import CryptoJS from 'crypto-js';
-import Vue from 'vue';
+import address from "address";
+import sha256 from "crypto-js/sha256";
+import CryptoJS from "crypto-js";
+import Vue from "vue";
 
 export default {
   namespaced: true,
   state: {
-    siteName: 'MemberMatters Portal',
-    siteOwner: 'MemberMatters',
+    siteName: "MemberMatters Portal",
+    siteOwner: "MemberMatters",
     homepageCards: {},
     webcamLinks: {},
     groups: [],
@@ -64,21 +64,21 @@ export default {
   actions: {
     getSiteConfig({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/config/')
+        Vue.prototype.$axios.get("/api/config/")
           .then((result) => {
-            commit('setSiteName', result.data.general.siteName);
-            commit('setSiteOwner', result.data.general.siteOwner);
-            commit('setHomepageCards', result.data.homepageCards);
-            commit('setWebcamLinks', result.data.webcamLinks);
-            commit('setGroups', result.data.groups);
-            commit('setmemberTypes', result.data.memberTypes);
-            commit('setKeys', result.data.keys);
-            commit('setFeatures', result.data.features);
+            commit("setSiteName", result.data.general.siteName);
+            commit("setSiteOwner", result.data.general.siteOwner);
+            commit("setHomepageCards", result.data.homepageCards);
+            commit("setWebcamLinks", result.data.webcamLinks);
+            commit("setGroups", result.data.groups);
+            commit("setmemberTypes", result.data.memberTypes);
+            commit("setKeys", result.data.keys);
+            commit("setFeatures", result.data.features);
             const { analyticsId } = result.data;
 
             if (analyticsId) {
-              ga('create', analyticsId, 'auto');
-              ga('send', 'pageview');
+              ga("create", analyticsId, "auto");
+              ga("send", "pageview");
             }
 
             resolve();
@@ -90,16 +90,16 @@ export default {
     },
     getKioskId({ commit }) {
       return new Promise((resolve) => {
-        commit('setKioskIp', address.ip());
+        commit("setKioskIp", address.ip());
         address.mac((err, macAddress) => {
-          commit('setKioskId', sha256(macAddress).toString(CryptoJS.enc.Hex));
+          commit("setKioskId", sha256(macAddress).toString(CryptoJS.enc.Hex));
           resolve();
         });
       });
     },
     pushKioskId({ state }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.put('/api/kiosks/', { name: state.kioskId, kioskId: state.kioskId })
+        Vue.prototype.$axios.put("/api/kiosks/", { name: state.kioskId, kioskId: state.kioskId })
           .then((result) => {
             resolve(result);
           })

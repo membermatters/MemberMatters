@@ -1,11 +1,11 @@
-import 'axios';
-import { Platform } from 'quasar';
+import "axios";
+import { Platform } from "quasar";
 
 export default {
   namespaced: true,
   state: {
-    accessToken: '',
-    refreshToken: '',
+    accessToken: "",
+    refreshToken: "",
   },
   getters: {
     accessToken: (state) => state.accessToken,

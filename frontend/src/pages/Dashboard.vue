@@ -39,21 +39,21 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import QuickActions from 'components/QuickActions';
-import { Platform } from 'quasar';
-import StatisticsCards from 'components/StatisticsCards';
-import DashboardCard from '../components/DashboardCard';
+import { mapGetters } from "vuex";
+import QuickActions from "components/QuickActions";
+import { Platform } from "quasar";
+import StatisticsCards from "components/StatisticsCards";
+import DashboardCard from "../components/DashboardCard";
 
 export default {
-  name: 'DashboardPage',
+  name: "DashboardPage",
   components: { StatisticsCards, QuickActions, DashboardCard },
   computed: {
     Platform() {
       return Platform;
     },
-    ...mapGetters('config', ['homepageCards']),
-    ...mapGetters('profile', ['loggedIn']),
+    ...mapGetters("config", ["homepageCards"]),
+    ...mapGetters("profile", ["loggedIn"]),
   },
 };
 </script>

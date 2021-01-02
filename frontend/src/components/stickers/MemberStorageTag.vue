@@ -36,22 +36,22 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import QRCode from 'qrcode';
-import Moment from 'moment';
-import icons from '../../icons';
+import { mapGetters } from "vuex";
+import QRCode from "qrcode";
+import Moment from "moment";
+import icons from "../../icons";
 
 export default {
-  name: 'ExtendedGreenTicket',
+  name: "ExtendedGreenTicket",
   props: {
     qrCodeId: {
       type: String,
-      default: '0',
+      default: "0",
     },
   },
   data() {
     return {
-      qrcode: '',
+      qrcode: "",
     };
   },
   mounted() {
@@ -59,19 +59,19 @@ export default {
   },
   methods: {
     getQrCode() {
-      QRCode.toDataURL(`2,${this.qrCodeId}`, { errorCorrectionLevel: 'H' }, async (err, url) => {
+      QRCode.toDataURL(`2,${this.qrCodeId}`, { errorCorrectionLevel: "H" }, async (err, url) => {
         this.qrcode = url;
       });
     },
   },
   computed: {
-    ...mapGetters('config', ['siteOwner']),
-    ...mapGetters('profile', ['profile']),
+    ...mapGetters("config", ["siteOwner"]),
+    ...mapGetters("profile", ["profile"]),
     icons() {
       return icons;
     },
     date() {
-      return Moment().format('DD/MM/YY');
+      return Moment().format("DD/MM/YY");
     },
   },
 };

@@ -34,13 +34,13 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import QRCode from 'qrcode';
-import Moment from 'moment';
-import icons from '../../icons';
+import { mapGetters } from "vuex";
+import QRCode from "qrcode";
+import Moment from "moment";
+import icons from "../../icons";
 
 export default {
-  name: 'RedTicket',
+  name: "RedTicket",
   props: {
     red: {
       type: Boolean,
@@ -52,16 +52,16 @@ export default {
     },
     description: {
       type: String,
-      default: 'No Description',
+      default: "No Description",
     },
     qrCodeId: {
       type: String,
-      default: '0',
+      default: "0",
     },
   },
   data() {
     return {
-      qrcode: '',
+      qrcode: "",
     };
   },
   mounted() {
@@ -69,28 +69,28 @@ export default {
   },
   methods: {
     getIdToken() {
-      QRCode.toDataURL(`3,${this.qrCodeId}`, { errorCorrectionLevel: 'H' }, async (err, url) => {
+      QRCode.toDataURL(`3,${this.qrCodeId}`, { errorCorrectionLevel: "H" }, async (err, url) => {
         this.qrcode = url;
       });
     },
   },
   computed: {
-    ...mapGetters('config', ['siteOwner']),
-    ...mapGetters('profile', ['profile']),
+    ...mapGetters("config", ["siteOwner"]),
+    ...mapGetters("profile", ["profile"]),
     icons() {
       return icons;
     },
     date() {
-      return Moment().format('DD/MM/YY'); // May 17th 2020, 1:30:47 pm
+      return Moment().format("DD/MM/YY"); // May 17th 2020, 1:30:47 pm
     },
     exp() {
-      return Moment().add(14, 'days').format('DD/MM/YY');
+      return Moment().add(14, "days").format("DD/MM/YY");
     },
     ticketType() {
-      return this.red || this.orange ? 'Finder' : 'Owner';
+      return this.red || this.orange ? "Finder" : "Owner";
     },
     ticketDescription() {
-      return this.orange ? 'Name' : 'Description';
+      return this.orange ? "Name" : "Description";
     },
   },
 };

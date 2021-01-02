@@ -1,16 +1,13 @@
 <template>
-  <q-dialog
-    ref="dialog"
-    @hide="onDialogHide"
-  >
+  <q-dialog ref="dialog" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
       <template v-if="profile.financial.memberBucks.savedCard.last4">
         <q-card-section>
           <div class="text-h6">
-            {{ $t('memberbucks.savedCardTitle') }}
+            {{ $t("memberbucks.savedCardTitle") }}
           </div>
           <div class="text-subtitle2">
-            {{ $t('memberbucks.savedCardDescription') }}
+            {{ $t("memberbucks.savedCardDescription") }}
           </div>
         </q-card-section>
 
@@ -32,7 +29,7 @@
               color="primary"
               @click="removeCard"
             >
-              {{ $t('memberbucks.removeCard') }}
+              {{ $t("memberbucks.removeCard") }}
             </q-btn>
             <q-space />
           </div>
@@ -56,12 +53,12 @@
 </template>
 
 <script>
-import CreditCard from 'components/CreditCard';
-import { mapGetters, mapActions } from 'vuex';
-import MemberBucksAddCard from 'components/MemberBucksAddCard';
+import CreditCard from "components/CreditCard";
+import { mapGetters, mapActions } from "vuex";
+import MemberBucksAddCard from "components/MemberBucksAddCard";
 
 export default {
-  name: 'MemberBucksManageBilling',
+  name: "MemberBucksManageBilling",
   components: { MemberBucksAddCard, CreditCard },
   data() {
     return {
@@ -69,16 +66,17 @@ export default {
     };
   },
   methods: {
-    ...mapActions('profile', ['getProfile']),
+    ...mapActions("profile", ["getProfile"]),
     removeCard() {
       this.removeLoading = true;
-      this.$axios.delete('/api/memberbucks/card/')
+      this.$axios
+        .delete("/api/memberbucks/card/")
         .then(() => {
           this.getProfile();
           this.hide();
         })
         .catch(() => {
-          this.error = this.$t('memberbucks.removeCardError');
+          this.error = this.$t("memberbucks.removeCardError");
         })
         .finally(() => {
           this.removeLoading = false;
@@ -91,10 +89,10 @@ export default {
       this.$refs.dialog.hide();
     },
     onDialogHide() {
-      this.$emit('hide');
+      this.$emit("hide");
     },
     onOKClick() {
-      this.$emit('ok');
+      this.$emit("ok");
       this.hide();
     },
     onCancelClick() {
@@ -102,7 +100,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('profile', ['profile']),
+    ...mapGetters("profile", ["profile"]),
   },
 };
 </script>

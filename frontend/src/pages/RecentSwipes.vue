@@ -8,10 +8,10 @@
 </template>
 
 <script>
-import RecentSwipesList from '../components/RecentSwipesList';
+import RecentSwipesList from "../components/RecentSwipesList";
 
 export default {
-  name: 'RecentSwipesPage',
+  name: "RecentSwipesPage",
   components: { RecentSwipesList },
 };
 </script>

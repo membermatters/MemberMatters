@@ -4,22 +4,22 @@
       <sad-face />
     </p>
     <p class="text-body1 text-faded">
-      {{ $t('error.404') }}
+      {{ $t("error.404") }}
     </p>
     <q-btn
       color="primary-btn"
-      style="width:200px;"
-      to="/"
+      style="width: 200px"
+      :to="{ name: 'dashboard' }"
       label="Go Home"
     />
   </div>
 </template>
 
 <script>
-import SadFace from '../components/SadFace';
+import SadFace from "../components/SadFace";
 
 export default {
-  name: 'Error404',
+  name: "Error404",
   components: { SadFace },
 };
 </script>

@@ -16,7 +16,7 @@ module.exports = {
     parser: '@typescript-eslint/parser',
     project: resolve(__dirname, './tsconfig.json'),
     tsconfigRootDir: __dirname,
-    ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
+    ecmaVersion: 2020, // Allows for the parsing of modern ECMAScript features
     sourceType: 'module' // Allows for the use of imports
   },
 
@@ -75,7 +75,7 @@ module.exports = {
     'prefer-promise-reject-errors': 'off',
 
     // TypeScript
-    quotes: ['warn', 'single', { avoidEscape: true }],
+    quotes: ['warn', 'double', { avoidEscape: true }],
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
 

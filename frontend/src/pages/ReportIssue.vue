@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import ReportIssueCard from '../components/ReportIssueCard';
+import ReportIssueCard from "../components/ReportIssueCard";
 
 export default {
-  name: 'ReportIssuePage',
+  name: "ReportIssuePage",
   components: {
     ReportIssueCard,
   },

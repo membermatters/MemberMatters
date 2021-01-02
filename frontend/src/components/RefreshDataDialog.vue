@@ -26,7 +26,7 @@
 
 <script>
 export default {
-  name: 'RefreshDataDialog',
+  name: "RefreshDataDialog",
   props: {
     value: {
       type: Boolean,
@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     close() {
-      this.$emit('input', false);
+      this.$emit("input", false);
     },
   },
 };

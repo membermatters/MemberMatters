@@ -8,10 +8,10 @@
 </template>
 
 <script>
-import MemberGroups from '../components/MemberGroups';
+import MemberGroups from "../components/MemberGroups";
 
 export default {
-  name: 'MemberGroupsPage',
+  name: "MemberGroupsPage",
   components: { MemberGroups },
 };
 </script>

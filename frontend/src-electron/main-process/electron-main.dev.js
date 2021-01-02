@@ -7,20 +7,20 @@
 
 // Install `electron-debug` with `devtron`
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-require('electron-debug')({ showDevTools: true });
+require("electron-debug")({ showDevTools: true });
 
 // Install `vue-devtools`
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-require('electron').app.on('ready', () => {
+require("electron").app.on("ready", () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const installExtension = require('electron-devtools-installer');
+  const installExtension = require("electron-devtools-installer");
   installExtension.default(installExtension.VUEJS_DEVTOOLS)
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     .then(() => {})
     .catch((err) => {
-      console.log('Unable to install `vue-devtools`: \n', err);
+      console.log("Unable to install `vue-devtools`: \n", err);
     });
 });
 
 // Require `main` process to boot app
-require('./electron-main');
+require("./electron-main");

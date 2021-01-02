@@ -24,15 +24,15 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import AccessList from '../components/AccessList';
-import icons from '../icons';
+import { mapGetters } from "vuex";
+import AccessList from "../components/AccessList";
+import icons from "../icons";
 
 export default {
-  name: 'CheckAccessPage',
+  name: "CheckAccessPage",
   components: { AccessList },
   computed: {
-    ...mapGetters('profile', ['profile']),
+    ...mapGetters("profile", ["profile"]),
     icons() {
       return icons;
     },

@@ -16,10 +16,10 @@
 </template>
 
 <script>
-import SadFace from '../components/SadFace';
+import SadFace from "../components/SadFace";
 
 export default {
-  name: 'Error501',
+  name: "Error501",
   components: { SadFace },
 };
 </script>

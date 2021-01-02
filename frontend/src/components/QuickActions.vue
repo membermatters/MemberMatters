@@ -25,62 +25,62 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from 'vuex';
-import icons from '@icons';
+import { mapGetters, mapMutations, mapActions } from "vuex";
+import icons from "@icons";
 
 export default {
-  name: 'QuickActions',
+  name: "QuickActions",
   mounted() {
     this.getSiteSignedIn();
   },
   methods: {
-    ...mapMutations('profile', ['setSiteSignedIn']),
-    ...mapActions('profile', ['getSiteSignedIn']),
+    ...mapMutations("profile", ["setSiteSignedIn"]),
+    ...mapActions("profile", ["getSiteSignedIn"]),
     doSignIn() {
-      this.$axios.post('/api/sitesessions/signin/', { guests: [] })
+      this.$axios.post("/api/sitesessions/signin/", { guests: [] })
         .then(() => {
           this.setSiteSignedIn(true);
           this.$q.dialog({
-            title: 'Success',
-            message: this.$t('dashboard.signinSuccess'),
+            title: "Success",
+            message: this.$t("dashboard.signinSuccess"),
           });
         })
         .catch(() => {
           this.setSiteSignedIn(false);
           this.$q.dialog({
-            title: 'Alert',
-            message: this.$t('dashboard.signinError'),
+            title: "Alert",
+            message: this.$t("dashboard.signinError"),
           });
         });
     },
     doSignOut() {
-      this.$axios.put('/api/sitesessions/signout/')
+      this.$axios.put("/api/sitesessions/signout/")
         .then(() => {
           this.setSiteSignedIn(false);
-          this.$router.push({ name: 'logout' });
+          this.$router.push({ name: "logout" });
         })
         .catch(() => {
           this.$q.dialog({
-            title: 'Alert',
-            message: this.$t('dashboard.signoutError'),
+            title: "Alert",
+            message: this.$t("dashboard.signoutError"),
           });
         });
     },
   },
   computed: {
-    ...mapGetters('profile', ['siteSignedIn']),
+    ...mapGetters("profile", ["siteSignedIn"]),
     quickActions() {
       const actions = [];
 
       if (this.siteSignedIn) {
         actions.push({
-          title: 'Site Sign Out',
+          title: "Site Sign Out",
           icon: icons.signout,
           click: this.doSignOut,
         });
       } else {
         actions.push({
-          title: 'Site Sign In',
+          title: "Site Sign In",
           icon: icons.signin,
           click: this.doSignIn,
         });

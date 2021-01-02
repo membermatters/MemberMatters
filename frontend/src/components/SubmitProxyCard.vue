@@ -76,11 +76,11 @@
 </template>
 
 <script>
-import formMixin from '../mixins/formMixin';
-import icons from '../icons';
+import formMixin from "../mixins/formMixin";
+import icons from "../icons";
 
 export default {
-  name: 'SubmitProxyCard',
+  name: "SubmitProxyCard",
   mixins: [formMixin],
   data() {
     return {
@@ -105,7 +105,7 @@ export default {
       this.submitError = false;
       this.buttonLoading = true;
 
-      this.$axios.post('/api/tools/issue/', {
+      this.$axios.post("/api/tools/issue/", {
         title: this.title,
         description: this.description,
       })

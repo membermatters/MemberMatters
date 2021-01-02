@@ -164,43 +164,43 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import KioskForm from 'components/KioskForm';
-import KioskDetails from 'components/KioskDetails';
-import icons from '../icons';
-import formatMixin from '../mixins/formatMixin';
+import { mapActions, mapGetters } from "vuex";
+import KioskForm from "components/KioskForm";
+import KioskDetails from "components/KioskDetails";
+import icons from "../icons";
+import formatMixin from "../mixins/formatMixin";
 
 export default {
-  name: 'KioskList',
+  name: "KioskList",
   components: { KioskForm, KioskDetails },
   mixins: [formatMixin],
   data() {
     return {
       loading: false,
-      filter: '',
-      editKioskId: '',
+      filter: "",
+      editKioskId: "",
       editKioskDialog: false,
       pagination: {
-        sortBy: 'date',
+        sortBy: "date",
         descending: true,
         rowsPerPage: this.$q.screen.xs ? 3 : 10,
       },
     };
   },
   methods: {
-    ...mapActions('adminTools', ['getKiosks']),
+    ...mapActions("adminTools", ["getKiosks"]),
     deleteKiosk(id) {
       this.$q.dialog({
-        title: 'Confirm',
-        message: this.$t('kiosk.delete'),
+        title: "Confirm",
+        message: this.$t("kiosk.delete"),
         cancel: {
-          color: 'primary',
+          color: "primary",
           flat: true,
-          label: this.$t('button.cancel'),
+          label: this.$t("button.cancel"),
         },
         ok: {
-          color: 'primary',
-          label: this.$t('button.ok'),
+          color: "primary",
+          label: this.$t("button.ok"),
         },
         persistent: true,
       }).onOk(() => {
@@ -210,8 +210,8 @@ export default {
           })
           .catch(() => {
             this.$q.dialog({
-              title: this.$t('error.error'),
-              message: this.$t('error.requestFailed'),
+              title: this.$t("error.error"),
+              message: this.$t("error.requestFailed"),
             });
           });
       });
@@ -229,7 +229,7 @@ export default {
       });
   },
   computed: {
-    ...mapGetters('adminTools', ['kiosks']),
+    ...mapGetters("adminTools", ["kiosks"]),
     icons() {
       return icons;
     },

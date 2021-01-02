@@ -34,38 +34,38 @@
 </template>
 
 <script>
-import VisaLogo from 'app/public/visa-logo.jpg';
-import MastercardLogo from 'app/public/mastercard-logo.png';
-import AmexLogo from 'app/public/amex-logo.png';
-import icons from '../icons';
+import VisaLogo from "app/public/visa-logo.jpg";
+import MastercardLogo from "app/public/mastercard-logo.png";
+import AmexLogo from "app/public/amex-logo.png";
+import icons from "../icons";
 
 export default {
-  name: 'CreditCard',
+  name: "CreditCard",
   props: {
     last4: {
       type: String,
-      default: '_ _ _ _',
+      default: "_ _ _ _",
     },
     expiry: {
       type: String,
-      default: '_ _/_ _',
+      default: "_ _/_ _",
     },
     name: {
       type: String,
-      default: '_ _ _ _ _    _ _ _ _ _',
+      default: "_ _ _ _ _    _ _ _ _ _",
     },
     logo: {
       type: String,
-      default: '',
+      default: "",
     },
   },
   computed: {
     ccLogo() {
-      if (this.logo === 'Visa') return VisaLogo;
-      if (this.logo === 'MasterCard') return MastercardLogo;
-      if (this.logo === 'American Express') return AmexLogo;
+      if (this.logo === "Visa") return VisaLogo;
+      if (this.logo === "MasterCard") return MastercardLogo;
+      if (this.logo === "American Express") return AmexLogo;
 
-      return '';
+      return "";
     },
     icons() {
       return icons;

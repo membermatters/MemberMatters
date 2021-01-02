@@ -1,5 +1,5 @@
-import Vue from 'vue';
-import { i18n } from '../../boot/i18n';
+import Vue from "vue";
+import { i18n } from "../../boot/i18n";
 
 export default {
   namespaced: true,
@@ -42,9 +42,9 @@ export default {
   actions: {
     getMeetings({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/meetings/')
+        Vue.prototype.$axios.get("/api/meetings/")
           .then((result) => {
-            commit('setMeetings', result.data);
+            commit("setMeetings", result.data);
             resolve();
           })
           .catch((error) => {
@@ -55,14 +55,14 @@ export default {
     },
     getMeetingTypes({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/meetings/types/')
+        Vue.prototype.$axios.get("/api/meetings/types/")
           .then((result) => {
             // eslint-disable-next-line no-return-assign
             const results = result.data.map((type) => ({
-              label: `${type.label} ${i18n.t('meetingForm.meeting')}`,
+              label: `${type.label} ${i18n.t("meetingForm.meeting")}`,
               value: type.value,
             }));
-            commit('setMeetingTypes', results);
+            commit("setMeetingTypes", results);
             resolve();
           })
           .catch((error) => {
@@ -73,9 +73,9 @@ export default {
     },
     getKiosks({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/kiosks/')
+        Vue.prototype.$axios.get("/api/kiosks/")
           .then((result) => {
-            commit('setKiosks', result.data);
+            commit("setKiosks", result.data);
             resolve();
           })
           .catch((error) => {
@@ -86,9 +86,9 @@ export default {
     },
     getDoors({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/admin/doors/')
+        Vue.prototype.$axios.get("/api/admin/doors/")
           .then((result) => {
-            commit('setDoors', result.data);
+            commit("setDoors", result.data);
             resolve();
           })
           .catch((error) => {
@@ -99,9 +99,9 @@ export default {
     },
     getInterlocks({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/admin/interlocks/')
+        Vue.prototype.$axios.get("/api/admin/interlocks/")
           .then((result) => {
-            commit('setInterlocks', result.data);
+            commit("setInterlocks", result.data);
             resolve();
           })
           .catch((error) => {
@@ -112,9 +112,9 @@ export default {
     },
     getTiers({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get('/api/admin/tiers/')
+        Vue.prototype.$axios.get("/api/admin/tiers/")
           .then((result) => {
-            commit('setTiers', result.data);
+            commit("setTiers", result.data);
             resolve();
           })
           .catch((error) => {

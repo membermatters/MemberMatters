@@ -1,14 +1,8 @@
 <template>
   <span>
     <template v-if="!children && !hiddenMenu">
-      <q-item
-        clickable
-        :to="{ name: name, params: defaultParams }"
-      >
-        <q-item-section
-          v-if="icon"
-          avatar
-        >
+      <q-item clickable :to="{ name: name, params: defaultParams }">
+        <q-item-section v-if="icon" avatar>
           <q-icon :name="icon" />
         </q-item-section>
 
@@ -26,50 +20,53 @@
         :label="$t(`menuLink.${name}`)"
       >
         <q-item
-          v-for="child in visibleLinks"
+          v-for="child in visibleLinks.filter(
+            (child) => child.hiddenMenu !== true
+          )"
           :key="child.name"
           clickable
           :inset-level="1"
           :to="{ name: child.name, params: child.defaultParams }"
         >
-          <q-item-section
-            v-if="child.icon"
-            avatar
-          >
-            <q-icon :name="child.icon" />
-          </q-item-section>
+          <template>
+            <q-item-section v-if="child.icon" avatar>
+              <q-icon :name="child.icon" />
+            </q-item-section>
 
-          <q-item-section>
-            <q-item-label>{{ $t(`menuLink.${child.name}`) }}</q-item-label>
-          </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ $t(`menuLink.${child.name}`) }}</q-item-label>
+            </q-item-section>
+          </template>
         </q-item>
-
       </q-expansion-item>
     </template>
   </span>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'EssentialLink',
+  name: "EssentialLink",
   props: {
     caption: {
       type: String,
-      default: '',
+      default: "",
     },
     name: {
       type: [String, Object],
-      default: '/',
+      default: "/",
     },
     defaultParams: {
       type: Object,
-      default: () => { {} },
+      default: () => {
+        {
+        }
+      },
     },
     icon: {
       type: String,
-      default: '',
+      default: "",
     },
     children: {
       type: Array,
@@ -81,7 +78,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('profile', ['loggedIn']),
+    ...mapGetters("profile", ["loggedIn"]),
     visibleLinks() {
       return this.children.filter((link) => {
         if (link.loggedIn === true) {

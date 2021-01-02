@@ -5,11 +5,12 @@
       { name: 'id', label: 'ID', field: 'id', sortable: true },
       { name: 'name', label: 'Name', field: 'name', sortable: true },
       { name: 'ipAddress', label: 'IP', field: 'ipAddress', sortable: true },
-      { name: 'lastSeen',
+      {
+        name: 'lastSeen',
         label: 'Last Seen',
         field: 'lastSeen',
         sortable: true,
-        format: (val) => formatDate(val)
+        format: (val) => formatDate(val),
       },
     ]"
     row-key="id"
@@ -17,6 +18,14 @@
     :pagination.sync="pagination"
     :grid="$q.screen.xs"
     :no-data-label="$t('doors.nodata')"
+    @row-click="
+      (evt, row) => {
+        $router.push({
+          name: 'manageDoor',
+          params: { doorId: String(row.id) },
+        });
+      }
+    "
   >
     <template v-slot:top-right>
       <q-input
@@ -34,15 +43,11 @@
 
     <template v-slot:header="props">
       <q-tr :props="props">
-        <q-th
-          v-for="col in props.cols"
-          :key="col.name"
-          :props="props"
-        >
+        <q-th v-for="col in props.cols" :key="col.name" :props="props">
           {{ col.label }}
         </q-th>
         <q-th auto-width>
-          {{ $t('button.actions') }}
+          {{ $t("button.actions") }}
         </q-th>
       </q-tr>
     </template>
@@ -54,7 +59,7 @@
         <q-card class="q-py-sm">
           <q-list dense>
             <q-item
-              v-for="col in props.cols.filter(col => col.name !== 'desc')"
+              v-for="col in props.cols.filter((col) => col.name !== 'desc')"
               :key="col.name"
             >
               <q-item-section>
@@ -79,7 +84,7 @@
               >
                 <q-icon :name="icons.unlock" />
                 <q-tooltip>
-                  {{ $t('button.unlockDoor') }}
+                  {{ $t("button.unlockDoor") }}
                 </q-tooltip>
               </q-btn>
 
@@ -92,18 +97,21 @@
               >
                 <q-icon :name="icons.reboot" />
                 <q-tooltip>
-                  {{ $t('button.rebootDevice') }}
+                  {{ $t("button.rebootDevice") }}
                 </q-tooltip>
               </q-btn>
 
               <q-btn
                 size="sm"
                 color="accent"
-                :to="{name: 'manageDoor', params: {doorId: String(props.row.id)}}"
+                :to="{
+                  name: 'manageDoor',
+                  params: { doorId: String(props.row.id) },
+                }"
               >
                 <q-icon :name="icons.settings" />
                 <q-tooltip>
-                  {{ $t('button.manage') }}
+                  {{ $t("button.manage") }}
                 </q-tooltip>
               </q-btn>
             </q-item>
@@ -113,17 +121,14 @@
     </template>
 
     <template v-slot:body="props">
-      <q-tr
-        :props="props"
-      >
-        <q-td
-          v-for="col in props.cols"
-          :key="col.name"
-          :props="props"
-        >
+      <q-tr :props="props">
+        <q-td v-for="col in props.cols" :key="col.name" :props="props">
           <router-link
             v-if="col.label === 'Name'"
-            :to="{name: 'manageDoor', params: {doorId: String(props.row.id)}}"
+            :to="{
+              name: 'manageDoor',
+              params: { doorId: String(props.row.id) },
+            }"
           >
             {{ col.value }}
           </router-link>
@@ -141,7 +146,7 @@
           >
             <q-icon :name="icons.unlock" />
             <q-tooltip>
-              {{ $t('button.unlockDoor') }}
+              {{ $t("button.unlockDoor") }}
             </q-tooltip>
           </q-btn>
 
@@ -154,7 +159,7 @@
           >
             <q-icon :name="icons.reboot" />
             <q-tooltip>
-              {{ $t('button.rebootDevice') }}
+              {{ $t("button.rebootDevice") }}
             </q-tooltip>
           </q-btn>
         </q-td>
@@ -164,25 +169,25 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import icons from '../../icons';
-import formatMixin from '../../mixins/formatMixin';
+import { mapActions, mapGetters } from "vuex";
+import icons from "../../icons";
+import formatMixin from "../../mixins/formatMixin";
 
 export default {
-  name: 'DoorsList',
+  name: "DoorsList",
   mixins: [formatMixin],
   data() {
     return {
-      filter: '',
+      filter: "",
       pagination: {
-        sortBy: 'lastSeen',
+        sortBy: "lastSeen",
         descending: true,
         rowsPerPage: this.$q.screen.xs ? 3 : 10,
       },
     };
   },
   computed: {
-    ...mapGetters('adminTools', ['doors']),
+    ...mapGetters("adminTools", ["doors"]),
     icons() {
       return icons;
     },
@@ -191,28 +196,32 @@ export default {
     this.getDoors();
   },
   methods: {
-    ...mapActions('adminTools', ['getDoors']),
+    ...mapActions("adminTools", ["getDoors"]),
     rebootDoor(doorId) {
       this.$refs[`${doorId}-reboot`].loading = true;
-      this.$axios.post(`/api/access/doors/${doorId}/reboot/`)
+      this.$axios
+        .post(`/api/access/doors/${doorId}/reboot/`)
         .catch(() => {
           this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
+            title: this.$t("error.error"),
+            message: this.$t("error.requestFailed"),
           });
-        }).finally(() => {
+        })
+        .finally(() => {
           this.$refs[`${doorId}-reboot`].loading = false;
         });
     },
     unlockDoor(doorId) {
       this.$refs[`${doorId}-unlock`].loading = true;
-      this.$axios.post(`/api/access/doors/${doorId}/unlock/`)
+      this.$axios
+        .post(`/api/access/doors/${doorId}/unlock/`)
         .catch(() => {
           this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
+            title: this.$t("error.error"),
+            message: this.$t("error.requestFailed"),
           });
-        }).finally(() => {
+        })
+        .finally(() => {
           this.$refs[`${doorId}-unlock`].loading = false;
         });
     },
@@ -221,7 +230,9 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-  @media (max-width: $breakpoint-xs-max)
-    .access-list
-      width: 100%;
+@media (max-width: $breakpoint-xs-max) {
+  .access-list {
+    width: 100%;
+  }
+}
 </style>

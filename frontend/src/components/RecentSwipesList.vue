@@ -109,35 +109,35 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import Moment from 'moment';
-import icons from '../icons';
-import RefreshDataDialog from './RefreshDataDialog';
+import { mapActions, mapGetters } from "vuex";
+import Moment from "moment";
+import icons from "../icons";
+import RefreshDataDialog from "./RefreshDataDialog";
 
 export default {
-  name: 'RecentSwipesList',
+  name: "RecentSwipesList",
   components: { RefreshDataDialog },
   data() {
     return {
-      tab: 'doors',
+      tab: "doors",
       loading: false,
       errorLoading: false,
       updateInterval: null,
-      filter: '',
+      filter: "",
       doorPagination: {
-        sortBy: 'desc',
+        sortBy: "desc",
         descending: false,
         rowsPerPage: this.$q.screen.xs ? 3 : 8,
       },
       interlockPagination: {
-        sortBy: 'desc',
+        sortBy: "desc",
         descending: false,
         rowsPerPage: this.$q.screen.xs ? 2 : 8,
       },
     };
   },
   methods: {
-    ...mapActions('tools', ['getRecentSwipes']),
+    ...mapActions("tools", ["getRecentSwipes"]),
   },
   mounted() {
     this.loading = true;
@@ -160,7 +160,7 @@ export default {
     clearInterval(this.updateInterval);
   },
   computed: {
-    ...mapGetters('tools', ['recentSwipes']),
+    ...mapGetters("tools", ["recentSwipes"]),
     icons() {
       return icons;
     },
@@ -172,7 +172,7 @@ export default {
         return this.recentSwipes.doors.map((value) => {
           const humanReadable = Moment.utc(value.date)
             .local()
-            .format('Do MMM YYYY, h:mm a');
+            .format("Do MMM YYYY, h:mm a");
           return {
             key: value.user + value.date,
             user: value.user,
@@ -192,17 +192,17 @@ export default {
         return this.recentSwipes.interlocks.map((value) => {
           const humanReadableStart = Moment.utc(value.sessionStart)
             .local()
-            .format('Do MMM YYYY, h:mm a');
+            .format("Do MMM YYYY, h:mm a");
           const humanReadableEnd = Moment.utc(value.sessionEnd)
             .local()
-            .format('Do MMM YYYY, h:mm a');
+            .format("Do MMM YYYY, h:mm a");
 
           return {
             name: value.name,
             userOn: value.userOn,
             sessionStart: humanReadableStart,
-            userOff: value.userOff === null ? this.$t('recentSwipes.timedOut') : value.userOff,
-            sessionEnd: value.sessionComplete ? humanReadableEnd : this.$t('recentSwipes.inProgress'),
+            userOff: value.userOff === null ? this.$t("recentSwipes.timedOut") : value.userOff,
+            sessionEnd: value.sessionComplete ? humanReadableEnd : this.$t("recentSwipes.inProgress"),
           };
         });
       }

@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import ProxyList from '../components/ProxyList';
+import ProxyList from "../components/ProxyList";
 
 export default {
-  name: 'ProxyPage',
+  name: "ProxyPage",
   components: { ProxyList },
 };
 </script>

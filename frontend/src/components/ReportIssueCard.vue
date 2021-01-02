@@ -76,20 +76,20 @@
 </template>
 
 <script>
-import formMixin from '../mixins/formMixin';
-import icons from '../icons';
+import formMixin from "../mixins/formMixin";
+import icons from "../icons";
 
 export default {
-  name: 'ReportIssueCard',
+  name: "ReportIssueCard",
   mixins: [formMixin],
   data() {
     return {
-      title: '',
-      description: '',
+      title: "",
+      description: "",
       submitSuccess: false,
       submitError: false,
       buttonLoading: false,
-      issueUrl: '',
+      issueUrl: "",
     };
   },
   computed: {
@@ -108,7 +108,7 @@ export default {
       this.submitError = false;
       this.buttonLoading = true;
 
-      this.$axios.post('/api/tools/issue/', {
+      this.$axios.post("/api/tools/issue/", {
         title: this.title,
         description: this.description,
       })

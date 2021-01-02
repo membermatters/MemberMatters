@@ -67,10 +67,10 @@
 </template>
 
 <script>
-import { Platform } from 'quasar';
+import { Platform } from "quasar";
 
 export default {
-  name: 'DashboardCard',
+  name: "DashboardCard",
   props: {
     title: {
       type: String,

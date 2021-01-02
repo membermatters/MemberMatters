@@ -1,26 +1,32 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header
-      v-if="loggedIn || ($q.platform.is.mobile && loggedIn)"
-      elevated
-    >
-      <q-toolbar
-        class="bg-toolbar"
-      >
-        <q-btn
-          v-if="loggedIn && !Platform.is.electron"
-          flat
-          dense
-          round
-          icon="fal fa-bars"
-          aria-label="Menu"
-          @click="mainMenuOpen = !mainMenuOpen"
-        />
+    <q-header v-if="loggedIn || ($q.platform.is.mobile && loggedIn)" elevated>
+      <q-toolbar class="bg-toolbar">
+        <template v-if="$route.meta.backButton">
+          <q-btn
+            v-if="loggedIn && !Platform.is.electron"
+            flat
+            dense
+            round
+            :icon="icons.backButton"
+            aria-label="Back"
+            @click="$router.go(-1)"
+          />
+        </template>
+        <template v-else>
+          <q-btn
+            v-if="loggedIn && !Platform.is.electron"
+            flat
+            dense
+            round
+            :icon="icons.menu"
+            aria-label="Menu"
+            @click="mainMenuOpen = !mainMenuOpen"
+          />
+        </template>
 
         <q-toolbar-title class="row">
-          <template
-            v-if="loggedIn"
-          >
+          <template v-if="loggedIn">
             {{ this.toolbarTitle }}
           </template>
         </q-toolbar-title>
@@ -35,12 +41,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-if="loggedIn"
-      v-model="mainMenuOpen"
-      bordered
-      class="column"
-    >
+    <q-drawer v-if="loggedIn" v-model="mainMenuOpen" bordered class="column">
       <router-link :to="{ name: 'profile' }">
         <q-img
           spinner-color="white"
@@ -48,38 +49,29 @@
           src="../assets/img/menu-bg/menu-bg.jpg"
           style="height: 150px"
         >
-          <div
-            class="absolute-bottom bg-transparent"
-          >
-            <q-avatar
-              size="56px"
-              class="q-mb-sm"
-            >
+          <div class="absolute-bottom bg-transparent">
+            <q-avatar size="56px" class="q-mb-sm">
               <q-icon :name="icons.profile" />
             </q-avatar>
             <div class="text-weight-bold">
               {{ profile.fullName }}
             </div>
-            <div v-if="profile.screenName">
-              ({{ profile.screenName }})
-            </div>
+            <div v-if="profile.screenName">({{ profile.screenName }})</div>
           </div>
         </q-img>
       </router-link>
 
       <q-scroll-area
-        :style="$q.platform.is.capacitor ? 'margin-top: 110px; height: calc(100% - 190px);' :
-          'margin-top: 150px; height: calc(100% - 220px);'"
+        :style="
+          $q.platform.is.capacitor
+            ? 'margin-top: 110px; height: calc(100% - 190px);'
+            : 'margin-top: 150px; height: calc(100% - 220px);'
+        "
         style="border-right: 1px solid #ddd"
       >
         <q-list>
-          <template
-            v-for="link in filteredLinks"
-          >
-            <EssentialLink
-              :key="link.title"
-              v-bind="link"
-            />
+          <template v-for="link in filteredLinks">
+            <EssentialLink :key="link.title" v-bind="link" />
           </template>
         </q-list>
       </q-scroll-area>
@@ -90,7 +82,7 @@
         <q-img
           contain
           src="../assets/img/logo/main-logo.png"
-          style="max-height: 40px; cursor: pointer;"
+          style="max-height: 40px; cursor: pointer"
           @click="aboutMemberMatters = true"
         />
       </div>
@@ -106,33 +98,30 @@
       <q-card>
         <q-card-section>
           <div class="text-h6">
-            {{ $t('about.title') }}
+            {{ $t("about.title") }}
           </div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          {{ $t('about.description') }}
-          <br><br>
+          {{ $t("about.description") }}
+          <br /><br />
           <a
             :class="$q.dark.isActive ? 'text-white' : 'text-black'"
             href="https://github.com/membermatters/MemberMatters"
             target="_blank"
-          >MemberMatters {{ $t('about.linkText') }}</a>
-          <br>
+            >MemberMatters {{ $t("about.linkText") }}</a
+          >
+          <br />
           <a
             :class="$q.dark.isActive ? 'text-white' : 'text-black'"
             href="https://github.com/jabelone"
             target="_blank"
-          >Jaimyn Mayer {{ $t('about.linkText') }}</a>
+            >Jaimyn Mayer {{ $t("about.linkText") }}</a
+          >
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn
-            v-close-popup
-            flat
-            label="OK"
-            color="primary-btn"
-          />
+          <q-btn v-close-popup flat label="OK" color="primary-btn" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -140,19 +129,19 @@
 </template>
 
 <script>
-import EssentialLink from 'components/EssentialLink';
-import { mapActions, mapGetters } from 'vuex';
-import Transitions, { FadeTransition } from 'vue2-transitions';
-import Vue from 'vue';
-import { Platform } from 'quasar';
-import icons from '../icons';
-import MainMenu from '../pages/pageAndRouteConfig';
-import mainMixin from '../mixins/mainMixin';
+import EssentialLink from "components/EssentialLink";
+import { mapActions, mapGetters } from "vuex";
+import Transitions, { FadeTransition } from "vue2-transitions";
+import Vue from "vue";
+import { Platform } from "quasar";
+import icons from "../icons";
+import MainMenu from "../pages/pageAndRouteConfig";
+import mainMixin from "../mixins/mainMixin";
 
 Vue.use(Transitions);
 
 export default {
-  name: 'MainLayout',
+  name: "MainLayout",
   components: {
     EssentialLink,
     FadeTransition,
@@ -166,22 +155,22 @@ export default {
     };
   },
   methods: {
-    ...mapActions('profile', ['getProfile']),
+    ...mapActions("profile", ["getProfile"]),
   },
   computed: {
     Platform() {
       return Platform;
     },
-    ...mapGetters('profile', ['loggedIn', 'profile']),
-    ...mapGetters('config', ['siteName']),
-    ...mapGetters('rfid', ['connected']),
+    ...mapGetters("profile", ["loggedIn", "profile"]),
+    ...mapGetters("config", ["siteName"]),
+    ...mapGetters("rfid", ["connected"]),
     icons() {
       return icons;
     },
     toolbarTitle() {
       const nameKey = `menuLink.${this.$route.meta.title}`;
       const name = `${this.$t(nameKey)}`;
-      return this.$route.meta.title ? name : this.$t('error.pageNotFound');
+      return this.$route.meta.title ? name : this.$t("error.pageNotFound");
     },
     filteredLinks() {
       return this.essentialLinks.filter((link) => {
@@ -194,7 +183,11 @@ export default {
           if (this.loggedIn) displayLink = false;
         }
         if (this.$q.platform.is.electron && !link.kiosk) displayLink = false;
-        if (link.admin && this.profile.permissions && !this.profile.permissions.admin) {
+        if (
+          link.admin &&
+          this.profile.permissions &&
+          !this.profile.permissions.admin
+        ) {
           displayLink = false;
         }
 
@@ -209,9 +202,9 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-  .footer
-    height: 50px
-    text-align: center
+.footer
+  height: 50px
+  text-align: center
 
   .q-scrollarea
     border-right: none!important

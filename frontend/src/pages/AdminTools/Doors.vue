@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import DoorsList from 'components/AdminTools/DoorsList';
+import DoorsList from "components/AdminTools/DoorsList";
 
 export default {
-  name: 'ManageDoors',
+  name: "ManageDoors",
   components: { DoorsList },
 };
 </script>

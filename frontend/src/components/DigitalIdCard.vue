@@ -73,15 +73,15 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import QRCode from 'qrcode';
-import icons from '../icons';
+import { mapGetters } from "vuex";
+import QRCode from "qrcode";
+import icons from "../icons";
 
 export default {
-  name: 'DigitalIdCard',
+  name: "DigitalIdCard",
   data() {
     return {
-      qrcode: '',
+      qrcode: "",
     };
   },
   mounted() {
@@ -89,15 +89,15 @@ export default {
   },
   methods: {
     getIdToken() {
-      this.$axios.get('api/profile/idtoken/')
+      this.$axios.get("api/profile/idtoken/")
         .then((result) => {
           QRCode.toDataURL(result.data.token, async (err, url) => { this.qrcode = url; });
         });
     },
   },
   computed: {
-    ...mapGetters('config', ['siteOwner']),
-    ...mapGetters('profile', ['profile']),
+    ...mapGetters("config", ["siteOwner"]),
+    ...mapGetters("profile", ["profile"]),
     icons() {
       return icons;
     },

@@ -352,3 +352,154 @@ class MemberTiers(APIView):
 
     def delete(self, request):
         return Response()
+
+
+class ManageMemberTier(APIView):
+    """
+    get: gets a member tier.
+    put: updates a member tier.
+    delete: deletes a member tier.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request, tier_id):
+        body = request.data
+
+        try:
+            tier = MemberTier.objects.get(pk=tier_id)
+
+        except MemberTier.DoesNotExist as e:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        formatted_tier = {
+            "id": tier.id,
+            "name": tier.name,
+            "description": tier.description,
+            "visible": tier.visible,
+        }
+
+        return Response(formatted_tier)
+
+    def put(self, request, tier_id):
+        body = request.data
+
+        tier = MemberTier.objects.get(pk=tier_id)
+
+        tier.name = body["name"]
+        tier.description = body["description"]
+        tier.visible = body["visible"]
+        tier.save()
+
+        return Response()
+
+    def delete(self, request, tier_id):
+        tier = MemberTier.objects.get(pk=tier_id)
+        tier.delete()
+
+        return Response()
+
+
+class ManageMemberTierPlans(APIView):
+    """
+    post: creates a new member tier plan.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request, tier_id):
+        plans = PaymentPlan.objects.filter(member_tier=tier_id)
+        formatted_plans = []
+
+        for plan in plans:
+            formatted_plans.append(
+                {
+                    "id": plan.id,
+                    "name": plan.name,
+                    "stripeId": plan.stripe_id,
+                    "memberTier": plan.member_tier.id,
+                    "visible": plan.visible,
+                    "currency": plan.currency,
+                    "cost": plan.cost / 100,  # convert to dollars
+                    "intervalCount": plan.interval_count,
+                    "interval": plan.interval,
+                }
+            )
+
+        return Response(formatted_plans)
+
+    def post(self, request, tier_id=None):
+        if tier_id is not None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        body = request.data
+
+        member_tier = MemberTier.objects.get(pk=body["memberTier"])
+
+        stripe_plan = stripe.Price.create(
+            unit_amount=body["cost"],
+            currency=str(body["currency"]).lower(),
+            recurring={
+                "interval": body["interval"],
+                "interval_count": body["intervalCount"],
+            },
+            product=member_tier.stripe_id,
+        )
+
+        PaymentPlan.objects.create(
+            name=body["name"],
+            stripe_id=stripe_plan.id,
+            member_tier_id=body["memberTier"],
+            visible=body["visible"],
+            currency=str(body["currency"]).lower(),
+            cost=int(body["cost"]),
+            interval_count=body["intervalCount"],
+            interval=body["interval"],
+        )
+
+        return Response()
+
+
+class ManageMemberTierPlan(APIView):
+    """
+    get: gets a member tier plan.
+    put: updates a member tier plan.
+    delete: deletes a member tier plan.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request, plan_id):
+        body = request.data
+
+        plan = PaymentPlan.objects.get(pk=plan_id)
+
+        formatted_plan = {
+            "id": plan.id,
+            "name": plan.name,
+            "member_tier": plan.member_tier,
+            "visible": plan.visible,
+            "cost": plan.cost,
+            "interval_count": plan.interval_count,
+            "interval": plan.interval,
+        }
+
+        return Response(formatted_plan)
+
+    def put(self, request, plan_id):
+        body = request.data
+
+        plan = PaymentPlan.objects.get(pk=plan_id)
+
+        plan.name = body["name"]
+        plan.visible = body["visible"]
+        plan.cost = body["cost"]
+        plan.save()
+
+        return Response()
+
+    def delete(self, request, plan_id):
+        plan = PaymentPlan.objects.get(pk=plan_id)
+        plan.delete()
+
+        return Response()

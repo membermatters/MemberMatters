@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import MembersList from '@components/AdminTools/MembersList';
+import MembersList from "@components/AdminTools/MembersList";
 
 export default {
-  name: 'MembersPage',
+  name: "MembersPage",
   components: { MembersList },
 };
 </script>

@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import MeetingsList from '../components/MeetingsList';
+import MeetingsList from "../components/MeetingsList";
 
 export default {
-  name: 'MeetingsPage',
+  name: "MeetingsPage",
   components: { MeetingsList },
 };
 </script>

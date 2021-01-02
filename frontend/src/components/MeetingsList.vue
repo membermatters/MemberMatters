@@ -103,44 +103,44 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import MeetingsDetails from 'components/MeetingDetails';
-import icons from '../icons';
-import formatMixin from '../mixins/formatMixin';
-import MeetingForm from './MeetingForm';
+import { mapActions, mapGetters } from "vuex";
+import MeetingsDetails from "components/MeetingDetails";
+import icons from "../icons";
+import formatMixin from "../mixins/formatMixin";
+import MeetingForm from "./MeetingForm";
 
 export default {
-  name: 'MeetingsList',
+  name: "MeetingsList",
   components: { MeetingsDetails, MeetingForm },
   mixins: [formatMixin],
   data() {
     return {
-      filter: '',
+      filter: "",
       loading: false,
       newMeeting: false,
       editMeetingDialog: false,
       editMeetingId: 0,
       pagination: {
-        sortBy: 'date',
+        sortBy: "date",
         descending: true,
         rowsPerPage: this.$q.screen.xs ? 3 : 10,
       },
     };
   },
   methods: {
-    ...mapActions('adminTools', ['getMeetings']),
+    ...mapActions("adminTools", ["getMeetings"]),
     deleteMeeting(id) {
       this.$q.dialog({
-        title: 'Confirm',
-        message: this.$t('meetingForm.deleteMeeting'),
+        title: "Confirm",
+        message: this.$t("meetingForm.deleteMeeting"),
         cancel: {
-          color: 'primary',
+          color: "primary",
           flat: true,
-          label: this.$t('button.cancel'),
+          label: this.$t("button.cancel"),
         },
         ok: {
-          color: 'primary',
-          label: this.$t('button.ok'),
+          color: "primary",
+          label: this.$t("button.ok"),
         },
         persistent: true,
       }).onOk(() => {
@@ -150,8 +150,8 @@ export default {
           })
           .catch(() => {
             this.$q.dialog({
-              title: this.$t('error.error'),
-              message: this.$t('error.requestFailed'),
+              title: this.$t("error.error"),
+              message: this.$t("error.requestFailed"),
             });
           });
       });
@@ -169,7 +169,7 @@ export default {
       });
   },
   computed: {
-    ...mapGetters('adminTools', ['meetings']),
+    ...mapGetters("adminTools", ["meetings"]),
     icons() {
       return icons;
     },

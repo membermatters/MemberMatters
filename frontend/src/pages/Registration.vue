@@ -13,10 +13,10 @@
 </template>
 
 <script>
-import RegistrationCard from 'components/Account/RegistrationCard';
+import RegistrationCard from "components/Account/RegistrationCard";
 
 export default {
-  name: 'RegistrationPage',
+  name: "RegistrationPage",
   components: {
     RegistrationCard,
   },
@@ -24,7 +24,7 @@ export default {
 </script>
 
 <style scoped>
-  .header-image-mobile {
-    max-height: 50px;
-  }
+.header-image-mobile {
+  max-height: 50px;
+}
 </style>

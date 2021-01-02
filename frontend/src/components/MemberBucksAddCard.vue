@@ -38,11 +38,11 @@
 </template>
 
 <script>
-import icons from 'src/icons';
-import { mapGetters, mapActions } from 'vuex';
+import icons from "src/icons";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
-  name: 'MemberBucksAddCard',
+  name: "MemberBucksAddCard",
   data() {
     return {
       stripe: null,
@@ -61,19 +61,19 @@ export default {
     }
   },
   methods: {
-    ...mapActions('profile', ['getProfile']),
+    ...mapActions("profile", ["getProfile"]),
     async setupStripe(stripePublishableKey) {
       this.stripe = await window.Stripe(stripePublishableKey);
 
       const elements = this.stripe.elements();
-      const cardElement = elements.create('card', this.$stripeElementsStyle());
-      cardElement.mount('#stripe-card-element');
+      const cardElement = elements.create("card", this.$stripeElementsStyle());
+      cardElement.mount("#stripe-card-element");
 
-      const cardButton = document.getElementById('card-button');
+      const cardButton = document.getElementById("card-button");
 
-      this.$axios.get('/api/memberbucks/card/')
+      this.$axios.get("/api/memberbucks/card/")
         .then((response) => {
-          cardButton.addEventListener('click', async () => {
+          cardButton.addEventListener("click", async () => {
             this.disableStripeForm = true;
             this.error = null;
             const { setupIntent, error } = await this.stripe.confirmCardSetup(
@@ -91,29 +91,29 @@ export default {
 
             if (error) {
               this.error = error.message;
-            } else if (setupIntent.status === 'succeeded') {
-              this.$axios.post('/api/memberbucks/card/', { paymentMethodId: setupIntent.payment_method })
+            } else if (setupIntent.status === "succeeded") {
+              this.$axios.post("/api/memberbucks/card/", { paymentMethodId: setupIntent.payment_method })
                 .then(() => {
                   this.getProfile();
                   this.hide();
                 })
                 .catch(() => {
-                  this.error = this.$t('memberbucks.addCardError');
+                  this.error = this.$t("memberbucks.addCardError");
                 });
             }
           });
         })
         .catch(() => {
-          this.error = this.$t('memberbucks.addCardError');
+          this.error = this.$t("memberbucks.addCardError");
         });
     },
     hide() {
-      this.$emit('hide');
+      this.$emit("hide");
     },
   },
   computed: {
-    ...mapGetters('profile', ['profile']),
-    ...mapGetters('config', ['keys']),
+    ...mapGetters("profile", ["profile"]),
+    ...mapGetters("config", ["keys"]),
     icons() {
       return icons;
     },

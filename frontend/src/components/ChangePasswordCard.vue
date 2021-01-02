@@ -82,16 +82,16 @@
 </template>
 
 <script>
-import formMixin from '../mixins/formMixin';
+import formMixin from "../mixins/formMixin";
 
 export default {
-  name: 'ChangePasswordCard',
+  name: "ChangePasswordCard",
   mixins: [formMixin],
   data() {
     return {
-      currentPassword: '',
-      newPassword: '',
-      newPassword2: '',
+      currentPassword: "",
+      newPassword: "",
+      newPassword2: "",
       buttonLoading: false,
       error: false,
       success: false,
@@ -108,7 +108,7 @@ export default {
       this.fail = false;
       this.buttonLoading = true;
 
-      this.$axios.put('/api/profile/password/', {
+      this.$axios.put("/api/profile/password/", {
         current: this.currentPassword,
         new: this.newPassword,
       })

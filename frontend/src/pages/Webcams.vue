@@ -2,7 +2,7 @@
   <q-page class="row flex content-start justify-center q-mt-md">
     <div class="row flex flex-center">
       <p class="text-body1 col-12 text-center q-px-md q-pt-md">
-        {{ $t('webcams.pageDescription') }}
+        {{ $t("webcams.pageDescription") }}
       </p>
 
       <div
@@ -10,9 +10,7 @@
         :key="link[1]"
         class="col-xs-12 col-sm-6 q-pa-sm"
       >
-        <q-img
-          :src="`${link[1]}?interval=${interval}`"
-        >
+        <q-img :src="`${link[1]}?interval=${interval}`">
           <div class="absolute-bottom-right text-subtitle2">
             {{ link[0] }}
           </div>
@@ -23,10 +21,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'WebcamsPage',
+  name: "WebcamsPage",
   data() {
     return {
       interval: 0,
@@ -39,14 +37,14 @@ export default {
     }, 60000);
   },
   computed: {
-    ...mapGetters('config', ['webcamLinks']),
+    ...mapGetters("config", ["webcamLinks"]),
   },
 };
 </script>
 
 <style scoped>
-  .row {
-    width: 100%;
-    max-width: 100vw;
-  }
+.row {
+  width: 100%;
+  max-width: 100vw;
+}
 </style>

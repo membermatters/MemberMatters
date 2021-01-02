@@ -1,11 +1,13 @@
-import axios from 'axios';
+import axios, {AxiosStatic} from "axios";
 
-export default ({ Vue, store }) => {
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default ({ Vue, store }: {Vue: any, store: any}) => {
   const instance = axios.create({
-    baseURL: process.env.apiBaseUrl || '',
+    baseURL: process.env.apiBaseUrl || "",
     // withCredentials: true,
-    xsrfCookieName: 'csrftoken',
-    xsrfHeaderName: 'X-CSRFTOKEN',
+    xsrfCookieName: "csrftoken",
+    xsrfHeaderName: "X-CSRFTOKEN",
   });
 
   // This interceptor adds the JWT to the request if it exists (ie mobile app)
@@ -18,3 +20,9 @@ export default ({ Vue, store }) => {
 
   Vue.prototype.$axios = instance;
 };
+
+declare module "vue/types/vue" {
+  interface Vue {
+    $axios: AxiosStatic;
+  }
+}
