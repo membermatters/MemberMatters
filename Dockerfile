@@ -6,7 +6,7 @@ MAINTAINER Jaimyn Mayer (github@jaimyn.com.au)
 RUN apk update && apk add --no-cache nginx make gcc g++ musl-dev libffi-dev openssl-dev zlib-dev jpeg-dev openrc
 
 # Create some base folders for everything
-RUN mkdir /usr/src/app && mkdir /usr/src/logs && mkdir /usr/src/data
+RUN mkdir /usr/src/app && mkdir /usr/src/app/frontend && mkdir /usr/src/logs && mkdir /usr/src/data
 
 # Copy our requirements across and install dependencies
 # Splitting this and copying the full code means we take advantage of the docker cache layers and don't have to
@@ -14,6 +14,10 @@ RUN mkdir /usr/src/app && mkdir /usr/src/logs && mkdir /usr/src/data
 ADD memberportal/requirements.txt /usr/src/app
 WORKDIR /usr/src/app
 RUN pip install --no-cache-dir -r requirements.txt
+
+ADD frontend/package.json /usr/src/app/frontend
+WORKDIR /usr/src/app/frontend
+RUN npm ci
 
 # Copy over the nginx config file
 ADD docker/nginx.conf /etc/nginx/nginx.conf
@@ -25,7 +29,7 @@ WORKDIR /usr/src/app/memberportal/
 RUN python manage.py collectstatic --noinput
 
 WORKDIR /usr/src/app/frontend
-RUN npm ci && npm run build
+RUN npm run build
 
 # Remove node_modules and our .npmrc
 RUN rm -rf .npmrc node_modules
