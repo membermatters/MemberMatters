@@ -248,7 +248,7 @@ export default {
       this.discourseSsoData = this.$route.query;
     }
 
-    if (this.loggedIn) this.redirectLoggedIn((delay = false));
+    if (this.loggedIn) this.redirectLoggedIn(false);
     if (this.resetToken) {
       Loading.show({ message: "Validating request..." });
 
