@@ -351,7 +351,11 @@ export default defineComponent({
           this.form.description = response.data.description;
           this.form.visible = response.data.visible;
         })
-        .catch(() => {
+        .catch((error) => {
+          if (error.response.status === 404) {
+            this.$router.push({ name: "Error404" });
+            return;
+          }
           this.$q.dialog({
             title: this.$tc("error.error"),
             message: this.$tc("error.requestFailed"),

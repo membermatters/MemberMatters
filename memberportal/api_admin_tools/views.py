@@ -366,7 +366,11 @@ class ManageMemberTier(APIView):
     def get(self, request, tier_id):
         body = request.data
 
-        tier = MemberTier.objects.get(pk=tier_id)
+        try:
+            tier = MemberTier.objects.get(pk=tier_id)
+
+        except MemberTier.DoesNotExist as e:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
         formatted_tier = {
             "id": tier.id,
