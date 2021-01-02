@@ -48,10 +48,10 @@
             class="text-primary"
           >
             <q-btn
-              v-close-popup
-              flat
-              :label="$t('button.cancel')"
+              color="negative"
+              :label="$t('button.remove')"
               :disable="form.loading"
+              @click="removeTier()"
             />
             <q-btn
               color="primary"
@@ -81,13 +81,35 @@
       <q-card-section class="row items-center q-pt-none">
         <q-table
           flat
-          @row-click="manageTier"
-          :data="tiers"
+          @row-click="managePlan"
+          :data="plans"
           :columns="[
             { name: 'name', label: 'Name', field: 'name', sortable: true },
-            { name: 'description', label: 'Description', field: 'description' },
+            {
+              name: 'visible',
+              label: 'Visible',
+              field: 'visible',
+              sortable: true,
+            },
+            {
+              name: 'cost',
+              label: 'Cost',
+              field: 'cost',
+              sortable: true,
+              format: (val) => `$${val}`,
+            },
+            {
+              name: 'interval',
+              label: 'Interval',
+              field: 'interval',
+              sortable: true,
+              format: (val, row) =>
+                `${row.intervalCount} ${row.interval}${
+                  row.intervalCount > 1 ? 's' : ''
+                }`,
+            },
           ]"
-          row-key="name"
+          row-key="id"
           :filter="filter"
           :pagination.sync="pagination"
           :grid="$q.screen.xs"
@@ -127,35 +149,87 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-form ref="formRef" @submit="submitPlan()">
-            <q-input
-              v-model="planForm.name"
-              outlined
-              :debounce="debounceLength"
-              :label="$t('form.name')"
-              :rules="[
-                (val) =>
-                  validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
-              ]"
-              :disable="form.success"
-            />
+          <q-form ref="formRef" @submit="submitPlanForm()">
+            <div class="row q-col-gutter-sm">
+              <q-input
+                class="col-sm-6 col-xs-12"
+                v-model="planForm.name"
+                outlined
+                :debounce="debounceLength"
+                :label="$t('form.name')"
+                :rules="[
+                  (val) =>
+                    validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+                ]"
+                :disable="form.success"
+              />
+              <q-input
+                class="col-sm-6 col-xs-12"
+                v-model="planForm.currency"
+                outlined
+                :debounce="debounceLength"
+                :label="$t('form.currency')"
+                :rules="[
+                  (val) =>
+                    validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+                ]"
+                :disable="form.success"
+              />
+              <q-input
+                class="col-sm-6 col-xs-12"
+                v-model="planForm.costString"
+                outlined
+                :debounce="debounceLength"
+                :label="$t('form.cost')"
+                :rules="[
+                  (val) =>
+                    validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+                ]"
+                :disable="form.success"
+                prefix="$"
+              />
 
-            <q-input
-              v-model="planForm.description"
-              outlined
-              :debounce="debounceLength"
-              :label="$t('form.description')"
-              :rules="[
-                (val) =>
-                  validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
-              ]"
-              :disable="planForm.success"
-            />
+              <q-checkbox
+                class="col-sm-6 col-xs-12"
+                v-model="planForm.visible"
+                :label="$t('form.visibleToMembers')"
+              />
 
-            <q-checkbox
-              v-model="planForm.visible"
-              :label="$t('form.visibleToMembers')"
-            />
+              <q-card-section class="col-12">
+                <span class="q-ml-sm">{{
+                  $t("paymentPlans.recurringDescription")
+                }}</span>
+              </q-card-section>
+
+              <q-input
+                class="col-sm-6 col-xs-12"
+                v-model="planForm.intervalCount"
+                outlined
+                :debounce="debounceLength"
+                :label="$t('form.intervalCount')"
+                :rules="[
+                  (val) =>
+                    validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+                ]"
+                :disable="form.success"
+              />
+              <q-select
+                outlined
+                class="col-sm-6 col-xs-12"
+                v-model="planForm.interval"
+                :debounce="debounceLength"
+                :label="$t('form.interval')"
+                :rules="[
+                  (val) =>
+                    validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+                ]"
+                :disable="form.success"
+                :options="intervalOptions"
+                emit-value
+                options-dense
+                map-options
+              />
+            </div>
 
             <q-banner
               v-if="planForm.success"
@@ -171,11 +245,8 @@
               {{ $t("paymentPlans.fail") }}
             </q-banner>
 
-            <q-card-actions
-              v-if="!planForm.success"
-              align="right"
-              class="text-primary"
-            >
+            <q-card-actions v-if="!planForm.success" class="text-primary">
+              <q-space />
               <q-btn
                 v-close-popup
                 flat
@@ -227,6 +298,7 @@ export default defineComponent({
   },
   data() {
     return {
+      plans: [],
       form: {
         loading: false,
         error: false,
@@ -240,8 +312,14 @@ export default defineComponent({
         error: false,
         success: false,
         name: "",
-        description: "",
-        visible: false,
+        memberTier: "",
+        stripeId: "",
+        visible: true,
+        currency: "aud",
+        costString: "",
+        cost: 0,
+        intervalCount: 1,
+        interval: "month",
       },
       addPlanDialog: false,
       filter: "",
@@ -255,6 +333,7 @@ export default defineComponent({
   },
   mounted() {
     this.getTier();
+    this.getPlans();
   },
   computed: {
     icons() {
@@ -263,6 +342,7 @@ export default defineComponent({
   },
   methods: {
     getTier() {
+      this.planForm.memberTier = this.$route.params.tierId;
       this.$axios
         .get(`/api/admin/tiers/${this.$route.params.tierId}/`)
         .then((response: AxiosResponse) => {
@@ -278,18 +358,72 @@ export default defineComponent({
           });
         });
     },
+    removeTier() {
+      this.$q
+        .dialog({
+          title: this.$tc("confirmAction"),
+          message: this.$tc("confirmRemove"),
+          cancel: true,
+          persistent: true,
+        })
+        .onOk(() => {
+          this.$axios
+            .delete(`/api/admin/tiers/${this.$route.params.tierId}/`)
+            .then(() => {
+              this.$router.back();
+            })
+            .catch(() => {
+              this.$q.dialog({
+                title: this.$tc("error.error"),
+                message: this.$tc("error.requestFailed"),
+              });
+            });
+        });
+    },
     submitTier() {
       this.form.loading = true;
+      this.form.error = false;
       this.$axios
         .put(`/api/admin/tiers/${this.$route.params.tierId}/`, this.form)
         .then(() => this.getTiers())
+        .catch(() => {
+          this.form.error = true;
+        })
+        .finally(() => (this.form.loading = false));
+    },
+    submitPlanForm() {
+      this.planForm.loading = true;
+      this.planForm.error = false;
+      this.planForm.success = false;
+      this.planForm.cost = parseFloat(this.planForm.costString) * 100;
+      this.$axios
+        .post("/api/admin/plans/", this.planForm)
+        .then(() => {
+          this.getPlans();
+          this.planForm.success = true;
+          this.planForm.error = false;
+        })
+        .catch(() => {
+          this.planForm.success = true;
+          this.planForm.error = true;
+        })
+        .finally(() => (this.planForm.loading = false));
+    },
+    getPlans() {
+      this.$axios
+        .get(`/api/admin/tiers/${this.$route.params.tierId}/plans/`)
+        .then((response: AxiosResponse) => {
+          this.plans = response.data;
+        })
         .catch(() => {
           this.$q.dialog({
             title: this.$tc("error.error"),
             message: this.$tc("error.requestFailed"),
           });
-        })
-        .finally(() => (this.form.loading = false));
+        });
+    },
+    managePlan(evt: InputEvent, row: any) {
+      this.$router.push({ name: "managePlan", params: { planId: row.id } });
     },
     resetForm() {
       this.form = {

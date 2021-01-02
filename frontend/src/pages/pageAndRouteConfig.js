@@ -94,6 +94,16 @@ const PageAndRouteConfig = [
         component: () => import("pages/AdminTools/ManageTier"),
       },
       {
+        icon: icons.members,
+        to: "/manage/plans/:planId",
+        name: "managePlan",
+        loggedIn: true,
+        admin: true,
+        hiddenMenu: true,
+        backButton: true,
+        component: () => import("pages/AdminTools/ManageTier"),
+      },
+      {
         icon: icons.doors,
         to: "/manage/doors",
         name: "doors",

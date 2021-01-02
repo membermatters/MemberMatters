@@ -30,5 +30,13 @@ export default {
     debounceLength() {
       return 1000;
     },
+    intervalOptions() {
+      return [
+        {label: "day(s)", value: "day"},
+        {label: "week(s)", value: "week"},
+        {label: "month(s)", value: "month"},
+        {label: "year(s)", value: "year"},
+      ]
+    }
   },
 };

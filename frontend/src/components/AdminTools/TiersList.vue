@@ -88,7 +88,7 @@
         { name: 'name', label: 'Name', field: 'name', sortable: true },
         { name: 'description', label: 'Description', field: 'description' },
       ]"
-      row-key="name"
+      row-key="id"
       :filter="filter"
       :pagination.sync="pagination"
       :grid="$q.screen.xs"
@@ -135,6 +135,7 @@ export default defineComponent({
     const { useGetters, useActions } = createNamespacedHelpers("adminTools");
     const { getTiers } = useActions(["getTiers"]);
     const { tiers } = useGetters(["tiers"]);
+    getTiers();
 
     return {
       getTiers,
@@ -150,7 +151,7 @@ export default defineComponent({
         success: false,
         name: "",
         description: "",
-        visible: false,
+        visible: true,
       },
       filter: "",
       pagination: {
@@ -160,6 +161,9 @@ export default defineComponent({
         rowsPerPage: (this as any).$q.screen.xs ? 3 : 10,
       },
     };
+  },
+  mounted() {
+    this.getTiers();
   },
   computed: {
     icons() {
@@ -179,7 +183,7 @@ export default defineComponent({
         .then(() => {
           this.form.error = false;
           this.form.success = true;
-          // this.getTiers();
+          this.getTiers();
         })
         .catch(() => {
           this.form.error = true;
@@ -194,7 +198,7 @@ export default defineComponent({
         success: false,
         name: "",
         description: "",
-        visible: false,
+        visible: true,
       };
       this.loading = false;
     },

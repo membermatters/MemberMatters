@@ -5,27 +5,13 @@
     </h3>
     <q-card
       class="q-mb-none"
-      style="background-color: transparent;"
-      :class="{'q-pb-lg': $q.screen.xs}"
+      style="background-color: transparent"
+      :class="{ 'q-pb-lg': $q.screen.xs }"
     >
-      <q-tabs
-        v-model="tab"
-        align="justify"
-        narrow-indicator
-      >
-        <q-tab
-          name="profile"
-          :label="$t('menuLink.profile')"
-        />
-        <q-tab
-          name="access"
-          :label="$t('adminTools.access')"
-        />
-        <q-tab
-          name="log"
-          disable
-          :label="$t('adminTools.log')"
-        />
+      <q-tabs v-model="tab" align="justify" narrow-indicator>
+        <q-tab name="profile" :label="$t('menuLink.profile')" />
+        <q-tab name="access" :label="$t('adminTools.access')" />
+        <q-tab name="log" disable :label="$t('adminTools.log')" />
         <!--        <q-tab-->
         <!--          name="memberbucks"-->
         <!--          disable-->
@@ -35,20 +21,14 @@
 
       <q-separator />
 
-      <q-tab-panels
-        v-model="tab"
-        animated
-      >
-        <q-tab-panel
-          name="profile"
-          class="q-px-lg q-py-lg"
-        >
+      <q-tab-panels v-model="tab" animated>
+        <q-tab-panel name="profile" class="q-px-lg q-py-lg">
           <div
             class="row justify-start q-pt-sm"
-            :class="{'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs}"
+            :class="{ 'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs }"
           >
             <q-btn
-              v-if="selectedMember.state==='Inactive'"
+              v-if="selectedMember.state === 'Inactive'"
               class="q-mr-sm q-mb-sm"
               color="positive"
               :label="$t('adminTools.enableAccess')"
@@ -56,7 +36,7 @@
               @click="setMemberState('active')"
             />
             <q-btn
-              v-else-if="selectedMember.state==='New'"
+              v-else-if="selectedMember.state === 'New'"
               class="q-mr-sm q-mb-sm"
               color="primary"
               :label="$t('adminTools.makeMember')"
@@ -73,43 +53,38 @@
             />
 
             <q-btn-dropdown
-              style="min-width: 170px;"
+              style="min-width: 170px"
               class="q-mr-sm q-mb-sm"
               color="primary"
               :label="$t('menuLink.adminTools')"
             >
               <q-list>
-                <q-item
-                  v-close-popup
-                  clickable
-                  @click="sendWelcomeEmail"
-                >
+                <q-item v-close-popup clickable @click="sendWelcomeEmail">
                   <q-item-section>
-                    <q-item-label>{{ $t('adminTools.sendWelcomeEmail') }}</q-item-label>
+                    <q-item-label>{{
+                      $t("adminTools.sendWelcomeEmail")
+                    }}</q-item-label>
                   </q-item-section>
                 </q-item>
 
                 <template v-if="selectedMember.xero.accountId">
-                  <q-item
-                    v-close-popup
-                    clickable
-                    @click="createInvoice()"
-                  >
+                  <q-item v-close-popup clickable @click="createInvoice()">
                     <q-item-section>
-                      <q-item-label>{{ $t('adminTools.createInvoice') }}</q-item-label>
+                      <q-item-label>{{
+                        $t("adminTools.createInvoice")
+                      }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
-                  <q-item
-                    v-close-popup
-                    clickable
-                  >
+                  <q-item v-close-popup clickable>
                     <q-item-section>
                       <a
                         :href="`https://go.xero.com/Contacts/View/${this.selectedMember.xero.accountId}`"
                         target="_blank"
                       >
-                        <q-item-label>{{ $t('adminTools.openXero') }}</q-item-label>
+                        <q-item-label>{{
+                          $t("adminTools.openXero")
+                        }}</q-item-label>
                       </a>
                     </q-item-section>
                   </q-item>
@@ -121,20 +96,21 @@
           <div class="row q-pt-md">
             <div
               class="col-12 col-md-6"
-              :class="{'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs}"
+              :class="{ 'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs }"
             >
-              <q-form
-                ref="formRef"
-              >
+              <q-form ref="formRef">
                 <h5 class="q-my-sm">
-                  {{ $t('adminTools.mainProfile') }}
+                  {{ $t("adminTools.mainProfile") }}
                 </h5>
                 <q-input
                   v-model="profileForm.email"
                   outlined
                   :debounce="debounceLength"
                   :label="$t('form.email')"
-                  :rules="[ val => validateEmail(val) || $t('validation.invalidEmail')]"
+                  :rules="[
+                    (val) =>
+                      validateEmail(val) || $t('validation.invalidEmail'),
+                  ]"
                   @input="saveChange('email')"
                 >
                   <template #append>
@@ -151,7 +127,10 @@
                   outlined
                   :debounce="debounceLength"
                   :label="$t('form.rfidCard')"
-                  :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+                  :rules="[
+                    (val) =>
+                      validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+                  ]"
                   @input="saveChange('rfidCard')"
                 >
                   <template #append>
@@ -168,7 +147,10 @@
                   outlined
                   :debounce="debounceLength"
                   :label="$t('form.firstName')"
-                  :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+                  :rules="[
+                    (val) =>
+                      validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+                  ]"
                   @input="saveChange('firstName')"
                 >
                   <template #append>
@@ -185,7 +167,10 @@
                   outlined
                   :debounce="debounceLength"
                   :label="$t('form.lastName')"
-                  :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+                  :rules="[
+                    (val) =>
+                      validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+                  ]"
                   @input="saveChange('lastName')"
                 >
                   <template #append>
@@ -202,7 +187,10 @@
                   outlined
                   :debounce="debounceLength"
                   :label="$t('form.phone')"
-                  :rules="[ val => validateNotEmpty(val) || $t('validation.invalidPhone')]"
+                  :rules="[
+                    (val) =>
+                      validateNotEmpty(val) || $t('validation.invalidPhone'),
+                  ]"
                   @input="saveChange('phone')"
                 >
                   <template #append>
@@ -219,7 +207,10 @@
                   outlined
                   :debounce="debounceLength"
                   :label="$t('form.screenName')"
-                  :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+                  :rules="[
+                    (val) =>
+                      validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+                  ]"
                   @input="saveChange('screenName')"
                 >
                   <template #append>
@@ -240,7 +231,10 @@
                   :options="groups"
                   option-value="id"
                   option-label="name"
-                  :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+                  :rules="[
+                    (val) =>
+                      validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+                  ]"
                   @input="saveChange('groups')"
                 >
                   <template #append>
@@ -259,7 +253,10 @@
                   :options="memberTypes"
                   option-value="id"
                   option-label="name"
-                  :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+                  :rules="[
+                    (val) =>
+                      validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+                  ]"
                   @input="saveChange('memberType')"
                 >
                   <template #append>
@@ -275,22 +272,20 @@
 
             <div
               class="col-12 col-md-6"
-              :class="{'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs}"
+              :class="{ 'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs }"
             >
               <h5 class="q-my-sm">
-                {{ $t('menuLink.memberbucks') }}
+                {{ $t("menuLink.memberbucks") }}
               </h5>
-              <q-list
-                bordered
-                padding
-                class="rounded-borders"
-              >
+              <q-list bordered padding class="rounded-borders">
                 <q-item>
                   <q-item-section>
                     <q-item-label lines="1">
-                      {{ selectedMember.memberBucks.balance ?
-                        $n(selectedMember.memberBucks.balance,
-                           'currency') : $t('error.noValue') }}
+                      {{
+                        selectedMember.memberBucks.balance
+                          ? $n(selectedMember.memberBucks.balance, "currency")
+                          : $t("error.noValue")
+                      }}
                     </q-item-label>
                     <q-item-label caption>
                       {{ $t(`memberbucks.currentBalance`) }}
@@ -300,8 +295,11 @@
                 <q-item>
                   <q-item-section>
                     <q-item-label lines="1">
-                      {{ selectedMember.memberBucks.lastPurchase ?
-                        selectedMember.memberBucks.lastPurchase : $t('error.noValue') }}
+                      {{
+                        selectedMember.memberBucks.lastPurchase
+                          ? selectedMember.memberBucks.lastPurchase
+                          : $t("error.noValue")
+                      }}
                     </q-item-label>
                     <q-item-label caption>
                       {{ $t(`memberbucks.lastPurchase`) }}
@@ -311,21 +309,18 @@
               </q-list>
 
               <h5 class="q-mt-md q-mb-sm">
-                {{ $t('adminTools.otherAttributes') }}
+                {{ $t("adminTools.otherAttributes") }}
               </h5>
-              <q-list
-                bordered
-                padding
-                class="rounded-borders"
-              >
-                <q-item
-                  v-for="item in ['id', 'state', 'admin']"
-                  :key="item"
-                >
+              <q-list bordered padding class="rounded-borders">
+                <q-item v-for="item in ['id', 'state', 'admin']" :key="item">
                   <q-item-section>
                     <q-item-label lines="1">
                       <template>
-                        {{ selectedMember[item] ? selectedMember[item] : $t('error.noValue') }}
+                        {{
+                          selectedMember[item]
+                            ? selectedMember[item]
+                            : $t("error.noValue")
+                        }}
                       </template>
                     </q-item-label>
                     <q-item-label caption>
@@ -336,25 +331,33 @@
               </q-list>
 
               <h5 class="q-mb-sm q-mt-md">
-                {{ $t('adminTools.memberDates') }}
+                {{ $t("adminTools.memberDates") }}
               </h5>
-              <q-list
-                bordered
-                padding
-                class="rounded-borders"
-              >
+              <q-list bordered padding class="rounded-borders">
                 <q-item
-                  v-for="item in ['lastInduction', 'registrationDate', 'lastUpdatedProfile',
-                                  'lastSeen']"
+                  v-for="item in [
+                    'lastInduction',
+                    'registrationDate',
+                    'lastUpdatedProfile',
+                    'lastSeen',
+                  ]"
                   :key="item"
                 >
                   <q-item-section>
                     <q-item-label lines="1">
                       <template v-if="item === 'registrationDate'">
-                        {{ selectedMember[item] ? selectedMember[item] : $t('error.noValue') }}
+                        {{
+                          selectedMember[item]
+                            ? selectedMember[item]
+                            : $t("error.noValue")
+                        }}
                       </template>
                       <template v-else>
-                        {{ selectedMember[item] ? selectedMember[item] : $t('error.noValue') }}
+                        {{
+                          selectedMember[item]
+                            ? selectedMember[item]
+                            : $t("error.noValue")
+                        }}
                       </template>
                     </q-item-label>
                     <q-item-label caption>
@@ -368,14 +371,10 @@
         </q-tab-panel>
 
         <q-tab-panel name="access">
-          <p
-            class="text-center q-mb-none q-mt-sm"
-          >
-            {{ $t('adminTools.accessDescription') }}
+          <p class="text-center q-mb-none q-mt-sm">
+            {{ $t("adminTools.accessDescription") }}
           </p>
-          <access-list
-            :member-id="selectedMemberFiltered.id"
-          />
+          <access-list :member-id="selectedMemberFiltered.id" />
         </q-tab-panel>
 
         <q-tab-panel name="log">
@@ -384,7 +383,7 @@
 
         <q-tab-panel name="memberbucks">
           <div class="text-h6">
-            {{ $t('menuLink.memberbucks') }}
+            {{ $t("menuLink.memberbucks") }}
           </div>
           Lorem ipsum dolor sit amet consectetur adipisicing elit.
         </q-tab-panel>
@@ -406,11 +405,16 @@ export default {
   props: {
     member: {
       type: Object,
-      default: () => { {} },
+      default: () => {
+        {
+        }
+      },
     },
     members: {
-      type: Object,
-      default: () => { {} },
+      type: Array,
+      default: () => {
+        [];
+      },
     },
   },
   data() {
@@ -460,26 +464,30 @@ export default {
     },
     saveChange(field) {
       this.$refs.formRef.validate(false).then(() => {
-        this.$refs.formRef.validate(false)
-          .then((result) => {
-            if (result) {
-              this.$axios.put(`/api/admin/members/${this.member.id}/profile/`, this.profileForm)
-                .then(() => {
-                  this.saved.error = false;
-                  this.saved[field] = true;
-                  // TODO: get list of updated profiles
-                })
-                .catch(() => {
-                  this.saved.error = true;
-                  this.saved[field] = true;
-                });
-            }
-          });
+        this.$refs.formRef.validate(false).then((result) => {
+          if (result) {
+            this.$axios
+              .put(
+                `/api/admin/members/${this.member.id}/profile/`,
+                this.profileForm
+              )
+              .then(() => {
+                this.saved.error = false;
+                this.saved[field] = true;
+                // TODO: get list of updated profiles
+              })
+              .catch(() => {
+                this.saved.error = true;
+                this.saved[field] = true;
+              });
+          }
+        });
       });
     },
     sendWelcomeEmail() {
       this.welcomeLoading = true;
-      this.$axios.post(`/api/admin/members/${this.member.id}/sendwelcome/`)
+      this.$axios
+        .post(`/api/admin/members/${this.member.id}/sendwelcome/`)
         .then(() => {
           this.$q.dialog({
             title: this.$t("success"),
@@ -498,39 +506,48 @@ export default {
     },
     createInvoice() {
       let emailInvoice = false;
-      this.$q.dialog({
-        title: this.$t("confirmAction"),
-        message: this.$t("adminTools.confirmInvoice"),
-        ok: "Ok",
-        cancel: "Cancel",
-      }).onOk(() => {
-        this.$q.dialog({
+      this.$q
+        .dialog({
           title: this.$t("confirmAction"),
-          message: this.$t("adminTools.confirmInvoiceEmail"),
-          ok: "Email Them",
-          cancel: "Don't Email",
-        }).onOk(() => {
-          emailInvoice = true;
-        }).onDismiss(() => {
-          this.$axios.post(`/api/admin/members/${this.member.id}/invoice/${emailInvoice}/`)
-            .then(() => {
-              this.$q.dialog({
-                title: this.$t("success"),
-                message: this.$t("adminTools.createInvoiceSuccess"),
-              });
+          message: this.$t("adminTools.confirmInvoice"),
+          ok: "Ok",
+          cancel: "Cancel",
+        })
+        .onOk(() => {
+          this.$q
+            .dialog({
+              title: this.$t("confirmAction"),
+              message: this.$t("adminTools.confirmInvoiceEmail"),
+              ok: "Email Them",
+              cancel: "Don't Email",
             })
-            .catch(() => {
-              this.$q.dialog({
-                title: this.$t("error.error"),
-                message: this.$t("error.requestFailed"),
-              });
+            .onOk(() => {
+              emailInvoice = true;
+            })
+            .onDismiss(() => {
+              this.$axios
+                .post(
+                  `/api/admin/members/${this.member.id}/invoice/${emailInvoice}/`
+                )
+                .then(() => {
+                  this.$q.dialog({
+                    title: this.$t("success"),
+                    message: this.$t("adminTools.createInvoiceSuccess"),
+                  });
+                })
+                .catch(() => {
+                  this.$q.dialog({
+                    title: this.$t("error.error"),
+                    message: this.$t("error.requestFailed"),
+                  });
+                });
             });
         });
-      });
     },
     setMemberState(state) {
       this.stateLoading = true;
-      this.$axios.post(`/api/admin/members/${this.member.id}/state/${state}/`)
+      this.$axios
+        .post(`/api/admin/members/${this.member.id}/state/${state}/`)
         .catch(() => {
           this.$q.dialog({
             title: this.$t("error.error"),
@@ -539,12 +556,15 @@ export default {
         })
         .finally(() => {
           this.$emit("update-members");
-          setTimeout(() => { this.stateLoading = false; }, 1200);
+          setTimeout(() => {
+            this.stateLoading = false;
+          }, 1200);
         });
     },
     activateMember() {
       this.stateLoading = true;
-      this.$axios.post(`/api/admin/members/${this.member.id}/makemember/`)
+      this.$axios
+        .post(`/api/admin/members/${this.member.id}/makemember/`)
         .then((response) => {
           if (response.data.success) {
             this.$q.dialog({
@@ -566,7 +586,9 @@ export default {
         })
         .finally(() => {
           this.$emit("update-members");
-          setTimeout(() => { this.stateLoading = false; }, 1200);
+          setTimeout(() => {
+            this.stateLoading = false;
+          }, 1200);
         });
     },
   },
@@ -593,7 +615,10 @@ export default {
   max-width: 100%;
 }
 
-a, a:visited, a:hover, a:active {
+a,
+a:visited,
+a:hover,
+a:active {
   color: inherit;
   text-decoration: none;
 }
