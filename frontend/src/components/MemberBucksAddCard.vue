@@ -2,17 +2,14 @@
   <div>
     <q-card-section>
       <div class="text-h6">
-        {{ $t('memberbucks.addCard') }}
+        {{ $t("memberbucks.addCard") }}
       </div>
 
-      {{ $t('memberbucks.addCardDescription') }}
+      {{ $t("memberbucks.addCardDescription") }}
     </q-card-section>
 
     <q-card-section>
-      <div
-        id="stripe-card-element"
-        class="q-pa-sm"
-      />
+      <div id="stripe-card-element" class="q-pa-sm" />
 
       <div class="row q-pa-sm">
         <q-space />
@@ -22,15 +19,12 @@
           :loading="disableStripeForm"
           color="primary"
         >
-          {{ $t('memberbucks.saveCard') }}
+          {{ $t("memberbucks.saveCard") }}
         </q-btn>
         <q-space />
       </div>
 
-      <q-banner
-        v-if="error"
-        class="text-white bg-red"
-      >
+      <q-banner v-if="error" class="text-white bg-red">
         {{ error }}
       </q-banner>
     </q-card-section>
@@ -38,7 +32,7 @@
 </template>
 
 <script>
-import icons from "src/icons";
+import icons from "@icons";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
@@ -71,7 +65,8 @@ export default {
 
       const cardButton = document.getElementById("card-button");
 
-      this.$axios.get("/api/memberbucks/card/")
+      this.$axios
+        .get("/api/memberbucks/card/")
         .then((response) => {
           cardButton.addEventListener("click", async () => {
             this.disableStripeForm = true;
@@ -85,14 +80,17 @@ export default {
                     name: this.profile.fullName,
                   },
                 },
-              },
+              }
             );
             this.disableStripeForm = false;
 
             if (error) {
               this.error = error.message;
             } else if (setupIntent.status === "succeeded") {
-              this.$axios.post("/api/memberbucks/card/", { paymentMethodId: setupIntent.payment_method })
+              this.$axios
+                .post("/api/memberbucks/card/", {
+                  paymentMethodId: setupIntent.payment_method,
+                })
                 .then(() => {
                   this.getProfile();
                   this.hide();

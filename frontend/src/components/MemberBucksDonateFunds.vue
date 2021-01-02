@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import icons from "src/icons";
+import icons from "@icons";
 import { mapGetters, mapActions } from "vuex";
 
 export default {

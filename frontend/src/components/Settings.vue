@@ -4,31 +4,30 @@
       <q-card>
         <q-card-section>
           <div class="text-h6">
-            {{ $t('settings.title') }}
+            {{ $t("settings.title") }}
           </div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          {{ $t('settings.description') }}
+          {{ $t("settings.description") }}
         </q-card-section>
 
         <q-card-section class="q-pt-none">
           <p class="text-h6">
-            {{ $t('settings.rfidScanner.title') }}
+            {{ $t("settings.rfidScanner.title") }}
           </p>
 
-          <p>{{ $t('settings.rfidScanner.connectionStatus') }}: {{ connectionStatusDisplay }}</p>
+          <p>
+            {{ $t("settings.rfidScanner.connectionStatus") }}:
+            {{ connectionStatusDisplay }}
+          </p>
 
-          <q-input
-            v-model="readerUrlInput"
-            outlined
-            label="Reader URL"
-          />
+          <q-input v-model="readerUrlInput" outlined label="Reader URL" />
         </q-card-section>
 
         <q-card-section class="q-pt-none">
           <p class="text-h6">
-            {{ $t('settings.other.title') }}
+            {{ $t("settings.other.title") }}
           </p>
 
           <q-btn
@@ -49,16 +48,13 @@
       </q-card>
     </q-dialog>
 
-    <div
-      class="settings-button"
-      @click="settingsDialog = true"
-    />
+    <div class="settings-button" @click="settingsDialog = true" />
   </div>
 </template>
 
 <script>
 /* eslint-disable no-console */
-import icons from "src/icons";
+import icons from "@icons";
 import { mapGetters, mapMutations } from "vuex";
 import Vue from "vue";
 import { Platform } from "quasar";
@@ -111,17 +107,22 @@ export default {
       };
 
       ws.onclose = () => {
-        console.warn("Disconnected from card reader! Trying to reconnect in 5 seconds.");
-        setTimeout(() => { this.connectReader(); }, 5000);
+        console.warn(
+          "Disconnected from card reader! Trying to reconnect in 5 seconds."
+        );
+        setTimeout(() => {
+          this.connectReader();
+        }, 5000);
       };
     },
     login() {
       this.loginFailed = false;
       this.buttonLoading = true;
-      this.$axios.post("/api/login/", {
-        email: this.email,
-        password: this.password,
-      })
+      this.$axios
+        .post("/api/login/", {
+          email: this.email,
+          password: this.password,
+        })
         .then(() => {
           this.redirectLoggedIn();
         })
@@ -145,20 +146,24 @@ export default {
       return icons;
     },
     connectionStatusDisplay() {
-      return this.connected ? this.$t("settings.rfidScanner.connected") : this.$t("settings.rfidScanner.disconnected");
+      return this.connected
+        ? this.$t("settings.rfidScanner.connected")
+        : this.$t("settings.rfidScanner.disconnected");
     },
     reloadWindow() {
-      return Platform.is.electron ? getCurrentWindow().reload() : window.location.reload();
+      return Platform.is.electron
+        ? getCurrentWindow().reload()
+        : window.location.reload();
     },
   },
 };
 </script>
 
 <style lang="sass" scoped>
-  .settings-button
-    width: 50px
-    height: 50px
-    position: fixed
-    bottom: 0
-    right: 0
+.settings-button
+  width: 50px
+  height: 50px
+  position: fixed
+  bottom: 0
+  right: 0
 </style>

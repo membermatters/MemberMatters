@@ -5,32 +5,24 @@
         <h5 class="q-ma-none q-pa-sm row justify-center">
           <q-icon
             class="rotate-90 q-mt-xs q-mr-sm"
-            style="font-size: 90%;"
+            style="font-size: 90%"
             :name="connected ? icons.rfid : icons.rfidSlash"
-          /> {{ $t('loginRfidCard.swipeCard') }}
+          />
+          {{ $t("loginRfidCard.swipeCard") }}
         </h5>
 
-        <br v-if="loginComplete || loginFailed || loginError">
+        <br v-if="loginComplete || loginFailed || loginError" />
 
-        <q-banner
-          v-if="loginComplete"
-          class="bg-positive text-white q-ma-md"
-        >
-          {{ $t('loginCard.loginSuccess') }}
+        <q-banner v-if="loginComplete" class="bg-positive text-white q-ma-md">
+          {{ $t("loginCard.loginSuccess") }}
         </q-banner>
 
-        <q-banner
-          v-if="loginFailed"
-          class="bg-negative text-white"
-        >
-          {{ $t('loginRfidCard.failed') }}
+        <q-banner v-if="loginFailed" class="bg-negative text-white">
+          {{ $t("loginRfidCard.failed") }}
         </q-banner>
 
-        <q-banner
-          v-if="loginError"
-          class="bg-negative text-white"
-        >
-          {{ $t('error.requestFailed') }}
+        <q-banner v-if="loginError" class="bg-negative text-white">
+          {{ $t("error.requestFailed") }}
         </q-banner>
       </q-card-section>
     </q-card>
@@ -38,7 +30,7 @@
 </template>
 
 <script>
-import icons from "src/icons";
+import icons from "@icons";
 import { mapGetters, mapMutations } from "vuex";
 
 export default {
@@ -62,7 +54,8 @@ export default {
   },
   watch: {
     cardId(card) {
-      this.$axios.post("/api/login/kiosk/", { cardId: card, kioskId: this.kioskId })
+      this.$axios
+        .post("/api/login/kiosk/", { cardId: card, kioskId: this.kioskId })
         .then(() => {
           this.loginComplete = true;
           this.loginFailed = false;
