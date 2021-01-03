@@ -1,7 +1,7 @@
 from django.db import models
 
 
-# This is a Strie Product
+# This is a Stripe Product
 class MemberTier(models.Model):
     """[A membership tier that a member can be billed for.]"""
 

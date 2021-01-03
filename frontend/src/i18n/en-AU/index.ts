@@ -265,6 +265,7 @@ export default {
     removeCard: "Remove Card",
     removeCardError: "There was an error removing your card. Please try again later.",
     addFundsSuccess: "Successfully added funds to your memberbucks account.",
+    donateFunds: "Donate Funds",
   },
   loginRfidCard: {
     swipeCard: "Tap Card",

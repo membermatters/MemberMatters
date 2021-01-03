@@ -1,6 +1,6 @@
 # Specify our base image
 FROM nikolaik/python-nodejs:python3.8-nodejs12-alpine
-MAINTAINER Jaimyn Mayer (github@jaimyn.com.au)
+LABEL maintainer="Jaimyn Mayer (github@jaimyn.com.au)"
 
 # Install nginx and other build dependencies
 RUN apk update && apk add --no-cache nginx make gcc g++ musl-dev libffi-dev openssl-dev zlib-dev jpeg-dev openrc
@@ -15,7 +15,8 @@ ADD memberportal/requirements.txt /usr/src/app
 WORKDIR /usr/src/app
 RUN pip install --no-cache-dir -r requirements.txt
 
-ADD frontend/package.json /usr/src/app/frontend
+ADD frontend/.npmrc /usr/src/app/frontend
+ADD frontend/package* /usr/src/app/frontend
 WORKDIR /usr/src/app/frontend
 RUN npm ci
 

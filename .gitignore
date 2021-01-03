@@ -120,7 +120,6 @@ env.list
 
 node_modules
 webpack-stats.json
-frontend/src/icons/
 
 frontend/src-capacitor/ios/App/App/Assets.xcassets/Splash.imageset/
 
