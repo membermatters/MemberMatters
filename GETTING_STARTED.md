@@ -17,8 +17,6 @@ PORTAL_ENV=Production
 PORTAL_LOG_LOCATION=[optional - remove line if not used]
 PORTAL_DB_LOCATION=[optional - remove line if not used]
 
-PORTAL_SENDGRID_API_KEY=sg.xxxx
-
 PORTAL_XERO_CONSUMER_KEY=
 PORTAL_XERO_RSA_FILE=/path/to/xerkey.pem
 ```
