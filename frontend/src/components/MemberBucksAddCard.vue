@@ -66,7 +66,7 @@ export default {
       const cardButton = document.getElementById("card-button");
 
       this.$axios
-        .get("/api/memberbucks/card/")
+        .get("/api/billing/card/")
         .then((response) => {
           cardButton.addEventListener("click", async () => {
             this.disableStripeForm = true;
@@ -88,7 +88,7 @@ export default {
               this.error = error.message;
             } else if (setupIntent.status === "succeeded") {
               this.$axios
-                .post("/api/memberbucks/card/", {
+                .post("/api/billing/card/", {
                   paymentMethodId: setupIntent.payment_method,
                 })
                 .then(() => {

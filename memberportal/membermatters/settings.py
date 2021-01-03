@@ -90,6 +90,7 @@ INSTALLED_APPS = [
     "api_access",
     "api_meeting",
     "api_admin_tools",
+    "api_billing",
     "corsheaders",
     "rest_framework",
 ]

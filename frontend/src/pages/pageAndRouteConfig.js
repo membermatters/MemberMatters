@@ -233,6 +233,13 @@ const PageAndRouteConfig = [
         loggedIn: true,
         component: () => import("pages/Billing"),
       },
+      {
+        icon: icons.plans,
+        to: "/account/membership-tier",
+        name: "membershipTier",
+        loggedIn: true,
+        component: () => import("pages/MembershipTier"),
+      },
     ],
   },
   {
