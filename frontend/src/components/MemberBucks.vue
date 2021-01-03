@@ -146,12 +146,6 @@ export default {
         parent: this,
       });
     },
-    openManageBillingDialog() {
-      this.$q.dialog({
-        component: MemberBucksManageBilling,
-        parent: this,
-      });
-    },
     addFunds() {
       this.$router
         .push({ name: "memberbucks", params: { dialog: "add" } })
@@ -175,23 +169,13 @@ export default {
         });
     },
     manageBilling() {
-      this.$router
-        .push({ name: "memberbucks", params: { dialog: "billing" } })
-        .catch((error) => {
-          if (error.name === "NavigationDuplicated") {
-            this.openManageBillingDialog();
-          } else {
-            throw error;
-          }
-        });
+      this.$router.push({ name: "billing" });
     },
   },
   watch: {
     dialog(dialog) {
       if (dialog === "add") {
         this.openAddFundsDialog();
-      } else if (dialog === "billing") {
-        this.openManageBillingDialog();
       } else if (dialog === "donate") {
         this.openDonateFundsDialog();
       } else {
@@ -209,8 +193,6 @@ export default {
     });
     if (this.dialog === "add") {
       this.openAddFundsDialog();
-    } else if (this.dialog === "billing") {
-      this.openManageBillingDialog();
     } else if (this.dialog === "donate") {
       this.openDonateFundsDialog();
     }

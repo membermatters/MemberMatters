@@ -1,55 +1,44 @@
 <template>
-  <q-dialog ref="dialog" @hide="onDialogHide">
-    <q-card class="q-dialog-plugin">
-      <template v-if="profile.financial.memberBucks.savedCard.last4">
-        <q-card-section>
-          <div class="text-h6">
-            {{ $t("memberbucks.savedCardTitle") }}
-          </div>
-          <div class="text-subtitle2">
-            {{ $t("memberbucks.savedCardDescription") }}
-          </div>
-        </q-card-section>
+  <q-card class="q-dialog-plugin">
+    <template v-if="profile.financial.memberBucks.savedCard.last4">
+      <q-card-section>
+        <div class="text-h6">
+          {{ $t("memberbucks.savedCardTitle") }}
+        </div>
+        <div class="text-subtitle2">
+          {{ $t("memberbucks.savedCardDescription") }}
+        </div>
+      </q-card-section>
 
-        <q-card-section>
-          <credit-card
-            :name="profile.fullName"
-            :expiry="profile.financial.memberBucks.savedCard.expiry"
-            :last4="profile.financial.memberBucks.savedCard.last4"
-            :brand="profile.financial.memberBucks.savedCard.brand"
-            class="shadow-7"
-          />
-
-          <div class="row q-pt-md">
-            <q-space />
-            <q-btn
-              id="card-button"
-              :loading="removeLoading"
-              :disable="removeLoading"
-              color="primary"
-              @click="removeCard"
-            >
-              {{ $t("memberbucks.removeCard") }}
-            </q-btn>
-            <q-space />
-          </div>
-        </q-card-section>
-      </template>
-
-      <template v-else>
-        <member-bucks-add-card @hide="hide" />
-      </template>
-
-      <q-card-actions align="right">
-        <q-btn
-          color="accent"
-          flat
-          :label="$t('button.close')"
-          @click="onCancelClick"
+      <q-card-section>
+        <credit-card
+          :name="profile.fullName"
+          :expiry="profile.financial.memberBucks.savedCard.expiry"
+          :last4="profile.financial.memberBucks.savedCard.last4"
+          :brand="profile.financial.memberBucks.savedCard.brand"
+          class="shadow-7"
         />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
+
+        <div class="row q-pt-md">
+          <q-space />
+          <q-btn
+            id="card-button"
+            :loading="removeLoading"
+            :disable="removeLoading"
+            color="primary"
+            @click="removeCard"
+          >
+            {{ $t("memberbucks.removeCard") }}
+          </q-btn>
+          <q-space />
+        </div>
+      </q-card-section>
+    </template>
+
+    <template v-else>
+      <member-bucks-add-card @hide="hide" />
+    </template>
+  </q-card>
 </template>
 
 <script>
@@ -93,9 +82,6 @@ export default {
     },
     onOKClick() {
       this.$emit("ok");
-      this.hide();
-    },
-    onCancelClick() {
       this.hide();
     },
   },

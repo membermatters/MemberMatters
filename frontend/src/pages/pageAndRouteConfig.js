@@ -226,6 +226,13 @@ const PageAndRouteConfig = [
         loggedIn: true,
         component: () => import("pages/MemberBucks"),
       },
+      {
+        icon: icons.billing,
+        to: "/account/billing",
+        name: "billing",
+        loggedIn: true,
+        component: () => import("pages/Billing"),
+      },
     ],
   },
   {

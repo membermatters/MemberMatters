@@ -66,8 +66,7 @@
             class="q-mb-sm q-mr-md"
             @click="
               $router.push({
-                name: 'memberbucks',
-                params: { dialog: 'billing' },
+                name: 'billing',
               })
             "
           />

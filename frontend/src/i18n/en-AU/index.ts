@@ -32,6 +32,7 @@ export default {
     recentSwipes: "Recent Swipes",
     lastSeen: "Last Seen",
     membership: "Membership",
+    billing: "Billing Method",
     profile: "Profile",
     checkAccess: "Check Access",
     memberbucks: "Spacebucks",
