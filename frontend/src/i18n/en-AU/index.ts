@@ -265,7 +265,12 @@ export default {
     removeCard: "Remove Card",
     removeCardError: "There was an error removing your card. Please try again later.",
     addFundsSuccess: "Successfully added funds to your memberbucks account.",
-    donateFunds: "Donate Funds",
+    donateFunds: "Make Payment",
+    quickAdd: "Quick Add",
+    totalAmount: "Total Amount",
+    donateFundsDescription: 'Click the quick add buttons or enter an amount above, then click "donate funds". You can use this to pay for things that don\'t have a payment terminal.',
+    donateFundsSuccess: "Successfully donated funds.",
+    donateFundsError: "There was an error donating your funds, check your balance or try again later.",
   },
   loginRfidCard: {
     swipeCard: "Tap Card",
