@@ -306,6 +306,8 @@ class MemberBucksDonateFunds(APIView):
             transaction_type="web",
             user=profile.user,
             amount=abs(amount / 100) * -1,  # make sure it's always negative!
-            description="Manual donation from portal.",
+            description=request.data.get(
+                "description", "No description. Manual payment via portal."
+            ),
         )
         return Response()

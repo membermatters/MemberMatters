@@ -41,14 +41,21 @@
           @click="addFunds(3)"
         />
 
-        <div class="text-subtitle2 q-pt-md q-pb-sm">
-          {{ $t("memberbucks.totalAmount") }}
-        </div>
         <q-input
+          class="q-py-sm"
           prefix="$"
           outlined
           :disable="donatingFunds"
           v-model="amount"
+          :label="$tc('memberbucks.totalAmount')"
+          color="accent"
+        />
+
+        <q-input
+          outlined
+          :disable="donatingFunds"
+          v-model="description"
+          :label="$tc('form.description')"
           color="accent"
         />
 
@@ -58,6 +65,7 @@
           color="secondary"
           :icon-right="icons.submit"
           :label="$t('memberbucks.donateFunds')"
+          :disable="donatingFunds || amount == 0"
         />
         <br />
         <q-spinner v-if="donatingFunds" color="primary" />
@@ -99,6 +107,7 @@ export default {
       donateFundsSuccess: false,
       donatingFunds: false,
       amount: 0,
+      description: "",
     };
   },
   methods: {
@@ -116,7 +125,9 @@ export default {
       this.donateFundsError = false;
       let convertedAmount = Math.floor(this.amount * 100);
       this.$axios
-        .post(`/api/memberbucks/donate/${convertedAmount}/`)
+        .post(`/api/memberbucks/donate/${convertedAmount}/`, {
+          description: this.description,
+        })
         .then(() => {
           this.getProfile();
           this.getMemberBucksTransactions();
@@ -130,6 +141,7 @@ export default {
         })
         .finally(() => {
           this.amount = 0;
+          this.description = "";
           this.donatingFunds = false;
         });
     },
