@@ -134,6 +134,5 @@ You will need to re-run the database migration every time the db models change. 
 `python3 manage.py migrate`
 
 To test all of the features you will need some api keys. Define these as environment variables:
-* PORTAL_SENDGRID_API_KEY
 * PORTAL_XERO_CONSUMER_KEY
 * PORTAL_XERO_RSA_FILE (path to the rsa key)

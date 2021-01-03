@@ -81,7 +81,7 @@
       <div class="footer q-pt-md">
         <q-img
           contain
-          src="../assets/img/logo/main-logo.png"
+          :src="images.siteLogo"
           style="max-height: 40px; cursor: pointer"
           @click="aboutMemberMatters = true"
         />
@@ -162,7 +162,7 @@ export default {
       return Platform;
     },
     ...mapGetters("profile", ["loggedIn", "profile"]),
-    ...mapGetters("config", ["siteName"]),
+    ...mapGetters("config", ["siteName", "images"]),
     ...mapGetters("rfid", ["connected"]),
     icons() {
       return icons;

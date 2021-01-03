@@ -16,6 +16,7 @@ export default {
     features: {},
     kioskId: null,
     kioskIp: null,
+    images: {},
   },
   getters: {
     siteName: (state) => state.siteName,
@@ -28,41 +29,45 @@ export default {
     features: (state) => state.features,
     kioskId: (state) => state.kioskId,
     kioskIp: (state) => state.kioskIp,
+    images: (state) => state.images,
   },
   mutations: {
-    setSiteName(state, payload) {
+    setSiteName (state, payload) {
       state.siteName = payload;
     },
-    setSiteOwner(state, payload) {
+    setSiteOwner (state, payload) {
       state.siteOwner = payload;
     },
-    setHomepageCards(state, payload) {
+    setHomepageCards (state, payload) {
       state.homepageCards = payload;
     },
-    setWebcamLinks(state, payload) {
+    setWebcamLinks (state, payload) {
       state.webcamLinks = payload;
     },
-    setGroups(state, payload) {
+    setGroups (state, payload) {
       state.groups = payload;
     },
-    setmemberTypes(state, payload) {
+    setmemberTypes (state, payload) {
       state.memberTypes = payload;
     },
-    setKeys(state, payload) {
+    setKeys (state, payload) {
       state.keys = payload;
     },
-    setFeatures(state, payload) {
+    setFeatures (state, payload) {
       state.features = payload;
     },
-    setKioskId(state, payload) {
+    setKioskId (state, payload) {
       state.kioskId = payload;
     },
-    setKioskIp(state, payload) {
+    setKioskIp (state, payload) {
       state.kioskIp = payload;
+    },
+    setImages (state, payload) {
+      state.images = payload;
     },
   },
   actions: {
-    getSiteConfig({ commit }) {
+    getSiteConfig ({ commit }) {
       return new Promise((resolve, reject) => {
         Vue.prototype.$axios.get("/api/config/")
           .then((result) => {
@@ -74,6 +79,7 @@ export default {
             commit("setmemberTypes", result.data.memberTypes);
             commit("setKeys", result.data.keys);
             commit("setFeatures", result.data.features);
+            commit("setImages", result.data.images);
             const { analyticsId } = result.data;
 
             if (analyticsId) {
@@ -88,7 +94,7 @@ export default {
           });
       });
     },
-    getKioskId({ commit }) {
+    getKioskId ({ commit }) {
       return new Promise((resolve) => {
         commit("setKioskIp", address.ip());
         address.mac((err, macAddress) => {
@@ -97,7 +103,7 @@ export default {
         });
       });
     },
-    pushKioskId({ state }) {
+    pushKioskId ({ state }) {
       return new Promise((resolve, reject) => {
         Vue.prototype.$axios.put("/api/kiosks/", { name: state.kioskId, kioskId: state.kioskId })
           .then((result) => {

@@ -3,7 +3,7 @@
     <template>
       <q-img
         contain
-        src="../assets/img/logo/main-logo.png"
+        :src="images.siteLogo"
         class="header-image-mobile q-my-lg"
       />
     </template>
@@ -19,6 +19,9 @@ export default {
   name: "RegistrationPage",
   components: {
     RegistrationCard,
+  },
+  computed: {
+    ...mapGetters("config", ["images"]),
   },
 };
 </script>

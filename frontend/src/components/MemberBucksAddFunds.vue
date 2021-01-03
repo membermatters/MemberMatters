@@ -1,23 +1,18 @@
 <template>
-  <q-dialog
-    ref="dialog"
-    @hide="onDialogHide"
-  >
+  <q-dialog ref="dialog" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
       <q-card-section>
         <div class="text-h6">
-          {{ $t('memberbucks.addFunds') }}
+          {{ $t("memberbucks.addFunds") }}
         </div>
         <div class="text-subtitle2">
-          {{ $t('memberbucks.currentBalance') }} {{ balance }}
+          {{ $t("memberbucks.currentBalance") }} {{ balance }}
         </div>
       </q-card-section>
 
       <template v-if="profile.financial.memberBucks.savedCard.last4">
         <q-card-section>
-          <p>
-            Adding funds is coming soon and is nearly finished!
-          </p>
+          <p>Adding funds is coming soon and is nearly finished!</p>
           <q-btn
             :disable="addingFunds"
             :label="$n(10, 'currency')"
@@ -37,18 +32,12 @@
             color="accent"
             @click="addFunds(30)"
           />
-          <br>
-          <q-spinner
-            v-if="addingFunds"
-            color="primary"
-          />
+          <br />
+          <q-spinner v-if="addingFunds" color="primary" />
         </q-card-section>
 
         <q-card-section>
-          <i18n
-            path="memberbucks.addFundsDescription"
-            tag="p"
-          >
+          <i18n path="memberbucks.addFundsDescription" tag="p">
             <template v-slot:savedCard>
               <span class="proxy-field">
                 <b>{{ profile.financial.memberBucks.savedCard.last4 }}</b>
@@ -56,16 +45,10 @@
             </template>
           </i18n>
 
-          <q-banner
-            v-if="addFundsError"
-            class="text-white bg-red"
-          >
+          <q-banner v-if="addFundsError" class="text-white bg-red">
             {{ addFundsError }}
           </q-banner>
-          <q-banner
-            v-if="addFundsSuccess"
-            class="text-white bg-success"
-          >
+          <q-banner v-if="addFundsSuccess" class="text-white bg-success">
             {{ $t("memberbucks.addFundsSuccess") }}
           </q-banner>
         </q-card-section>
@@ -73,7 +56,7 @@
 
       <template v-else>
         <q-card-section>
-          {{ $t('memberbucks.noSavedBilling') }}
+          {{ $t("memberbucks.noSavedBilling") }}
         </q-card-section>
         <q-card-section>
           <q-btn
@@ -81,7 +64,11 @@
             :icon="icons.billing"
             :label="$t('memberbucks.manageBilling')"
             class="q-mb-sm q-mr-md"
-            @click="$router.push({ name: 'memberbucks', params: { dialog: 'billing' } })"
+            @click="
+              $router.push({
+                name: 'billing',
+              })
+            "
           />
         </q-card-section>
       </template>
@@ -99,7 +86,7 @@
 </template>
 
 <script>
-import icons from "src/icons";
+import icons from "@icons";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
@@ -113,12 +100,16 @@ export default {
   },
   methods: {
     ...mapActions("profile", ["getProfile"]),
-    ...mapActions("tools", ["getMemberBucksTransactions", "getMemberBucksBalance"]),
+    ...mapActions("tools", [
+      "getMemberBucksTransactions",
+      "getMemberBucksBalance",
+    ]),
     addFunds(amount) {
       this.addingFunds = true;
       this.addFundsSuccess = false;
       this.addFundsError = false;
-      this.$axios.post(`/api/memberbucks/add/${amount}/`)
+      this.$axios
+        .post(`/api/memberbucks/add/${amount}/`)
         .then(() => {
           this.getProfile();
           this.getMemberBucksTransactions();

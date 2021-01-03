@@ -26,7 +26,7 @@ def spacedirectory_status(request):
                     "lon": config.SPACE_DIRECTORY_LOCATION_LON,
                 },
                 "space": config.SITE_OWNER,
-                "logo": config.SITE_URL + settings.MEDIA_URL + config.SITE_LOGO,
+                "logo": config.SITE_LOGO,
                 "url": config.MAIN_SITE_URL,
                 "spacefed": {
                     "spacenet": config.SPACE_DIRECTORY_FED_SPACENET,

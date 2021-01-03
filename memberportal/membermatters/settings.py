@@ -267,11 +267,10 @@ CONSTANCE_CONFIG = {
         "The URL members should visit to book in for a site induction.",
     ),
     # Logo and favicon
-    "SITE_LOGO": ("img/logo/logo_small.png", "Site logo (rectangular)", "image_field"),
+    "SITE_LOGO": ("", "Site logo (rectangular)"),
     "SITE_FAVICON": (
-        "img/logo/logo_square_small.png",
+        "",
         "Site favicon (square)",
-        "image_field",
     ),
     # Localisation of terminology
     "MEMBERBUCKS_NAME": (
@@ -298,6 +297,10 @@ CONSTANCE_CONFIG = {
     # Stripe config
     "STRIPE_PUBLISHABLE_KEY": ("", "Set this to your Stripe PUBLIC API key."),
     "STRIPE_SECRET_KEY": ("", "Set this to your Stripe PRIVATE API key."),
+    "STRIPE_WEBHOOK_SECRET": (
+        "",
+        "Set this to a secret value to verify that a webhook came from Stripe.",
+    ),
     "STRIPE_MEMBERBUCKS_TOPUP_OPTIONS": (
         "[1000, 2000, 3000]",
         "This is a JSON array of top-up amounts in cents.",
@@ -400,6 +403,10 @@ CONSTANCE_CONFIG = {
         "PLEASE_CHANGE_ME",
         "The API key used by the internal access system for device authentication.",
     ),
+    "SENDGRID_API_KEY": (
+        "PLEASE_CHANGE_ME",
+        "The API key used to send email with Sendgrid.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -412,6 +419,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "ENTITY_TYPE",
                 "GOOGLE_ANALYTICS_PROPERTY_ID",
                 "API_SECRET_KEY",
+                "SENDGRID_API_KEY",
             ),
         ),
         (
@@ -446,6 +454,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             (
                 "STRIPE_PUBLISHABLE_KEY",
                 "STRIPE_SECRET_KEY",
+                "STRIPE_WEBHOOK_SECRET",
                 "ENABLE_MEMBERBUCKS_STRIPE_INTEGRATION",
                 "STRIPE_MEMBERBUCKS_TOPUP_OPTIONS",
             ),

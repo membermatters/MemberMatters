@@ -283,3 +283,31 @@ class MemberBucksAddFunds(APIView):
         else:
             print(payment_intent.status)
             return Response("Error charging card", status=status.HTTP_400_BAD_REQUEST)
+
+
+class MemberBucksDonateFunds(APIView):
+    """
+    post: charges the member the specified amount and removes it from their balance.
+    """
+
+    def post(self, request, amount=None):
+        profile = request.user.profile
+
+        # check if we got an amount, and if it's less than or equal to the max
+        if not (amount and amount <= int(config.MEMBERBUCKS_MAX_TOPUP) * 100):
+            return Response(
+                "Invalid amount specified", status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if profile.memberbucks_balance < amount / 100:
+            return Response("Not enough funds", status=status.HTTP_400_BAD_REQUEST)
+
+        MemberBucks.objects.create(
+            transaction_type="web",
+            user=profile.user,
+            amount=abs(amount / 100) * -1,  # make sure it's always negative!
+            description=request.data.get(
+                "description", "No description. Manual payment via portal."
+            ),
+        )
+        return Response()

@@ -3,19 +3,14 @@
     <template>
       <q-img
         contain
-        src="../assets/img/logo/main-logo.png"
+        :src="images.siteLogo"
         class="header-image-mobile q-my-lg"
       />
     </template>
 
     <login-card :reset-token="resetToken" />
 
-    <h4
-      v-if="$q.platform.is.electron"
-      class="q-my-sm"
-    >
-      OR
-    </h4>
+    <h4 v-if="$q.platform.is.electron" class="q-my-sm">OR</h4>
 
     <login-rfid-card v-if="$q.platform.is.electron" />
   </q-page>
@@ -24,6 +19,7 @@
 <script>
 import LoginRfidCard from "components/LoginRfidCard";
 import LoginCard from "../components/LoginCard";
+import { mapGetters } from "vuex";
 
 export default {
   name: "LoginPage",
@@ -37,11 +33,14 @@ export default {
       default: null,
     },
   },
+  computed: {
+    ...mapGetters("config", ["images"]),
+  },
 };
 </script>
 
 <style scoped>
-  .header-image-mobile {
-    max-height: 50px;
-  }
+.header-image-mobile {
+  max-height: 50px;
+}
 </style>
