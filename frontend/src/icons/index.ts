@@ -20,6 +20,7 @@ export default {
   meetings: pro ? "fad fa-clipboard-list" : "fal fa-clipboard-list",
   groups: pro ? "fad fa-user-tag" : "fal fa-user-tag",
   plans: pro ? "fad fa-box-usd" : "fal fa-box-usd",
+  dollar: pro ? "fad fa-dollar-sign" : "fal fa-dollar-sign",
   doors: pro ? "fad fa-door-closed" : "fal fa-door-closed",
   interlocks: pro ? "fad fa-plug" : "fal fa-plug",
   kiosks: pro ? "fad fa-desktop" : "fal fa-desktop",

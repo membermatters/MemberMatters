@@ -37,6 +37,8 @@
               :label="$t('form.visibleToMembers')"
             />
 
+            <q-checkbox v-model="form.featured" :label="$t('form.featured')" />
+
             <q-banner
               v-if="form.success"
               class="bg-positive text-white q-my-md"
@@ -152,6 +154,7 @@ export default defineComponent({
         name: "",
         description: "",
         visible: true,
+        featured: false,
       },
       filter: "",
       pagination: {
@@ -199,6 +202,7 @@ export default defineComponent({
         name: "",
         description: "",
         visible: true,
+        featured: false,
       };
       this.loading = false;
     },

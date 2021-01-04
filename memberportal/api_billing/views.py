@@ -228,6 +228,7 @@ class MemberTiers(APIView):
                     "id": tier.id,
                     "name": tier.name,
                     "description": tier.description,
+                    "featured": tier.featured,
                     "plans": [],
                 }
             )

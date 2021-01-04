@@ -9,6 +9,7 @@ class MemberTier(models.Model):
     description = models.CharField("Description", max_length=50, unique=True)
     stripe_id = models.CharField("Stripe Id", max_length=100, unique=True)
     visible = models.BooleanField("Is this plan visible to members?", default=True)
+    featured = models.BooleanField("Is this plan featured?", default=False)
 
     def __str__(self):
         return self.name

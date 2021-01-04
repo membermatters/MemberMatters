@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import icons from "../icons";
 import SelectTier from "@components/Billing/SelectTier.vue";
 
 export default {

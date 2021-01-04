@@ -169,7 +169,7 @@ export default {
     pageDescription: "Edit any of the fields below and they will be automatically saved.",
     noResults: "No Results",
     allFieldsRequired: "All fields are required.",
-
+    featured: "Featured?",
     email: "Email",
     rfidCard: "RFID Card",
     firstName: "First Name",
@@ -376,15 +376,17 @@ export default {
     remove: "Remove this payment plan",
     add: "Add a new payment plan",
     success: "Successfully added a new payment plan.",
-    fail: "Failed to add a new payment plan."
+    fail: "Failed to add a new payment plan.",
+    select: "Select Plan",
   },
   tiers: {
+    select: "Select Tier",
     nodata: "There are no membership tiers in the system.",
     name: "Tier Name",
     description: "Tier Description",
     remove: "Remove this tier",
     add: "Add a new tier",
-    selectToContinue: "Select a membership tier to continue."
+    becomeMember: "Become a member"
   },
   tierForm: {
     fail: "Failed to add a new tier.",

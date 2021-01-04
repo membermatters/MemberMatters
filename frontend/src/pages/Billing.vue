@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import icons from "../icons";
 import MemberBucksManageBilling from "@components/MemberBucksManageBilling.vue";
 
 export default {

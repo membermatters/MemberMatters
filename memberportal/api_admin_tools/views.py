@@ -331,6 +331,7 @@ class MemberTiers(APIView):
                     "name": tier.name,
                     "description": tier.description,
                     "visible": tier.visible,
+                    "featured": tier.featured,
                 }
             )
 
@@ -345,6 +346,7 @@ class MemberTiers(APIView):
             name=body["name"],
             description=body["description"],
             visible=body["visible"],
+            featured=body["featured"],
             stripe_id=product.id,
         )
 
@@ -377,6 +379,7 @@ class ManageMemberTier(APIView):
             "name": tier.name,
             "description": tier.description,
             "visible": tier.visible,
+            "featured": tier.featured,
         }
 
         return Response(formatted_tier)
@@ -389,6 +392,7 @@ class ManageMemberTier(APIView):
         tier.name = body["name"]
         tier.description = body["description"]
         tier.visible = body["visible"]
+        tier.featured = body["featured"]
         tier.save()
 
         return Response()
