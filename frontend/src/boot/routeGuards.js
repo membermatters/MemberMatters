@@ -25,8 +25,10 @@ export default ({ router, store }) => {
       }
     }
 
-    // if we are authenticating via SSO then don't update the route
-    if (!from.query.sso) {
+    console.log(to);
+
+    // if we are authenticating via SSO then don't update the route unless we're registering
+    if (!from.query.sso || to.name === "register") {
       next();
     }
   });
@@ -36,4 +38,10 @@ export default ({ router, store }) => {
       ga("send", "pageview");
     }
   });
+
+  router.onError(error => {
+    if (/loading chunk \d* failed./i.test(error.message)) {
+      window.location.reload()
+    }
+  })
 };
