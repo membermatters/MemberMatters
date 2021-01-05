@@ -14,6 +14,7 @@
 
 <script>
 import RegistrationCard from "components/Account/RegistrationCard";
+import { mapGetters } from "vuex";
 
 export default {
   name: "RegistrationPage",

@@ -59,7 +59,7 @@ export default {
     removeCard() {
       this.removeLoading = true;
       this.$axios
-        .delete("/api/memberbucks/card/")
+        .delete("/api/billing/card/")
         .then(() => {
           this.getProfile();
           this.hide();

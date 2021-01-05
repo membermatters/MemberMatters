@@ -34,8 +34,9 @@ export default {
     membership: "Membership",
     billing: "Billing Method",
     profile: "Profile",
-    checkAccess: "Check Access",
+    checkAccess: "Access Permissions",
     memberbucks: "Spacebucks",
+    membershipTier: "Membership Tier",
 
     Error404: "Page Not Found",
   },
@@ -44,8 +45,8 @@ export default {
     statistics: "Statistics",
     quickActions: "Quick Actions",
     signinSuccess: "Successfully signed you in. Please remember to sign out when you leave.",
-    signoutError: "There was a problem signing you out. Please contact the management committee if this problem persists.",
-    signinError: "There was a problem signing you in. Please contact the management committee if this problem persists.",
+    signoutError: "There was a problem signing you out. Please contact the executive committee if this problem persists.",
+    signinError: "There was a problem signing you in. Please contact the executive committee if this problem persists.",
   },
   error: {
     error: "Error",
@@ -91,6 +92,7 @@ export default {
     actions: "Actions",
     unlockDoor: "Unlock Door",
     remove: "Remove",
+    select: "Select",
   },
   loginCard: {
     login: "Login",
@@ -127,7 +129,7 @@ export default {
   },
   access: {
     pageDescription: "Your access permissions for doors and interlocks are shown below. Please "
-      + "contact the management committee if you believe you should have access to something that "
+      + "contact the executive committee if you believe you should have access to something that "
       + "you don't.",
     inactive: "Your membership is currently inactive. This may affect your access.",
     authorised: "Authorised",
@@ -167,7 +169,7 @@ export default {
     pageDescription: "Edit any of the fields below and they will be automatically saved.",
     noResults: "No Results",
     allFieldsRequired: "All fields are required.",
-
+    featured: "Featured?",
     email: "Email",
     rfidCard: "RFID Card",
     firstName: "First Name",
@@ -374,14 +376,17 @@ export default {
     remove: "Remove this payment plan",
     add: "Add a new payment plan",
     success: "Successfully added a new payment plan.",
-    fail: "Failed to add a new payment plan."
+    fail: "Failed to add a new payment plan.",
+    select: "Select Plan",
   },
   tiers: {
+    select: "Select Tier",
     nodata: "There are no membership tiers in the system.",
     name: "Tier Name",
     description: "Tier Description",
     remove: "Remove this tier",
     add: "Add a new tier",
+    becomeMember: "Become a member"
   },
   tierForm: {
     fail: "Failed to add a new tier.",

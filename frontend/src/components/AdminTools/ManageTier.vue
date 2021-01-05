@@ -15,7 +15,6 @@
             :rules="[
               (val) => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
             ]"
-            :disable="form.success"
           />
 
           <q-input
@@ -26,7 +25,6 @@
             :rules="[
               (val) => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
             ]"
-            :disable="form.success"
           />
 
           <q-checkbox
@@ -34,19 +32,17 @@
             :label="$t('form.visibleToMembers')"
           />
 
+          <q-checkbox v-model="form.featured" :label="$t('form.featured')" />
+
           <q-banner v-if="form.success" class="bg-positive text-white q-my-md">
-            {{ $t("tierForm.success") }}
+            {{ $t("form.saved") }}
           </q-banner>
 
           <q-banner v-if="form.error" class="bg-negative text-white q-my-md">
-            {{ $t("tierForm.fail") }}
+            {{ $t("form.error") }}
           </q-banner>
 
-          <q-card-actions
-            v-if="!form.success"
-            align="right"
-            class="text-primary"
-          >
+          <q-card-actions align="right" class="text-primary">
             <q-btn
               color="negative"
               :label="$t('button.remove')"
@@ -59,15 +55,6 @@
               :loading="form.loading"
               :disable="form.loading"
               type="submit"
-            />
-          </q-card-actions>
-
-          <q-card-actions v-else align="right" class="text-primary">
-            <q-btn
-              v-close-popup
-              flat
-              :label="$t('button.close')"
-              @click="resetForm()"
             />
           </q-card-actions>
         </q-form>
@@ -89,6 +76,12 @@
               name: 'visible',
               label: 'Visible',
               field: 'visible',
+              sortable: true,
+            },
+            {
+              name: 'featured',
+              label: 'Featured',
+              field: 'featured',
               sortable: true,
             },
             {
@@ -306,6 +299,7 @@ export default defineComponent({
         name: "",
         description: "",
         visible: false,
+        featured: false,
       },
       planForm: {
         loading: false,
@@ -346,10 +340,10 @@ export default defineComponent({
       this.$axios
         .get(`/api/admin/tiers/${this.$route.params.tierId}/`)
         .then((response: AxiosResponse) => {
-          console.log(response);
           this.form.name = response.data.name;
           this.form.description = response.data.description;
           this.form.visible = response.data.visible;
+          this.form.featured = response.data.featured;
         })
         .catch((error) => {
           if (error.response.status === 404) {
@@ -387,11 +381,17 @@ export default defineComponent({
     submitTier() {
       this.form.loading = true;
       this.form.error = false;
+      this.form.success = false;
       this.$axios
         .put(`/api/admin/tiers/${this.$route.params.tierId}/`, this.form)
-        .then(() => this.getTiers())
+        .then(() => {
+          this.getTiers();
+          this.form.success = true;
+          this.form.error = false;
+        })
         .catch(() => {
           this.form.error = true;
+          this.form.success = false;
         })
         .finally(() => (this.form.loading = false));
     },
@@ -408,7 +408,7 @@ export default defineComponent({
           this.planForm.error = false;
         })
         .catch(() => {
-          this.planForm.success = true;
+          this.planForm.success = false;
           this.planForm.error = true;
         })
         .finally(() => (this.planForm.loading = false));
@@ -426,6 +426,7 @@ export default defineComponent({
           });
         });
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     managePlan(evt: InputEvent, row: any) {
       this.$router.push({ name: "managePlan", params: { planId: row.id } });
     },
@@ -437,6 +438,7 @@ export default defineComponent({
         name: "",
         description: "",
         visible: false,
+        featured: false,
       };
     },
   },

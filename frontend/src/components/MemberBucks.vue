@@ -97,7 +97,6 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import MemberBucksAddFunds from "components/MemberBucksAddFunds";
-import MemberBucksManageBilling from "components/MemberBucksManageBilling";
 import MemberBucksDonateFunds from "components/MemberBucksDonateFunds";
 import icons from "../icons";
 import formatMixin from "../mixins/formatMixin";
