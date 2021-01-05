@@ -23,7 +23,7 @@ PORTAL_XERO_RSA_FILE=/path/to/xerkey.pem
 
 Once you've downloaded the docker image and configured your environment variables, you'll need to create a container:
 ```bash
-docker create -p 8000:8000 --name membermatters --restart always --detach --env-file /usr/app/env.list -v /usr/app/:/usr/src/data jaimynmayer/membermatters
+docker create -p 8000:8000 --name membermatters --restart always --detach --env-file /usr/app/env.list -v /usr/app/:/usr/src/data membermatters/membermatters
 ```
 
 Once your container is running, you will be able to login with the default admin account details:
@@ -61,13 +61,13 @@ We suggest writing a bash script like the one below:
 
 ```bash
 echo "checking for new docker image"
-docker pull jaimynmayer/membermatters
+docker pull membermatters/membermatters
 echo "Stopping the docker container"
 docker stop membermatters
 echo "Removing the old docker container"
 docker rm membermatters
 echo "Creating new docker container"
-docker create -p 8000:8000 --name membermatters --restart always --detach --env-file /usr/app/env.list -v /usr/app/:/usr/src/data jaimynmayer/membermatters
+docker create -p 8000:8000 --name membermatters --restart always --detach --env-file /usr/app/env.list -v /usr/app/:/usr/src/data membermatters/membermatters
 echo "Running new docker container"
 docker start membermatters
 ``` 
