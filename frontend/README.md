@@ -20,8 +20,7 @@ npm run dev
 
 Take note of the IP and port. In this case, open your favourite browser and go to `http://127.0.0.1:8080/`. You should 
 be presented with the home page of the web app. Assuming you loaded the database fixtures in the backend, you can login with the username "default@example.com" and password 
-"MemberMatters!". You should create a new account, then use the default account to give your new account admin rights. You 
-should change the password of the default admin account or remove it.
+"MemberMatters!". You should create a new account, then use the default account to give your new account admin rights. You can do so using the Django admin page for the `user` model which can be accessed at http://localhost:8080/admin/profile/user/. Make sure to select "super user", "staff", and "admin" for your new account. You should change the password of the default admin account or remove it once you've setup your new account.
 
 ### Lint the files
 ```bash
