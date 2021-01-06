@@ -93,6 +93,8 @@ export default {
     unlockDoor: "Unlock Door",
     remove: "Remove",
     select: "Select",
+    continue: "Continue",
+    back: "Back"
   },
   loginCard: {
     login: "Login",
@@ -259,6 +261,7 @@ export default {
     noSavedBilling: "Sorry, but you don't have any valid billing methods. Please add a new "
       + "billing method by clicking the button below.",
     manageBilling: "Manage Billing",
+    selectToContinue: "Select your billing method to continue.",
     addCard: "Add Card",
     addCardDescription: "To add a new card please fill out the form. We do not store your credit card information (other than the last 4 digits and expiry) as our payment processor collects this for us.",
     addCardError: "There was an error adding your card. Please try again later.",
@@ -378,15 +381,38 @@ export default {
     success: "Successfully added a new payment plan.",
     fail: "Failed to add a new payment plan.",
     select: "Select Plan",
+    selected: "Selected Payment Plan",
+    confirmSelection: "Confirm Selections",
+    selectToContinue: "Select a plan to continue.",
+    dueToday: "Due Today: {amount}",
+    intervalDescription: "{amount} {currency} every {intervalCount} {interval}",
+    interval: {
+      day: "day",
+      week: "week",
+      month: "month",
+      year: "year",
+    },
+    intervalPlurals: {
+      day: "days",
+      week: "weeks",
+      month: "months",
+      year: "years",
+    }
   },
   tiers: {
     select: "Select Tier",
+    selectToContinue: "Select a membership tier to continue.",
+    selected: "Selected Membership Tier",
     nodata: "There are no membership tiers in the system.",
     name: "Tier Name",
     description: "Tier Description",
     remove: "Remove this tier",
     add: "Add a new tier",
-    becomeMember: "Become a member"
+    becomeMember: "Become a member",
+    confirm: "Please confirm your selected membership tier and plan. By continuing you agree to pay for your selected plan using the provided credit card. Your first payment will be collected today, and future payments of {intervalDescription}.",
+    confirmDelay: "Your membership application may need to be approved. This can take up to 24 hours. You will receive an email when your membership application is approved.",
+    finish: "Finish Signup",
+    plansFrom: "From {plan}",
   },
   tierForm: {
     fail: "Failed to add a new tier.",

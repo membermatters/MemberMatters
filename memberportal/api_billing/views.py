@@ -223,13 +223,27 @@ class MemberTiers(APIView):
         formatted_tiers = []
 
         for tier in tiers:
+            plans = []
+
+            for plan in tier.plans.filter(visible=True):
+                plans.append(
+                    {
+                        "id": plan.id,
+                        "name": plan.name,
+                        "currency": plan.currency,
+                        "cost": plan.cost,
+                        "intervalAmount": plan.interval_count,
+                        "interval": plan.interval,
+                    }
+                )
+
             formatted_tiers.append(
                 {
                     "id": tier.id,
                     "name": tier.name,
                     "description": tier.description,
                     "featured": tier.featured,
-                    "plans": [],
+                    "plans": plans,
                 }
             )
 

@@ -75,7 +75,7 @@ class MemberBucksAddFunds(APIView):
         except stripe.error.CardError as e:
             err = e.error
             # Error code will be authentication_required if authentication is needed
-            if err.code is "authentication_required":
+            if err.code == "authentication_required":
                 return Response(
                     "Card requires 3D Secure which is not yet supported.",
                     status=status.HTTP_400_BAD_REQUEST,
