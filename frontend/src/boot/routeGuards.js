@@ -25,8 +25,6 @@ export default ({ router, store }) => {
       }
     }
 
-    console.log(to);
-
     // if we are authenticating via SSO then don't update the route unless we're registering
     if (!from.query.sso || to.name === "register") {
       next();

@@ -23,7 +23,9 @@ class PaymentPlan(models.Model):
 
     name = models.CharField("Name", max_length=30)
     stripe_id = models.CharField("Stripe Id", max_length=100, unique=True)
-    member_tier = models.ForeignKey(MemberTier, on_delete=models.CASCADE)
+    member_tier = models.ForeignKey(
+        MemberTier, on_delete=models.CASCADE, related_name="plans"
+    )
     visible = models.BooleanField("Is this plan visible to members?", default=True)
     currency = models.CharField(
         "Three letter ISO currency code.", max_length=3, default="aud"

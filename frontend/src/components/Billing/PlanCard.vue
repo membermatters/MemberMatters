@@ -3,26 +3,21 @@
     <q-card class="shadow-5" :class="{ 'dark-border': $q.dark.isActive }">
       <div class="my-card column">
         <q-card-section>
-          <div class="text-h6">{{ tier.name }}</div>
-          <div v-if="!selected" class="text-subtitle2 q-pb-sm">
+          <div class="text-h6">{{ plan.name }}</div>
+          <div class="text-subtitle2">
             {{
-              $t("tiers.plansFrom", {
-                plan: $t("paymentPlans.intervalDescription", {
-                  currency: minPrice.currency.toUpperCase(),
-                  amount: $n(minPrice.cost / 100, "currency"),
-                  intervalCount: minPrice.intervalAmount,
-                  interval: $tc(
-                    `paymentPlans.${
-                      minPrice.intervalAmount > 1
-                        ? "intervalPlurals"
-                        : "interval"
-                    }.${minPrice.interval}`
-                  ),
-                }),
+              $t("paymentPlans.intervalDescription", {
+                currency: plan.currency.toUpperCase(),
+                amount: $n(plan.cost / 100, "currency"),
+                intervalCount: plan.intervalAmount,
+                interval: $tc(
+                  `paymentPlans.${
+                    plan.intervalAmount > 1 ? "intervalPlurals" : "interval"
+                  }.${plan.interval}`
+                ),
               })
             }}
           </div>
-          <div class="text-subtitle2">{{ tier.description }}</div>
         </q-card-section>
 
         <q-space />
@@ -33,7 +28,7 @@
           <q-card-section>
             <div class="row justify-center">
               <q-btn
-                @click="selectTier"
+                @click="selectPlan"
                 color="primary"
                 :label="$tc('button.select')"
               />
@@ -49,9 +44,9 @@
 import { defineComponent } from "@vue/composition-api";
 
 export default defineComponent({
-  name: "TierCard",
+  name: "PlanCard",
   props: {
-    tier: {
+    plan: {
       type: Object,
       required: true,
     },
@@ -62,15 +57,8 @@ export default defineComponent({
     },
   },
   methods: {
-    selectTier() {
-      this.$emit("selected", this.tier);
-    },
-  },
-  computed: {
-    minPrice(): any {
-      return this.tier.plans.reduce((prev: any, curr: any) => {
-        return prev.cost < curr.cost ? prev : curr;
-      });
+    selectPlan() {
+      this.$emit("selected", this.plan);
     },
   },
 });

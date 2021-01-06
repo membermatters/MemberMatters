@@ -12,7 +12,6 @@
 
       <template v-if="profile.financial.memberBucks.savedCard.last4">
         <q-card-section>
-          <p>Adding funds is coming soon and is nearly finished!</p>
           <q-btn
             :disable="addingFunds"
             :label="$n(10, 'currency')"
