@@ -29,7 +29,7 @@
     "@stripe/stripe-js": "^1.8.0",
     "@vue/composition-api": "^0.6.4",
     "address": "^1.1.2",
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "crypto-js": "^4.0.0",
     "csv-stringify": "^5.5.0",

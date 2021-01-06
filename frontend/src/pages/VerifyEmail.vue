@@ -7,7 +7,7 @@
       <br />
 
       <p class="text-body1 text-faded">
-        {{ $t("verifyEmail.complete") }}
+        {{ $t("verifyEmail.success") }}
       </p>
     </template>
 
