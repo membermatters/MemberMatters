@@ -1,11 +1,9 @@
 <template>
-  <div style="min-width: 300px">
+  <div style="min-width: 300px; border-radius: 10px">
     <q-card class="my-card">
       <div class="my-card-inner">
         <q-card-section class="full-height column items-start">
-          <div class="credit-card-title q-ma-sm">
-            Credit Card
-          </div>
+          <div class="credit-card-title q-ma-sm">Credit Card</div>
 
           <q-space />
 
@@ -22,10 +20,7 @@
           </div>
 
           <div class="credit-card-logo">
-            <q-img
-              width="100%"
-              :src="ccLogo"
-            />
+            <q-img width="100%" :src="ccLogo" />
           </div>
         </q-card-section>
       </div>
@@ -75,10 +70,10 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-  .my-card
-    width: 100%
-    padding-bottom: 63%
-    border-radius: 10px
+.my-card
+  width: 100%
+  padding-bottom: 63%
+  border-radius: 10px
 
   .my-card-inner
     position: absolute
