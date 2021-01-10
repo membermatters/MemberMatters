@@ -157,6 +157,7 @@ module.exports = configure((ctx) => ({
     plugins: [
       "Dialog",
       "LoadingBar",
+      "Cookies",
     ],
   },
 
