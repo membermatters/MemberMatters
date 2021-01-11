@@ -1,4 +1,5 @@
 from memberbucks.models import MemberBucks
+from profile.models import Profile
 
 from rest_framework import status, permissions
 from rest_framework.response import Response
@@ -31,7 +32,6 @@ class MemberBucksAddCard(APIView):
                     email=request.user.email,
                     name=profile.get_full_name(),
                     phone=profile.phone,
-                    invoice_prefix=profile.xero_account_number,
                 )
 
                 profile.stripe_customer_id = customer.id
@@ -47,84 +47,6 @@ class MemberBucksAddCard(APIView):
 
                 return Response({"clientSecret": intent.client_secret})
 
-            except stripe.error.CardError as e:
-                # Since it's a decline, stripe.error.CardError will be caught
-                body = e.json_body
-                err = body.get("error", {})
-
-                log_user_event(
-                    request.user,
-                    "Card declined while saving payment details.",
-                    "stripe",
-                )
-
-                return Response(
-                    {
-                        "success": False,
-                        "message": err,
-                    },
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
-                )
-
-            except stripe.error.RateLimitError as e:
-                log_user_event(
-                    request.user, "Rate limited while saving payment details.", "stripe"
-                )
-
-                return Response(
-                    {
-                        "success": False,
-                        "message": e,
-                    },
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
-                )
-
-            except stripe.error.InvalidRequestError as e:
-                log_user_event(
-                    request.user,
-                    "Invalid request while saving payment details.",
-                    "stripe",
-                    request,
-                )
-
-                return Response(
-                    {
-                        "success": False,
-                        "message": e,
-                    },
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
-                )
-
-            except stripe.error.AuthenticationError as e:
-                log_user_event(
-                    request.user,
-                    "Can't authenticate with stripe while saving payment details.",
-                    "stripe",
-                )
-
-                return Response(
-                    {
-                        "success": False,
-                        "message": e,
-                    },
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
-                )
-
-            except stripe.error.APIConnectionError as e:
-                log_user_event(
-                    request.user,
-                    "Stripe API connection error while saving payment details.",
-                    "stripe",
-                )
-
-                return Response(
-                    {
-                        "success": False,
-                        "message": e,
-                    },
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
-                )
-
             except stripe.error.StripeError as e:
                 log_user_event(
                     request.user,
@@ -136,7 +58,7 @@ class MemberBucksAddCard(APIView):
                 return Response(
                     {
                         "success": False,
-                        "message": e,
+                        "message": str(e),
                     },
                     status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 )
@@ -226,26 +148,9 @@ class MemberTiers(APIView):
             plans = []
 
             for plan in tier.plans.filter(visible=True):
-                plans.append(
-                    {
-                        "id": plan.id,
-                        "name": plan.name,
-                        "currency": plan.currency,
-                        "cost": plan.cost,
-                        "intervalAmount": plan.interval_count,
-                        "interval": plan.interval,
-                    }
-                )
+                plans.append(plan.get_object())
 
-            formatted_tiers.append(
-                {
-                    "id": tier.id,
-                    "name": tier.name,
-                    "description": tier.description,
-                    "featured": tier.featured,
-                    "plans": plans,
-                }
-            )
+            formatted_tiers.append(tier.get_object())
 
         return Response(formatted_tiers)
 
@@ -255,8 +160,11 @@ class StripeWebhook(APIView):
     post: processes a Stripe webhook event.
     """
 
+    permission_classes = (permissions.AllowAny,)
+
     def post(self, request):
         webhook_secret = config.STRIPE_WEBHOOK_SECRET
+        body = request.body
         request_data = request.data
 
         if webhook_secret:
@@ -264,23 +172,39 @@ class StripeWebhook(APIView):
             signature = request.headers.get("stripe-signature")
             try:
                 event = stripe.Webhook.construct_event(
-                    payload=request.body, sig_header=signature, secret=webhook_secret
+                    payload=body, sig_header=signature, secret=webhook_secret
                 )
                 data = event["data"]
             except Exception as e:
-                return e
+                print(e)
+                return Response({"error": "Error validaitng Stripe signature."})
+
             # Get the type of webhook event sent - used to check the status of PaymentIntents.
             event_type = event["type"]
         else:
             data = request_data["data"]
             event_type = request_data["type"]
 
-        data_object = data["object"]
-        print(data_object)
+        data = data["object"]
 
         if event_type == "invoice.paid":
-            print("INVOICE PAID")
+            print("INVOICE PAID EVENT")
             print(data)
+
+            member = Profile.objects.get(stripe_customer_id=data["customer"])
+
+            if not member:
+                # Just in case the linked Stripe account also processes other payments we should just ignore a non existant customer.
+                Response()
+
+            else:
+                invoice_status = data["status"]
+
+                if invoice_status == "paid" and member.state != "active":
+                    # if the invoice was paid and the member isn't active, then activate them
+                    member.activate()
+
+                # in all other instances, we don't care about the event and can ignore it
 
         if event_type == "invoice.payment_failed":
             print("INVOICE PAYMENT FAILED")

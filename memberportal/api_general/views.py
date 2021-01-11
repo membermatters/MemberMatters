@@ -346,21 +346,16 @@ class ProfileDetail(generics.GenericAPIView):
                         "expiry": p.stripe_card_expiry,
                     },
                 },
+                "membershipPlan": p.membership_plan.get_object()
+                if p.membership_plan
+                else None,
+                "membershipTier": p.membership_plan.member_tier.get_object()
+                if p.membership_plan
+                else None
+                if p.membership_plan
+                else None,
             },
-            "permissions": {
-                "admin": user.is_admin
-                #     "generateInvoice": p.can_generate_invoice,
-                #     "adminOfGroups": list(p.can_manage_group.values()),
-                #     "groups": p.can_manage_groups,
-                #     "addGroup": p.can_add_group,
-                #     "interlocks": p.can_manage_interlocks,
-                #     "doors": p.can_manage_doors,
-                #     "seeMemberLogs": p.can_see_members_logs,
-                #     "seeMemberbucks": p.can_see_members_memberbucks,
-                #     "seeMemberPersonalDetails": p.can_see_members_personal_details,
-                #     "disableMembers": p.can_disable_members,
-                #     "manageAccess": p.can_manage_access,
-            },
+            "permissions": {"admin": user.is_admin},
         }
 
         return JsonResponse(response)

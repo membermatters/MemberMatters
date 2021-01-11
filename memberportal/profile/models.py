@@ -20,6 +20,7 @@ from profile.xerohelpers import get_xero_contact, create_membership_invoice
 from profile.xerohelpers import add_to_xero
 from constance import config
 from api_general.models import SiteSession
+from api_admin_tools.models import MemberTier, PaymentPlan
 import json
 import uuid
 
@@ -263,6 +264,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class MemberTypes(models.Model):
+    # TODO: remove this when the stripe billing is fully implemented
     name = models.CharField("Member Type Name", max_length=20)
     conditions = models.CharField("Membership Conditions", max_length=100)
     cost = models.IntegerField("Monthly Cost (cents)")
@@ -336,6 +338,13 @@ class Profile(models.Model):
         MemberTypes, on_delete=models.PROTECT, related_name="member_type"
     )
     groups = models.ManyToManyField("group.Group")
+    membership_plan = models.ForeignKey(
+        PaymentPlan,
+        on_delete=models.PROTECT,
+        related_name="membership_plan",
+        null=True,
+        blank=True,
+    )
 
     rfid = models.CharField(
         "RFID Tag", max_length=20, unique=True, null=True, blank=True
@@ -359,6 +368,9 @@ class Profile(models.Model):
         max_length=4, blank=True, null=True, default=""
     )
     stripe_payment_method_id = models.CharField(
+        max_length=100, blank=True, null=True, default=""
+    )
+    stripe_subscription_id = models.CharField(
         max_length=100, blank=True, null=True, default=""
     )
     xero_account_id = models.CharField(

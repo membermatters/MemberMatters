@@ -1,5 +1,5 @@
 <template>
-  <q-card class="q-dialog-plugin">
+  <q-card :flat="flat" class="q-dialog-plugin">
     <template v-if="profile.financial.memberBucks.savedCard.last4">
       <q-card-section>
         <div class="text-h6">
@@ -49,6 +49,13 @@ import MemberBucksAddCard from "components/MemberBucksAddCard";
 export default {
   name: "MemberBucksManageBilling",
   components: { MemberBucksAddCard, CreditCard },
+  props: {
+    flat: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
   data() {
     return {
       removeLoading: false,

@@ -82,10 +82,10 @@ export default {
                 },
               }
             );
-            this.disableStripeForm = false;
 
             if (error) {
               this.error = error.message;
+              this.disableStripeForm = false;
             } else if (setupIntent.status === "succeeded") {
               this.$axios
                 .post("/api/billing/card/", {
@@ -97,7 +97,8 @@ export default {
                 })
                 .catch(() => {
                   this.error = this.$t("memberbucks.addCardError");
-                });
+                })
+                .finally(() => (this.disableStripeForm = false));
             }
           });
         })

@@ -14,6 +14,20 @@ class MemberTier(models.Model):
     def __str__(self):
         return self.name
 
+    def get_object(self):
+        plans = []
+
+        for plan in self.plans.filter(visible=True):
+            plans.append(plan.get_object())
+
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "featured": self.featured,
+            "plans": plans,
+        }
+
 
 # This is a Stripe Price
 class PaymentPlan(models.Model):
@@ -38,3 +52,13 @@ class PaymentPlan(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_object(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "currency": self.currency,
+            "cost": self.cost,
+            "intervalAmount": self.interval_count,
+            "interval": self.interval,
+        }

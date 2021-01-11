@@ -69,12 +69,7 @@
           {{ $tc("memberbucks.selectToContinue") }}
         </div>
 
-        <div class="bg-red">
-          You can just tap continue for now. This form WILL NOT charge your card
-          if you go all the way through.
-        </div>
-
-        <member-bucks-manage-billing />
+        <member-bucks-manage-billing flat />
 
         <div class="row justify-start q-mt-md">
           <q-btn @click="backToPlans" flat :label="$tc('button.back')" />
@@ -136,7 +131,7 @@
         </div>
 
         <div class="row">
-          <q-btn flat @click="backToPlans" :label="$tc('button.back')" />
+          <q-btn flat @click="backToBilling" :label="$tc('button.back')" />
           <q-space />
           <q-btn color="primary" :label="$tc('tiers.finish')" />
         </div>
@@ -200,6 +195,9 @@ export default defineComponent({
     backToPlans() {
       this.step = 2;
       this.selectedPlan = {};
+    },
+    backToBilling() {
+      this.step = 3;
     },
   },
 });
