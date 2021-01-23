@@ -408,6 +408,10 @@ CONSTANCE_CONFIG = {
         "PLEASE_CHANGE_ME",
         "The API key used to send email with Sendgrid.",
     ),
+    "DEFAULT_MEMBER_TYPE": (
+        1,
+        "The ID of the member type to assign new members to by default.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -421,6 +425,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "GOOGLE_ANALYTICS_PROPERTY_ID",
                 "API_SECRET_KEY",
                 "SENDGRID_API_KEY",
+                "DEFAULT_MEMBER_TYPE",
             ),
         ),
         (
