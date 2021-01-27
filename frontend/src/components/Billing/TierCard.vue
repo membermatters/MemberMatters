@@ -67,7 +67,9 @@ export default defineComponent({
     },
   },
   computed: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     minPrice(): any {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return this.tier.plans.reduce((prev: any, curr: any) => {
         return prev.cost < curr.cost ? prev : curr;
       });

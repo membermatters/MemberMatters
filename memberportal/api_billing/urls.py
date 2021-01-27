@@ -13,6 +13,26 @@ urlpatterns = [
         name="MemberTiers",
     ),
     path(
+        "api/billing/plans/<int:plan_id>/signup/",
+        views.PaymentPlanSignup.as_view(),
+        name="PaymentPlanSignup",
+    ),
+    path(
+        "api/billing/myplan/<str:resume>/",
+        views.PaymentPlanResumeCancel.as_view(),
+        name="PaymentPlanResumeCancel",
+    ),
+    path(
+        "api/billing/myplan/",
+        views.SubscriptionInfo.as_view(),
+        name="SubscriptionInfo",
+    ),
+    path(
+        "api/billing/can-signup/",
+        views.CanSignup.as_view(),
+        name="CanSignup",
+    ),
+    path(
         "api/billing/stripe-webhook/",
         views.StripeWebhook.as_view(),
         name="StripeWebhook",

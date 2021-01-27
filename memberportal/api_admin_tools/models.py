@@ -3,7 +3,7 @@ from django.db import models
 
 # This is a Stripe Product
 class MemberTier(models.Model):
-    """[A membership tier that a member can be billed for.]"""
+    """A membership tier that a member can be billed for."""
 
     name = models.CharField("Name", max_length=30, unique=True)
     description = models.CharField("Description", max_length=50, unique=True)
@@ -31,7 +31,7 @@ class MemberTier(models.Model):
 
 # This is a Stripe Price
 class PaymentPlan(models.Model):
-    """[A payment plan that specifies how a member is billed for a member tier.]"""
+    """A payment plan that specifies how a member is billed for a member tier."""
 
     BILLING_PERIODS = [("Months", "month"), ("Weeks", "week"), ("Days", "days")]
 

@@ -1,14 +1,13 @@
-from memberbucks.models import MemberBucks
 from profile.models import Profile
+from api_admin_tools.models import *
 
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api_admin_tools.models import *
 import stripe
-import json
 from constance import config
+from datetime import datetime, timedelta
 from membermatters.helpers import log_user_event, log_event
 
 stripe.api_key = config.STRIPE_SECRET_KEY
@@ -155,6 +154,115 @@ class MemberTiers(APIView):
         return Response(formatted_tiers)
 
 
+class PaymentPlanSignup(APIView):
+    """
+    post: attempts to sign the member up to a new membership payment plan.
+    """
+
+    def post(self, request, plan_id):
+        current_plan = request.user.profile.membership_plan
+
+        if current_plan:
+            return Response({"success": False}, status=status.HTTP_409_CONFLICT)
+
+        else:
+            new_plan = PaymentPlan.objects.get(pk=plan_id)
+            new_subscription = stripe.Subscription.create(
+                customer=request.user.profile.stripe_customer_id,
+                items=[
+                    {"price": new_plan.stripe_id},
+                ],
+            )
+            request.user.profile.stripe_subscription_id = new_subscription.id
+            request.user.profile.membership_plan = new_plan
+            request.user.profile.save()
+
+            if new_subscription.status == "active":
+                return Response({"success": True})
+
+            return Response({"success": False})
+
+
+class CanSignup(APIView):
+    """
+    get: checks if the member is elligible to signup, and what actions they need to complete.
+    """
+
+    def get(self, request):
+        return Response(request.user.profile.can_signup())
+
+
+class SubscriptionInfo(APIView):
+    """
+    get: retrieves information about the members subscription.
+    """
+
+    def get(self, request):
+        current_plan = request.user.profile.membership_plan
+
+        if not current_plan:
+            return Response({"success": False}, status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            s = stripe.Subscription.retrieve(
+                request.user.profile.stripe_subscription_id,
+            )
+
+            if s:
+                subscription = {
+                    "billingCycleAnchor": s.billing_cycle_anchor,
+                    "currentPeriodEnd": s.current_period_end,
+                    "cancelAt": s.cancel_at,
+                    "cancelAtPeriodEnd": s.cancel_at_period_end,
+                    "startDate": s.start_date,
+                }
+                return Response({"success": True, "subscription": subscription})
+
+            return Response({"success": False})
+
+
+class PaymentPlanResumeCancel(APIView):
+    """
+    post: attempts to cancel a member's payment plan.
+    """
+
+    def post(self, request, resume):
+        current_plan = request.user.profile.membership_plan
+        resume = True if resume == "resume" else False
+
+        if not current_plan:
+            return Response(
+                {"success": False, "message": "paymentPlan.notExists"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        else:
+            # this will modify the subscription to automatically cancel at the end of the current payment plan
+            if resume:
+                modified_subscription = stripe.Subscription.modify(
+                    request.user.profile.stripe_subscription_id,
+                    cancel_at_period_end=False,
+                )
+
+                if modified_subscription.cancel_at_period_end == False:
+                    request.user.profile.subscription_status = "active"
+                    request.user.profile.save()
+                    return Response({"success": True})
+
+            else:
+                modified_subscription = stripe.Subscription.modify(
+                    request.user.profile.stripe_subscription_id,
+                    cancel_at_period_end=True,
+                )
+
+                if modified_subscription.cancel_at_period_end == True:
+                    request.user.profile.subscription_status = "cancelling"
+                    request.user.profile.save()
+                    return Response({"success": True})
+
+            return Response({"success": False})
+
+
 class StripeWebhook(APIView):
     """
     post: processes a Stripe webhook event.
@@ -186,32 +294,59 @@ class StripeWebhook(APIView):
             event_type = request_data["type"]
 
         data = data["object"]
+        try:
+            member = Profile.objects.get(stripe_customer_id=data["customer"])
+
+        except Profile.DoesNotExist:
+            return Response()
+
+        # Just in case the linked Stripe account also processes other payments we should just ignore a non existant customer.
+        if not member:
+            return Response()
 
         if event_type == "invoice.paid":
             print("INVOICE PAID EVENT")
-            print(data)
 
-            member = Profile.objects.get(stripe_customer_id=data["customer"])
+            invoice_status = data["status"]
 
-            if not member:
-                # Just in case the linked Stripe account also processes other payments we should just ignore a non existant customer.
-                Response()
+            if invoice_status == "paid" and member.state != "active":
+                # if the invoice was paid and the member isn't active, then activate them
+                subject = "Your payment was successful."
+                title = subject
+                preheader = ""
+                message = "Thanks for making a payment via our automated billing system. You will receive another email shortly confirming that your access has been enabled, or if any additional steps are required to be completed."
 
-            else:
-                invoice_status = data["status"]
-
-                if invoice_status == "paid" and member.state != "active":
-                    # if the invoice was paid and the member isn't active, then activate them
-                    member.activate()
+                member.user.email_notification(subject, title, preheader, message)
+                member.activate()
+                member.subscription_status = "active"
+                member.save()
 
                 # in all other instances, we don't care about the event and can ignore it
 
         if event_type == "invoice.payment_failed":
             print("INVOICE PAYMENT FAILED")
-            print(data)
+
+            subject = "Your membership payment failed"
+            title = subject
+            preheader = ""
+            message = "Hi there, your membership payment failed. Please update your billing information or contact us to resolve this issue. We'll try again, but if we're unable to collect your payment, your membership may be cancelled."
+
+            member.user.email_notification(self, subject, title, preheader, message)
 
         if event_type == "customer.subscription.deleted":
             print("SUBSCRIPTION DELETED")
-            print(data)
+
+            # the subscription was deleted, so deactivate the member
+            subject = "Your membership has been cancelled"
+            title = subject
+            preheader = ""
+            message = "You will receive another email shortly confirming that your access has been deactivated. Your membership was either cancelled at your request or because we couldn't collect your payment."
+
+            member.user.email_notification(subject, title, preheader, message)
+            member.deactivate()
+            member.membership_plan = None
+            member.stripe_subscription_id = None
+            member.subscription_status = "inactive"
+            member.save()
 
         return Response()

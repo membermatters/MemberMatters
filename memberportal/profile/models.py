@@ -294,9 +294,15 @@ class Profile(models.Model):
         return os.path.join(filename)
 
     STATES = (
-        ("noob", "New"),
+        ("noob", "Needs Induction"),
         ("active", "Active"),
         ("inactive", "Inactive"),
+    )
+
+    SUBSCRIPTION_STATES = (
+        ("inactive", "Inactive"),
+        ("active", "Active"),
+        ("cancelling", "Cancelling"),
     )
 
     class Meta:
@@ -373,6 +379,9 @@ class Profile(models.Model):
     stripe_subscription_id = models.CharField(
         max_length=100, blank=True, null=True, default=""
     )
+    subscription_status = models.CharField(
+        max_length=10, default="inactive", choices=SUBSCRIPTION_STATES
+    )
     xero_account_id = models.CharField(
         max_length=100, blank=True, null=True, default=""
     )
@@ -398,23 +407,39 @@ class Profile(models.Model):
         else:
             return False
 
-    def deactivate(self, request):
-        log_user_event(
-            self.user,
-            request.user.profile.get_full_name() + " deactivated member",
-            "profile",
-        )
+    def deactivate(self, request=None):
+        if request:
+            log_user_event(
+                self.user,
+                request.user.profile.get_full_name() + " deactivated member",
+                "profile",
+            )
+        else:
+            log_user_event(
+                self.user,
+                "system deactivated member",
+                "profile",
+            )
+
         self.user.email_disable_member()
         self.state = "inactive"
         self.save()
         return True
 
-    def activate(self, request):
-        log_user_event(
-            self.user,
-            request.user.profile.get_full_name() + " activated member",
-            "profile",
-        )
+    def activate(self, request=None):
+        if request:
+            log_user_event(
+                self.user,
+                request.user.profile.get_full_name() + " activated member",
+                "profile",
+            )
+        else:
+            log_user_event(
+                self.user,
+                "system activated member",
+                "profile",
+            )
+
         if self.state != "noob":
             self.user.email_enable_member()
 
@@ -577,6 +602,36 @@ class Profile(models.Model):
                 )
 
         return {"doors": doors, "interlocks": interlocks}
+
+    def can_signup(self):
+        """Checks if a member can signup. Returns {"success": True/False, "reasons": [String<list of reasons>]}"""
+        required_steps = []
+
+        if self.membership_plan:
+            required_steps.append("existingPlan")
+
+        # check if they were inducted recently enough
+        last_inducted = self.last_induction
+        furthest_previous_date = datetime.now() - timedelta(
+            days=config.MAX_INDUCTION_DAYS
+        )
+
+        if config.MAX_INDUCTION_DAYS > 0 and (
+            last_inducted == None or last_inducted < furthest_previous_date
+        ):
+            required_steps.append("induction")
+
+        # if we require an rfid card to sign up
+        if config.REQUIRE_ACCESS_CARD:
+            # check if they have an RFID card assigned
+            if not len(self.rfid):
+                required_steps.append("accessCard")
+
+        if len(required_steps):
+            return {"success": False, "requiredSteps": required_steps}
+
+        else:
+            return {"success": True, "requiredSteps": []}
 
     def save(self, *args, **kwargs):
         """ On save, update timestamps """

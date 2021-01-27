@@ -14,19 +14,6 @@ import os
 from collections import OrderedDict
 from datetime import timedelta
 
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-
-# sentry_sdk.init(
-#     dsn="https://2f4ae7b6c5444de7bc7093fdce72267e@o402264.ingest.sentry.io/5263074",
-#     environment=os.environ.get("PORTAL_ENV")
-#     if os.environ.get("PORTAL_ENV")
-#     else "UNKNOWN",
-#     integrations=[DjangoIntegration()],
-#     send_default_pii=True,
-# )
-
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get(
     "PORTAL_SECRET_KEY", "l)#t68rzepzp)0l#x=9mntciapun$whl+$j&=_@nl^zl1xm3j*"
@@ -85,7 +72,7 @@ INSTALLED_APPS = [
     "access",
     "group",
     "memberbucks",
-    "spacedirectory",
+    "api_spacedirectory",
     "api_general",
     "api_access",
     "api_meeting",
@@ -408,6 +395,14 @@ CONSTANCE_CONFIG = {
         "PLEASE_CHANGE_ME",
         "The API key used to send email with Sendgrid.",
     ),
+    "MAX_INDUCTION_DAYS": (
+        180,
+        "The maximum amount of days since a member was last inducted before they have to complete another induction (0 to disable).",
+    ),
+    "REQUIRE_ACCESS_CARD": (
+        True,
+        "If an access card is required to be added to a members profile before signup.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -422,6 +417,10 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "API_SECRET_KEY",
                 "SENDGRID_API_KEY",
             ),
+        ),
+        (
+            "Signup",
+            ("MAX_INDUCTION_DAYS", "REQUIRE_ACCESS_CARD"),
         ),
         (
             "Contact Information",

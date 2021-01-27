@@ -130,10 +130,28 @@
           {{ $t("tiers.confirmDelay") }}
         </div>
 
-        <div class="row">
-          <q-btn flat @click="backToBilling" :label="$tc('button.back')" />
+        <div v-if="finishSuccess" class="row">
+          <q-banner class="bg-success text-white">
+            <div class="text-h5">{{ $tc("paymentPlans.signupSuccess") }}</div>
+            <p>{{ $tc("paymentPlans.signupSuccessDescription") }}</p>
+          </q-banner>
+        </div>
+
+        <div v-else class="row">
+          <q-btn
+            flat
+            :disable="disableFinish || loading"
+            @click="backToBilling"
+            :label="$tc('button.back')"
+          />
           <q-space />
-          <q-btn color="primary" :label="$tc('tiers.finish')" />
+          <q-btn
+            :loading="loading"
+            :disable="disableFinish"
+            @click="finishSignup"
+            color="primary"
+            :label="$tc('tiers.finish')"
+          />
         </div>
       </q-step>
     </q-stepper>
@@ -155,6 +173,9 @@ export default defineComponent({
       tiers: [],
       selectedTier: {},
       selectedPlan: {},
+      disableFinish: false,
+      loading: false,
+      finishSuccess: false,
     };
   },
   computed: {
@@ -176,6 +197,36 @@ export default defineComponent({
         this.tiers = response.data;
       });
     },
+    finishSignup() {
+      this.disableFinish = true;
+      this.loading = true;
+      this.$axios
+        .post(`api/billing/plans/${this.selectedPlan.id}/signup/`)
+        .then((response) => {
+          if (response.data.success) {
+            this.finishSuccess = true;
+            setTimeout(() => {
+              location.reload();
+            }, 3000);
+          } else {
+            this.disableFinish = false;
+            this.$q.dialog({
+              title: this.$t("paymentPlans.signupFailed"),
+              message: this.$t("error.contactUs"),
+            });
+          }
+        })
+        .catch(() => {
+          this.disableFinish = false;
+          this.$q.dialog({
+            title: this.$t("paymentPlans.signupFailed"),
+            message: this.$t("error.contactUs"),
+          });
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
     selectedTierEvent(tier) {
       this.selectedTier = tier;
       this.step++;
@@ -184,7 +235,7 @@ export default defineComponent({
       this.selectedPlan = plan;
       this.step++;
     },
-    selectedBillingMethodEvent(plan) {
+    selectedBillingMethodEvent() {
       this.step++;
     },
     backToTiers() {

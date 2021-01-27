@@ -354,6 +354,7 @@ class ProfileDetail(generics.GenericAPIView):
                 else None
                 if p.membership_plan
                 else None,
+                "subscriptionState": p.subscription_status,
             },
             "permissions": {"admin": user.is_admin},
         }
