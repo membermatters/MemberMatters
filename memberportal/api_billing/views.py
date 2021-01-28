@@ -1,13 +1,13 @@
-from memberbucks.models import MemberBucks
+from profile.models import Profile
+from api_admin_tools.models import *
 
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api_admin_tools.models import *
 import stripe
-import json
 from constance import config
+from datetime import datetime, timedelta
 from membermatters.helpers import log_user_event, log_event
 
 stripe.api_key = config.STRIPE_SECRET_KEY
@@ -31,7 +31,6 @@ class MemberBucksAddCard(APIView):
                     email=request.user.email,
                     name=profile.get_full_name(),
                     phone=profile.phone,
-                    invoice_prefix=profile.xero_account_number,
                 )
 
                 profile.stripe_customer_id = customer.id
@@ -47,84 +46,6 @@ class MemberBucksAddCard(APIView):
 
                 return Response({"clientSecret": intent.client_secret})
 
-            except stripe.error.CardError as e:
-                # Since it's a decline, stripe.error.CardError will be caught
-                body = e.json_body
-                err = body.get("error", {})
-
-                log_user_event(
-                    request.user,
-                    "Card declined while saving payment details.",
-                    "stripe",
-                )
-
-                return Response(
-                    {
-                        "success": False,
-                        "message": err,
-                    },
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
-                )
-
-            except stripe.error.RateLimitError as e:
-                log_user_event(
-                    request.user, "Rate limited while saving payment details.", "stripe"
-                )
-
-                return Response(
-                    {
-                        "success": False,
-                        "message": e,
-                    },
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
-                )
-
-            except stripe.error.InvalidRequestError as e:
-                log_user_event(
-                    request.user,
-                    "Invalid request while saving payment details.",
-                    "stripe",
-                    request,
-                )
-
-                return Response(
-                    {
-                        "success": False,
-                        "message": e,
-                    },
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
-                )
-
-            except stripe.error.AuthenticationError as e:
-                log_user_event(
-                    request.user,
-                    "Can't authenticate with stripe while saving payment details.",
-                    "stripe",
-                )
-
-                return Response(
-                    {
-                        "success": False,
-                        "message": e,
-                    },
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
-                )
-
-            except stripe.error.APIConnectionError as e:
-                log_user_event(
-                    request.user,
-                    "Stripe API connection error while saving payment details.",
-                    "stripe",
-                )
-
-                return Response(
-                    {
-                        "success": False,
-                        "message": e,
-                    },
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
-                )
-
             except stripe.error.StripeError as e:
                 log_user_event(
                     request.user,
@@ -136,7 +57,7 @@ class MemberBucksAddCard(APIView):
                 return Response(
                     {
                         "success": False,
-                        "message": e,
+                        "message": str(e),
                     },
                     status=status.HTTP_503_SERVICE_UNAVAILABLE,
                 )
@@ -226,28 +147,120 @@ class MemberTiers(APIView):
             plans = []
 
             for plan in tier.plans.filter(visible=True):
-                plans.append(
-                    {
-                        "id": plan.id,
-                        "name": plan.name,
-                        "currency": plan.currency,
-                        "cost": plan.cost,
-                        "intervalAmount": plan.interval_count,
-                        "interval": plan.interval,
-                    }
-                )
+                plans.append(plan.get_object())
 
-            formatted_tiers.append(
-                {
-                    "id": tier.id,
-                    "name": tier.name,
-                    "description": tier.description,
-                    "featured": tier.featured,
-                    "plans": plans,
-                }
-            )
+            formatted_tiers.append(tier.get_object())
 
         return Response(formatted_tiers)
+
+
+class PaymentPlanSignup(APIView):
+    """
+    post: attempts to sign the member up to a new membership payment plan.
+    """
+
+    def post(self, request, plan_id):
+        current_plan = request.user.profile.membership_plan
+
+        if current_plan:
+            return Response({"success": False}, status=status.HTTP_409_CONFLICT)
+
+        else:
+            new_plan = PaymentPlan.objects.get(pk=plan_id)
+            new_subscription = stripe.Subscription.create(
+                customer=request.user.profile.stripe_customer_id,
+                items=[
+                    {"price": new_plan.stripe_id},
+                ],
+            )
+            request.user.profile.stripe_subscription_id = new_subscription.id
+            request.user.profile.membership_plan = new_plan
+            request.user.profile.save()
+
+            if new_subscription.status == "active":
+                return Response({"success": True})
+
+            return Response({"success": False})
+
+
+class CanSignup(APIView):
+    """
+    get: checks if the member is elligible to signup, and what actions they need to complete.
+    """
+
+    def get(self, request):
+        return Response(request.user.profile.can_signup())
+
+
+class SubscriptionInfo(APIView):
+    """
+    get: retrieves information about the members subscription.
+    """
+
+    def get(self, request):
+        current_plan = request.user.profile.membership_plan
+
+        if not current_plan:
+            return Response({"success": False}, status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            s = stripe.Subscription.retrieve(
+                request.user.profile.stripe_subscription_id,
+            )
+
+            if s:
+                subscription = {
+                    "billingCycleAnchor": s.billing_cycle_anchor,
+                    "currentPeriodEnd": s.current_period_end,
+                    "cancelAt": s.cancel_at,
+                    "cancelAtPeriodEnd": s.cancel_at_period_end,
+                    "startDate": s.start_date,
+                }
+                return Response({"success": True, "subscription": subscription})
+
+            return Response({"success": False})
+
+
+class PaymentPlanResumeCancel(APIView):
+    """
+    post: attempts to cancel a member's payment plan.
+    """
+
+    def post(self, request, resume):
+        current_plan = request.user.profile.membership_plan
+        resume = True if resume == "resume" else False
+
+        if not current_plan:
+            return Response(
+                {"success": False, "message": "paymentPlan.notExists"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        else:
+            # this will modify the subscription to automatically cancel at the end of the current payment plan
+            if resume:
+                modified_subscription = stripe.Subscription.modify(
+                    request.user.profile.stripe_subscription_id,
+                    cancel_at_period_end=False,
+                )
+
+                if modified_subscription.cancel_at_period_end == False:
+                    request.user.profile.subscription_status = "active"
+                    request.user.profile.save()
+                    return Response({"success": True})
+
+            else:
+                modified_subscription = stripe.Subscription.modify(
+                    request.user.profile.stripe_subscription_id,
+                    cancel_at_period_end=True,
+                )
+
+                if modified_subscription.cancel_at_period_end == True:
+                    request.user.profile.subscription_status = "cancelling"
+                    request.user.profile.save()
+                    return Response({"success": True})
+
+            return Response({"success": False})
 
 
 class StripeWebhook(APIView):
@@ -255,8 +268,11 @@ class StripeWebhook(APIView):
     post: processes a Stripe webhook event.
     """
 
+    permission_classes = (permissions.AllowAny,)
+
     def post(self, request):
         webhook_secret = config.STRIPE_WEBHOOK_SECRET
+        body = request.body
         request_data = request.data
 
         if webhook_secret:
@@ -264,30 +280,73 @@ class StripeWebhook(APIView):
             signature = request.headers.get("stripe-signature")
             try:
                 event = stripe.Webhook.construct_event(
-                    payload=request.body, sig_header=signature, secret=webhook_secret
+                    payload=body, sig_header=signature, secret=webhook_secret
                 )
                 data = event["data"]
             except Exception as e:
-                return e
+                print(e)
+                return Response({"error": "Error validaitng Stripe signature."})
+
             # Get the type of webhook event sent - used to check the status of PaymentIntents.
             event_type = event["type"]
         else:
             data = request_data["data"]
             event_type = request_data["type"]
 
-        data_object = data["object"]
-        print(data_object)
+        data = data["object"]
+        try:
+            member = Profile.objects.get(stripe_customer_id=data["customer"])
+
+        except Profile.DoesNotExist:
+            return Response()
+
+        # Just in case the linked Stripe account also processes other payments we should just ignore a non existant customer.
+        if not member:
+            return Response()
 
         if event_type == "invoice.paid":
-            print("INVOICE PAID")
-            print(data)
+            print("INVOICE PAID EVENT")
+
+            invoice_status = data["status"]
+
+            if invoice_status == "paid" and member.state != "active":
+                # if the invoice was paid and the member isn't active, then activate them
+                subject = "Your payment was successful."
+                title = subject
+                preheader = ""
+                message = "Thanks for making a payment via our automated billing system. You will receive another email shortly confirming that your access has been enabled, or if any additional steps are required to be completed."
+
+                member.user.email_notification(subject, title, preheader, message)
+                member.activate()
+                member.subscription_status = "active"
+                member.save()
+
+                # in all other instances, we don't care about the event and can ignore it
 
         if event_type == "invoice.payment_failed":
             print("INVOICE PAYMENT FAILED")
-            print(data)
+
+            subject = "Your membership payment failed"
+            title = subject
+            preheader = ""
+            message = "Hi there, your membership payment failed. Please update your billing information or contact us to resolve this issue. We'll try again, but if we're unable to collect your payment, your membership may be cancelled."
+
+            member.user.email_notification(self, subject, title, preheader, message)
 
         if event_type == "customer.subscription.deleted":
             print("SUBSCRIPTION DELETED")
-            print(data)
+
+            # the subscription was deleted, so deactivate the member
+            subject = "Your membership has been cancelled"
+            title = subject
+            preheader = ""
+            message = "You will receive another email shortly confirming that your access has been deactivated. Your membership was either cancelled at your request or because we couldn't collect your payment."
+
+            member.user.email_notification(subject, title, preheader, message)
+            member.deactivate()
+            member.membership_plan = None
+            member.stripe_subscription_id = None
+            member.subscription_status = "inactive"
+            member.save()
 
         return Response()

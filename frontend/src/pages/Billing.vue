@@ -1,6 +1,6 @@
 <template>
   <q-page class="column flex justify-start items-center">
-    <member-bucks-manage-billing />
+    <member-bucks-manage-billing style="width: 100%; max-width: 400px" />
   </q-page>
 </template>
 

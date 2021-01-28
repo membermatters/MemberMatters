@@ -71,4 +71,6 @@ export default {
   email: pro ? "fad fa-mail-bulk" : "fal fa-mail-bulk",
   reboot: pro ? "fad fa-sync" : "fal fa-sync",
   unlock: pro ? "fad fa-unlock" : "fal fa-unlock",
+  induction: pro ? "fad fa-user-hard-hat" : "fal fa-user-hard-hat",
+  accessCard: pro ? "fad fa-id-card" : "fal fa-user-id-card"
 };

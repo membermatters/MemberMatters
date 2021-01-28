@@ -238,6 +238,7 @@ const PageAndRouteConfig = [
         to: "/account/membership-tier",
         name: "membershipTier",
         loggedIn: true,
+        hiddenMenu: true,
         component: () => import("pages/MembershipTier"),
       },
     ],

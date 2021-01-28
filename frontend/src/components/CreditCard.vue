@@ -1,11 +1,9 @@
 <template>
-  <div style="min-width: 300px">
-    <q-card class="my-card">
+  <div style="min-width: 200px; border-radius: 10px">
+    <q-card class="my-card bg-primary">
       <div class="my-card-inner">
         <q-card-section class="full-height column items-start">
-          <div class="credit-card-title q-ma-sm">
-            Credit Card
-          </div>
+          <div class="credit-card-title q-ma-sm">Credit Card</div>
 
           <q-space />
 
@@ -13,19 +11,16 @@
             **** **** **** {{ last4 }}
           </div>
 
-          <div class="credit-card-expiry q-pa-sm full-width row justify-center">
+          <div class="credit-card-expiry q-pa-sm full-width row justify-end">
             Expiry: {{ expiry }}
           </div>
 
-          <div class="credit-card-name q-pa-sm">
+          <div class="credit-card-name">
             {{ name }}
           </div>
 
           <div class="credit-card-logo">
-            <q-img
-              width="100%"
-              :src="ccLogo"
-            />
+            <q-img width="100%" :src="ccLogo" />
           </div>
         </q-card-section>
       </div>
@@ -75,18 +70,15 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-  .my-card
-    width: 100%
-    padding-bottom: 63%
-    border-radius: 10px
+.my-card
+  width: 100%
+  padding-bottom: 63%
+  border-radius: 10px
 
   .my-card-inner
     position: absolute
     width: 100%
     height: 100%
-
-  .credit-card-title
-    font-size: 140%
 
   .credit-card-logo
     position: absolute

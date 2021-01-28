@@ -1,5 +1,5 @@
 <template>
-  <q-card class="q-dialog-plugin">
+  <q-card :flat="flat">
     <template v-if="profile.financial.memberBucks.savedCard.last4">
       <q-card-section>
         <div class="text-h6">
@@ -49,6 +49,13 @@ import MemberBucksAddCard from "components/MemberBucksAddCard";
 export default {
   name: "MemberBucksManageBilling",
   components: { MemberBucksAddCard, CreditCard },
+  props: {
+    flat: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
   data() {
     return {
       removeLoading: false,
@@ -62,7 +69,6 @@ export default {
         .delete("/api/billing/card/")
         .then(() => {
           this.getProfile();
-          this.hide();
         })
         .catch(() => {
           this.error = this.$t("memberbucks.removeCardError");
@@ -71,18 +77,8 @@ export default {
           this.removeLoading = false;
         });
     },
-    show() {
-      this.$refs.dialog.show();
-    },
-    hide() {
-      this.$refs.dialog.hide();
-    },
-    onDialogHide() {
-      this.$emit("hide");
-    },
     onOKClick() {
       this.$emit("ok");
-      this.hide();
     },
   },
   computed: {
