@@ -1,9 +1,8 @@
 from profile.models import User
 from access import models
 from .models import MemberTier, PaymentPlan
-from profile import models as profile_models
 from constance import config
-from profile.emailhelpers import send_single_email
+from services.email import send_single_email
 import json
 import stripe
 

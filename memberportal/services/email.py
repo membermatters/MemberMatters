@@ -92,3 +92,25 @@ def send_single_email(
         return True
     else:
         return False
+
+
+def send_email_to_admin(
+    subject: object,
+    title: object,
+    message: object,
+):
+    message = escape(message)
+    message = message.replace("~br~", "<br>")
+    email_vars = {"preheader": "", "title": title, "message": message}
+    email_string = render_to_string(
+        "email_without_button.html", {"email": email_vars, "config": config}
+    )
+
+    sg = sendgrid.SendGridAPIClient(config.SENDGRID_API_KEY)
+    from_email = From(config.EMAIL_DEFAULT_FROM)
+    to_email = To(config.EMAIL_ADMIN)
+    subject = subject
+    content = Content("text/html", email_string)
+    mail = Mail(from_email, to_email, subject, content)
+
+    return sg.send(mail)
