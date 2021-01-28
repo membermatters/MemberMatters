@@ -6,11 +6,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import stripe
+from services import canvas
+from services.email import send_email_to_admin
 from constance import config
 from datetime import datetime, timedelta
-from membermatters.helpers import log_user_event, log_event
+from membermatters.helpers import log_user_event
 
 stripe.api_key = config.STRIPE_SECRET_KEY
+Canvas = canvas.Canvas()
 
 
 class MemberBucksAddCard(APIView):
@@ -192,6 +195,54 @@ class CanSignup(APIView):
         return Response(request.user.profile.can_signup())
 
 
+class CompleteSignup(APIView):
+    """
+    post: completes the member's signup if they have completed all requirements and enables access
+    """
+
+    def post(self, request):
+        member = request.user.profile
+
+        if member.state == "active":
+            return Response({"success": False, "message": "signup.existingMember"})
+
+        elif member.can_signup()["success"]:
+            member.activate()
+
+            subject = "Your membership application has been submitted"
+            title = subject
+            message = "Thanks for submitting your membership application! You have now become a membership applicant. After 7 days your membership will be accepted and you will become a fully fledged member. Although you aren't a full member just yet, we'll turn on your site access so you can get started straight away (look for an email confirmation of this). In the unlikely event that your membership is rejected for some reason, you'll receive an email from us."
+            member.user.email_notification(subject, title, "", message)
+
+            subject = (
+                f"A new person just became a member applicant: {member.get_full_name()}"
+            )
+            title = subject
+            message = f"{member.get_full_name()} just completed all steps required to sign up and is now a member applicant. Their site access has been enabled and membership will automatically be accepted within 7 days without objection from the executive."
+            send_email_to_admin(subject, title, message)
+
+            return Response({"success": True, "message": "signup.complete"})
+
+        return Response({"success": False, "message": "signup.requirementsNotMet"})
+
+
+class CheckInductionStatus(APIView):
+    """
+    post: checks if the member has completed the induction (via the canvas API).
+    """
+
+    def post(self, request):
+        score = Canvas.get_student_score_for_course(1981304, "hello@jaimyn.com.au")
+        induction_passed = score >= config.MIN_INDUCTION_SCORE
+
+        if induction_passed:
+            request.user.profile.update_last_induction()
+
+            return Response({"success": True, "score": score})
+
+        return Response({"success": False, "score": score})
+
+
 class SubscriptionInfo(APIView):
     """
     get: retrieves information about the members subscription.
@@ -201,7 +252,7 @@ class SubscriptionInfo(APIView):
         current_plan = request.user.profile.membership_plan
 
         if not current_plan:
-            return Response({"success": False}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"success": False})
 
         else:
             s = stripe.Subscription.retrieve(
@@ -313,11 +364,9 @@ class StripeWebhook(APIView):
                 # if the invoice was paid and the member isn't active, then activate them
                 subject = "Your payment was successful."
                 title = subject
-                preheader = ""
-                message = "Thanks for making a payment via our automated billing system. You will receive another email shortly confirming that your access has been enabled, or if any additional steps are required to be completed."
+                message = "Thanks for making your first membership payment. Once you have completed all steps required to become a member, you will receive an email confirmation."
+                member.user.email_notification(subject, title, "", message)
 
-                member.user.email_notification(subject, title, preheader, message)
-                member.activate()
                 member.subscription_status = "active"
                 member.save()
 
@@ -348,5 +397,10 @@ class StripeWebhook(APIView):
             member.stripe_subscription_id = None
             member.subscription_status = "inactive"
             member.save()
+
+            subject = f"The membership for {member.get_full_name()} was just cancelled"
+            title = subject
+            message = f"The subscription for {member.get_full_name()} was deleted so their membership has been cancelled. Their site access has been turned off."
+            send_email_to_admin(subject, title, message)
 
         return Response()

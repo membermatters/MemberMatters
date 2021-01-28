@@ -33,6 +33,11 @@ urlpatterns = [
         name="CanSignup",
     ),
     path(
+        "api/billing/check-induction/",
+        views.CheckInductionStatus.as_view(),
+        name="CheckInductionStatus",
+    ),
+    path(
         "api/billing/stripe-webhook/",
         views.StripeWebhook.as_view(),
         name="StripeWebhook",

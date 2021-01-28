@@ -419,7 +419,10 @@ export default {
   signup: {
     requiredSteps: "You must complete the following steps before you can select a membership tier.",
     completeInduction: "Complete an induction",
-    registerAccessCard: "Regist your access card"
+    registerAccessCard: "Register your access card",
+    completeInductionDescription: "Complete your induction via Canvas by clicking the button below. Keep this page open and come back to it once you're finished.",
+    waitingCompletion: "Waiting for completion...",
+    complete: "Your membership application has been submitted. Please check your email for next steps."
   },
   tiers: {
     select: "Tier",
