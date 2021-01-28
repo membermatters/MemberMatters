@@ -29,12 +29,6 @@
           <p class="text-h6">
             {{ $t("settings.other.title") }}
           </p>
-
-          <q-btn
-            color="primary"
-            :label="$t('settings.other.reloadPage')"
-            @click="reloadWindow()"
-          />
         </q-card-section>
 
         <q-card-actions align="right">
@@ -57,15 +51,7 @@
 import icons from "@icons";
 import { mapGetters, mapMutations } from "vuex";
 import Vue from "vue";
-import { Platform } from "quasar";
 import formMixin from "../mixins/formMixin";
-
-let getCurrentWindow;
-
-if (Platform.is.electron) {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  getCurrentWindow = require("electron").remote.getCurrentWindow;
-}
 
 export default {
   name: "Settings",
@@ -149,11 +135,6 @@ export default {
       return this.connected
         ? this.$t("settings.rfidScanner.connected")
         : this.$t("settings.rfidScanner.disconnected");
-    },
-    reloadWindow() {
-      return Platform.is.electron
-        ? getCurrentWindow().reload()
-        : window.location.reload();
     },
   },
 };

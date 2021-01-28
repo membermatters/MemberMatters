@@ -1,15 +1,12 @@
 <template>
-  <div class="q-pa-md">
+  <div>
     <q-card class="submit-issue-card">
       <h6 class="q-ma-none q-pa-md">
-        {{ $t('reportIssue.pageDescription') }}
+        {{ $t("reportIssue.pageDescription") }}
       </h6>
 
       <q-card-section>
-        <q-form
-          class="q-gutter-md"
-          @submit="onSubmit"
-        >
+        <q-form ref="form" class="q-gutter-md" @submit="onSubmit">
           <q-input
             v-model="title"
             filled
@@ -17,7 +14,7 @@
             label="Issue Title"
             lazy-rules
             :rules="[
-              val => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+              (val) => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
             ]"
           >
             <template v-slot:prepend>
@@ -33,7 +30,7 @@
             autogrow
             lazy-rules
             :rules="[
-              val => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+              (val) => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
             ]"
           >
             <template v-slot:prepend>
@@ -41,23 +38,15 @@
             </template>
           </q-input>
 
-          <q-banner
-            v-if="submitSuccess"
-            class="bg-positive text-white"
-          >
-            {{ $t('reportIssue.success') }}<br>
-            <a
-              v-if="issueUrl"
-              target="_blank"
-              :href="issueUrl"
-            >{{ issueUrl }}</a>
+          <q-banner v-if="submitSuccess" class="bg-positive text-white">
+            {{ $t("reportIssue.success") }}<br />
+            <a v-if="issueUrl" target="_blank" :href="issueUrl">{{
+              issueUrl
+            }}</a>
           </q-banner>
 
-          <q-banner
-            v-if="submitError"
-            class="bg-negative text-white"
-          >
-            {{ $t('reportIssue.fail') }}
+          <q-banner v-if="submitError" class="bg-negative text-white">
+            {{ $t("reportIssue.fail") }}
           </q-banner>
 
           <div class="row">
@@ -108,15 +97,22 @@ export default {
       this.submitError = false;
       this.buttonLoading = true;
 
-      this.$axios.post("/api/tools/issue/", {
-        title: this.title,
-        description: this.description,
-      })
+      this.$axios
+        .post("/api/tools/issue/", {
+          title: this.title,
+          description: this.description,
+        })
         .then((response) => {
           if (response.data.success === true) {
             this.issueUrl = response.data.url;
             this.submitError = false;
             this.submitSuccess = true;
+
+            this.title = null;
+            this.description = null;
+            this.submitError = false;
+            this.buttonLoading = false;
+            this.$refs.form.resetValidation();
           } else {
             this.submitError = true;
             this.submitSuccess = false;
@@ -136,6 +132,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-  .submit-issue-card
-    min-width: $minWidth
+.submit-issue-card
+  min-width: $minWidth
 </style>

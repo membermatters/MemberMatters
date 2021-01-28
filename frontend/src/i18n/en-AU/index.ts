@@ -47,6 +47,8 @@ export default {
     signinSuccess: "Successfully signed you in. Please remember to sign out when you leave.",
     signoutError: "There was a problem signing you out. Please contact the executive committee if this problem persists.",
     signinError: "There was a problem signing you in. Please contact the executive committee if this problem persists.",
+    signIn: "Site Sign In",
+    signOut: "Site Sign Out",
   },
   error: {
     error: "Error",
@@ -430,7 +432,7 @@ export default {
     add: "Add a new tier",
     becomeMember: "Become a member",
     confirm: "Please confirm your selected membership tier and plan. By continuing you agree to pay for your selected plan using the provided credit card. Your first payment will be collected today, and future payments of {intervalDescription}.",
-    confirmDelay: "Your membership application may need to be approved. This can take up to 24 hours. You will receive an email when your membership application is approved.",
+    confirmDelay: "Your membership application will be submitted after payment is received. Site access will be granted as soon as you complete your membership induction in the next step. Your membership application will be provisionally accepted straight away, and officially accepted after 7 days.",
     finish: "Finish Signup",
     plansFrom: "From {plan}",
   },

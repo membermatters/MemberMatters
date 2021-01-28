@@ -610,7 +610,7 @@ class Register(APIView):
 
         profile = Profile.objects.create(
             user=new_user,
-            member_type_id=1,
+            member_type_id=config.DEFAULT_MEMBER_TYPE,
             first_name=body.get("firstName"),
             last_name=body.get("lastName"),
             screen_name=body.get("screenName"),

@@ -402,6 +402,9 @@ CONSTANCE_CONFIG = {
     "REQUIRE_ACCESS_CARD": (
         True,
         "If an access card is required to be added to a members profile before signup.",
+    "DEFAULT_MEMBER_TYPE": (
+        1,
+        "The ID of the member type to assign new members to by default.",
     ),
 }
 
@@ -416,6 +419,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "GOOGLE_ANALYTICS_PROPERTY_ID",
                 "API_SECRET_KEY",
                 "SENDGRID_API_KEY",
+                "DEFAULT_MEMBER_TYPE",
             ),
         ),
         (

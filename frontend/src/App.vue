@@ -13,7 +13,6 @@
 <script>
 // We should include Stripe everywhere to enable better fraud protection
 import { loadStripe } from "@stripe/stripe-js";
-
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import Vue from "vue";
 import { colors, Dark, Platform } from "quasar";
@@ -65,17 +64,11 @@ export default {
       this.$axios.interceptors.request.use(
         async (config) => {
           // Grab the csrf token
-          const cookies = await remote.session.defaultSession.cookies.get({
-            url: process.env.apiBaseUrl,
-          });
+          var cookie = this.$q.cookies.get("cookie_name");
 
-          if (!cookies.length) return config;
+          if (!cookie) return config;
 
-          const [csrfToken] = cookies.filter(
-            (cookie) => cookie.name === "csrftoken"
-          );
-
-          config.headers["X-CSRFTOKEN"] = csrfToken.value;
+          config.headers["X-CSRFTOKEN"] = cookie;
 
           return config;
         },
@@ -89,6 +82,7 @@ export default {
       (response) => response,
       (error) => {
         // Do something with response error
+        console.log(error);
         if (
           error.response.status === 401 &&
           !error.response.config.url.includes("/api/login/")
