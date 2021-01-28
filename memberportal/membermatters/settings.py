@@ -395,16 +395,29 @@ CONSTANCE_CONFIG = {
         "PLEASE_CHANGE_ME",
         "The API key used to send email with Sendgrid.",
     ),
+    "INDUCTION_ENROL_LINK": (
+        "",
+        "The link that a member can use to enrol into an induction.",
+    ),
     "MAX_INDUCTION_DAYS": (
         180,
         "The maximum amount of days since a member was last inducted before they have to complete another induction (0 to disable).",
     ),
+    "MIN_INDUCTION_SCORE": (
+        99,
+        "The minimum score to consider an induction as passed (0-100).",
+    ),
     "REQUIRE_ACCESS_CARD": (
         True,
         "If an access card is required to be added to a members profile before signup.",
+    ),
     "DEFAULT_MEMBER_TYPE": (
         1,
         "The ID of the member type to assign new members to by default.",
+    ),
+    "CANVAS_API_TOKEN": (
+        "PLEASE_CHANGE_ME",
+        "Canvas API token.",
     ),
 }
 
@@ -418,13 +431,25 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "ENTITY_TYPE",
                 "GOOGLE_ANALYTICS_PROPERTY_ID",
                 "API_SECRET_KEY",
-                "SENDGRID_API_KEY",
                 "DEFAULT_MEMBER_TYPE",
             ),
         ),
         (
             "Signup",
-            ("MAX_INDUCTION_DAYS", "REQUIRE_ACCESS_CARD"),
+            (
+                "INDUCTION_ENROL_LINK",
+                "MAX_INDUCTION_DAYS",
+                "MIN_INDUCTION_SCORE",
+                "REQUIRE_ACCESS_CARD",
+            ),
+        ),
+        (
+            "Canvas Integration",
+            ("CANVAS_API_TOKEN",),
+        ),
+        (
+            "Sendgrid Integration",
+            ("SENDGRID_API_KEY",),
         ),
         (
             "Contact Information",
