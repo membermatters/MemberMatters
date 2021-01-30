@@ -24,7 +24,6 @@ class Canvas:
             headers={"Authorization": "Bearer " + self.api_token},
             data=query,
         )
-        print(response.headers)
 
         return response.json()
 

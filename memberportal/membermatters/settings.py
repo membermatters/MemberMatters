@@ -395,9 +395,17 @@ CONSTANCE_CONFIG = {
         "PLEASE_CHANGE_ME",
         "The API key used to send email with Sendgrid.",
     ),
+    "MAX_GROUPS": (
+        3,
+        "The maximum number groups allowed to be selected during signup.",
+    ),
     "INDUCTION_ENROL_LINK": (
         "",
         "The link that a member can use to enrol into an induction.",
+    ),
+    "INDUCTION_COURSE_ID": (
+        "",
+        "Canvas course id for the induction.",
     ),
     "MAX_INDUCTION_DAYS": (
         180,
@@ -438,9 +446,11 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             "Signup",
             (
                 "INDUCTION_ENROL_LINK",
+                "INDUCTION_COURSE_ID",
                 "MAX_INDUCTION_DAYS",
                 "MIN_INDUCTION_SCORE",
                 "REQUIRE_ACCESS_CARD",
+                "MAX_GROUPS",
             ),
         ),
         (

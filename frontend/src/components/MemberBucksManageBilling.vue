@@ -36,7 +36,7 @@
     </template>
 
     <template v-else>
-      <member-bucks-add-card @hide="hide" />
+      <member-bucks-add-card />
     </template>
   </q-card>
 </template>

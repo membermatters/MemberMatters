@@ -9,7 +9,12 @@
     :options="groups"
     option-value="id"
     option-label="name"
-    :rules="[ val => validateNotEmpty(val) || $t('validation.cannotBeEmpty')]"
+    :rules="[
+      (val) => val.length > 0 || $t('validation.cannotBeEmpty'),
+      (val) =>
+        val.length <= maxGroups ||
+        $t('validation.tooMany', { number: maxGroups }),
+    ]"
     @input="$emit('input', groupsSelected)"
   />
 </template>
@@ -37,7 +42,7 @@ export default {
     this.groupsSelected = this.value;
   },
   computed: {
-    ...mapGetters("config", ["groups"]),
+    ...mapGetters("config", ["groups", "maxGroups"]),
     icons() {
       return icons;
     },
@@ -46,7 +51,7 @@ export default {
 </script>
 
 <style lang="sass">
-  .profile-form
-    max-width: $maxWidthMedium
-    width: 100%
+.profile-form
+  max-width: $maxWidthMedium
+  width: 100%
 </style>

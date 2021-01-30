@@ -3,7 +3,7 @@
     <div v-if="loggedIn">
       <template v-if="Platform.is.electron">
         <h5 class="q-ma-md">
-          {{ $t('dashboard.quickActions') }}
+          {{ $t("dashboard.quickActions") }}
         </h5>
         <div class="row">
           <quick-actions />
@@ -11,14 +11,14 @@
       </template>
 
       <h5 class="q-ma-md">
-        {{ $t('dashboard.statistics') }}
+        {{ $t("dashboard.statistics") }}
       </h5>
       <div class="row">
         <statistics-cards />
       </div>
 
       <h5 class="q-ma-md">
-        {{ $t('dashboard.usefulResources') }}
+        {{ $t("dashboard.usefulResources") }}
       </h5>
       <div class="row">
         <dashboard-card
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import QuickActions from "components/QuickActions";
 import { Platform } from "quasar";
 import StatisticsCards from "components/StatisticsCards";
@@ -53,14 +53,26 @@ export default {
       return Platform;
     },
     ...mapGetters("config", ["homepageCards"]),
-    ...mapGetters("profile", ["loggedIn"]),
+    ...mapGetters("profile", ["loggedIn", "profile"]),
+  },
+  methods: {
+    ...mapActions("profile", ["getProfile"]),
+  },
+  async mounted() {
+    await this.getProfile();
+    if (
+      this.profile.memberStatus === "noob" &&
+      this.$route.name !== "membershipTier"
+    ) {
+      this.$router.push({ name: "membershipTier" });
+    }
   },
 };
 </script>
 
 <style lang="sass" scoped>
-  .row
-    width: 100%
-    max-width: $maxWidth
-    margin: auto
+.row
+  width: 100%
+  max-width: $maxWidth
+  margin: auto
 </style>

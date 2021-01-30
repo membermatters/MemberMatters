@@ -53,6 +53,7 @@ class GetConfig(APIView):
                 ),
             },
             "trelloIntegration": config.ENABLE_TRELLO_INTEGRATION,
+            "inductionLink": config.INDUCTION_ENROL_LINK,
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}
@@ -64,6 +65,11 @@ class GetConfig(APIView):
                 "siteOwner": config.SITE_OWNER,
                 "entityType": config.ENTITY_TYPE,
             },
+            "contact": {
+                "admin": config.EMAIL_ADMIN,
+                "sysadmin": config.EMAIL_SYSADMIN,
+                "address": config.SITE_MAIL_ADDRESS,
+            },
             "images": {
                 "siteLogo": config.SITE_LOGO,
                 "siteFavicon": config.SITE_FAVICON,
@@ -71,6 +77,7 @@ class GetConfig(APIView):
             "homepageCards": json.loads(config.HOME_PAGE_CARDS),
             "webcamLinks": json.loads(config.WEBCAM_PAGE_URLS),
             "groups": groups,
+            "maxGroups": config.MAX_GROUPS,
             "memberTypes": membership_types,
             "keys": keys,
             "features": features,
@@ -635,19 +642,6 @@ class Register(APIView):
         )
 
         profile.email_profile_to(config.EMAIL_ADMIN)
-
-        new_user.email_link(
-            f"Action Required: {config.SITE_OWNER} New Member Signup",
-            "Next Step: Register for an Induction",
-            "Important. Please read this email for details on how to "
-            "register for an induction.",
-            f"Hi {profile.first_name}, thanks for signing up! The next step to becoming a fully "
-            "fledged member is to book in for an induction. During this "
-            "induction we will go over the basic safety and operational "
-            f"aspects of {config.SITE_OWNER}. To book in, click the link below.",
-            f"{config.INDUCTION_URL}",
-            "Register for Induction",
-        )
 
         return Response()
 

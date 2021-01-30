@@ -1,4 +1,5 @@
 from profile.models import Profile
+from access.models import Doors, Interlock
 from api_admin_tools.models import *
 
 from rest_framework import status, permissions
@@ -140,8 +141,6 @@ class MemberTiers(APIView):
     get: gets a list of all member tiers.
     """
 
-    permission_classes = (permissions.IsAdminUser,)
-
     def get(self, request):
         tiers = MemberTier.objects.filter(visible=True)
         formatted_tiers = []
@@ -195,35 +194,22 @@ class CanSignup(APIView):
         return Response(request.user.profile.can_signup())
 
 
-class CompleteSignup(APIView):
+class AssignAccessCard(APIView):
     """
-    post: completes the member's signup if they have completed all requirements and enables access
+    post: assigns the access card to the member - can ony be called if they don't have one.
     """
 
     def post(self, request):
-        member = request.user.profile
+        profile = request.user.profile
 
-        if member.state == "active":
-            return Response({"success": False, "message": "signup.existingMember"})
+        if not profile.rfid:
+            profile.rfid = request.data["accessCard"]
+            profile.save()
 
-        elif member.can_signup()["success"]:
-            member.activate()
+            return Response({"success": True})
 
-            subject = "Your membership application has been submitted"
-            title = subject
-            message = "Thanks for submitting your membership application! You have now become a membership applicant. After 7 days your membership will be accepted and you will become a fully fledged member. Although you aren't a full member just yet, we'll turn on your site access so you can get started straight away (look for an email confirmation of this). In the unlikely event that your membership is rejected for some reason, you'll receive an email from us."
-            member.user.email_notification(subject, title, "", message)
-
-            subject = (
-                f"A new person just became a member applicant: {member.get_full_name()}"
-            )
-            title = subject
-            message = f"{member.get_full_name()} just completed all steps required to sign up and is now a member applicant. Their site access has been enabled and membership will automatically be accepted within 7 days without objection from the executive."
-            send_email_to_admin(subject, title, message)
-
-            return Response({"success": True, "message": "signup.complete"})
-
-        return Response({"success": False, "message": "signup.requirementsNotMet"})
+        else:
+            return Response({"success": False}, status=status.HTTP_403_FORBIDDEN)
 
 
 class CheckInductionStatus(APIView):
@@ -232,15 +218,78 @@ class CheckInductionStatus(APIView):
     """
 
     def post(self, request):
-        score = Canvas.get_student_score_for_course(1981304, "hello@jaimyn.com.au")
-        induction_passed = score >= config.MIN_INDUCTION_SCORE
+        score = Canvas.get_student_score_for_course(
+            config.INDUCTION_COURSE_ID, request.user.email
+        )
+        if score:
+            induction_passed = score >= config.MIN_INDUCTION_SCORE
 
-        if induction_passed:
-            request.user.profile.update_last_induction()
+            if induction_passed:
+                request.user.profile.update_last_induction()
 
-            return Response({"success": True, "score": score})
+                return Response({"success": True, "score": score})
 
         return Response({"success": False, "score": score})
+
+
+def send_submitted_application_emails(member):
+    subject = "Your membership application has been submitted"
+    title = subject
+    message = "Thanks for submitting your membership application! Your membership application has been submitted and you are now a 'member applicant'. Your membership will be officially accepted after 7 days, but we have granted site access immediately. You will receive an email confirming that your access card has been enabled. If for some reason your membership is rejected within this period, you will receive an email with further information."
+    member.user.email_notification(subject, title, "", message)
+
+    subject = f"A new person just became a member applicant: {member.get_full_name()}"
+    title = subject
+    message = f"{member.get_full_name()} just completed all steps required to sign up and is now a member applicant. Their site access has been enabled and membership will automatically be accepted within 7 days without objection from the executive."
+    send_email_to_admin(subject, title, message)
+
+
+class CompleteSignup(APIView):
+    """
+    post: completes the member's signup if they have completed all requirements and enables access
+    """
+
+    def post(self, request):
+        member = request.user.profile
+        signupCheck = member.can_signup()
+
+        if member.state == "active":
+            return Response({"success": False, "message": "signup.existingMember"})
+
+        elif signupCheck["success"]:
+            member.activate()
+            send_submitted_application_emails(member)
+
+            # give default door access
+            for door in Doors.objects.filter(all_members=True):
+                member.doors.add(door)
+
+            # give default interlock access
+            for interlock in Interlock.objects.filter(all_members=True):
+                member.interlocks.add(interlock)
+
+            member.user.email_welcome()
+
+            return Response({"success": True})
+
+        return Response(
+            {
+                "success": False,
+                "message": "signup.requirementsNotMet",
+                "items": signupCheck["requiredSteps"],
+            }
+        )
+
+
+class SkipSignup(APIView):
+    """
+    post: skips the billing/tier signup process if they just want an account
+    """
+
+    def post(self, request):
+        request.user.profile.set_account_only()
+
+        return Response({"success": True})
 
 
 class SubscriptionInfo(APIView):
@@ -369,6 +418,10 @@ class StripeWebhook(APIView):
 
                 member.subscription_status = "active"
                 member.save()
+
+                # if the member isn't signing up for the first time
+                if member.state != "noob":
+                    send_submitted_application_emails(member)
 
                 # in all other instances, we don't care about the event and can ignore it
 

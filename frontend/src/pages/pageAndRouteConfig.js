@@ -154,6 +154,7 @@ const PageAndRouteConfig = [
     name: "memberTools",
     loggedIn: true,
     kiosk: true,
+    memberOnly: true,
     children: [
       {
         icon: icons.reportIssue,
@@ -169,6 +170,7 @@ const PageAndRouteConfig = [
         name: "proxy",
         loggedIn: true,
         kiosk: true,
+        memberOnly: true,
         component: () => import("pages/Proxy"),
       },
       {
@@ -177,6 +179,7 @@ const PageAndRouteConfig = [
         name: "groupMembers",
         loggedIn: true,
         kiosk: true,
+        memberOnly: true,
         component: () => import("pages/MemberGroups"),
       },
       {
@@ -185,6 +188,7 @@ const PageAndRouteConfig = [
         name: "recentSwipes",
         loggedIn: true,
         kiosk: true,
+        memberOnly: true,
         component: () => import("pages/RecentSwipes"),
       },
       {
@@ -193,6 +197,7 @@ const PageAndRouteConfig = [
         name: "lastSeen",
         loggedIn: true,
         kiosk: true,
+        memberOnly: true,
         component: () => import("pages/LastSeen"),
       },
     ],

@@ -37,14 +37,12 @@ export default {
       type: String,
       default: "",
     },
-    verifySuccess: {
-      type: Boolean,
-      default: false,
-    },
-    verifyError: {
-      type: Boolean,
-      default: false,
-    },
+  },
+  data() {
+    return {
+      verifySuccess: false,
+      verifyError: false,
+    };
   },
   computed: {
     icons() {

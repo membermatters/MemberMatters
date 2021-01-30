@@ -182,6 +182,8 @@ export default {
         if (!link.loggedIn) {
           if (this.loggedIn) displayLink = false;
         }
+        if (link.memberOnly && this.profile.memberStatus !== "active")
+          displayLink = false;
         if (this.$q.platform.is.electron && !link.kiosk) displayLink = false;
         if (
           link.admin &&
@@ -195,8 +197,16 @@ export default {
       });
     },
   },
-  mounted() {
-    if (this.loggedIn) this.getProfile();
+  async mounted() {
+    if (this.loggedIn) {
+      await this.getProfile();
+      if (
+        this.profile.memberStatus === "noob" &&
+        this.$route.name !== "membershipTier"
+      ) {
+        next({ name: "membershipTier" });
+      }
+    }
   },
 };
 </script>
