@@ -50,6 +50,14 @@ code and other assets needed by the frontend.
 ### Django Python backend
 Please see the [readme](memberportal/README.md) file inside the `memberportal` folder. This folder contains all of the source
 code and other assets needed by the backend.
+
+## Door, Interlock & Vending Machine Resources
+This software was developed out of HSBNE Inc (Australia's largest hackerspace!). As part of our access control system (including doors and machine interlocks) we have developed a set of standard hardware components and firmware that is compatible with MemberMatters. Below is a list of useful resources for building your own hardware using off the shelf components. Once the hardware is built and firmware flashed, you can add them to MemberMatters for a complete access system and/or billing system for physical purchases.
+
+* [HSBNE Access Control Firmware](https://github.com/HSBNE/AccessControl) - Arduino based software that runs on ESPxx devices that are the brains of our interlocks/door controllers.
+* [HSBNE Access Control Hardware BOM](https://docs.google.com/spreadsheets/d/1sQvaxc8gp7CUdddq65luUwCwQNSQK4HCsXnodN-CSEk/edit#gid=0) - A list of materials that go into our access control system hardware.
+* [HSBNE Inc Access Control Wiki Page](https://wiki.hsbne.org/infrastructure/services/accesscontrol) - Information about our current and past access control hardware.
+* [Vending Machine RFID Panel Firmware](https://github.com/HSBNE/VendingMachine) - Arduino based software that powers our Spacebucks enabled vending machines.
  
  
 ## Screenshots
