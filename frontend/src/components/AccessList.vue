@@ -146,7 +146,7 @@ export default {
      * this method returns a specific user's access permissions
      */
     getMemberAccess() {
-      this.$axios.get(`/api/admin/members/${this.memberId}/access/`)
+      this.$axios.get(`/dapi/admin/members/${this.memberId}/access/`)
         .then((response) => {
           this.access = response.data;
         })

@@ -9,7 +9,7 @@ export default ({ router, store }) => {
       }
     }
 
-    if (store.getters["profile/profile"].memberStatus === "noob" && to.name !== "membershipTier") {
+    if (store.getters["profile/profile"].memberStatus === "noob" && to.name !== "membershipTier" && store.getters["config/features"].enableMembershipPayments) {
       return next({ name: "membershipTier" });
     }
 

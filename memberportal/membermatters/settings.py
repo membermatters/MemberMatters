@@ -293,9 +293,9 @@ CONSTANCE_CONFIG = {
         "[1000, 2000, 3000]",
         "This is a JSON array of top-up amounts in cents.",
     ),
-    "ENABLE_MEMBERBUCKS_STRIPE_INTEGRATION": (
+    "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS": (
         False,
-        "Enable integration with stripe for adding memberbucks.",
+        "Enable integration with stripe for membership payments.",
     ),
     # Trello config
     "ENABLE_TRELLO_INTEGRATION": (
@@ -494,7 +494,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "STRIPE_PUBLISHABLE_KEY",
                 "STRIPE_SECRET_KEY",
                 "STRIPE_WEBHOOK_SECRET",
-                "ENABLE_MEMBERBUCKS_STRIPE_INTEGRATION",
+                "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS",
                 "STRIPE_MEMBERBUCKS_TOPUP_OPTIONS",
             ),
         ),

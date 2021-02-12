@@ -1,4 +1,5 @@
 import icons from "../icons";
+import store from "../store";
 
 const PageAndRouteConfig = [
   {
@@ -243,7 +244,7 @@ const PageAndRouteConfig = [
         to: "/account/membership-tier",
         name: "membershipTier",
         loggedIn: true,
-        hiddenMenu: true,
+        hiddenMenu: !store.getters["config/features"].enableMembershipPayments,
         component: () => import("pages/MembershipTier"),
       },
     ],

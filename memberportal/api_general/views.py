@@ -47,7 +47,7 @@ class GetConfig(APIView):
         features = {
             "stripe": {
                 "enabled": len(config.STRIPE_PUBLISHABLE_KEY) > 0,
-                "memberBucksIntegration": config.ENABLE_MEMBERBUCKS_STRIPE_INTEGRATION,
+                "enableMembershipPayments": config.ENABLE_STRIPE_MEMBERSHIP_PAYMENTS,
                 "memberbucks_topup_options": json.loads(
                     config.STRIPE_MEMBERBUCKS_TOPUP_OPTIONS
                 ),
