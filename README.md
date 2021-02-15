@@ -5,11 +5,12 @@ MemberMatters is an open source membership and access management solution.
 The official place for updates on the MemberMatters software is on the HSBNE Inc. forum. You can access the specific thread [here](https://forum.hsbne.org/t/membermatters-hsbne-portal-updates/3514). You will also find a changelog under each release [here](https://github.com/membermatters/MemberMatters/releases) on GitHub.
 
 ### Features
-* Supports all major browser versions released within the last few years (babel)
+* Supports all major browser versions released within the last few years
 * First class mobile support with native mobile app (capacitor)
 * Kiosk mode with site sign/sign out feature (electron)
 * Dark mode support with native OS detection and switching
 * Member registration system (signup, login, profile etc)
+* Manage recurring membership payments via Stripe
 * Single Sign On (SSO) system implemented with the discourse protocol (more coming soon)
 * Profile - members can update all their info in one place
 * Issue reporting tool
@@ -29,8 +30,11 @@ The official place for updates on the MemberMatters software is on the HSBNE Inc
 * Automatically create a xero contact and create invoice when a new person is made into a member
  
 ### Coming soon
-* Manage recurring membership payments via Stripe
 * Edit member swipe in theme
+
+### Deprecation Warning
+The following features have now been deprecated and will be removed in a future release:
+* Xero integration
 
 ## Getting started using MemberMatters
 See the [getting started](/GETTING_STARTED.md) instructions for how to run the MemberMatters software for your 
