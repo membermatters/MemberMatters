@@ -37,13 +37,8 @@ CORS_ORIGIN_WHITELIST = [
 if os.environ.get("PORTAL_ENV") == "Production":
     ENVIRONMENT = "Production"
     DEBUG = False
-    ALLOWED_HOSTS = [
-        os.environ.get("PORTAL_DOMAIN", "portal.example.org"),
-        os.environ.get("PORTAL_DOMAIN_KIOSK", "kiosk.example.org"),
-        "localhost",
-    ]
     CORS_ORIGIN_WHITELIST = [
-        "https://" + os.environ.get("PORTAL_DOMAIN", "portal.example.org"),
+        os.environ.get("PORTAL_DOMAIN", "https://portal.example.org"),
         "capacitor://localhost",
         "http://localhost",
     ]
@@ -210,8 +205,6 @@ REQUEST_TIMEOUT = 0.05
 
 # Django constance configuration
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
-
-CONSTANCE_ADDITIONAL_FIELDS = {"image_field": ["django.forms.ImageField", {}]}
 
 CONSTANCE_CONFIG = {
     # General site info
@@ -402,6 +395,7 @@ CONSTANCE_CONFIG = {
     "REQUIRE_ACCESS_CARD": (
         True,
         "If an access card is required to be added to a members profile before signup.",
+    ),
     "DEFAULT_MEMBER_TYPE": (
         1,
         "The ID of the member type to assign new members to by default.",

@@ -1,32 +1,39 @@
 ### Getting Started
-> Note: MemberMatters only supports running in Docker on Linux. Installing Docker is outside the scope of this guide, 
->please consult your favourite search engine for tips.
- 
- To get started, download the latest version from docker hub using the following command:
- ```bash
+
+> Note: MemberMatters only supports running in Docker on Linux. Installing Docker is outside the scope of this guide,
+> please consult your favourite search engine for tips.
+
+To get started, download the latest version from docker hub using the following command:
+
+```bash
 docker pull membermatters/membermatters
 ```
 
-Create a file to contain all of your environment variables. This file contains sensitive information so treat it like a 
-password! Place it somewhere you won't forget like `/usr/app/env.list`. This file is where Docker gets the environment 
+Create a file to contain all of your environment variables. This file contains sensitive information so treat it like a
+password! Place it somewhere you won't forget like `/usr/app/env.list`. This file is where Docker gets the environment
 variables from.
+
 ```
 PORTAL_DOMAIN=https://demo.membermatters.org
 PORTAL_ENV=Production
-
-PORTAL_LOG_LOCATION=[optional - remove line if not used]
-PORTAL_DB_LOCATION=[optional - remove line if not used]
-
-PORTAL_XERO_CONSUMER_KEY=
-PORTAL_XERO_RSA_FILE=/path/to/xerkey.pem
 ```
 
 Once you've downloaded the docker image and configured your environment variables, you'll need to create a container:
+
 ```bash
-docker create -p 8000:8000 --name membermatters --restart always --detach --env-file /usr/app/env.list -v /usr/app/:/usr/src/data membermatters/membermatters
+docker create -p 8000:8000 --name membermatters --restart always --env-file /usr/app/env.list -v /usr/app/:/usr/src/data membermatters/membermatters
+```
+
+After you've created the container you can start/stop/restart it with:
+
+```bash
+docker start membermatters
+docker stop membermatters
+docker restart membermatters
 ```
 
 Once your container is running, you will be able to login with the default admin account details:
+
 ```
 Email: default@example.com
 Password: MemberMatters!
@@ -34,29 +41,32 @@ Password: MemberMatters!
 
 The first thing you should do is change the email address and password of the default admin account.
 
-Once you've done all this, your MemberMatters instance is ready for use. Read on below for tips on customising 
+Once you've done all this, your MemberMatters instance is ready for use. Read on below for tips on customising
 and deploying it.
 
 ### Deployment Tips
-* MemberMatters runs on port 8000 by default. You should run a reverse proxy in front of it
-so you can protect all traffic with HTTPS. Please consult your favourite search engine on how to setup a reverse proxy. 
-We recommend that you use nginx with let's encrypt.
-* MemberMatters is designed to run on site if you have any door, interlock or memberbucks devices. However, some parts
-need reliable networking and internet to function. Please keep this in mind and make sure you perform thorough
-testing before relying on it.
 
+- MemberMatters runs on port 8000 by default. You should run a reverse proxy in front of it
+  so you can protect all traffic with HTTPS. Please consult your favourite search engine on how to setup a reverse proxy.
+  We recommend that you use nginx with let's encrypt.
+- MemberMatters is designed to run on site if you have any door, interlock or memberbucks devices. However, some parts
+  need reliable networking and internet to function. Please keep this in mind and make sure you perform thorough
+  testing before relying on it.
 
 ### Kiosk Mode
+
 MemberMatters also offers a kiosk mode. You can build this by running `npm run build:electron`. This
 will compile an electron based application that you can run on a machine set up as a kiosk. For
 security reasons, kiosk builds will only have limited profile functionality and are primarily meant
 to allow members to sign in/out of site, print out tickets and use basic features of MemberMatters.
 
 #### Linux
+
 You may need to install ffmpeg and a chromium run time.
 
 ### Updating your instance
-Docker containers are meant to be disposable, so you'll need to delete it and make a fresh one from the latest image. 
+
+Docker containers are meant to be disposable, so you'll need to delete it and make a fresh one from the latest image.
 We suggest writing a bash script like the one below:
 
 ```bash
@@ -70,11 +80,12 @@ echo "Creating new docker container"
 docker create -p 8000:8000 --name membermatters --restart always --detach --env-file /usr/app/env.list -v /usr/app/:/usr/src/data membermatters/membermatters
 echo "Running new docker container"
 docker start membermatters
-``` 
+```
 
 ### Customisation
-The primary way to customise MemberMatters is via the database settings. Once your instance is up and running, 
-navigate to `http://<instance_url>/admin` and login with an admin account. Then click on "Config" under "Constance". 
+
+The primary way to customise MemberMatters is via the database settings. Once your instance is up and running,
+navigate to `http://<instance_url>/admin` and login with an admin account. Then click on "Config" under "Constance".
 On this page you'll see a variety of settings. You should customise these settings with your own details.
 
 A summary of the most important settings is included below with the default in brackets:
@@ -104,33 +115,37 @@ A summary of the most important settings is included below with the default in b
 `ADMIN_NAME` (`Administrators`) - You can specify a different name for your admin group like exec or leaders
 
 #### Home Page and Welcome Email Cards
-The settings called "HOME_PAGE_CARDS" and "WELCOME_EMAIL_CARDS" control the content that is displayed on the 
+
+The settings called "HOME_PAGE_CARDS" and "WELCOME_EMAIL_CARDS" control the content that is displayed on the
 MemberMatters home page, and the content in the welcome email each user receives when they are converted to a member.
 These options are configured with a JSON object specifying the content. You can add as many cards as you want, but we
-recommend 6 as a maximum for the homepage, and 4 for the email. You can find the icon names on 
+recommend 6 as a maximum for the homepage, and 4 for the email. You can find the icon names on
 [this page](https://materializecss.com/icons.html). Absolute and relative URLs are supported.
 
 An example with 3 cards is below:
+
 ```json
-[{
-	"title": "HSBNE Wiki",
-	"description": "Our wiki is like the rule book for HSBNE. It contains all the information about our tools, processes and other helpful tips.",
-	"icon": "class",
-	"url": "https://wiki.hsbne.org",
-	"btn_text": "Read Wiki"
-},
-{
-	"title": "Trello",
-	"description": "We use Trello for task management. If you want to help out around the space check out Trello for stuff to fix and improve.",
-	"icon": "view_list",
-	"url": "https://trello.com/b/xxxxxxx/inbox",
-	"btn_text": "Visit Trello"
-},
-{
-	"title": "Report Issue",
-	"description": "Found something broken at HSBNE that you don't have the time or skills to fix? You can submit an issue report.",
-	"icon": "bug_report",
-	"url": "/issue/report/",
-	"btn_text": "Report Issue"
-}]
+[
+  {
+    "title": "HSBNE Wiki",
+    "description": "Our wiki is like the rule book for HSBNE. It contains all the information about our tools, processes and other helpful tips.",
+    "icon": "class",
+    "url": "https://wiki.hsbne.org",
+    "btn_text": "Read Wiki"
+  },
+  {
+    "title": "Trello",
+    "description": "We use Trello for task management. If you want to help out around the space check out Trello for stuff to fix and improve.",
+    "icon": "view_list",
+    "url": "https://trello.com/b/xxxxxxx/inbox",
+    "btn_text": "Visit Trello"
+  },
+  {
+    "title": "Report Issue",
+    "description": "Found something broken at HSBNE that you don't have the time or skills to fix? You can submit an issue report.",
+    "icon": "bug_report",
+    "url": "/issue/report/",
+    "btn_text": "Report Issue"
+  }
+]
 ```

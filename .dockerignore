@@ -3,4 +3,4 @@ venv
 frontend/node_modules
 frontend/dist
 frontend/src-*
-memberportal/docker_dev
+*.sqlite3
