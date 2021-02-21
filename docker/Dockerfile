@@ -12,8 +12,8 @@ ADD . /usr/src/app/
 WORKDIR /usr/src/app/
 
 # Install nginx and other build dependencies
-RUN apk update --no-cache \
-    && apk add --no-cache make gcc g++ musl-dev libffi-dev openssl-dev zlib-dev jpeg-dev openrc cargo nginx vips-dev python2 python3=3.8.7-r0 python3-dev=3.8.7-r0 py3-pip=20.3.4-r0 nodejs=14.15.5-r0 npm=14.15.5-r0  \
+RUN apk update \
+    && apk add make gcc g++ musl-dev libffi-dev openssl-dev zlib-dev jpeg-dev bash libpng-dev openrc cargo nginx vips-dev python2 python3 python3-dev py3-pip nodejs npm  \
     # Create some base folders for everything
     && mkdir -p /usr/src/app/frontend && mkdir /usr/src/logs && mkdir /usr/src/data \
 
@@ -35,7 +35,7 @@ RUN apk update --no-cache \
     && rm -rf .npmrc node_modules/ \
 
     # Remove build deps we don't need anymore
-    && apk del --no-cache --purge make gcc g++ musl-dev libffi-dev openssl-dev zlib-dev jpeg-dev cargo vips-dev python2 python3-dev npm \
+    && apk del --no-cache --purge make gcc g++ musl-dev libffi-dev openssl-dev zlib-dev jpeg-dev bash libpng-dev cargo vips-dev python2 python3-dev npm \
     && rm -rf /var/cache/apk/* \
 
     # Expose the port and run the app
