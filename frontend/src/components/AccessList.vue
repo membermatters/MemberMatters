@@ -128,6 +128,7 @@ export default {
       return this.memberId ? this.access.interlocks : this.interlockAccess;
     },
   },
+  
   watch: {
     memberId() {
       this.getMemberAccess();

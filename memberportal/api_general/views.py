@@ -66,6 +66,7 @@ class GetConfig(APIView):
             },
             "images": {
                 "siteLogo": config.SITE_LOGO,
+                "statsCard": config.STATS_CARD_IMAGE,
                 "siteFavicon": config.SITE_FAVICON,
             },
             "homepageCards": json.loads(config.HOME_PAGE_CARDS),
