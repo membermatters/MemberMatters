@@ -9,33 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Stripe billing for membership payments
 
-## Template
-
-## [vMajor.Minor.Patch] - 2021-02-17
+## [v2.1.2] - 2021-02-26
 
 ### Added
 
-- for new features.
+- configurable dashboard stats card image.
 
 ### Changed
 
-- for changes in existing functionality.
-
-### Deprecated
-
-- for soon-to-be removed features.
-
-### Removed
-
-- for now removed features.
-
-### Fixed
-
-- for any bug fixes.
-
-### Security
-
-- in case of vulnerabilities.
+- updated default/example dashboard cards and icons.
 
 ## [v2.1.1] - 2021-02-22
 
@@ -90,3 +72,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Versions prior to v2.1.0 don't have changelog entries
 
 - For these versions, please see the git commit history for changes.
+
+# Template
+
+## [vMajor.Minor.Patch] - 2021-02-17
+
+### Added
+
+- for new features.
+
+### Changed
+
+- for changes in existing functionality.
+
+### Deprecated
+
+- for soon-to-be removed features.
+
+### Removed
+
+- for now removed features.
+
+### Fixed
+
+- for any bug fixes.
+
+### Security
+
+- in case of vulnerabilities.
