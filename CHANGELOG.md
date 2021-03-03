@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Stripe billing for membership payments
 
+## [v2.1.3] - 2021-03-03
+
+### Fixed
+
+- out of date packge-lock.json
+- minor dependency updates
+- removed sentry configuration
+
 ## [v2.1.2] - 2021-02-26
 
 ### Added
