@@ -11,6 +11,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
 const { configure } = require("quasar/wrappers");
+const PROICONS = true;
 
 module.exports = configure((ctx) => ({
   // https://quasar.dev/quasar-cli/supporting-ts
@@ -61,7 +62,7 @@ module.exports = configure((ctx) => ({
     env: {
       // Set this to false to disable fontawesome pro icons. You need to configure your .npmrc
       // file as per the font awesome pro instructions to download and use FA pro icons.
-      proIcons: true,
+      proIcons: PROICONS,
 
       // When running with capacitor this value is used for the base URL for all API requests
       apiBaseUrl: process.env.API_BASE_URL,
@@ -139,7 +140,7 @@ module.exports = configure((ctx) => ({
       dark: "auto", // or Boolean true/false
       loadingBar: { color: "accent" },
     },
-    iconSet: "fontawesome-v5-pro", // Quasar icon set
+    iconSet: PROICONS ? "fontawesome-v5-pro" : "fontawesome-v5", // Quasar icon set
 
     // Possible values for "importStrategy":
     // * 'auto' - (DEFAULT) Auto-import needed Quasar components & directives

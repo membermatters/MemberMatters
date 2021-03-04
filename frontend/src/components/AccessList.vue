@@ -21,7 +21,7 @@
             top
           >
             <q-avatar
-              icon="fad fa-door-open"
+              :icon="icons.doorOpen"
               :color="door.access ? 'green' : 'red'"
               text-color="white"
             />
@@ -69,7 +69,7 @@
             top
           >
             <q-avatar
-              icon="fad fa-tools"
+              :icon="icons.interlock"
               :color="interlock.access ? 'green' : 'red'"
               text-color="white"
             />
@@ -103,6 +103,7 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import RefreshDataDialog from "./RefreshDataDialog";
+import icons from "@icons";
 
 export default {
   name: "AccessList",
@@ -121,6 +122,9 @@ export default {
   },
   computed: {
     ...mapGetters("profile", ["doorAccess", "interlockAccess"]),
+    icons() {
+      return icons;
+    },
     doors() {
       return this.memberId ? this.access.doors : this.doorAccess;
     },
