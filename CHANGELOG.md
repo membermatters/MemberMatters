@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Stripe billing for membership payments
 
+## [v2.1.4] - 2021-03-04
+
+### Fixed
+
+- documentation regarding font awesome icons
+- free font awesome icon usage bugs
+
 ## [v2.1.3] - 2021-03-03
 
 ### Fixed
