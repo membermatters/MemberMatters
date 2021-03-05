@@ -16,13 +16,13 @@ $hsbneprimary: #ffb629
 $hsbnetoolbar: #f14400
 $hsbneaccent: #189ab4
 
-$defaultprimary: #278ab0
-$defaulttoolbar: #0461b1
-$defaultaccent: #189ab4
+$defaultprimary: var(--q-color-primary)
+$defaulttoolbar: var(--q-color-toolbar)
+$defaultaccent: var(--q-color-accent)
 
-$primary: $defaultprimary
-$toolbar: $defaulttoolbar
-$accent: $hsbneaccent
+$primary: if($defaultprimary, $defaultprimary, #278ab0)
+$toolbar: if($defaulttoolbar, $defaulttoolbar, #0461b1)
+$accent: if($defaultaccent, $defaultaccent, #189ab4)
 
 $positive: #18a558
 $success: $positive

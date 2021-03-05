@@ -47,7 +47,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("config", ["siteName", "keys", "features"]),
+    ...mapGetters("config", ["siteName", "keys", "features", "theme"]),
     ...mapGetters("profile", ["loggedIn"]),
   },
   watch: {
@@ -133,6 +133,9 @@ export default {
           if (this.features.stripe.enabled) {
             Vue.prototype.$stripe = loadStripe(this.keys.stripePublishableKey);
           }
+          colors.setBrand("primary", this.theme.themePrimary);
+          colors.setBrand("toolbar", this.theme.themeToolbar);
+          colors.setBrand("accent", this.theme.themeAccent);
         })
         .catch(() => {
           console.error("Unable to get portal config!");

@@ -19,6 +19,7 @@ export default {
     kioskId: null,
     kioskIp: null,
     images: {},
+    theme: {}
   },
   getters: {
     siteName: (state) => state.siteName,
@@ -34,6 +35,7 @@ export default {
     kioskId: (state) => state.kioskId,
     kioskIp: (state) => state.kioskIp,
     images: (state) => state.images,
+    theme: (state) => state.theme,
   },
   mutations: {
     setSiteName (state, payload) {
@@ -57,7 +59,7 @@ export default {
     setMaxGroups (state, payload) {
       state.maxGroups = payload;
     },
-    setmemberTypes (state, payload) {
+    setMemberTypes (state, payload) {
       state.memberTypes = payload;
     },
     setKeys (state, payload) {
@@ -75,6 +77,9 @@ export default {
     setImages (state, payload) {
       state.images = payload;
     },
+    setTheme (state, payload) {
+      state.theme = payload;
+    },
   },
   actions: {
     getSiteConfig ({ commit }) {
@@ -88,10 +93,11 @@ export default {
             commit("setWebcamLinks", result.data.webcamLinks);
             commit("setGroups", result.data.groups);
             commit("setMaxGroups", result.data.maxGroups);
-            commit("setmemberTypes", result.data.memberTypes);
+            commit("setMemberTypes", result.data.memberTypes);
             commit("setKeys", result.data.keys);
             commit("setFeatures", result.data.features);
             commit("setImages", result.data.images);
+            commit("setTheme", result.data.theme);
             const { analyticsId } = result.data;
 
             if (analyticsId) {
