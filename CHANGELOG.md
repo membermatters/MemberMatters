@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Stripe billing for membership payments
 
+## [v2.1.5] - 2021-03-06
+
+### Fixed
+
+- .dockerignore bug
+- added note about nvm/ubuntu dependency
+
 ## [v2.1.4] - 2021-03-04
 
 ### Fixed
