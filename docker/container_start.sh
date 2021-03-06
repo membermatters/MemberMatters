@@ -7,11 +7,11 @@ nginx
 cd memberportal
 
 # We should migrate on startup in case there's been any db changes
-python manage.py migrate
+python3 manage.py migrate
 
 if [ ! -f /usr/src/data/setupcomplete ]; then
     echo "INFO: Detected a first time run. Populating the database with defaults."
-    python manage.py loaddata initial
+    python3 manage.py loaddata initial
     touch /usr/src/data/setupcomplete
 fi
 

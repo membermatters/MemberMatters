@@ -6,12 +6,35 @@ The frontend software is a modern JavaScript SPA. It utilises Vue.js, Webpack, N
 The frontend can be built into a normal SPA web app, a semi native iOS and Android app, and a desktop "kiosk" mode.
 
 # Getting Started
+### Node
+Ensure you have nvm (node version manager) installed. Once you've installed nvm install node 14 with `node install 14`.
 
-Ensure you have nvm (node version manager) installed.
+### Ubuntu
+If you're using Ubuntu, you may need to install some dependencies with:
+
+`sudo apt install libpng-dev`
+
+### Fontawesome icons
+By default, this project uses font awesome **pro** icons. These have many more icons, duotone and brand versions, etc. If you don't want to pay for a pro license, you can revert to the free icons.
+
+#### Pro icons
+You should review the official Font Awesome documentation about using npm with pro icons available [here](https://fontawesome.com/how-to-use/on-the-web/setup/using-package-managers#installing-pro). Once setup, you should be able to continue installing dependencies and follow the rest of this guide.
+
+#### Free icons
+To disable the pro icons, you need to make a few changes.
+
+`src/boot/fontawesome-pro.ts` - In this file, comment out the lines in the pro section, and uncomment the lines in the free section.
+
+`quasar.conf.js` - Near the top of this file, change `const PROICONS = true;` to `const PROICONS = false;`.
+
+`package.json` - remove the line that says `"@fortawesome/fontawesome-pro": "^5.13.0",` (the version may be different).
+
 ## Install the dependencies
 ```bash
 npm install
 ```
+
+**Note:** please see the section above about configuring Font Awesome icons. You will run into issues if you don't correctly configure them.
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
@@ -46,7 +69,7 @@ npm run icons:bg
 ```
 
 
-### Contributing Guidelines
+## Contributing Guidelines
 This frontend project uses the Quasar framework for components and building/config. All source code
 can be found in the `src` folder.
 
@@ -55,12 +78,12 @@ does not pass the linter. It is recommended that you setup some sort of file wat
 that automatically runs `eslint --fix <changed_file>`. You should also set up your IDE to show
 you eslint errors or warnings (most can do this).
 
-#### Routing and menu config
+### Routing and menu config
 In the file `pages/pageAndRouteConfig.js` you'll find an object. This is where all of our routes
 and main menu pages, page titles and components are specified. If you'd like to add a new page you
 must add it to this file. Currently pages one level deep are supported under the `children` property.
 
-##### Example
+#### Example
 ```
 {
     title: 'Dashboard', // this is the page title

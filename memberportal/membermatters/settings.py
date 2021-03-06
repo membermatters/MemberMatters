@@ -37,13 +37,8 @@ CORS_ORIGIN_WHITELIST = [
 if os.environ.get("PORTAL_ENV") == "Production":
     ENVIRONMENT = "Production"
     DEBUG = False
-    ALLOWED_HOSTS = [
-        os.environ.get("PORTAL_DOMAIN", "portal.example.org"),
-        os.environ.get("PORTAL_DOMAIN_KIOSK", "kiosk.example.org"),
-        "localhost",
-    ]
     CORS_ORIGIN_WHITELIST = [
-        "https://" + os.environ.get("PORTAL_DOMAIN", "portal.example.org"),
+        os.environ.get("PORTAL_DOMAIN", "https://portal.example.org"),
         "capacitor://localhost",
         "http://localhost",
     ]
@@ -211,8 +206,6 @@ REQUEST_TIMEOUT = 0.05
 # Django constance configuration
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
 
-CONSTANCE_ADDITIONAL_FIELDS = {"image_field": ["django.forms.ImageField", {}]}
-
 CONSTANCE_CONFIG = {
     # General site info
     "SITE_NAME": (
@@ -255,10 +248,17 @@ CONSTANCE_CONFIG = {
         "The URL members should visit to book in for a site induction.",
     ),
     # Logo and favicon
-    "SITE_LOGO": ("", "Site logo (rectangular)"),
+    "SITE_LOGO": (
+        "https://hsbne-public-assets.s3-ap-southeast-2.amazonaws.com/main-logo.png",
+        "Site logo (rectangular)",
+    ),
     "SITE_FAVICON": (
-        "",
+        "https://hsbne-public-assets.s3-ap-southeast-2.amazonaws.com/logo-favicon.png",
         "Site favicon (square)",
+    ),
+    "STATS_CARD_IMAGE": (
+        "https://hsbne.org/assets/img/carousel/00.jpg",
+        "Image to use for the site statistics card.",
     ),
     # Localisation of terminology
     "MEMBERBUCKS_NAME": (
@@ -275,7 +275,25 @@ CONSTANCE_CONFIG = {
         "A JSON serialised array of URLs to pull webcam images from.",
     ),
     "HOME_PAGE_CARDS": (
-        '[{"title": "Example", "description": "Example", "icon": "forum", "url": "https://membermatters.org/", "btn_text": "Click Here"}]',
+        """[
+            {
+                "title": "Example",
+                "description": "This is an example card with a narwhal icon!",
+                "icon": "fad fa-narwhal",
+                "url": "https://membermatters.org/",
+                "btn_text": "Click Here"
+            },
+            {
+                "title": "Example 2",
+                "description": "This is an example card with a unicorn icon! And it links to another page using a Vue route!",
+                "icon": "fad fa-unicorn",
+                "routerLink": {
+                "name": "reportIssue"
+                },
+                "btn_text": "Go to route"
+            }
+           ]
+        """,
         "You can specify cards that go on the home page with JSON. See https://github.com/MemberMatters/MemberMatters/blob/master/GETTING_STARTED.md.",
     ),
     "WELCOME_EMAIL_CARDS": (
@@ -476,7 +494,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
         ),
         ("URLs", ("SITE_URL", "MAIN_SITE_URL", "INDUCTION_URL")),
         ("Memberbucks", ("MEMBERBUCKS_MAX_TOPUP", "MEMBERBUCKS_CURRENCY")),
-        ("Images", ("SITE_LOGO", "SITE_FAVICON")),
+        ("Images", ("SITE_LOGO", "SITE_FAVICON", "STATS_CARD_IMAGE")),
         (
             "Group Localisation",
             (

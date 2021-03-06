@@ -2,7 +2,7 @@
   <div class="row">
     <div class="q-pa-md col-12 col-sm-4">
       <q-card>
-        <img src="https://hsbne.org/assets/img/carousel/00.jpg" />
+        <img :src="images.statsCard" />
 
         <q-list>
           <q-item clickable>
@@ -61,6 +61,7 @@ export default {
     ...mapActions("tools", ["getStatistics"]),
   },
   computed: {
+    ...mapGetters("config", ["images"]),
     ...mapGetters("tools", ["statistics"]),
     icons() {
       return icons;

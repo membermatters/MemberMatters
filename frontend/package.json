@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "2.0.1",
+  "version": "2.1.5",
   "description": "The new MemberMatters frontend",
   "productName": "MemberMatters",
   "author": "Jaimyn Mayer <hello@jaimyn.com.au>",
@@ -22,6 +22,7 @@
   "dependencies": {
     "@capacitor/core": "^2.1.2",
     "@fortawesome/fontawesome-pro": "^5.13.0",
+    "@fortawesome/fontawesome-free": "^5.15.2",
     "@ionic/pwa-elements": "^3.0.1",
     "@quasar/extras": "^1.0.0",
     "@sentry/browser": "^5.16.1",
@@ -59,7 +60,7 @@
     "@vue/eslint-config-typescript": "^7.0.0",
     "babel-eslint": "^10.0.1",
     "devtron": "^1.4.0",
-    "electron": "^10.1.5",
+    "electron": "^10.4.0",
     "electron-debug": "^3.1.0",
     "electron-devtools-installer": "^3.0.0",
     "electron-packager": "^14.2.1",

@@ -339,8 +339,6 @@ class Profile(models.Model):
     phone = models.CharField(validators=[phone_regex], max_length=12, blank=True)
     state = models.CharField(max_length=11, default="noob", choices=STATES)
 
-    picture = models.ImageField(upload_to=path_and_rename, null=True, blank=True)
-
     member_type = models.ForeignKey(
         MemberTypes, on_delete=models.PROTECT, related_name="member_type"
     )
