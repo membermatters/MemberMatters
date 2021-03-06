@@ -74,6 +74,12 @@ class GetConfig(APIView):
                 "siteLogo": config.SITE_LOGO,
                 "statsCard": config.STATS_CARD_IMAGE,
                 "siteFavicon": config.SITE_FAVICON,
+                "menuBackground": config.MENU_BACKGROUND,
+            },
+            "theme": {
+                "themePrimary": config.THEME_PRIMARY,
+                "themeToolbar": config.THEME_TOOLBAR,
+                "themeAccent": config.THEME_ACCENT,
             },
             "homepageCards": json.loads(config.HOME_PAGE_CARDS),
             "webcamLinks": json.loads(config.WEBCAM_PAGE_URLS),

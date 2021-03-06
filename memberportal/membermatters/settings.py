@@ -260,6 +260,23 @@ CONSTANCE_CONFIG = {
         "https://hsbne.org/assets/img/carousel/00.jpg",
         "Image to use for the site statistics card.",
     ),
+    "MENU_BACKGROUND": (
+        "menu-bg/menu-bg.jpg",
+        "Image to use as the background in the menu. Can be specified as either a local asset in assets/img/ or full URL.",
+    ),
+    # Custom theme colors
+    "THEME_PRIMARY": (
+        "#278ab0",
+        "Custom primary theme colour"
+    ),
+    "THEME_TOOLBAR": (
+        "#0461b1",
+        "Custom toolbar theme colour"
+    ),
+    "THEME_ACCENT": (
+        "#189ab4",
+        "Custom accent theme colour"
+    ),
     # Localisation of terminology
     "MEMBERBUCKS_NAME": (
         "Memberbucks",
@@ -494,7 +511,8 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
         ),
         ("URLs", ("SITE_URL", "MAIN_SITE_URL", "INDUCTION_URL")),
         ("Memberbucks", ("MEMBERBUCKS_MAX_TOPUP", "MEMBERBUCKS_CURRENCY")),
-        ("Images", ("SITE_LOGO", "SITE_FAVICON", "STATS_CARD_IMAGE")),
+        ("Images", ("SITE_LOGO", "SITE_FAVICON", "STATS_CARD_IMAGE", "MENU_BACKGROUND")),
+        ("Theme", ("THEME_PRIMARY", "THEME_TOOLBAR", "THEME_ACCENT")),
         (
             "Group Localisation",
             (
