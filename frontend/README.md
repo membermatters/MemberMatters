@@ -6,8 +6,13 @@ The frontend software is a modern JavaScript SPA. It utilises Vue.js, Webpack, N
 The frontend can be built into a normal SPA web app, a semi native iOS and Android app, and a desktop "kiosk" mode.
 
 # Getting Started
+### Node
+Ensure you have nvm (node version manager) installed. Once you've installed nvm install node 14 with `node install 14`.
 
-Ensure you have nvm (node version manager) installed.
+### Ubuntu
+If you're using Ubuntu, you may need to install some dependencies with:
+
+`sudo apt install libpng-dev`
 
 ### Fontawesome icons
 By default, this project uses font awesome **pro** icons. These have many more icons, duotone and brand versions, etc. If you don't want to pay for a pro license, you can revert to the free icons.
