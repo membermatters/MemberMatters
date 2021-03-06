@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - Task queueing for non critical tasks like emails etc.
+
+## [v2.2.1] - 2021-03-06
+
+### Added
+
+- 𝔗𝔥𝔢𝔪𝔢𝔦𝔫𝔤 𝔰𝔲𝔭𝔭𝔬𝔯𝔱 🎨 (thanks @snoopen)
+
 ## [v2.2.0] - 2021-03-06
 
 ### Added
