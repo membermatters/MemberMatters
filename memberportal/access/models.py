@@ -75,6 +75,8 @@ class MemberbucksDevice(AccessControlledDevice):
 
 class Doors(AccessControlledDevice):
     class Meta:
+        verbose_name = "Doors"
+        verbose_name_plural = "Doors"
         permissions = [
             ("manage_doors", "Can manage doors"),
         ]

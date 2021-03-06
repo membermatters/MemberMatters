@@ -4,6 +4,10 @@ from django.db.models import Sum
 
 
 class MemberBucks(models.Model):
+    class Meta:
+        verbose_name = "Memberbucks"
+        verbose_name_plural = "Memberbucks"
+
     TRANSACTION_TYPES = (
         ("stripe", "Stripe Payment"),
         ("bank", "Bank Transfer"),
