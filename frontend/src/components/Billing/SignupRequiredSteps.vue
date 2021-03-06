@@ -234,6 +234,10 @@ export default defineComponent({
       if (this.inductionComplete) {
         clearInterval(this.interval);
       }
+
+      if (result.data.notRequired) {
+        this.step++;
+      }
     },
     async submitAccessCard() {
       this.accessCardLoading = true;

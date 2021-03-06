@@ -442,6 +442,7 @@ export default {
     errorMessageDescription: "Please include the error message below:"
   },
   tiers: {
+    disabledFeature: "Warning! This feature is disabled. You can make changes but your users won't be able to use it.",
     select: "Tier",
     selectToContinue: "Select a membership tier to continue.",
     selected: "Selected Membership Tier",

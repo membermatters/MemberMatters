@@ -218,6 +218,9 @@ class CheckInductionStatus(APIView):
     """
 
     def post(self, request):
+        if "induction" not in request.user.profile.can_signup():
+            return Response({"success": True, "score": 0, "notRequired": True})
+
         score = Canvas.get_student_score_for_course(
             config.INDUCTION_COURSE_ID, request.user.email
         )

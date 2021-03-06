@@ -37,7 +37,12 @@ class Canvas:
 
     def get_course_scores(self, course_id):
         students = self.get_course_details(course_id)
-        students = students["data"]["course"]["enrollmentsConnection"]["nodes"]
+        students = students.get("data")
+
+        if not students:
+            return {}
+
+        students = students["course"]["enrollmentsConnection"]["nodes"]
         scores = {}
 
         for student in students:
