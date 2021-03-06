@@ -41,7 +41,7 @@ Password: MemberMatters!
 
 The first thing you should do is change the email address and password of the default admin account.
 
-Once you've done this, your MemberMatters instance is ready for configuration. You should now head to [post installation steps](/docs/POST_INSTALL_STEPS.md) for important instructions on setting up and customising your instance.
+Once you've done this, your MemberMatters instance is ready for configuration. You should now head to [post installation steps](/docs/POST_INSTALL_STEPS) for important instructions on setting up and customising your instance.
 
 ### Deployment Tips
 
