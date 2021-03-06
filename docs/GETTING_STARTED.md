@@ -1,0 +1,82 @@
+### Getting Started
+
+> Note: MemberMatters only supports running in Docker on Linux. Installing Docker is outside the scope of this guide,
+> please consult your favourite search engine for tips.
+
+To get started, download the latest version from docker hub using the following command:
+
+```bash
+docker pull membermatters/membermatters
+```
+
+Create a file to contain all of your environment variables. This file contains sensitive information so treat it like a
+password! Place it somewhere you won't forget like `/usr/app/env.list`. This file is where Docker gets the environment
+variables from.
+
+```
+PORTAL_DOMAIN=https://demo.membermatters.org
+PORTAL_ENV=Production
+```
+
+Once you've downloaded the docker image and configured your environment variables, you'll need to create a container:
+
+```bash
+docker create -p 8000:8000 --name membermatters --restart always --env-file /usr/app/env.list -v /usr/app/:/usr/src/data membermatters/membermatters
+```
+
+After you've created the container you can start/stop/restart it with:
+
+```bash
+docker start membermatters
+docker stop membermatters
+docker restart membermatters
+```
+
+Once your container is running, you will be able to login with the default admin account details:
+
+```
+Email: default@example.com
+Password: MemberMatters!
+```
+
+The first thing you should do is change the email address and password of the default admin account.
+
+Once you've done this, your MemberMatters instance is ready for configuration. You should now head to [post installation steps](/docs/POST_INSTALL_STEPS.md) for important instructions on setting up and customising your instance.
+
+### Deployment Tips
+
+- MemberMatters runs on port 8000 by default. You should run a reverse proxy in front of it
+  so you can protect all traffic with HTTPS. Please consult your favourite search engine on how to setup a reverse proxy.
+  We recommend that you use nginx with let's encrypt.
+- MemberMatters is designed to run on site if you have any door, interlock or memberbucks devices. However, some parts
+  need reliable networking and internet to function. Please keep this in mind and make sure you perform thorough
+  testing before relying on it.
+
+### Updating your instance
+
+Docker containers are meant to be disposable, so you'll need to delete it and make a fresh one from the latest image.
+We suggest writing a bash script like the one below:
+
+```bash
+echo "checking for new docker image"
+docker pull membermatters/membermatters
+echo "Stopping the docker container"
+docker stop membermatters
+echo "Removing the old docker container"
+docker rm membermatters
+echo "Creating new docker container"
+docker create -p 8000:8000 --name membermatters --restart always --detach --env-file /usr/app/env.list -v /usr/app/:/usr/src/data membermatters/membermatters
+echo "Running new docker container"
+docker start membermatters
+```
+
+### Kiosk Mode
+
+MemberMatters also offers a kiosk mode. You can build this by running `npm run build:electron` after reading through the development instructions in the `frontend` folder. At this time, we do not offer precompiled binaries for download. This command 
+will compile an electron based application that you can run on a machine set up as a kiosk. For
+security reasons, kiosk builds will only have limited profile functionality and are primarily meant
+to allow members to sign in/out of site and use basic features of MemberMatters.
+
+#### Linux
+
+You may need to install ffmpeg and a chromium run time.

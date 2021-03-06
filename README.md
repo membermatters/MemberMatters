@@ -18,8 +18,11 @@ The following features have now been deprecated and will be removed in a future 
 * Xero integration
 
 ## Getting Started
-See the [getting started](/GETTING_STARTED.md) instructions for how to run the MemberMatters software for your 
-organisation.
+See the [getting started](/docs/GETTING_STARTED.md) instructions for how to run the MemberMatters software for your 
+organisation. Once you've finished installing MemberMatters, your should read the [post installation steps](/docs/POST_INSTALL_STEPS.md) for important instructions on setting up and customising your instance.
+
+### Compatibility
+Currently, MemberMatters is only officially supported on the latest LTS release of Ubuntu Server. Being Docker, you should be able to run it on various other platforms, but minimal support will be available. We currently offer AMD64, ARM64 and ARMv7 builds on Dockerhub.
 
 ## Updates and Releases
 The official changelog is available on the website [here](https://membermatters.org/CHANGELOG). You will also find each release [here](https://github.com/membermatters/MemberMatters/releases) on GitHub.

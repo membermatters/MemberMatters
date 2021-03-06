@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Stripe billing for membership payments
+- Task queueing for non critical tasks like emails etc.
+## [v2.2.0] - 2021-03-06
+
+### Added
+
+- stripe billing payments
 
 ## [v2.1.5] - 2021-03-06
 
