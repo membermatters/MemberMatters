@@ -22,9 +22,10 @@ class Migration(migrations.Migration):
                     ("noob", "Needs Induction"),
                     ("active", "Active"),
                     ("inactive", "Inactive"),
+                    ("accountonly", "Account only (ie for SSO access)"),
                 ],
                 default="noob",
-                max_length=8,
+                max_length=11,
             ),
         ),
     ]

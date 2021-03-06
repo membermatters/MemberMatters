@@ -39,6 +39,7 @@ export default {
     membershipTier: "Membership Tier",
 
     Error404: "Page Not Found",
+    Error403: "Error 403",
   },
   dashboard: {
     usefulResources: "Useful Resources",
@@ -131,6 +132,7 @@ export default {
     passwordNotMatch: "Sorry, but your passwords don't match.",
     cannotBeEmpty: "This field cannot be empty.",
     futureDate: "Date must be today or in the future.",
+    tooMany: "Sorry, the maximum is {number}."
   },
   access: {
     pageDescription: "Your access permissions for doors and interlocks are shown below. Please "
@@ -323,12 +325,14 @@ export default {
   failed: "Action failed",
   success: "Action was successful",
   warning: "Warning",
+  confirm: "Confirm",
   confirmAction: "Confirm Action",
   confirmRemove: "Are you sure you want to remove this?",
   edit: "Edit",
   delete: "Delete",
   dataRefreshWarning: "There was an error fetching new data. Any data that you see may not be up "
     + "to date.",
+  progress: "Progress: {percent}%",
   adminTools: {
     emailAddresses: "Email Addresses",
     exportCsv: "Export CSV",
@@ -403,7 +407,7 @@ export default {
     },
     signupFailed: "Signup failed",
     signupSuccess: "Signup success",
-    signupSuccessDescription: "Your signup was processed successfully. Please check your email for further steps.",
+    signupSuccessDescription: "Your payment was processed successfully. This page will refresh in a moment.",
     cancelButton: "Cancel my membership",
     cancelConfirmDescription: "Are you sure you want to cancel your membership? Your membership will remain active until the end of your current billing period. You can resume it at any point before the end of your current billing period.",
     cancelSuccessDescription: "Your plan was cancelled. This page will reload in a moment.",
@@ -417,11 +421,28 @@ export default {
     subscriptionInfo: "Subscription Info",
   },
   signup: {
-    requiredSteps: "You must complete the following steps before you can select a membership tier.",
+    induction: "Induction",
+    requiredSteps: "You must complete the following steps before your membership application can be submitted.",
     completeInduction: "Complete an induction",
-    registerAccessCard: "Regist your access card"
+    completedInduction: "Induction completed",
+    registerAccessCard: "Register your access card",
+    completeInductionDescription: "Complete your induction via Canvas by clicking the button below. Keep this page open and come back to it once you're finished.",
+    emailWarning: "Please use the same email address you used during signup ({email}) or your progress won't sync.",
+    waitingCompletion: "Waiting for completion...",
+    accessCard: "Access Card",
+    accessCardNumber: "Access Card Number",
+    assignAccessCard: "Assign your access card",
+    assignAccessCardDescription: "Please enter your access card number below.",
+    assignAccessCardWarning: "Double check before continuing as you will need to contact us to change it.",
+    submitted: "Membership application submitted",
+    submittedDescription: "Your membership application has been submitted and you are now a 'member applicant'. Your membership will be officially accepted after 7 days, but we have granted site access immediately. You will receive an email confirming that your access card has been enabled. If for some reason your membership is rejected within this period, you will receive an email with further information.",
+    continueToDashboard: "Continue to dashboard",
+    error: "Error submitting membership application",
+    errorDescription: "We're very sorry but there was an unexpected error when submitting your application. Please contact us at {email} for assistance.",
+    errorMessageDescription: "Please include the error message below:"
   },
   tiers: {
+    disabledFeature: "Warning! This feature is disabled. You can make changes but your users won't be able to use it.",
     select: "Tier",
     selectToContinue: "Select a membership tier to continue.",
     selected: "Selected Membership Tier",
@@ -432,9 +453,10 @@ export default {
     add: "Add a new tier",
     becomeMember: "Become a member",
     confirm: "Please confirm your selected membership tier and plan. By continuing you agree to pay for your selected plan using the provided credit card. Your first payment will be collected today, and future payments of {intervalDescription}.",
-    confirmDelay: "Your membership application will be submitted after payment is received. Site access will be granted as soon as you complete your membership induction in the next step. Your membership application will be provisionally accepted straight away, and officially accepted after 7 days.",
-    finish: "Finish Signup",
+    confirmDelay: "Your membership application will be submitted after you complete the next steps.",
+    finish: "Pay & Continue",
     plansFrom: "From {plan}",
+    skipSignup: "Skip Signup (if you just want an account)"
   },
   tierForm: {
     fail: "Failed to add a new tier.",

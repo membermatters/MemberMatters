@@ -297,6 +297,7 @@ class Profile(models.Model):
         ("noob", "Needs Induction"),
         ("active", "Active"),
         ("inactive", "Inactive"),
+        ("accountonly", "Account only (ie for SSO access)"),
     )
 
     SUBSCRIPTION_STATES = (
@@ -336,7 +337,7 @@ class Profile(models.Model):
         "Up to 12 characters allowed.",
     )
     phone = models.CharField(validators=[phone_regex], max_length=12, blank=True)
-    state = models.CharField(max_length=8, default="noob", choices=STATES)
+    state = models.CharField(max_length=11, default="noob", choices=STATES)
 
     member_type = models.ForeignKey(
         MemberTypes, on_delete=models.PROTECT, related_name="member_type"
@@ -445,6 +446,10 @@ class Profile(models.Model):
         self.save()
         return True
 
+    def set_account_only(self):
+        self.state = "accountonly"
+        self.save()
+
     def email_profile_to(self, to_email):
         groups = self.groups.all()
         groups_string = "none :("
@@ -500,7 +505,7 @@ class Profile(models.Model):
         return self.save()
 
     def update_last_induction(self):
-        self.last_seen = timezone.now()
+        self.last_induction = timezone.now()
         return self.save()
 
     def get_xero_contact(self):
@@ -577,7 +582,7 @@ class Profile(models.Model):
         doors = []
         interlocks = []
 
-        user_active = not (self.state == "inactive" or self.state == "noob")
+        user_active = self.state == "active"
 
         # if the method got doors, use them, otherwise query them
         for door in Doors.objects.all():
@@ -605,12 +610,9 @@ class Profile(models.Model):
         """Checks if a member can signup. Returns {"success": True/False, "reasons": [String<list of reasons>]}"""
         required_steps = []
 
-        if self.membership_plan:
-            required_steps.append("existingPlan")
-
         # check if they were inducted recently enough
         last_inducted = self.last_induction
-        furthest_previous_date = datetime.now() - timedelta(
+        furthest_previous_date = timezone.now() - timedelta(
             days=config.MAX_INDUCTION_DAYS
         )
 
@@ -622,7 +624,7 @@ class Profile(models.Model):
         # if we require an rfid card to sign up
         if config.REQUIRE_ACCESS_CARD:
             # check if they have an RFID card assigned
-            if not len(self.rfid):
+            if self.rfid == None or not len(self.rfid):
                 required_steps.append("accessCard")
 
         if len(required_steps):

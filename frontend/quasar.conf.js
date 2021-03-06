@@ -107,6 +107,7 @@ module.exports = configure((ctx) => ({
         "@icons": path.resolve(__dirname, "src/icons/"),
         "@store": path.resolve(__dirname, "src/store/"),
         "@mixins": path.resolve(__dirname, "src/mixins/"),
+        "@assets": path.resolve(__dirname, "src/assets/"),
       };
     },
   },

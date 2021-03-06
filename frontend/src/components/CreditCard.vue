@@ -76,6 +76,7 @@ export default {
   border-radius: 10px
 
   .my-card-inner
+    color: white
     position: absolute
     width: 100%
     height: 100%

@@ -107,7 +107,7 @@
           }}
         </div>
 
-        <div v-if="step > 2" class="text-subtitle2 q-py-md">
+        <p v-if="step > 2" class="q-py-md">
           {{
             $t("tiers.confirm", {
               intervalDescription: $t("paymentPlans.intervalDescription", {
@@ -124,7 +124,7 @@
               }),
             })
           }}
-        </div>
+        </p>
 
         <div class="text-subtitle2 q-pb-md">
           {{ $t("tiers.confirmDelay") }}
@@ -155,10 +155,16 @@
         </div>
       </q-step>
     </q-stepper>
+    <div class="text-center">
+      <p @click="skipSignup" style="text-decoration: underline">
+        {{ $tc("tiers.skipSignup") }}
+      </p>
+    </div>
   </div>
 </template>
 
 <script>
+import { mapActions } from "vuex";
 import { defineComponent } from "@vue/composition-api";
 import TierCard from "@components/Billing/TierCard.vue";
 import PlanCard from "@components/Billing/PlanCard.vue";
@@ -192,10 +198,32 @@ export default defineComponent({
     this.getTiers();
   },
   methods: {
+    ...mapActions("profile", ["getProfile"]),
     getTiers() {
       this.$axios.get("/api/billing/tiers/").then((response) => {
         this.tiers = response.data;
       });
+    },
+    skipSignup() {
+      this.$axios
+        .post("/api/billing/skip-signup/")
+        .then(async (response) => {
+          if (response.data.success) {
+            await this.getProfile();
+            this.$router.push({ name: "dashboard" });
+          } else {
+            this.$q.dialog({
+              title: this.$t("error.requestFailed"),
+              message: this.$t("error.contactUs"),
+            });
+          }
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t("error.requestFailed"),
+            message: this.$t("error.contactUs"),
+          });
+        });
     },
     finishSignup() {
       this.disableFinish = true;

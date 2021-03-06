@@ -1,4 +1,5 @@
 from profile.models import Profile
+from access.models import Doors, Interlock
 from api_admin_tools.models import *
 
 from rest_framework import status, permissions
@@ -6,11 +7,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import stripe
+from services import canvas
+from services.email import send_email_to_admin
 from constance import config
 from datetime import datetime, timedelta
-from membermatters.helpers import log_user_event, log_event
+from membermatters.helpers import log_user_event
 
 stripe.api_key = config.STRIPE_SECRET_KEY
+Canvas = canvas.Canvas()
 
 
 class MemberBucksAddCard(APIView):
@@ -137,8 +141,6 @@ class MemberTiers(APIView):
     get: gets a list of all member tiers.
     """
 
-    permission_classes = (permissions.IsAdminUser,)
-
     def get(self, request):
         tiers = MemberTier.objects.filter(visible=True)
         formatted_tiers = []
@@ -192,6 +194,107 @@ class CanSignup(APIView):
         return Response(request.user.profile.can_signup())
 
 
+class AssignAccessCard(APIView):
+    """
+    post: assigns the access card to the member - can ony be called if they don't have one.
+    """
+
+    def post(self, request):
+        profile = request.user.profile
+
+        if not profile.rfid:
+            profile.rfid = request.data["accessCard"]
+            profile.save()
+
+            return Response({"success": True})
+
+        else:
+            return Response({"success": False}, status=status.HTTP_403_FORBIDDEN)
+
+
+class CheckInductionStatus(APIView):
+    """
+    post: checks if the member has completed the induction (via the canvas API).
+    """
+
+    def post(self, request):
+        if "induction" not in request.user.profile.can_signup():
+            return Response({"success": True, "score": 0, "notRequired": True})
+
+        score = Canvas.get_student_score_for_course(
+            config.INDUCTION_COURSE_ID, request.user.email
+        )
+        if score:
+            induction_passed = score >= config.MIN_INDUCTION_SCORE
+
+            if induction_passed:
+                request.user.profile.update_last_induction()
+
+                return Response({"success": True, "score": score})
+
+        return Response({"success": False, "score": score})
+
+
+def send_submitted_application_emails(member):
+    subject = "Your membership application has been submitted"
+    title = subject
+    message = "Thanks for submitting your membership application! Your membership application has been submitted and you are now a 'member applicant'. Your membership will be officially accepted after 7 days, but we have granted site access immediately. You will receive an email confirming that your access card has been enabled. If for some reason your membership is rejected within this period, you will receive an email with further information."
+    member.user.email_notification(subject, title, "", message)
+
+    subject = f"A new person just became a member applicant: {member.get_full_name()}"
+    title = subject
+    message = f"{member.get_full_name()} just completed all steps required to sign up and is now a member applicant. Their site access has been enabled and membership will automatically be accepted within 7 days without objection from the executive."
+    send_email_to_admin(subject, title, message)
+
+
+class CompleteSignup(APIView):
+    """
+    post: completes the member's signup if they have completed all requirements and enables access
+    """
+
+    def post(self, request):
+        member = request.user.profile
+        signupCheck = member.can_signup()
+
+        if member.state == "active":
+            return Response({"success": False, "message": "signup.existingMember"})
+
+        elif signupCheck["success"]:
+            member.activate()
+            send_submitted_application_emails(member)
+
+            # give default door access
+            for door in Doors.objects.filter(all_members=True):
+                member.doors.add(door)
+
+            # give default interlock access
+            for interlock in Interlock.objects.filter(all_members=True):
+                member.interlocks.add(interlock)
+
+            member.user.email_welcome()
+
+            return Response({"success": True})
+
+        return Response(
+            {
+                "success": False,
+                "message": "signup.requirementsNotMet",
+                "items": signupCheck["requiredSteps"],
+            }
+        )
+
+
+class SkipSignup(APIView):
+    """
+    post: skips the billing/tier signup process if they just want an account
+    """
+
+    def post(self, request):
+        request.user.profile.set_account_only()
+
+        return Response({"success": True})
+
+
 class SubscriptionInfo(APIView):
     """
     get: retrieves information about the members subscription.
@@ -201,7 +304,7 @@ class SubscriptionInfo(APIView):
         current_plan = request.user.profile.membership_plan
 
         if not current_plan:
-            return Response({"success": False}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"success": False})
 
         else:
             s = stripe.Subscription.retrieve(
@@ -313,13 +416,15 @@ class StripeWebhook(APIView):
                 # if the invoice was paid and the member isn't active, then activate them
                 subject = "Your payment was successful."
                 title = subject
-                preheader = ""
-                message = "Thanks for making a payment via our automated billing system. You will receive another email shortly confirming that your access has been enabled, or if any additional steps are required to be completed."
+                message = "Thanks for making your first membership payment. Once you have completed all steps required to become a member, you will receive an email confirmation."
+                member.user.email_notification(subject, title, "", message)
 
-                member.user.email_notification(subject, title, preheader, message)
-                member.activate()
                 member.subscription_status = "active"
                 member.save()
+
+                # if the member isn't signing up for the first time
+                if member.state != "noob":
+                    send_submitted_application_emails(member)
 
                 # in all other instances, we don't care about the event and can ignore it
 
@@ -348,5 +453,10 @@ class StripeWebhook(APIView):
             member.stripe_subscription_id = None
             member.subscription_status = "inactive"
             member.save()
+
+            subject = f"The membership for {member.get_full_name()} was just cancelled"
+            title = subject
+            message = f"The subscription for {member.get_full_name()} was deleted so their membership has been cancelled. Their site access has been turned off."
+            send_email_to_admin(subject, title, message)
 
         return Response()

@@ -311,9 +311,9 @@ CONSTANCE_CONFIG = {
         "[1000, 2000, 3000]",
         "This is a JSON array of top-up amounts in cents.",
     ),
-    "ENABLE_MEMBERBUCKS_STRIPE_INTEGRATION": (
+    "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS": (
         False,
-        "Enable integration with stripe for adding memberbucks.",
+        "Enable integration with stripe for membership payments.",
     ),
     # Trello config
     "ENABLE_TRELLO_INTEGRATION": (
@@ -413,9 +413,25 @@ CONSTANCE_CONFIG = {
         "PLEASE_CHANGE_ME",
         "The API key used to send email with Sendgrid.",
     ),
+    "MAX_GROUPS": (
+        3,
+        "The maximum number groups allowed to be selected during signup.",
+    ),
+    "INDUCTION_ENROL_LINK": (
+        "",
+        "The link that a member can use to enrol into an induction.",
+    ),
+    "INDUCTION_COURSE_ID": (
+        "",
+        "Canvas course id for the induction.",
+    ),
     "MAX_INDUCTION_DAYS": (
         180,
         "The maximum amount of days since a member was last inducted before they have to complete another induction (0 to disable).",
+    ),
+    "MIN_INDUCTION_SCORE": (
+        99,
+        "The minimum score to consider an induction as passed (0-100).",
     ),
     "REQUIRE_ACCESS_CARD": (
         True,
@@ -424,6 +440,10 @@ CONSTANCE_CONFIG = {
     "DEFAULT_MEMBER_TYPE": (
         1,
         "The ID of the member type to assign new members to by default.",
+    ),
+    "CANVAS_API_TOKEN": (
+        "PLEASE_CHANGE_ME",
+        "Canvas API token.",
     ),
 }
 
@@ -437,13 +457,27 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "ENTITY_TYPE",
                 "GOOGLE_ANALYTICS_PROPERTY_ID",
                 "API_SECRET_KEY",
-                "SENDGRID_API_KEY",
                 "DEFAULT_MEMBER_TYPE",
             ),
         ),
         (
             "Signup",
-            ("MAX_INDUCTION_DAYS", "REQUIRE_ACCESS_CARD"),
+            (
+                "INDUCTION_ENROL_LINK",
+                "INDUCTION_COURSE_ID",
+                "MAX_INDUCTION_DAYS",
+                "MIN_INDUCTION_SCORE",
+                "REQUIRE_ACCESS_CARD",
+                "MAX_GROUPS",
+            ),
+        ),
+        (
+            "Canvas Integration",
+            ("CANVAS_API_TOKEN",),
+        ),
+        (
+            "Sendgrid Integration",
+            ("SENDGRID_API_KEY",),
         ),
         (
             "Contact Information",
@@ -478,7 +512,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "STRIPE_PUBLISHABLE_KEY",
                 "STRIPE_SECRET_KEY",
                 "STRIPE_WEBHOOK_SECRET",
-                "ENABLE_MEMBERBUCKS_STRIPE_INTEGRATION",
+                "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS",
                 "STRIPE_MEMBERBUCKS_TOPUP_OPTIONS",
             ),
         ),

@@ -6,7 +6,7 @@ from group.models import Group
 from api_meeting.models import Meeting
 from constance import config
 from membermatters.helpers import log_user_event
-from profile.emailhelpers import send_single_email
+from services.email import send_single_email
 from random import shuffle
 import requests
 import datetime

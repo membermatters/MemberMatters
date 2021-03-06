@@ -1,4 +1,5 @@
 import icons from "../icons";
+import store from "../store";
 
 const PageAndRouteConfig = [
   {
@@ -154,6 +155,7 @@ const PageAndRouteConfig = [
     name: "memberTools",
     loggedIn: true,
     kiosk: true,
+    memberOnly: true,
     children: [
       {
         icon: icons.reportIssue,
@@ -169,6 +171,7 @@ const PageAndRouteConfig = [
         name: "proxy",
         loggedIn: true,
         kiosk: true,
+        memberOnly: true,
         component: () => import("pages/Proxy"),
       },
       {
@@ -177,6 +180,7 @@ const PageAndRouteConfig = [
         name: "groupMembers",
         loggedIn: true,
         kiosk: true,
+        memberOnly: true,
         component: () => import("pages/MemberGroups"),
       },
       {
@@ -185,6 +189,7 @@ const PageAndRouteConfig = [
         name: "recentSwipes",
         loggedIn: true,
         kiosk: true,
+        memberOnly: true,
         component: () => import("pages/RecentSwipes"),
       },
       {
@@ -193,6 +198,7 @@ const PageAndRouteConfig = [
         name: "lastSeen",
         loggedIn: true,
         kiosk: true,
+        memberOnly: true,
         component: () => import("pages/LastSeen"),
       },
     ],
@@ -238,7 +244,7 @@ const PageAndRouteConfig = [
         to: "/account/membership-tier",
         name: "membershipTier",
         loggedIn: true,
-        hiddenMenu: true,
+        hiddenMenu: !store.getters["config/features"].stripe.enableMembershipPayments,
         component: () => import("pages/MembershipTier"),
       },
     ],

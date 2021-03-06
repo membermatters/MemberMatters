@@ -67,11 +67,11 @@ export default {
       return icons;
     },
     onsiteCount() {
-      return this.statistics.onSite ? this.statistics.onSite.count : 0;
+      return this.statistics?.onSite ? this.statistics?.onSite?.count : 0;
     },
     onsiteMembers() {
-      return this.statistics.onSite.members
-        ? this.statistics.onSite.members
+      return this.statistics?.onSite?.members
+        ? this.statistics?.onSite?.members
         : [];
     },
   },

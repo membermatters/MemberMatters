@@ -5,15 +5,19 @@ export default ({ router, store }) => {
     // if we're in kiosk mode disallow certain pages
     if (Platform.is.electron) {
       if (!to.meta.kiosk) {
-        next({ name: "dashboard" });
+        return next({ name: "dashboard" });
       }
+    }
+
+    if (store.getters["profile/profile"].memberStatus === "noob" && to.name !== "membershipTier" && store.getters["config/features"].enableMembershipPayments) {
+      return next({ name: "membershipTier" });
     }
 
     // Check if the user must be logged in to access the route
     if (to.meta.loggedIn === true) {
       if (store.getters["profile/loggedIn"] === true) next();
       else {
-        next({ name: "login" });
+        return next({ name: "login" });
       }
     }
 
@@ -21,13 +25,16 @@ export default ({ router, store }) => {
     if (to.meta.admin === true) {
       if (store.getters["profile/profile"].permissions.admin === true) next();
       else {
-        next({ name: "Error403" });
+        return next({ name: "Error403" });
       }
     }
 
+    // check if the user must be a member
+    if (to.meta.memberOnly && store.getters["profile/profile"].memberStatus !== "active") next({ name: "Error403" });
+
     // if we are authenticating via SSO then don't update the route unless we're registering
     if (!from.query.sso || to.name === "register") {
-      next();
+      return next();
     }
   });
 

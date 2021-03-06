@@ -1,85 +1,89 @@
 <template>
   <q-page class="column flex justify-start items-center">
-    <template v-if="!currentPlan">
-      <template v-if="canSignup == null">
-        <q-spinner size="4em" />
-      </template>
+    <template v-if="currentPlan == false || canSignup == null">
+      <q-spinner size="4em" />
+    </template>
 
-      <template v-else-if="canSignup"><select-tier /></template>
-      <template v-else>
-        <div class="text-subtitle2">
-          {{ $t("signup.requiredSteps") }}
-        </div>
-        <signup-required-steps :steps="requiredSteps" />
-      </template>
+    <template v-else-if="!currentPlan">
+      <template><select-tier /></template>
     </template>
 
     <template v-else>
-      <selected-tier :plan="currentPlan" :tier="currentTier" />
-
-      <div v-if="cancelSuccess" class="row q-mb-md">
-        <q-banner class="bg-success text-white">
-          <div class="text-h5">{{ $tc("success") }}</div>
-          <p>{{ $tc("paymentPlans.cancelSuccessDescription") }}</p>
-        </q-banner>
-      </div>
-
-      <div v-if="subscriptionStatus === 'cancelling'" class="row q-mb-md">
-        <q-banner class="bg-error text-white">
-          <div class="text-h5">{{ $tc("paymentPlans.cancelling") }}</div>
-          <p>
-            {{
-              $t("paymentPlans.cancellingDescription", { date: cancelAtDate })
-            }}
-          </p>
-        </q-banner>
-      </div>
-
-      <div
-        v-if="currentPeriodEnd && subscriptionStatus !== 'cancelling'"
-        class="q-mb-md"
-      >
-        <div class="text-h6 q-py-md">
-          {{ $t("paymentPlans.subscriptionInfo") }}
+      <template v-if="!canSignup">
+        <div class="text-h6 q-pb-md">
+          {{ $t("signup.requiredSteps") }}
         </div>
-        <q-card>
-          <q-list bordered separator>
-            <q-item>
-              <q-item-section>
-                <q-item-label>{{ currentPeriodEnd }}</q-item-label>
-                <q-item-label caption>{{
-                  $tc("paymentPlans.renewalDate")
-                }}</q-item-label>
-              </q-item-section>
-            </q-item>
-            <q-item>
-              <q-item-section>
-                <q-item-label>{{ signupDate }}</q-item-label>
-                <q-item-label caption>{{
-                  $tc("paymentPlans.signupDate")
-                }}</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-card>
-      </div>
 
-      <q-btn
-        v-if="subscriptionStatus === 'active'"
-        :disable="disableButton"
-        :loading="loadingButton"
-        @click="cancelPlan"
-        color="error"
-        :label="$tc('paymentPlans.cancelButton')"
-      />
-      <q-btn
-        v-else
-        :disable="disableButton"
-        :loading="loadingButton"
-        @click="resumePlan"
-        color="success"
-        :label="$tc('paymentPlans.resumeButton')"
-      />
+        <signup-required-steps :steps="requiredSteps" />
+      </template>
+
+      <template v-else>
+        <selected-tier :plan="currentPlan" :tier="currentTier" />
+
+        <div v-if="cancelSuccess" class="row q-mb-md">
+          <q-banner class="bg-success text-white">
+            <div class="text-h5">{{ $tc("success") }}</div>
+            <p>{{ $tc("paymentPlans.cancelSuccessDescription") }}</p>
+          </q-banner>
+        </div>
+
+        <div v-if="subscriptionStatus === 'cancelling'" class="row q-mb-md">
+          <q-banner class="bg-error text-white">
+            <div class="text-h5">{{ $tc("paymentPlans.cancelling") }}</div>
+            <p>
+              {{
+                $t("paymentPlans.cancellingDescription", { date: cancelAtDate })
+              }}
+            </p>
+          </q-banner>
+        </div>
+
+        <div
+          v-if="currentPeriodEnd && subscriptionStatus !== 'cancelling'"
+          class="q-mb-md"
+        >
+          <div class="text-h6 q-py-md">
+            {{ $t("paymentPlans.subscriptionInfo") }}
+          </div>
+          <q-card>
+            <q-list bordered separator>
+              <q-item>
+                <q-item-section>
+                  <q-item-label>{{ currentPeriodEnd }}</q-item-label>
+                  <q-item-label caption>{{
+                    $tc("paymentPlans.renewalDate")
+                  }}</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item>
+                <q-item-section>
+                  <q-item-label>{{ signupDate }}</q-item-label>
+                  <q-item-label caption>{{
+                    $tc("paymentPlans.signupDate")
+                  }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-card>
+        </div>
+
+        <q-btn
+          v-if="subscriptionStatus === 'active'"
+          :disable="disableButton"
+          :loading="loadingButton"
+          @click="cancelPlan"
+          color="error"
+          :label="$tc('paymentPlans.cancelButton')"
+        />
+        <q-btn
+          v-else
+          :disable="disableButton"
+          :loading="loadingButton"
+          @click="resumePlan"
+          color="success"
+          :label="$tc('paymentPlans.resumeButton')"
+        />
+      </template>
     </template>
   </q-page>
 </template>
@@ -118,7 +122,11 @@ export default defineComponent({
   computed: {
     ...mapGetters("profile", ["profile"]),
     currentPlan() {
-      return this.profile.financial.membershipPlan;
+      if (Object.keys(this.profile).length) {
+        return this.profile.financial.membershipPlan;
+      } else {
+        return false;
+      }
     },
     currentTier() {
       return this.profile.financial.membershipTier;
