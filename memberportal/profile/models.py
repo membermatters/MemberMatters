@@ -269,6 +269,10 @@ class MemberTypes(models.Model):
     conditions = models.CharField("Membership Conditions", max_length=100)
     cost = models.IntegerField("Monthly Cost (cents)")
 
+    class Meta:
+        verbose_name = "Member types"
+        verbose_name_plural = "Member types"
+
     def get_object(self):
         return {
             "id": self.id,
