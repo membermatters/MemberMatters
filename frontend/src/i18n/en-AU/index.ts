@@ -155,7 +155,7 @@ export default {
     pageDescription: "Here is a list of when each member last tapped their card.",
   },
   recentSwipes: {
-    pageDescription: "Here is a list of the last 50 swipes from doors and interlocks.",
+    pageDescription: "Here is a list of the last 300 swipes from doors and interlocks.",
     inProgress: "In Progress",
     timedOut: "TIMED OUT",
   },
