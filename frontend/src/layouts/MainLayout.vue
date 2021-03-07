@@ -46,7 +46,7 @@
         <q-img
           spinner-color="white"
           class="absolute-top"
-          :src="getImgUrl(images.menuBackground)"
+          :src="getBackground(images.menuBackground)"
           style="height: 150px"
         >
           <div class="absolute-bottom bg-transparent">
@@ -156,9 +156,8 @@ export default {
   },
   methods: {
     ...mapActions("profile", ["getProfile"]),
-    getImgUrl(path) {
-      return (path.substr(0,4).toLowerCase() === 'http') ?
-        path : require('../assets/img/'+path);
+    getBackground(path) {
+      return path ? path : require("../assets/img/menu-bg/menu-bg.jpg");
     },
   },
   computed: {

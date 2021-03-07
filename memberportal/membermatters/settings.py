@@ -261,8 +261,8 @@ CONSTANCE_CONFIG = {
         "Image to use for the site statistics card.",
     ),
     "MENU_BACKGROUND": (
-        "menu-bg/menu-bg.jpg",
-        "Image to use as the background in the menu. Can be specified as either a local asset in assets/img/ or full URL.",
+        "",
+        "[Optional] Image to use as the background in the menu. Leave blank for the default background image.",
     ),
     # Custom theme colors
     "THEME_PRIMARY": ("#278ab0", "Custom primary theme colour"),
