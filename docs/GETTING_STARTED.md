@@ -78,7 +78,7 @@ This command will compile an electron based application that you can run on a ma
 security reasons, kiosk builds will only have limited profile functionality and are primarily meant
 to allow members to sign in/out of site and use basic features of MemberMatters. Be sure to specify the full URL to your MemberMatters instance, including the protocol (http or https).
 
-The first time a kiosk connects, you will have to "authorise" it from the MemberMatters dashboard. You should see the kiosk show up with it's serial number. Open the kiosk to edit it, then click on authorise to allow full functionality. This is to prevent "random" kiosks being able to your MemberMatters instance.
+The first time a kiosk connects, you will have to "authorise" it from the MemberMatters dashboard. You should see the kiosk show up with it's serial number. Open the kiosk to edit it, then click on authorise to allow full functionality. This is to prevent "random" kiosks being able to connect to your MemberMatters instance.
 
 #### Linux
 
