@@ -24,11 +24,6 @@ urlpatterns = [
         name="memberbucks_balance",
     ),
     path(
-        "api/memberbucks/groupdonation/<int:rfid>/<int:group_id>/<int:amount>/",
-        views.memberbucks_group_donation,
-        name="memberbucks_group_donation",
-    ),
-    path(
         "api/memberbucks/debit/<int:rfid>/<int:amount>/<str:description>",
         views.memberbucks_debit,
         name="memberbucks_debit",

@@ -1,12 +1,9 @@
 from django.http import JsonResponse
-from django.views.decorators.http import require_GET, require_POST
-from membermatters.decorators import login_required_401
 from access.models import Doors, Interlock
-from profile.models import User, Profile
+from profile.models import User
 
 from rest_framework import permissions
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.views import APIView
 
 

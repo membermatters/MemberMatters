@@ -1,36 +1,26 @@
-from django.http import (
-    JsonResponse,
-    HttpResponseBadRequest,
-    HttpResponseForbidden,
-    HttpResponseNotAllowed,
-    HttpResponse,
-)
 from django.contrib.auth import (
     authenticate,
     login,
     logout,
 )
 from django.core.exceptions import ObjectDoesNotExist
-from django.views.decorators.http import require_POST
-from membermatters.decorators import login_required_401
-from django.views.decorators.csrf import csrf_exempt
 from constance import config
 import json
 from django.utils.timezone import make_aware
 import datetime
 from pytz import UTC as utc
 from group.models import Group
-from profile.models import MemberTypes
+from profile.models import User, Profile, MemberTypes
 
 from rest_framework import status, permissions, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import *
 from .models import Kiosk, SiteSession, EmailVerificationToken
 from services.discord import post_kiosk_swipe_to_discord
 import base64
 from urllib.parse import parse_qs, urlencode
-import hmac, hashlib
+import hmac
+import hashlib
 
 
 class GetConfig(APIView):
@@ -258,68 +248,73 @@ class LoginKiosk(APIView):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
-@csrf_exempt
-def Logout(request):
+class Logout(APIView):
     """
     WEB_ONLY, KIOSK_ONLY
 
     post: Ends the user's session and logs them out.
     """
 
-    logout(request)
+    def post(self, request):
+        logout(request)
 
-    return HttpResponse()
+        return Response({"success": True})
 
 
-@require_POST
-def ResetPassword(request):
+class ResetPassword(APIView):
     """
-    WEB_ONLY
-
     post: Handles the various stages of the password reset flow.
     """
-    body = json.loads(request.body)
 
-    # If we get a reset token and no password, the token is being validated
-    if body.get("token") and not body.get("password"):
-        try:
+    def post(self, request):
+        body = json.loads(request.body)
+
+        # If we get a reset token and no password, the token is being validated
+        if body.get("token") and not body.get("password"):
+            try:
+                user = User.objects.get(password_reset_key=body.get("token"))
+
+            except User.DoesNotExist:
+                return Response({"success": False})
+
+            if (
+                user
+                and utc.localize(datetime.datetime.now()) < user.password_reset_expire
+            ):
+                return Response({"success": True})
+
+            else:
+                user.password_reset_key = None
+                user.password_reset_expire = None
+                user.save()
+                return Response({"success": False})
+
+        # If we get a reset token and email, the password should be reset
+        if body.get("token") and body.get("password"):
             user = User.objects.get(password_reset_key=body.get("token"))
 
-        except User.DoesNotExist:
-            return JsonResponse({"success": False})
+            if (
+                user
+                and utc.localize(datetime.datetime.now()) < user.password_reset_expire
+            ):
+                user.set_password(body.get("password"))
+                user.password_reset_key = None
+                user.password_reset_expire = None
+                user.save()
 
-        if user and utc.localize(datetime.datetime.now()) < user.password_reset_expire:
-            return JsonResponse({"success": True})
+                if user:
+                    return Response({"success": True})
+
+            return Response({"success": False})
 
         else:
-            user.password_reset_key = None
-            user.password_reset_expire = None
-            user.save()
-            return JsonResponse({"success": False})
+            try:
+                user = User.objects.get(email=body.get("email"))
+                user.reset_password()
+                return Response({"success": True})
 
-    # If we get a reset token and email, the password should be reset
-    if body.get("token") and body.get("password"):
-        user = User.objects.get(password_reset_key=body.get("token"))
-
-        if user and utc.localize(datetime.datetime.now()) < user.password_reset_expire:
-            user.set_password(body.get("password"))
-            user.password_reset_key = None
-            user.password_reset_expire = None
-            user.save()
-
-            if user:
-                return JsonResponse({"success": True})
-
-        return JsonResponse({"success": False})
-
-    else:
-        try:
-            user = User.objects.get(email=body.get("email"))
-            user.reset_password()
-            return JsonResponse({"success": True})
-
-        except ObjectDoesNotExist:
-            return JsonResponse({"success": False})
+            except ObjectDoesNotExist:
+                return Response({"success": False})
 
 
 class ProfileDetail(generics.GenericAPIView):
@@ -373,7 +368,7 @@ class ProfileDetail(generics.GenericAPIView):
             "permissions": {"admin": user.is_admin},
         }
 
-        return JsonResponse(response)
+        return Response(response)
 
     def put(self, request):
         p = request.user.profile
@@ -392,17 +387,15 @@ class ProfileDetail(generics.GenericAPIView):
         request.user.save()
         p.save()
 
-        return JsonResponse({"success": True})
+        return Response({"success": True})
 
 
-@login_required_401
-def api_password(request):
+class ApiPassword(APIView):
     """
-    Change the user's password.
-    :param request:
-    :return:
+    put: Change the user's password.
     """
-    if request.method == "PUT":
+
+    def put(self, request):
         user = request.user
         body = json.loads(request.body)
         current = body.get("current")
@@ -412,34 +405,20 @@ def api_password(request):
             user.set_password(new)
             user.save()
 
-            return JsonResponse({"success": True})
+            return Response({"success": True})
 
-        return HttpResponseForbidden()
-
-    return HttpResponseBadRequest
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
 
-@csrf_exempt
-@login_required_401
-def api_digital_id(request):
+class DigitalId(APIView):
     """
-    Get the user's digital ID token.
+    get: retrieves the user's digital id token.
     """
-    if request.method == "GET":
-        p = request.user.profile
 
-        return JsonResponse({"success": True, "token": p.generate_digital_id_token()})
-
-    elif request.method == "POST":
-        token = json.loads(request.body).get("token")
-
-        valid = Profile.objects.get(digital_id_token=token).validate_digital_id_token(
-            token
+    def get(self, request):
+        return Response(
+            {"success": True, "token": request.user.profile.generate_digital_id_token()}
         )
-
-        return JsonResponse({"success": True, "valid": valid})
-
-    return HttpResponseNotAllowed(["GET", "POST"])
 
 
 class Kiosks(APIView):

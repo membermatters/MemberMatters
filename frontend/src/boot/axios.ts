@@ -1,6 +1,5 @@
 import axios, {AxiosStatic} from "axios";
 
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default ({ Vue, store }: {Vue: any, store: any}) => {
   const instance = axios.create({
@@ -12,10 +11,21 @@ export default ({ Vue, store }: {Vue: any, store: any}) => {
 
   // This interceptor adds the JWT to the request if it exists (ie mobile app)
   instance.interceptors.request.use(function (config) {
-    const token = store.state.auth.accessToken;
+    const token = store.state.auth?.accessToken;
     if (token) config.headers.Authorization = `Bearer ${token}`;
 
     return config;
+  });
+
+  instance.interceptors.response.use(function (response) {
+    return response;
+  }, function (error) {
+    if (error.response.status === 401) {
+      store.commit("auth/setAuth", {});
+      return Promise.reject(error);
+    } else {
+      return Promise.reject(error);
+    }
   });
 
   Vue.prototype.$axios = instance;

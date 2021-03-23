@@ -1,21 +1,14 @@
-from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseServerError
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
-from django.urls import reverse
 from django.utils import timezone
-from membermatters.decorators import no_noobs, api_auth
+from membermatters.decorators import api_auth
 from membermatters.helpers import log_user_event
 from .models import MemberBucks
 from profile.models import Profile, User
-from group.models import Group
-from profile.xerohelpers import create_group_donation_invoice
 from constance import config
-import stripe
 import json
 import pytz
-import os
 
 utc = pytz.UTC
 
@@ -125,53 +118,6 @@ def memberbucks_balance(request, rfid=None):
     try:
         profile = Profile.objects.get(rfid=rfid)
         return JsonResponse({"balance": profile.memberbucks_balance})
-
-    except ObjectDoesNotExist:
-        return HttpResponseBadRequest("400 Invalid request. User does not exist.")
-
-
-@api_auth
-def memberbucks_group_donation(request, rfid=None, group_id=None, amount=None):
-    if group_id is None or rfid is None or amount is None:
-        return HttpResponseBadRequest("400 Invalid request.")
-
-    try:
-        group = Group.objects.get(pk=group_id)
-
-    except ObjectDoesNotExist:
-        return HttpResponseBadRequest(
-            f"400 Invalid request. {config.GROUP_NAME} does not exist."
-        )
-
-    try:
-        amount = amount / 100  # convert to dollars
-        profile = Profile.objects.get(rfid=rfid)
-        result = create_group_donation_invoice(profile.user, group, amount)
-        if "Error" not in result:
-            time_dif = (
-                timezone.now() - profile.last_memberbucks_purchase
-            ).total_seconds()
-
-            if time_dif > 10:
-                transaction = MemberBucks()
-                transaction.amount = amount * -1.0
-                transaction.user = profile.user
-                transaction.description = "Donation to {}.".format(group.name)
-                transaction.transaction_type = "card"
-                transaction.save()
-
-                profile.last_memberbucks_purchase = timezone.now()
-                profile.save()
-
-            return JsonResponse(
-                {
-                    "success": True,
-                    "balance": profile.memberbucks_balance,
-                    "donated": amount,
-                }
-            )
-
-        return HttpResponseServerError("Error while creating invoice: " + result)
 
     except ObjectDoesNotExist:
         return HttpResponseBadRequest("400 Invalid request. User does not exist.")

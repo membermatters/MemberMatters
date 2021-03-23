@@ -156,8 +156,13 @@ export default {
   },
   methods: {
     ...mapActions("profile", ["getProfile"]),
-    getBackground(path) {
-      return path ? path : require("../assets/img/menu-bg/menu-bg.jpg");
+    getImgUrl(path) {
+      if (path) {
+        return (path?.substr(0,4).toLowerCase() === 'http') ?
+          path : require('../assets/img/'+path);
+      } else {
+        return require('../assets/img/menu-bg/menu-bg.jpg');
+      }
     },
   },
   computed: {
