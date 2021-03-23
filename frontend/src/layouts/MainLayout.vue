@@ -156,12 +156,12 @@ export default {
   },
   methods: {
     ...mapActions("profile", ["getProfile"]),
-    getImgUrl(path) {
+    getBackground(path) {
       if (path) {
-        return (path?.substr(0,4).toLowerCase() === 'http') ?
-          path : require('../assets/img/'+path);
+        return (path?.substr(0,4).toLowerCase() === "http") ?
+          path : require("../assets/img/"+path);
       } else {
-        return require('../assets/img/menu-bg/menu-bg.jpg');
+        return require("../assets/img/menu-bg/menu-bg.jpg");
       }
     },
   },

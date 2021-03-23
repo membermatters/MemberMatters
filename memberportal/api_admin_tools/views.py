@@ -2,7 +2,7 @@ from profile.models import User
 from access import models
 from .models import MemberTier, PaymentPlan
 from constance import config
-from services.email import send_single_email
+from services.emails import send_single_email
 import json
 import stripe
 

@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 
 import stripe
 from services import canvas
-from services.email import send_email_to_admin
+from services.emails import send_email_to_admin
 from constance import config
 from datetime import datetime, timedelta
 from membermatters.helpers import log_user_event

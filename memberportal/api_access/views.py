@@ -1,4 +1,3 @@
-from django.http import JsonResponse
 from access.models import Doors, Interlock
 from profile.models import User
 
@@ -13,7 +12,7 @@ class UserAccessPermissions(APIView):
     """
 
     def get(self, request):
-        return JsonResponse(request.user.profile.get_access_permissions())
+        return Response(request.user.profile.get_access_permissions())
 
 
 class AuthoriseDoor(APIView):
