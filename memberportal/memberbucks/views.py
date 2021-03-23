@@ -6,7 +6,7 @@ from profile.models import Profile, User
 from constance import config
 import pytz
 
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -18,6 +18,8 @@ class MemberbucksDebit(APIView):
     get:
     post:
     """
+
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, rfid=None, amount=None, description="No Description"):
         if amount is None or rfid is None:
@@ -114,6 +116,8 @@ class MemberbucksBalance(APIView):
     """
     get: returns the member's current memberbucks balance.
     """
+
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, rfid=None):
         if rfid is None:
