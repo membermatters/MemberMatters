@@ -1,11 +1,9 @@
 from django.template.loader import render_to_string
 from django.utils.html import escape
-from django.conf import settings
 from sendgrid.helpers.mail import *
 from membermatters.helpers import log_user_event
 from constance import config
 import sendgrid
-import os
 
 
 def send_group_email(user, emails, subject, title, message):

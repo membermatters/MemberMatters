@@ -3,5 +3,9 @@
   "appName": "MemberMatters",
   "bundledWebRuntime": false,
   "npmClient": "npm",
-  "webDir": "www"
+  "webDir": "www",
+  "server": {
+    "iosScheme": "ionic",
+    "androidScheme": "ionic"
+  }
 }

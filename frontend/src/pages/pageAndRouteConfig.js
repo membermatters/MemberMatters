@@ -244,10 +244,7 @@ const PageAndRouteConfig = [
         to: "/account/membership-tier",
         name: "membershipTier",
         loggedIn: true,
-        hiddenMenu: !(
-          store.getters["config/features"].stripe &&
-          store.getters["config/features"].stripe.enableMembershipPayments
-        ),
+        hiddenMenu: !store?.getters["config/features"]?.stripe?.enableMembershipPayments,
         component: () => import("pages/MembershipTier"),
       },
     ],

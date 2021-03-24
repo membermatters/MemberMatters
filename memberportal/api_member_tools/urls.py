@@ -7,5 +7,5 @@ urlpatterns = [
     path("api/tools/issue/", views.IssueDetail.as_view(), name="IssueDetail"),
     path("api/tools/groups/", views.MemberGroupList.as_view(), name="MemberGroupList"),
     path("api/tools/meetings/", views.MeetingList.as_view(), name="MemberGroupList"),
-    path("api/tools/members/", views.api_members, name="api_members"),
+    path("api/tools/members/", views.Members.as_view(), name="api_members"),
 ]

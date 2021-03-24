@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Task queueing for non critical tasks like emails etc.
 
+## [v2.3.0] - 2021-03-24
+
+### Added
+
+- better documentation for kiosk building
+
+### Changed
+
+- fixed linting on some files
+- refactored all remaining (except for door/interlock controller endpoints) endpoints to use DRF in preparation for mobile app support
+- Changed capacitor scheme and changed iOS build target to 13.0
+
+### Fixed
+
+- fixed typo on doors/interlocks page
+- fixed some plurarls in django admin
+
 ## [v2.2.1] - 2021-03-06
 
 ### Added

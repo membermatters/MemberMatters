@@ -131,7 +131,11 @@ export default {
         .then(() => {
           this.updatePageTitle();
           if (this.features.stripe.enabled) {
-            Vue.prototype.$stripe = loadStripe(this.keys.stripePublishableKey);
+            try {
+              Vue.prototype.$stripe = loadStripe(this.keys.stripePublishableKey);
+            } catch {
+              console.log("Failed to load Stripe...");
+            }
           }
           colors.setBrand("primary", this.theme.themePrimary);
           colors.setBrand("toolbar", this.theme.themeToolbar);

@@ -107,7 +107,8 @@ export default {
 
             resolve();
           })
-          .catch(() => {
+          .catch((e) => {
+            console.warn(e);
             reject();
           });
       });
