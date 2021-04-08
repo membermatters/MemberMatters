@@ -50,8 +50,10 @@ export default {
   },
   methods: {
     ...mapMutations("profile", ["setLoggedIn", "resetState"]),
+    ...mapMutations("auth", ["setAuth"]),
     completeLogout() {
       this.resetState();
+      this.setAuth({accessToken: "", refreshToken: ""});
       this.setLoggedIn(false);
       this.error = false;
       this.spinner = false;

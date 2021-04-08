@@ -1,5 +1,7 @@
 import "axios";
-import { Platform } from "quasar";
+import { Plugins } from "@capacitor/core";
+import {access} from "fs";
+const { Storage } = Plugins;
 
 export default {
   namespaced: true,
@@ -11,10 +13,26 @@ export default {
     accessToken: (state) => state.accessToken,
     refreshToken: (state) => state.refreshToken,
   },
+  actions: {
+    async retrieveAuth ({ commit }) {
+      const accessToken = await Storage.get({ key: "accessToken" });
+      const refreshToken = await Storage.get({ key: "refreshToken"});
+      commit("auth/accessToken", accessToken.value);
+      commit("auth/refreshToken", refreshToken.value);
+    },
+  },
   mutations: {
-    setAuth(state, payload) {
+    async setAuth(state, payload) {
       state.accessToken = payload.access;
       state.refreshToken = payload.refresh;
+      await Storage.set({
+        key: "accessToken",
+        value: payload.access
+      });
+      await Storage.set({
+        key: "refreshToken",
+        value: payload.refresh
+      });
     },
   },
 };

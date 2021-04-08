@@ -9,7 +9,7 @@
         <q-form class="q-gutter-md" @submit="onSubmit" @reset="onReset">
           <q-input
             v-model="email"
-            :autofocus="!$q.platform.is.electron"
+            ref="emailInput"
             filled
             type="email"
             label="Your email"
@@ -205,6 +205,8 @@
 import { mapMutations, mapGetters, mapActions } from "vuex";
 import { Loading } from "quasar";
 import formMixin from "../mixins/formMixin";
+import { Plugins } from "@capacitor/core";
+const { SplashScreen } = Plugins;
 
 export default {
   name: "LoginCard",
@@ -243,12 +245,25 @@ export default {
       },
     };
   },
-  mounted() {
+  async mounted() {
     if (this.$route.query.sso && this.$route.query.sig) {
       this.discourseSsoData = this.$route.query;
     }
 
-    if (this.loggedIn) this.redirectLoggedIn(false);
+    // check if we're logged in and our session is still valid
+    await this.retrieveAuth();
+    await this.getLoggedIn();
+
+    // if we're logged in then open the app straight away, then
+    if (this.loggedIn) {
+      this.redirectLoggedIn(false);
+    }
+    else {
+      await SplashScreen.hide();
+      // if we're not in electron, and need to login, auto focus the email field
+      if (!this.$q.platform.is.electron) this.$refs.emailInput.focus();
+    }
+
     if (this.resetToken) {
       Loading.show({ message: "Validating request..." });
 
@@ -265,6 +280,7 @@ export default {
   },
   methods: {
     ...mapActions("profile", ["getLoggedIn"]),
+    ...mapActions("auth", ["retrieveAuth"]),
     ...mapMutations("profile", ["setLoggedIn"]),
     ...mapMutations("auth", ["setAuth"]),
     /**
@@ -287,9 +303,11 @@ export default {
         setTimeout(() => {
           this.setLoggedIn(true);
           this.$router.push({ name: "dashboard" });
+          setTimeout(SplashScreen.hide, 500);
         }, 1000);
       } else {
         this.$router.push({ name: "dashboard" });
+        setTimeout(SplashScreen.hide, 500);
       }
     },
     onReset() {
