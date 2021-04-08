@@ -101,6 +101,19 @@ module.exports = configure((ctx) => ({
         });
       }
 
+      cfg.module.rules.push(
+        {
+          test: /\.(afphoto)$/,
+          use: "null-loader",
+        },
+      );
+      cfg.module.rules.push(
+        {
+          test: /(LICENSE)$/,
+          use: "null-loader",
+        },
+      );
+
       cfg.resolve.alias = {
         ...cfg.resolve.alias,
         "@components": path.resolve(__dirname, "src/components/"),
@@ -221,7 +234,7 @@ module.exports = configure((ctx) => ({
 
   // Full list of options: https://quasar.dev/quasar-cli/developing-capacitor-apps/configuring-capacitor
   capacitor: {
-    hideSplashscreen: true,
+    hideSplashscreen: false,
     iosStatusBarPadding: true,
   },
 
