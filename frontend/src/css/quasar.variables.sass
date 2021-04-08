@@ -12,17 +12,9 @@
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
-$hsbneprimary: #ffb629
-$hsbnetoolbar: #f14400
-$hsbneaccent: #189ab4
-
-$defaultprimary: var(--q-color-primary)
-$defaulttoolbar: var(--q-color-toolbar)
-$defaultaccent: var(--q-color-accent)
-
-$primary: if($defaultprimary, $defaultprimary, #278ab0)
-$toolbar: if($defaulttoolbar, $defaulttoolbar, #0461b1)
-$accent: if($defaultaccent, $defaultaccent, #189ab4)
+$primary: #278ab0
+$secondary: #0461b1
+$accent: #189ab4
 
 $positive: #18a558
 $success: $positive
@@ -48,7 +40,9 @@ $maxWidth: 1300px
   background-color: $negative
 
 .bg-toolbar
-  background: $toolbar
+  background: $secondary
+  background: var(--q-color-secondary)
 
 .bg-primary-btn
   background: $accent
+  background: var(--q-color-accent)

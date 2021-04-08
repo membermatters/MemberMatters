@@ -19,6 +19,8 @@ import { colors, Dark, Platform } from "quasar";
 import Settings from "components/Settings";
 import store from "./store/index";
 import LoginCard from "./components/LoginCard";
+import { Plugins } from "@capacitor/core";
+const { SplashScreen } = Plugins;
 
 colors.setBrand("dark", "#313131");
 
@@ -137,11 +139,12 @@ export default {
               console.log("Failed to load Stripe...");
             }
           }
-          colors.setBrand("primary", this.theme.themePrimary);
-          colors.setBrand("toolbar", this.theme.themeToolbar);
-          colors.setBrand("accent", this.theme.themeAccent);
+            colors.setBrand("primary", this.theme?.themePrimary || "#278ab0");
+            colors.setBrand("secondary", this.theme?.themeToolbar || "#0461b1");
+            colors.setBrand("accent", this.theme?.themeAccent || "#189ab4");
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e);
           console.error("Unable to get portal config!");
         });
     },
