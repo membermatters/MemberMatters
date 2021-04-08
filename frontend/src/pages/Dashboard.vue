@@ -52,7 +52,7 @@ export default {
     Platform() {
       return Platform;
     },
-    ...mapGetters("config", ["homepageCards"]),
+    ...mapGetters("config", ["homepageCards", "features"]),
     ...mapGetters("profile", ["loggedIn", "profile"]),
   },
   methods: {
@@ -61,8 +61,9 @@ export default {
   async mounted() {
     await this.getProfile();
     if (
-      this.profile.memberStatus === "noob" &&
-      this.$route.name !== "membershipTier"
+      this.profile.memberStatus === "Needs Induction" &&
+      this.$route.name !== "membershipTier" &&
+      this.features.stripe.enableMembershipPayments
     ) {
       this.$router.push({ name: "membershipTier" });
     }

@@ -10,8 +10,8 @@ export default ({ router, store }) => {
     }
 
     if (
-      store.getters["profile/profile"].memberStatus === "noob" && 
-      to.name !== "membershipTier" && 
+      store.getters["profile/profile"].memberStatus === "Needs Induction" &&
+      to.name !== "membershipTier" &&
       store.getters["config/features"].stripe.enableMembershipPayments
     ) {
       return next({ name: "membershipTier" });

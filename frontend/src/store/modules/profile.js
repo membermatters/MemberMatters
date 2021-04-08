@@ -92,8 +92,8 @@ export default {
             resolve();
           })
           .catch((error) => {
-            reject();
-            throw error;
+            commit("setLoggedIn", false);
+            resolve();
           });
       });
     },
