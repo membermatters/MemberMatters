@@ -335,7 +335,7 @@ class ProfileDetail(generics.GenericAPIView):
             "lastName": p.last_name,
             "screenName": p.screen_name,
             "phone": p.phone,
-            "memberStatus": p.state,
+            "memberStatus": p.get_state_display(),
             "lastInduction": p.last_induction,
             "lastSeen": p.last_seen,
             "firstJoined": p.created,
@@ -657,6 +657,10 @@ class VerifyEmail(APIView):
             verification_token.user.email_verified = True
             verification_token.user.save()
 
+            # auto log the user in after verifying their email
+            login(request, verification_token.user)
+
+            # delete the verification token so it can't be used again
             verification_token.delete()
 
             return Response()
