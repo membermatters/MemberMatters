@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Task queueing for non critical tasks like emails etc.
 
+## [v2.3.2] - 2021-04-13
+
+### Added
+
+- auto login after email verification
+
+### Fixed
+
+- broken signup flow caused by renaming noobs to needs inductions
+- fixed several bugs related to above
+
 ## [v2.3.1] - 2021-04-08
 
 ### Added

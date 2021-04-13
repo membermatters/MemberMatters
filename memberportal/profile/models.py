@@ -301,7 +301,7 @@ class Profile(models.Model):
         ("noob", "Needs Induction"),
         ("active", "Active"),
         ("inactive", "Inactive"),
-        ("accountonly", "Account only (ie for SSO access)"),
+        ("accountonly", "Account only"),
     )
 
     SUBSCRIPTION_STATES = (
@@ -621,14 +621,14 @@ class Profile(models.Model):
         )
 
         if config.MAX_INDUCTION_DAYS > 0 and (
-            last_inducted == None or last_inducted < furthest_previous_date
+            last_inducted is None or last_inducted < furthest_previous_date
         ):
             required_steps.append("induction")
 
         # if we require an rfid card to sign up
         if config.REQUIRE_ACCESS_CARD:
             # check if they have an RFID card assigned
-            if self.rfid == None or not len(self.rfid):
+            if self.rfid is None or not len(self.rfid):
                 required_steps.append("accessCard")
 
         if len(required_steps):

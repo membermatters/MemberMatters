@@ -170,7 +170,7 @@ export default {
       return Platform;
     },
     ...mapGetters("profile", ["loggedIn", "profile"]),
-    ...mapGetters("config", ["siteName", "images"]),
+    ...mapGetters("config", ["siteName", "images", "features"]),
     ...mapGetters("rfid", ["connected"]),
     icons() {
       return icons;
@@ -209,8 +209,9 @@ export default {
     if (this.loggedIn) {
       await this.getProfile();
       if (
-        this.profile.memberStatus === "noob" &&
-        this.$route.name !== "membershipTier"
+        this.profile.memberStatus === "Needs Induction" &&
+        this.$route.name !== "membershipTier" &&
+        this.features.stripe.enableMembershipPayments
       ) {
         next({ name: "membershipTier" });
       }
