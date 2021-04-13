@@ -36,7 +36,7 @@
               @click="setMemberState('active')"
             />
             <q-btn
-              v-else-if="selectedMember.state === 'New'"
+              v-else-if="selectedMember.state === 'Needs Induction' || selectedMember.state === 'Account only'"
               class="q-mr-sm q-mb-sm"
               color="primary"
               :label="$t('adminTools.makeMember')"
@@ -91,6 +91,10 @@
                 </template>
               </q-list>
             </q-btn-dropdown>
+          </div>
+
+          <div class="text-body1" :class="{ 'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs }">
+            Member State: {{selectedMember.state}}
           </div>
 
           <div class="row q-pt-md">

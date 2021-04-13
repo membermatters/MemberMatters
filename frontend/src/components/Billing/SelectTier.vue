@@ -6,6 +6,7 @@
       ref="stepper"
       color="primary"
       :done-icon="icons.success"
+      :vertical="$q.screen.xs"
       animated
     >
       <q-step
@@ -21,6 +22,7 @@
           <tier-card
             :class="{ featured: tier.featured }"
             class="col-xs-12 col-sm-6 col-md-4"
+            style="min-width: 180px;"
             v-for="tier in tiers"
             :key="tier.id"
             :tier="tier"
@@ -156,7 +158,7 @@
       </q-step>
     </q-stepper>
     <div class="text-center">
-      <p @click="skipSignup" style="text-decoration: underline">
+      <p @click="skipSignup" style="text-decoration: underline; cursor: pointer;">
         {{ $tc("tiers.skipSignup") }}
       </p>
     </div>

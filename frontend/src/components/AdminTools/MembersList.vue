@@ -71,16 +71,21 @@
               :label="$t('adminTools.emailAddresses')"
               @click="exportEmails"
             />
-            <q-option-group
-              v-model="memberState"
-              inline
-              class="q-mb-md"
-              :options="filterOptions"
-            />
           </template>
         </div>
       </template>
       <template v-slot:top-right>
+        <q-select
+          v-model="memberState"
+          class="q-mr-sm"
+          style="min-width: 100px;"
+          outlined
+          emit-value
+          :options="filterOptions"
+          :label="$t('adminTools.filterOptions')"
+          dense
+        />
+
         <q-input
           v-model="filter"
           outlined
@@ -137,7 +142,8 @@ export default {
         { label: this.$t("adminTools.all"), value: "All" },
         { label: this.$t("adminTools.active"), value: "Active" },
         { label: this.$t("adminTools.inactive"), value: "Inactive" },
-        { label: this.$t("adminTools.new"), value: "New" },
+        { label: this.$t("adminTools.new"), value: "Needs Induction" },
+        { label: this.$t("adminTools.accountOnly"), value: "Account only" },
       ];
     },
     columns() {
