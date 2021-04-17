@@ -66,7 +66,7 @@ class MakeMember(APIView):
 
     def post(self, request, member_id):
         user = User.objects.get(id=member_id)
-        if user.profile.state == "noob":
+        if user.profile.state == "noob" or user.profile.state == "accountonly":
             # give default door access
             for door in models.Doors.objects.filter(all_members=True):
                 user.profile.doors.add(door)
@@ -96,9 +96,6 @@ class MakeMember(APIView):
                         "message": "adminTools.makeMemberSuccess",
                     }
                 )
-
-            elif "Error" in xero:
-                return Response({"success": False, "message": xero})
 
             elif "Error" in invoice:
                 return Response({"success": False, "message": invoice})
