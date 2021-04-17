@@ -4,6 +4,7 @@
       v-if="currentMember"
       :members="members"
       :member="currentMember"
+      @memberUpdated="getMembers"
     />
     <error404 v-else-if="!currentMember && members.length" />
   </q-page>
