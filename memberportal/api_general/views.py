@@ -266,6 +266,8 @@ class ResetPassword(APIView):
     post: Handles the various stages of the password reset flow.
     """
 
+    permission_classes = (permissions.AllowAny,)
+
     def post(self, request):
         body = json.loads(request.body)
 
