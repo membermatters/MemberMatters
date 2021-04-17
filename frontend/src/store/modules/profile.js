@@ -105,8 +105,7 @@ export default {
             resolve();
           })
           .catch((error) => {
-            reject();
-            throw error;
+            resolve();
           });
       });
     },

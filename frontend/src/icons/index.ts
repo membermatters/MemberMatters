@@ -44,6 +44,7 @@ export default {
 
   search: pro ? "fad fa-search" : "fas fa-search",
   warning: pro ? "fad fa-exclamation-triangle" : "fas fa-exclamation-triangle",
+  info: pro ? "fad fa-info-circle" : "fas fa-info-circle",
   clock: pro ? "fad fa-clock" : "fas fa-clock",
   calendar: pro ? "fad fa-calendar" : "fas fa-calendar",
 

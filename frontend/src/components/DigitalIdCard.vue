@@ -12,6 +12,22 @@
     </q-card-section>
 
     <q-card-section class="column flex items-start justify-start">
+      <div class="column flex content-start justify-center">
+        <q-banner
+          v-if="profile.memberStatus !== 'Active'"
+          inline-actions
+          rounded
+          class="bg-orange text-white q-ma-md"
+        >
+          <template v-slot:avatar>
+            <q-icon
+              :name="icons.info"
+            />
+          </template>
+          {{ $t('digitalId.inactiveMember') }}
+        </q-banner>
+      </div>
+
       <div
         class="column flex items-center justify-center q-pb-md"
         style="width: 100%;"

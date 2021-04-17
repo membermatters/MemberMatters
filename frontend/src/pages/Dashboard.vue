@@ -1,20 +1,27 @@
 <template>
   <q-page class="row flex content-start justify-center">
     <div v-if="loggedIn">
-      <template v-if="Platform.is.electron">
-        <h5 class="q-ma-md">
-          {{ $t("dashboard.quickActions") }}
-        </h5>
-        <div class="row">
-          <quick-actions />
-        </div>
-      </template>
+      <div class="column flex content-start justify-center">
+        <q-banner
+          v-if="profile.memberStatus !== 'Active' && profile.memberStatus !== 'Account only'"
+          inline-actions
+          rounded
+          class="bg-orange text-white q-ma-md"
+        >
+          <template v-slot:avatar>
+            <q-icon
+              :name="icons.warning"
+            />
+          </template>
+          {{ $t('access.inactive') }}
+        </q-banner>
+      </div>
 
       <h5 class="q-ma-md">
-        {{ $t("dashboard.statistics") }}
+        {{ $t("dashboard.quickCards") }}
       </h5>
       <div class="row">
-        <statistics-cards />
+        <quick-cards />
       </div>
 
       <h5 class="q-ma-md">
@@ -34,26 +41,28 @@
         />
       </div>
     </div>
-    <div v-else />
   </q-page>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import QuickActions from "components/QuickActions";
+import QuickCards from "components/QuickCards";
 import { Platform } from "quasar";
-import StatisticsCards from "components/StatisticsCards";
 import DashboardCard from "../components/DashboardCard";
+import icons from "src/icons";
 
 export default {
   name: "DashboardPage",
-  components: { StatisticsCards, QuickActions, DashboardCard },
+  components: { QuickCards, DashboardCard },
   computed: {
     Platform() {
       return Platform;
     },
     ...mapGetters("config", ["homepageCards", "features"]),
     ...mapGetters("profile", ["loggedIn", "profile"]),
+    icons() {
+      return icons;
+    },
   },
   methods: {
     ...mapActions("profile", ["getProfile"]),

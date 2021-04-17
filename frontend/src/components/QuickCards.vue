@@ -1,6 +1,22 @@
 <template>
-  <div class="row">
-    <div class="q-pa-md col-12 col-sm-4">
+  <div class="row items-stretch">
+    <div
+      v-if="!$q.platform.is.electron && siteSignedIn"
+      class="q-pa-md col-12 col-sm-4">
+
+      <q-banner
+        inline-actions
+        rounded
+        class="bg-orange text-white q-ma-md"
+      >
+        <template v-slot:avatar>
+          <q-icon
+            :name="icons.warning"
+          />
+        </template>
+        {{ $t('dashboard.signedIn') }}
+      </q-banner>
+
       <a @click="signInCard.click" :disabled="signinDisable">
         <q-card class="q-pa-xl column justify-center items-center">
           <p class="text-h4">
@@ -10,6 +26,25 @@
         </q-card>
       </a>
     </div>
+
+
+    <div
+      v-else-if="$q.platform.is.electron"
+      class="q-pa-md col-12 col-sm-4">
+      <a @click="signInCard.click" :disabled="signinDisable">
+        <q-card class="q-pa-xl column justify-center items-center">
+          <p class="text-h4">
+            {{ signInCard.title }}
+          </p>
+          <q-icon style="font-size: 100px" :name="signInCard.icon" />
+        </q-card>
+      </a>
+    </div>
+
+    <div class="q-pa-md col-12 col-sm-4">
+      <members-onsite-card />
+    </div>
+
     <div class="q-pa-md col-12 col-sm-4">
       <report-issue-card />
     </div>
@@ -17,13 +52,14 @@
 </template>
 
 <script>
+import MembersOnsiteCard from "components/MembersOnsiteCard";
 import ReportIssueCard from "@components/ReportIssueCard.vue";
 import { mapGetters, mapMutations, mapActions } from "vuex";
 import icons from "@icons";
 
 export default {
   name: "QuickActions",
-  components: { ReportIssueCard },
+  components: { ReportIssueCard, MembersOnsiteCard },
   mounted() {
     this.getSiteSignedIn();
   },
@@ -41,19 +77,30 @@ export default {
         .post("/api/sitesessions/signin/", { guests: [] })
         .then(() => {
           this.setSiteSignedIn(true);
-          this.$q.dialog({
-            title: "Success",
-            message: this.$t("dashboard.signinSuccess"),
-          });
+          let diag = this.$q
+            .dialog({
+              title: "Alert",
+              message: this.$t("dashboard.signinSuccess"),
+            });
+          this.signinDisable = false;
+
+          try {
+            setTimeout(diag.hide, 5000);
+          } catch {}
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e);
           this.setSiteSignedIn(false);
-          this.$q
+          let diag = this.$q
             .dialog({
               title: "Alert",
               message: this.$t("dashboard.signinError"),
             })
-            .finally(() => (this.signinDisable = false));
+          this.signinDisable = false;
+
+          try {
+            setTimeout(diag.hide, 5000);
+          } catch {}
         });
     },
     doSignOut() {
@@ -61,7 +108,9 @@ export default {
         .put("/api/sitesessions/signout/")
         .then(() => {
           this.setSiteSignedIn(false);
-          this.$router.push({ name: "logout" });
+          if (this.$q.platform.is.electron) {
+            this.$router.push({name: "logout"});
+          }
         })
         .catch(() => {
           this.$q
@@ -75,6 +124,9 @@ export default {
   },
   computed: {
     ...mapGetters("profile", ["siteSignedIn"]),
+    icons() {
+      return icons;
+    },
     signInCard() {
       if (this.siteSignedIn) {
         return {

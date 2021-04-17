@@ -84,15 +84,15 @@ export default {
       (response) => response,
       (error) => {
         // Do something with response error
-        console.log(error);
         if (
           error.response.status === 401 &&
           !error.response.config.url.includes("/api/login/")
         ) {
           this.setLoggedIn(false);
           this.resetState();
-          if (!window.location.pathname.includes("/profile/password/reset")) {
+          if (!window.location.pathname.includes("/profile/password/reset") && !window.location.pathname.includes("/login")) {
             this.$router.push("/login");
+            return Promise.resolve();
           }
         }
         return Promise.reject(error);

@@ -1,6 +1,23 @@
 <template>
   <div class="q-gutter-md">
     <div class="text-h5 text-center">{{ $tc("tiers.becomeMember") }}</div>
+
+    <div class="column flex content-start justify-center">
+      <q-banner
+        v-if="profile.memberStatus === 'Account only'"
+        inline-actions
+        rounded
+        class="bg-blue text-white q-ma-md"
+      >
+        <template v-slot:avatar>
+          <q-icon
+            :name="icons.info"
+          />
+        </template>
+        {{ $t('paymentPlans.accountOnlyWarning') }}
+      </q-banner>
+    </div>
+
     <q-stepper
       v-model="step"
       ref="stepper"
@@ -166,7 +183,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import { defineComponent } from "@vue/composition-api";
 import TierCard from "@components/Billing/TierCard.vue";
 import PlanCard from "@components/Billing/PlanCard.vue";
@@ -187,6 +204,7 @@ export default defineComponent({
     };
   },
   computed: {
+    ...mapGetters("profile", ["loggedIn", "profile"]),
     icons() {
       return icons;
     },

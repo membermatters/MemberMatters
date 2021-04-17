@@ -9,7 +9,7 @@
         <q-form class="q-gutter-md" @submit="onSubmit" @reset="onReset">
           <q-input
             v-model="email"
-            ref="emailInput"
+            ref="focusInput"
             filled
             type="email"
             label="Your email"
@@ -86,6 +86,7 @@
         <q-form class="q-gutter-md" @submit="submitResetPassword">
           <q-input
             v-model="reset.password"
+            ref="focusInput"
             filled
             autofocus
             type="password"
@@ -260,8 +261,8 @@ export default {
     }
     else {
       await SplashScreen.hide();
-      // if we're not in electron, and need to login, auto focus the email field
-      if (!this.$q.platform.is.electron) this.$refs.emailInput.focus();
+      // if we're not in electron, auto focus the first field
+      if (!this.$q.platform.is.electron) this.$refs.focusInput.focus();
     }
 
     if (this.resetToken) {

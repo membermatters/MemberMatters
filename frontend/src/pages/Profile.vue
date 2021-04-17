@@ -1,5 +1,36 @@
 <template>
   <q-page class="column flex justify-start items-center">
+
+    <div class="column flex content-start justify-center">
+      <q-banner
+        v-if="profile.memberStatus !== 'Active' && profile.memberStatus !== 'Account only'"
+        inline-actions
+        rounded
+        class="bg-orange text-white q-ma-md"
+      >
+        <template v-slot:avatar>
+          <q-icon
+            :name="icons.warning"
+          />
+        </template>
+        {{ $t('access.inactive') }}
+      </q-banner>
+
+      <q-banner
+        v-if="profile.memberStatus === 'Account only'"
+        inline-actions
+        rounded
+        class="bg-blue text-white q-ma-md"
+      >
+        <template v-slot:avatar>
+          <q-icon
+            :name="icons.info"
+          />
+        </template>
+        {{ $t('paymentPlans.profileAccountOnlyWarning') }}
+      </q-banner>
+    </div>
+
     <profile-form class="q-mb-lg" />
 
     <q-btn-group push>
@@ -32,6 +63,7 @@ import ProfileForm from "../components/ProfileForm";
 import icons from "../icons";
 import DigitalIdCard from "../components/DigitalIdCard";
 import ChangePasswordCard from "../components/ChangePasswordCard";
+import {mapGetters} from "vuex";
 
 export default {
   name: "ProfilePage",
@@ -44,6 +76,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters("profile", ["loggedIn", "profile"]),
     icons() {
       return icons;
     },

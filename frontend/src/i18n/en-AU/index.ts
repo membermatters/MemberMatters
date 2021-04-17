@@ -42,9 +42,10 @@ export default {
     Error403: "Error 403",
   },
   dashboard: {
-    usefulResources: "Useful Resources",
-    statistics: "Statistics",
+    usefulResources: "Member Resources",
+    quickCards: "Quick Cards",
     quickActions: "Quick Actions",
+    signedIn: "You are currently signed in. If you are no longer on site, please sign out.",
     signinSuccess: "Successfully signed you in. Please remember to sign out when you leave.",
     signoutError: "There was a problem signing you out. Please contact the executive committee if this problem persists.",
     signinError: "There was a problem signing you in. Please contact the executive committee if this problem persists.",
@@ -214,6 +215,7 @@ export default {
     memberState: "Member Status",
     memberId: "Member ID",
     memberSince: "Member Since",
+    inactiveMember: "This person is not an active member."
   },
   meetings: {
     memberName: "Member Name",
@@ -420,6 +422,8 @@ export default {
     renewalDate: "Renewal Date",
     signupDate: "Signup Date",
     subscriptionInfo: "Subscription Info",
+    accountOnlyWarning: "Your profile is currently set to 'account only'. This is because you skipped this process last time. You're welcome to continue using this account for our online services, or you can signup to become a member below. ",
+    profileAccountOnlyWarning: "Your profile is currently set to 'account only'. This is because you skipped the signup process and did not become a member. You're welcome to continue using this account for our online services, or you can signup to become a member from the menu ('Membership' > 'Membership Tier')."
   },
   signup: {
     induction: "Induction",

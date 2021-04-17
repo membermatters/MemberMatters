@@ -17,8 +17,7 @@ export default {
     async retrieveAuth ({ commit }) {
       const accessToken = await Storage.get({ key: "accessToken" });
       const refreshToken = await Storage.get({ key: "refreshToken"});
-      commit("auth/accessToken", accessToken.value);
-      commit("auth/refreshToken", refreshToken.value);
+      commit("setAuth", {access: accessToken.value, refresh: refreshToken.value});
     },
   },
   mutations: {
