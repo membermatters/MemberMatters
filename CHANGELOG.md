@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Task queueing for non critical tasks like emails etc.
 
+## [v2.4.0] - 2021-04-17
+
+### Added
+
+- self site sign out feature (members can sign out from site using the portal)
+- new warning and info banners throughout the site for inactive or account only profiles
+
+### Fixed
+
+- broken reset password functionality
+- member tools link disappearing
+- make member button bug with account only profiles
+- manage member page doesn't refresh after changes
+
 ## [v2.3.2] - 2021-04-13
 
 ### Added
