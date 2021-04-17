@@ -190,7 +190,7 @@ export default {
         if (!link.loggedIn) {
           if (this.loggedIn) displayLink = false;
         }
-        if (link.memberOnly && this.profile.memberStatus !== "active")
+        if (link.memberOnly && this.profile.memberStatus !== "Active")
           displayLink = false;
         if (this.$q.platform.is.electron && !link.kiosk) displayLink = false;
         if (
