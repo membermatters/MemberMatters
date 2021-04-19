@@ -5,7 +5,7 @@
     </p>
     <div class="column flex content-start justify-center">
       <q-banner
-        v-if="profile.memberStatus !== 'active'"
+        v-if="profile.memberStatus !== 'Active'"
         inline-actions
         rounded
         class="bg-orange text-white q-ma-md"

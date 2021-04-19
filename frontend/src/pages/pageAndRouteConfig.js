@@ -298,6 +298,13 @@ const PageAndRouteConfig = [
   },
   {
     icon: icons.signin, // specify the icon to use
+    to: "/error/403MemberOnly", // specify the URL route for this page
+    name: "Error403MemberOnly", // specify the name of this URL route
+    hiddenMenu: true, // adds the route and page config, but don't show in the menu
+    component: () => import("pages/Error403MemberOnly"), // which component to load as the page
+  },
+  {
+    icon: icons.signin, // specify the icon to use
     to: "/error/404", // specify the URL route for this page
     name: "Error404", // specify the name of this URL route
     hiddenMenu: true, // adds the route and page config, but don't show in the menu

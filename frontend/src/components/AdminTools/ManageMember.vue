@@ -478,7 +478,7 @@ export default {
               .then(() => {
                 this.saved.error = false;
                 this.saved[field] = true;
-                this.$emit('memberUpdated');
+                this.$emit("memberUpdated");
               })
               .catch(() => {
                 this.saved.error = true;
@@ -538,7 +538,7 @@ export default {
                     title: this.$t("success"),
                     message: this.$t("adminTools.createInvoiceSuccess"),
                   });
-                  this.$emit('memberUpdated');
+                  this.$emit("memberUpdated");
                 })
                 .catch(() => {
                   this.$q.dialog({
@@ -560,7 +560,7 @@ export default {
           });
         })
         .finally(() => {
-          this.$emit('memberUpdated');
+          this.$emit("memberUpdated");
           setTimeout(() => {
             this.stateLoading = false;
           }, 1200);
@@ -590,7 +590,7 @@ export default {
           });
         })
         .finally(() => {
-          this.$emit('memberUpdated');
+          this.$emit("memberUpdated");
           setTimeout(() => {
             this.stateLoading = false;
           }, 1200);

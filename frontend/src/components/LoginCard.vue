@@ -5,12 +5,16 @@
         {{ $t("loginCard.loginToContinue") }}
       </h6>
 
+      <form action="https://portal.hsbne.org"></form>
+
       <q-card-section>
         <q-form class="q-gutter-md" @submit="onSubmit" @reset="onReset">
           <q-input
+            id="username-field"
             v-model="email"
             ref="focusInput"
             filled
+            autocomplete="on"
             type="email"
             label="Your email"
             lazy-rules
@@ -21,7 +25,9 @@
 
           <q-input
             v-model="password"
+            id="password-field"
             filled
+            autocomplete="on"
             type="password"
             label="Your password"
             lazy-rules
@@ -86,8 +92,10 @@
         <q-form class="q-gutter-md" @submit="submitResetPassword">
           <q-input
             v-model="reset.password"
+            id="new-password-field"
             ref="focusInput"
             filled
+            autocomplete="on"
             autofocus
             type="password"
             label="Your new password"
@@ -102,6 +110,8 @@
           <q-input
             v-model="reset.password2"
             filled
+            autocomplete="on"
+            id="new-password-confirm-field"
             type="password"
             label="Confirm password"
             lazy-rules

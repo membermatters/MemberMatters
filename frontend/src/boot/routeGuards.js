@@ -34,7 +34,7 @@ export default ({ router, store }) => {
     }
 
     // check if the user must be a member
-    if (to.meta.memberOnly && store.getters["profile/profile"].memberStatus !== "active") next({ name: "Error403" });
+    if (to.meta.memberOnly && store.getters["profile/profile"].memberStatus !== "Active") next({ name: "Error403MemberOnly" });
 
     // if we are authenticating via SSO then don't update the route unless we're registering
     if (!from.query.sso || to.name === "register") {

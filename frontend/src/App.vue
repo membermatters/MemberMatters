@@ -19,8 +19,6 @@ import { colors, Dark, Platform } from "quasar";
 import Settings from "components/Settings";
 import store from "./store/index";
 import LoginCard from "./components/LoginCard";
-import { Plugins } from "@capacitor/core";
-const { SplashScreen } = Plugins;
 
 colors.setBrand("dark", "#313131");
 
@@ -83,10 +81,10 @@ export default {
     this.$axios.interceptors.response.use(
       (response) => response,
       (error) => {
-        // Do something with response error
+        // If we get a 401 and it's not the loggedin check endpoint, or reset password/login page, redirect user to login screen
         if (
           error.response.status === 401 &&
-          !error.response.config.url.includes("/api/login/")
+          !error.response.config.url.includes("/api/loggedin/")
         ) {
           this.setLoggedIn(false);
           this.resetState();

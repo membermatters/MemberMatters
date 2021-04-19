@@ -152,7 +152,7 @@ module.exports = configure((ctx) => ({
     lang: "en-us", // Quasar language pack
     config: {
       dark: "auto", // or Boolean true/false
-      loadingBar: { color: "accent" },
+      loadingBar: { color: "accent", skipHijack: ctx.mode.capacitor },
     },
     iconSet: PROICONS ? "fontawesome-v5-pro" : "fontawesome-v5", // Quasar icon set
 

@@ -26,7 +26,7 @@ export default {
       Object.assign(state, getDefaultState());
     },
     setLoggedIn(state, payload) {
-      // If we're on electron, logged in, and not in dev then enable auto logout after 60s
+      // If we're on electron, logged in, and not in dev then enable auto logout after 20s
       if (Platform.is.electron && payload === true && process.env.NODE_ENV !== "Development") {
         window.IDLETIMEOUT = idleTimeout(
           () => {
@@ -56,21 +56,17 @@ export default {
   },
   actions: {
     getAccess({ commit }) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         Vue.prototype.$axios.get("/api/access/permissions/")
           .then((response) => {
             commit("setDoorAccess", response.data.doors);
             commit("setInterlockAccess", response.data.interlocks);
             resolve();
           })
-          .catch((error) => {
-            reject();
-            throw error;
-          });
       });
     },
     getProfile({ commit }) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         Vue.prototype.$axios.get("/api/profile/")
           .then((response) => {
             response.data.firstJoined = Moment(response.data.firstJoined).format("Do MMMM YYYY");
@@ -78,33 +74,29 @@ export default {
             commit("setLoggedIn", true);
             resolve();
           })
-          .catch((error) => {
-            reject();
-            throw error;
-          });
       });
     },
     getLoggedIn({ commit }) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         Vue.prototype.$axios.get("/api/loggedin/")
           .then(() => {
             commit("setLoggedIn", true);
             resolve();
           })
-          .catch((error) => {
+          .catch(() => {
             commit("setLoggedIn", false);
             resolve();
           });
       });
     },
     getSiteSignedIn({ commit }) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         Vue.prototype.$axios.get("/api/sitesessions/check/")
           .then((response) => {
             commit("setSiteSignedIn", response.data);
             resolve();
           })
-          .catch((error) => {
+          .catch(() => {
             resolve();
           });
       });
