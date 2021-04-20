@@ -27,30 +27,11 @@ SESSION_COOKIE_SAMESITE = None
 CSRF_COOKIE_SAMESITE = None
 
 # this allows the frontend dev server to talk to the dev server
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
-    "capacitor://localhost",
-    "http://localhost",
-]
+CORS_ALLOW_ALL_ORIGINS = True
 
 if os.environ.get("PORTAL_ENV") == "Production":
     ENVIRONMENT = "Production"
     DEBUG = False
-    CORS_ORIGIN_WHITELIST = [
-        os.environ.get("PORTAL_DOMAIN", "https://portal.example.org"),
-        "capacitor://localhost",
-        "http://localhost",
-    ]
-
-    # Slightly hacky, but allows a direct IP while on the local network.
-    # These may or may not be required for the interlocks, doors, etc. depending on your setup
-    # for x in range(1, 255):
-    #     ALLOWED_HOSTS.append("http://10.0.0." + str(x))
-    #     ALLOWED_HOSTS.append("10.0.0." + str(x))
-    #     ALLOWED_HOSTS.append("http://10.0.1." + str(x))
-    #     ALLOWED_HOSTS.append("http://192.168.0." + str(x))
-    #     ALLOWED_HOSTS.append("http://192.168.1." + str(x))
 
 # Application definition
 INSTALLED_APPS = [
@@ -166,14 +147,15 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=90),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=365),
     "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": True,
+    "BLACKLIST_AFTER_ROTATION": True,
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
     "VERIFYING_KEY": None,
-    "AUTH_HEADER_TYPES": ("Bearer"),
+    "AUTH_HEADER_TYPES": "Bearer",
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),

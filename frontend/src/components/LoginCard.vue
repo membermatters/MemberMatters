@@ -367,7 +367,7 @@ export default {
           .finally(() => {
             this.buttonLoading = false;
           });
-      } else if (this.$q.platform.is.ios) {
+      } else if (this.$q.platform.is.capacitor) {
         this.$axios
           .post("/api/token/obtain/", {
             email: this.email,

@@ -21,16 +21,21 @@ export default {
   },
   mutations: {
     async setAuth(state, payload) {
-      state.accessToken = payload.access;
-      state.refreshToken = payload.refresh;
-      await Storage.set({
-        key: "accessToken",
-        value: payload.access
-      });
-      await Storage.set({
-        key: "refreshToken",
-        value: payload.refresh
-      });
+      if (payload.access) {
+        state.accessToken = payload.access;
+        await Storage.set({
+          key: "accessToken",
+          value: payload.access
+        });
+      }
+
+      if (payload.refresh) {
+        state.refreshToken = payload.refresh;
+        await Storage.set({
+          key: "refreshToken",
+          value: payload.refresh
+        });
+      }
     },
   },
 };

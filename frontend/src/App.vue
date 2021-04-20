@@ -49,6 +49,7 @@ export default {
   computed: {
     ...mapGetters("config", ["siteName", "keys", "features", "theme"]),
     ...mapGetters("profile", ["loggedIn"]),
+    ...mapGetters("auth", ["refreshToken"]),
   },
   watch: {
     $route() {
@@ -86,11 +87,32 @@ export default {
           error.response.status === 401 &&
           !error.response.config.url.includes("/api/loggedin/")
         ) {
-          this.setLoggedIn(false);
-          this.resetState();
-          if (!window.location.pathname.includes("/profile/password/reset") && !window.location.pathname.includes("/login")) {
-            this.$router.push("/login");
-            return Promise.resolve();
+          // this means our access token probably just expired so request a new one
+          if (error.response.data.code === "token_not_valid" &&
+            Platform.is.capacitor &&
+            error.response.data?.messages[0]?.token_class === "AccessToken"
+          ) {
+            this.$axios
+              .post("/api/token/refresh/", {
+                refresh: this.refreshToken,
+              })
+              .then((response) => {
+                this.setAuth(response.data);
+                this.setLoggedIn(true);
+                return Promise.resolve();
+              })
+            .catch(() => {
+              // if we fail to refresh, send them back to the login page
+              this.$router.push("/login");
+              return Promise.resolve();
+            })
+          } else {
+            this.setLoggedIn(false);
+            this.resetState();
+            if (!window.location.pathname.includes("/profile/password/reset") && !window.location.pathname.includes("/login")) {
+              this.$router.push("/login");
+              return Promise.resolve();
+            }
           }
         }
         return Promise.reject(error);
@@ -119,6 +141,7 @@ export default {
     ...mapMutations("rfid", ["setConnected", "setCardId"]),
     ...mapActions("config", ["getSiteConfig", "getKioskId", "pushKioskId"]),
     ...mapActions("profile", ["getProfile"]),
+    ...mapMutations("auth", ["setAuth"]),
     updatePageTitle() {
       const pageTitle = this.$route.meta.title;
       const nameKey = pageTitle
