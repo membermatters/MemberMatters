@@ -31,6 +31,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 if os.environ.get("PORTAL_ENV") == "Production":
     ENVIRONMENT = "Production"
+    CORS_ALLOW_ALL_ORIGINS = False
     DEBUG = False
 
 # Application definition

@@ -1,4 +1,5 @@
 import axios, {AxiosStatic} from "axios";
+import { Platform } from "quasar";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default ({ Vue, store }: {Vue: any, store: any}) => {
@@ -12,7 +13,10 @@ export default ({ Vue, store }: {Vue: any, store: any}) => {
   // This interceptor adds the JWT to the request if it exists (ie mobile app)
   instance.interceptors.request.use(function (config) {
     const token = store.state.auth?.accessToken;
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+
+    if (Platform.is.capacitor && token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
 
     return config;
   });

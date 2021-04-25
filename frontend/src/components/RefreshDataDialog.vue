@@ -39,7 +39,7 @@ export default {
     };
   },
   created() {
-    this.opened = value;
+    this.opened = this.value;
   },
   methods: {
     close() {
