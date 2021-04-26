@@ -1,7 +1,7 @@
 {
   "name": "frontend",
-  "version": "2.4.1",
-  "description": "The new MemberMatters frontend",
+  "version": "2.4.2",
+  "description": "The MemberMatters frontend",
   "productName": "MemberMatters",
   "author": "Jaimyn Mayer <hello@jaimyn.com.au>",
   "private": true,
