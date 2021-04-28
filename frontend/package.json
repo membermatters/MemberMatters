@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@capacitor/core": "^2.1.2",
+    "@fortawesome/fontawesome-free": "^5.15.2",
     "@ionic/pwa-elements": "^3.0.1",
     "@quasar/extras": "^1.0.0",
     "@sentry/browser": "^5.16.1",
