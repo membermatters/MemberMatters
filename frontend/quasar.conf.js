@@ -11,7 +11,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
 const { configure } = require("quasar/wrappers");
-const PROICONS = true;
+const PROICONS = false;
 
 module.exports = configure((ctx) => ({
   // https://quasar.dev/quasar-cli/supporting-ts
