@@ -15,7 +15,7 @@ export ENV=prod
 source ./set_env.sh
 ```
 
-## Step 2: Initial bootstrapping
+## Step 2: Initial bootstrapping of Infra & Database
 
 ```bash
 # nameservers for the zone we're gonna use in AWS land
@@ -45,4 +45,25 @@ terragrunt apply --terragrunt-working-dir membermatters/$ENV/sg-db
 # Create the DB! get RDS master password from env variable:
 source secrets.sh 
 terragrunt apply --terragrunt-working-dir membermatters/$ENV/db
+```
+
+# Initial setup of app
+
+```bash
+cd copilot
+# Bootstrap copilot setup
+copilot app init mm --domain members.gctechspace.org
+# Tell copilot to start a "prod" environment in the VPC / security groups we made above
+copilot env init -n prod --import-vpc-id vpc-0903228a2ce58d9f2 --import-public-subnets subnet-09e0cd5ec6c42a3e1,subnet-01c831b1e7051d803 --import-private-subnets subnet-050236b57beb46fd0,subnet-0e7676e504a766e50
+# Tell copilot to launch a service called "frontend" based on a Dockerfile
+copilot svc init --name frontend --svc-type "Load Balanced Web Service" --dockerfile ../../test/Dockerfile
+# deploy and start the service
+copilot svc deploy
+
+# We now have an app at frontend.prod.mm.members.gctechspace.org - phew! 
+# Manually fix up the hostname in AWS console
+# 1. Load balancers -> HTTPS Listener -> Change certificate to `members.gctechspace.org`
+# 2. Load balancers -> HTTPS Listener -> View/edit rules -> Change hostname to `members.gctechspace.org`
+# 3. Load balancers -> HTTP Listener -> View/edit rules -> Change hostname to `members.gctechspace.org`
+# These settings should stay as long as we don't delete the app and re-create it.
 ```
