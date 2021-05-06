@@ -35,5 +35,6 @@ host -t ns members.gctechspace.org
     members.gctechspace.org name server ns-217.awsdns-27.com.
     members.gctechspace.org name server ns-797.awsdns-35.net.
 
-
+# Create AWS SSL cert for *.members.gctechspace.org
+terragrunt apply --terragrunt-working-dir membermatters/$ENV/acm-public
 ```
