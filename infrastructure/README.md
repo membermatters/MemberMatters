@@ -18,8 +18,6 @@ source ./set_env.sh
 ## Step 2: Initial bootstrapping
 
 ```bash
-# secrets for one time RDS etc.. creation 
-source secrets.sh 
 # nameservers for the zone we're gonna use in AWS land
 terragrunt apply --terragrunt-working-dir membermatters/$ENV/route53-delegation-set
 # setup the zone for members.gctechspace.org
@@ -43,4 +41,8 @@ terragrunt apply --terragrunt-working-dir membermatters/$ENV/vpc
 # Security groups for our public app and for the DB
 terragrunt apply --terragrunt-working-dir membermatters/$ENV/sg-app-public
 terragrunt apply --terragrunt-working-dir membermatters/$ENV/sg-db
+
+# Create the DB! get RDS master password from env variable:
+source secrets.sh 
+terragrunt apply --terragrunt-working-dir membermatters/$ENV/db
 ```
