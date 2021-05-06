@@ -37,4 +37,6 @@ host -t ns members.gctechspace.org
 
 # Create AWS SSL cert for *.members.gctechspace.org
 terragrunt apply --terragrunt-working-dir membermatters/$ENV/acm-public
+# Create VPC for hosting this app in (note down the VPC ID, public and private subnet IDs)
+terragrunt apply --terragrunt-working-dir membermatters/$ENV/vpc
 ```
