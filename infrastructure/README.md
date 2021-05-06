@@ -39,4 +39,8 @@ host -t ns members.gctechspace.org
 terragrunt apply --terragrunt-working-dir membermatters/$ENV/acm-public
 # Create VPC for hosting this app in (note down the VPC ID, public and private subnet IDs)
 terragrunt apply --terragrunt-working-dir membermatters/$ENV/vpc
+
+# Security groups for our public app and for the DB
+terragrunt apply --terragrunt-working-dir membermatters/$ENV/sg-app-public
+terragrunt apply --terragrunt-working-dir membermatters/$ENV/sg-db
 ```
