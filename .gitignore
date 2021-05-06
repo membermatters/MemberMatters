@@ -134,3 +134,13 @@ memberportal/static/
 .config
 frontend/src-electron/icons/
 .eslintcache
+
+# Infra stuff
+*.swp
+*.pyc
+/**/secrets.sh
+/**/vault.key
+/**/.terragrunt-cache
+tmp/
+.ackrc
+.terragrunt-cache/
