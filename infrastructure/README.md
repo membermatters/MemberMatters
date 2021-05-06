@@ -18,4 +18,9 @@ source ./set_env.sh
 ## Step 2: Initial bootstrapping
 
 ```bash
+# secrets for one time RDS etc.. creation 
+source secrets.sh 
+# nameservers for the zone we're gonna use in AWS land
+terragrunt apply --terragrunt-working-dir membermatters/$ENV/route53-delegation-set
+
 ```
