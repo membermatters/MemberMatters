@@ -23,7 +23,9 @@ export default {
     doors: "Doors",
     manageDoor: "Manage Door",
     manageInterlock: "Manage Interlock",
+    manageDevice: "Manage Device",
     interlocks: "Interlocks",
+    devices: "Devices",
     kiosks: "Kiosks",
 
     memberTools: "Member Tools",
@@ -364,6 +366,7 @@ export default {
     access: "Access",
     accessDescription: "Tap an icon below to change a member's access.",
     log: "Log",
+    stats: "Stats",
     mainProfile: "Main Profile",
     otherAttributes: "Other Attributes",
     memberDates: "Important Dates",

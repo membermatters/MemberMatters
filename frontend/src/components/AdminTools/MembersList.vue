@@ -11,7 +11,9 @@
       class="full-width"
       @row-click="
         (evt, row) => {
-          $router.push({ name: 'manageMember', params: { memberId: row.id } });
+          $router.push({
+            name: 'manageMember',
+            params: { memberId: row.id } });
         }
       "
     >

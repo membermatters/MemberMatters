@@ -4,7 +4,20 @@
       <h3 class="q-mt-none q-mb-md">
         {{ door.name }}
       </h3>
-      <q-card class="my-card">
+      <q-card
+      class="q-mb-none"
+      style="background-color: transparent"
+      :class="{ 'q-pb-lg': $q.screen.xs }"
+    >
+
+
+      <q-tabs v-model="tab" align="justify" narrow-indicator>
+        <q-tab name="profile" :label="$t('menuLink.profile')"/>
+        <q-tab name="stats" :label="$t('adminTools.stats')"/>
+      </q-tabs>
+        <q-separator />
+        <q-tab-panels v-model="tab" animated>
+        <q-tab-panel name="profile" class="q-px-lg q-py-lg">
         <q-card-section>
           <q-form ref="formRef">
             <div class="column q-gutter-md q-px-sm">
@@ -146,6 +159,11 @@
             </div>
           </q-form>
         </q-card-section>
+        </q-tab-panel>
+        <q-tab-panel name="stats">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+        </q-tab-panel>
+      </q-tab-panels>
       </q-card>
     </div>
   </q-page>
@@ -165,12 +183,13 @@ export default {
   mixins: [formMixin],
   props: {
     doorId: {
-      type: String,
+      type: [String, Number],
       default: "",
     },
   },
   data() {
     return {
+      tab: "profile",
       removeLoading: false,
       saved: {
         // if there was an error saving the form
