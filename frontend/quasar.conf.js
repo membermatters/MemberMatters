@@ -11,7 +11,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
 const { configure } = require("quasar/wrappers");
-const PROICONS = true;
 
 module.exports = configure((ctx) => ({
   // https://quasar.dev/quasar-cli/supporting-ts
@@ -32,7 +31,6 @@ module.exports = configure((ctx) => ({
     "sentry",
     "i18n",
     "axios",
-    "fontawesome-pro",
     "routeGuards",
     "capacitor",
   ],
@@ -45,7 +43,7 @@ module.exports = configure((ctx) => ({
   // https://github.com/quasarframework/quasar/tree/dev/extras
   extras: [
     // 'ionicons-v4',
-    // 'mdi-v5',
+    "mdi-v5",
     // 'fontawesome-v5',
     // 'eva-icons',
     // 'themify',
@@ -60,10 +58,6 @@ module.exports = configure((ctx) => ({
   build: {
     vueRouterMode: "history", // available values: 'hash', 'history'
     env: {
-      // Set this to false to disable fontawesome pro icons. You need to configure your .npmrc
-      // file as per the font awesome pro instructions to download and use FA pro icons.
-      proIcons: PROICONS,
-
       // When running with capacitor this value is used for the base URL for all API requests
       apiBaseUrl: process.env.API_BASE_URL,
     },
@@ -154,7 +148,7 @@ module.exports = configure((ctx) => ({
       dark: "auto", // or Boolean true/false
       loadingBar: { color: "accent", skipHijack: ctx.mode.capacitor },
     },
-    iconSet: PROICONS ? "fontawesome-v5-pro" : "fontawesome-v5", // Quasar icon set
+    iconSet: "mdi-v5", // Quasar icon set
 
     // Possible values for "importStrategy":
     // * 'auto' - (DEFAULT) Auto-import needed Quasar components & directives
