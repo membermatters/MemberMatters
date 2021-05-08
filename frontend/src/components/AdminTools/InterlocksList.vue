@@ -9,7 +9,13 @@
         label: 'Last Seen',
         field: 'lastSeen',
         sortable: true,
-        format: (val, row) => this.formatDate(val)
+        format: (val) => this.formatDate(val)
+      },
+      {
+        name: 'usage',
+        label: 'Logged Time',
+        field: 'usage',
+        sortable: true,
       },
     ]"
     row-key="id"
@@ -34,11 +40,7 @@
 
     <template v-slot:header="props">
       <q-tr :props="props">
-        <q-th
-          v-for="col in props.cols"
-          :key="col.name"
-          :props="props"
-        >
+        <q-th v-for="col in props.cols" :key="col.name" :props="props">
           {{ col.label }}
         </q-th>
         <q-th auto-width>
@@ -100,14 +102,8 @@
     </template>
 
     <template v-slot:body="props">
-      <q-tr
-        :props="props"
-      >
-        <q-td
-          v-for="col in props.cols"
-          :key="col.name"
-          :props="props"
-        >
+      <q-tr :props="props">
+        <q-td v-for="col in props.cols" :key="col.name" :props="props">
           <router-link
             v-if="col.label === 'Name'"
             :to="{name: 'manageInterlock', params: {interlockId: String(props.row.id)}}"

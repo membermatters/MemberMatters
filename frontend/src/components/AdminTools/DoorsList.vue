@@ -5,12 +5,17 @@
       { name: 'id', label: 'ID', field: 'id', sortable: true },
       { name: 'name', label: 'Name', field: 'name', sortable: true },
       { name: 'ipAddress', label: 'IP', field: 'ipAddress', sortable: true },
-      {
-        name: 'lastSeen',
+      { name: 'lastSeen',
         label: 'Last Seen',
         field: 'lastSeen',
         sortable: true,
-        format: (val) => formatDate(val),
+        format: (val) => this.formatDate(val),
+      },
+      {
+        name: 'usage',
+        label: 'Swipes',
+        field: 'usage',
+        sortable: true,
       },
     ]"
     row-key="id"
@@ -18,14 +23,6 @@
     :pagination.sync="pagination"
     :grid="$q.screen.xs"
     :no-data-label="$t('doors.nodata')"
-    @row-click="
-      (evt, row) => {
-        $router.push({
-          name: 'manageDoor',
-          params: { doorId: String(row.id) },
-        });
-      }
-    "
   >
     <template v-slot:top-right>
       <q-input
