@@ -13,7 +13,7 @@
                 interval: $tc(
                   `paymentPlans.${
                     plan.intervalAmount > 1 ? "intervalPlurals" : "interval"
-                  }.${plan.interval}`
+                  }.${plan.interval.toLowerCase()}`
                 ),
               })
             }}
