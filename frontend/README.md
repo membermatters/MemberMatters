@@ -9,25 +9,14 @@ The frontend can be built into a normal SPA web app, a semi native iOS and Andro
 ### Node
 Ensure you have nvm (node version manager) installed. Once you've installed nvm install node 14 with `node install 14`.
 
-### Ubuntu
+### Linux
 If you're using Ubuntu, you may need to install some dependencies with:
 
 `sudo apt install libpng-dev`
 
-### Fontawesome icons
-By default, this project uses font awesome **pro** icons. These have many more icons, duotone and brand versions, etc. If you don't want to pay for a pro license, you can revert to the free icons.
+If using Fedora, you may need to run the command:
 
-#### Pro icons
-You should review the official Font Awesome documentation about using npm with pro icons available [here](https://fontawesome.com/how-to-use/on-the-web/setup/using-package-managers#installing-pro). Once setup, you should be able to continue installing dependencies and follow the rest of this guide.
-
-#### Free icons
-To disable the pro icons, you need to make a few changes.
-
-`src/boot/fontawesome-pro.ts` - In this file, comment out the lines in the pro section, and uncomment the lines in the free section.
-
-`quasar.conf.js` - Near the top of this file, change `const PROICONS = true;` to `const PROICONS = false;`.
-
-`package.json` - remove the line that says `"@fortawesome/fontawesome-pro": "^5.13.0",` (the version may be different).
+`sudo dnf install libpng-devel`
 
 ## Install the dependencies
 ```bash
