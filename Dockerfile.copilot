@@ -16,7 +16,7 @@ WORKDIR /usr/src/app/
 
 # Install nginx and other build dependencies
 RUN apk update \
-    && apk add make gcc g++ musl-dev libffi-dev openssl-dev zlib-dev jpeg-dev bash libpng-dev openrc cargo nginx vips-dev python2 python3 python3-dev py3-pip nodejs npm  \
+    && apk add make gcc g++ musl-dev libffi-dev openssl-dev zlib-dev jpeg-dev bash libpng-dev openrc cargo nginx vips-dev python2 python3 python3-dev py3-pip nodejs npm mysql-client \
     # Create some base folders for everything
     && mkdir /usr/src/logs && mkdir /usr/src/data \
     # Install node deps
@@ -30,9 +30,10 @@ RUN apk update \
 # Copy over app code
 ADD memberportal /usr/src/app/memberportal
 ADD frontend /usr/src/app/frontend
+ADD docker /usr/src/app/docker
 
 # Build out the code:
-RUN /usr/src/app/memberportal/ \
+RUN cd /usr/src/app/memberportal/ \
     && python3 manage.py collectstatic --noinput \
     # Build our frontend
     && cd /usr/src/app/frontend/ \
