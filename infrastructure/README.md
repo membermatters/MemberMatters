@@ -63,4 +63,9 @@ copilot svc deploy
 copilot storage init -n mm-db -t Aurora -w frontend --engine MySQL
 # Deploy database config and kick of DB creation:
 copilot deploy --name frontend 
+
+# Create codedeploy pipeline
+copilot pipeline init
+# Have a look at the generated files, tweak as needed and add them to git:
+git add buildspec.yml pipeline.yml 
 ```
