@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const xcode = require("xcode");
 const fs = require("fs");
 const pkg = require("./package.json");
