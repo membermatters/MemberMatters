@@ -1,0 +1,20 @@
+{
+  "devDependencies": {
+    "husky": "^6.0.0",
+    "lint-staged": "^11.0.0"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,ts,vue,json}": [
+      "echo Linting Frontend",
+      "npm run lint:precommit --prefix frontend -- "
+    ],
+    "*.py": [
+      "echo Linting Backend",
+      "black --check -- "
+    ]
+  }
+}

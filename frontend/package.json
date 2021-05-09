@@ -16,6 +16,7 @@
     "build:android": "quasar build -m capacitor -T android --ide",
     "build:electron": "quasar build -m electron",
     "lint": "eslint --cache --fix --ext .js,.vue,.ts ./",
+    "lint:precommit": "eslint",
     "icons": "icongenie generate -i app-icon.png",
     "icons:bg": "icongenie generate -i app-icon.png -b app-bg.png"
   },
