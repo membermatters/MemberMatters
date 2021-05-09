@@ -30,14 +30,9 @@ npm install
 npm run dev
 ```
 
-Take note of the IP and port. In this case, open your favourite browser and go to `http://127.0.0.1:8080/`. You should 
-be presented with the home page of the web app. Assuming you loaded the database fixtures in the backend, you can login with the username "default@example.com" and password 
+Take note of the IP and port. In this case, open your favourite browser and go to `http://127.0.0.1:8080/`. You should
+be presented with the home page of the web app. Assuming you loaded the database fixtures in the backend, you can login with the username "default@example.com" and password
 "MemberMatters!". You should create a new account, then use the default account to give your new account admin rights. You can do so using the Django admin page for the `user` model which can be accessed at http://localhost:8080/admin/profile/user/. Make sure to select "super user", "staff", and "admin" for your new account. You should change the password of the default admin account or remove it once you've setup your new account.
-
-### Lint the files
-```bash
-npm run lint
-```
 
 ### Build the app for production
 ```bash
@@ -57,13 +52,18 @@ With the icon overlayed on a gradient background for the splashscreen.
 npm run icons:bg
 ```
 
+## Linter
+This project uses a combination of eslint and prettier to detect common errors and enforce common code style.
+
+You should set up a file watcher as explained below, but you can also manually lint the front end by running:
+`npm run lint`
 
 ## Contributing Guidelines
 This frontend project uses the Quasar framework for components and building/config. All source code
 can be found in the `src` folder.
 
 All code must pass the eslint rules. In fact, the dev server will throw an exception if your code
-does not pass the linter. It is recommended that you setup some sort of file watcher in your IDE
+generates an eslint error. It is recommended that you set up some sort of file watcher in your IDE
 that automatically runs `eslint --fix <changed_file>`. You should also set up your IDE to show
 you eslint errors or warnings (most can do this).
 
