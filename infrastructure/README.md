@@ -68,4 +68,7 @@ copilot deploy --name frontend
 copilot pipeline init
 # Have a look at the generated files, tweak as needed and add them to git:
 git add buildspec.yml pipeline.yml 
+# Deploy the pipeline
+copilot pipeline update
+# Follow the prompts ^^ to connect github up to codepipeline
 ```
