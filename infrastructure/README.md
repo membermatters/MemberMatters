@@ -15,7 +15,7 @@ export ENV=prod
 source ./set_env.sh
 ```
 
-## Step 2: Initial bootstrapping of Infra & Database
+## Step 2: Initial bootstrapping of hosted zone / vpc / wildcard ssl certificate
 
 ```bash
 # nameservers for the zone we're gonna use in AWS land
@@ -37,17 +37,9 @@ host -t ns members.gctechspace.org
 terragrunt apply --terragrunt-working-dir membermatters/$ENV/acm-public
 # Create VPC for hosting this app in (note down the VPC ID, public and private subnet IDs)
 terragrunt apply --terragrunt-working-dir membermatters/$ENV/vpc
-
-# Security groups for our public app and for the DB
-terragrunt apply --terragrunt-working-dir membermatters/$ENV/sg-app-public
-terragrunt apply --terragrunt-working-dir membermatters/$ENV/sg-db
-
-# Create the DB! get RDS master password from env variable:
-source secrets.sh 
-terragrunt apply --terragrunt-working-dir membermatters/$ENV/db
 ```
 
-# Initial setup of app
+# Initial setup of app & database
 
 ```bash
 cd copilot
