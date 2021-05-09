@@ -1,0 +1,31 @@
+# This YAML file defines the relationship and deployment ordering of your environments.
+
+# The name of the pipeline
+name: pipeline-mm-MemberMatters
+
+# The version of the schema used in this template
+version: 1
+
+# This section defines the source artifacts.
+source:
+  # The name of the provider that is used to store the source artifacts.
+  provider: GitHub
+  # Additional properties that further specifies the exact location
+  # the artifacts should be sourced from. For example, the GitHub provider
+  # has the following properties: repository, branch.
+  properties:
+    branch: main
+    repository: https://github.com/gctechspace/MemberMatters
+    # Optional: specify the name of an existing CodeStar Connections connection.
+    # connection_name: a-connection
+
+# The deployment section defines the order the pipeline will deploy
+# to your environments.
+stages:
+    - # The name of the environment to deploy to.
+      name: prod
+      # Optional: flag for manual approval action before deployment.
+      # requires_approval: true
+      # Optional: use test commands to validate this stage of your build.
+      # test_commands: [echo 'running tests', make test]
+
