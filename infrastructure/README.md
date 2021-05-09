@@ -58,4 +58,9 @@ copilot svc deploy
 # 2. Load balancers -> HTTPS Listener -> View/edit rules -> Change hostname to `members.gctechspace.org`
 # 3. Load balancers -> HTTP Listener -> View/edit rules -> Change hostname to `members.gctechspace.org`
 # These settings should stay as long as we don't delete the app and re-create it.
+
+# Create the database configuration ( enter initial database name as "mm" )
+copilot storage init -n mm-db -t Aurora -w frontend --engine MySQL
+# Deploy database config and kick of DB creation:
+copilot deploy --name frontend 
 ```
