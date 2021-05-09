@@ -638,7 +638,7 @@ class Profile(models.Model):
             return {"success": True, "requiredSteps": []}
 
     def save(self, *args, **kwargs):
-        """ On save, update timestamps """
+        """On save, update timestamps"""
         if not self.id:
             self.created = timezone.now()
         self.modified = timezone.now()
