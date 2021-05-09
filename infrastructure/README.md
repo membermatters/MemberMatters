@@ -72,3 +72,9 @@ git add buildspec.yml pipeline.yml
 copilot pipeline update
 # Follow the prompts ^^ to connect github up to codepipeline
 ```
+
+# Manual deploy app
+
+```bash
+copilot svc deploy
+```
