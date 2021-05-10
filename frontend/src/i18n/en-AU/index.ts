@@ -23,6 +23,8 @@ export default {
     doors: "Doors",
     manageDoor: "Manage Door",
     manageInterlock: "Manage Interlock",
+    manageDevice: "Manage Device",
+    devices: "Devices",
     interlocks: "Interlocks",
     kiosks: "Kiosks",
 
@@ -373,6 +375,7 @@ export default {
     lastSeen: "Last Seen",
     openXero: "Open In Xero",
     createInvoice: "Create Invoice",
+    stats: "Stats"
   },
   doors: {
     nodata: "There are no doors in the system.",
