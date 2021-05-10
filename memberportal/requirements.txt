@@ -16,3 +16,4 @@ markdown~=3.3.3
 djangorestframework-simplejwt>=4.6.0
 sentry_sdk
 django-csp~=3.7
+mysqlclient
