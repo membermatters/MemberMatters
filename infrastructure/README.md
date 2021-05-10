@@ -78,3 +78,9 @@ copilot pipeline update
 ```bash
 copilot svc deploy
 ```
+
+# Connect to running instance
+
+```bash
+copilot svc exec --name frontend --env prod -c /bin/bash
+```
