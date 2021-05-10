@@ -75,12 +75,28 @@ copilot pipeline update
 
 # Manual deploy app
 
+From the command line, pushing any local changes straight to production:
 ```bash
 copilot svc deploy
 ```
+
+From the AWS console, pulling in the latest `main` branch from github and deploying it:
+
+https://ap-southeast-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/pipeline-mm-MemberMatters/view?region=ap-southeast-2
+
+then click 'Release change' at the top.
 
 # Connect to running instance
 
 ```bash
 copilot svc exec --name frontend --env prod -c /bin/bash
 ```
+
+# Automatic Deployments
+
+When a merge to main happens, AWS kicks off an automatic build and deployment of the latest code. 
+
+Follow along with progress here: https://ap-southeast-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/pipeline-mm-MemberMatters/view?region=ap-southeast-2 
+
+If something doesn't work right, CloudFormation will time out after 30 or so minutes. To make that process quicker you can scale down the number of instances (ECS -> Clusters -> open Cluster -> open Service -> click Update -> next,next,change Desired Count to 0)
+
