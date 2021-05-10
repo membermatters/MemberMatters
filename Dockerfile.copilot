@@ -46,4 +46,4 @@ RUN cd /usr/src/app/memberportal/ \
 
 # Expose the port and run the app
 EXPOSE 8000
-CMD ["sh", "/usr/src/app/docker/container_start.sh"]
+CMD ["sh", "/usr/src/app/docker/container_start_no_setup.sh"]
