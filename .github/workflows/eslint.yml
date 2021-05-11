@@ -8,4 +8,5 @@ jobs:
       - name: Install modules
         run: npm i
       - name: Run ESLint
+        working-directory: ./frontend
         run: npm run lint
