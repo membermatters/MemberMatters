@@ -16,7 +16,7 @@
                       minPrice.intervalAmount > 1
                         ? "intervalPlurals"
                         : "interval"
-                    }.${minPrice.interval}`
+                    }.${minPrice.interval.toLowerCase()}`
                   ),
                 }),
               })

@@ -28,6 +28,10 @@ Currently, MemberMatters is only officially supported on the latest LTS release 
 The official changelog is available on the website [here](https://membermatters.org/CHANGELOG). You will also find each release [here](https://github.com/membermatters/MemberMatters/releases) on GitHub.
 
 ## Getting Started (Developers)
+### Pre-Commit Hooks
+We use husky and lint-staged to manage pre commit hooks. The first thing you should do is run `npm install` in this 
+directory. This installs and configures the pre commit hooks automatically. After doing this, you should see them run
+when you try to commit a file (for example, with `git commit -m "update thing"`).
 
 ### Vue.js JavaScript frontend 
 Please see the [readme](frontend/README.md) file inside the `frontend` folder. This folder contains all of the source

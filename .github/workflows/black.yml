@@ -1,4 +1,4 @@
-name: Python Linter
+name: Python Linter (Black)
 
 on: [push, pull_request]
 
@@ -9,3 +9,5 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
       - uses: psf/black@stable
+        with:
+          args: ". --check"

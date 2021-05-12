@@ -1,11 +1,11 @@
 # Getting started (Django backend)
 First step is to grab a copy of this repository. You will need to make sure you have python installed,
-3.7 or newer as that's the only version it has been tested on. Make sure you also install pip so that you can install
-all of the dependencies.
+3.7 or newer, as that's the only version it has been tested on. Make sure you also install pip so that you can install
+all the dependencies.
 
 To install python 3/pip and the requirements, run the commands below *from within this folder*.
 ## Linux (Ubuntu)
- Make sure you have all of the common programming dependencies installed:
+ Make sure you have all the common programming dependencies installed:
  ```bash
  sudo apt install build-essential libssl-dev libffi-dev python3-dev python3 python3-pip python3-venv
  ```
@@ -24,7 +24,7 @@ deactivate
 ```
 
  
-#### macOS
+## macOS
 You should install and use virtualenv on macOS.
  
 ```bash
@@ -47,7 +47,7 @@ Notes: if you're running macOS Big Sur (and/or an Apple Silicon Mac), you may ne
 CFLAGS='-I/usr/local/opt/zlib/include -L/usr/local/opt/zlib/lib' pip3 install -r requirements.txt
 ```
 
-#### Windows
+## Windows
 Please follow the instructions below to setup dev environment in Windows (tested in Windows 7 & 10).
 * Download & install Python 3.6+ from [here](https://www.python.org/downloads/)
 * CD into the cloned repository.
@@ -99,12 +99,15 @@ Starting development server at http://127.0.0.1:8000/
 
 Now that the backend API is running, you can head over to the [frontend](/frontend) folder and follow those instructions to get the frontend UI running.
 
-## Pre-commit hooks
-Finally, you need to install the git pre-commit hooks:
+## Linter
+As explained below, this projects uses a linter (called "Black") to fix common errors, and to enforce consistent code style/standards.
 
-`pre-commit install`
+You can manually run the black linter with the following command in this folder: `black . `
 
-Failure to ensure your code is compliant with our code formatting and linting standards will result 
+Note that the command above will automatically try to correct any issues that are detected. If you just want to check 
+your code without automatically applying fixes, you can use: `black --check .`
+
+Failure to ensure your code is compliant with our code formatting and linting standards may result 
 in rejection of your pull request so please make sure you complete this step.
 
 # Contributing Guidelines
@@ -119,14 +122,15 @@ Once you are happy with your changes, please open a pull request to merge them i
 and accepted/rejected.
 
 Note to collaborators with push permission: Do not push directly to master. You should push all changes to a feature 
-branch first (`feature/<feature_name>`). When you are happy with it submit a pull request for merging into dev. The 
-`master` branch should only contain the latest stable release.
+branch first (`feature/<feature_name>`). When you are happy with it submit a pull request for merging into main. We use
+tags to manage versions, so `main` contains the latest "development" version, and this is tagged when a new
+version is released.
 
-We use eslint, prettier and black for code linting and formatting. These are setup as precommit 
-hooks. These are a requirement and anything that fails these rules will not be accepted. If you 
+We use eslint, prettier and black for code linting and formatting. These are set up as pre-commit 
+hooks. These are a requirement and anything that fails these rules may not be accepted. If you 
 would like to suggest changes to the eslint config please open an issue. If you have a specific use 
 case, you may disable eslint rules on a line by line basis. Any global disables will be rejected 
-unless you have a really good reason.
+unless you have a good reason.
 
 # Notes
 You will need to re-run the database migration every time the db models change. You may see random database related errors such as column does not exist if you forget to do this. You can do that by running:
