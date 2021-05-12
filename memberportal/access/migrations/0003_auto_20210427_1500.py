@@ -6,12 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('access', '0002_auto_20201118_2210'),
+        ("access", "0002_auto_20201118_2210"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='doors',
-            options={'permissions': [('manage_doors', 'Can manage doors')], 'verbose_name': 'Doors', 'verbose_name_plural': 'Doors'},
+            name="doors",
+            options={
+                "permissions": [("manage_doors", "Can manage doors")],
+                "verbose_name": "Doors",
+                "verbose_name_plural": "Doors",
+            },
         ),
     ]
