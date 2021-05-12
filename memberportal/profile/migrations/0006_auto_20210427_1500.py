@@ -6,17 +6,29 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('profile', '0005_auto_20210218_1100'),
+        ("profile", "0005_auto_20210218_1100"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='membertypes',
-            options={'verbose_name': 'Member types', 'verbose_name_plural': 'Member types'},
+            name="membertypes",
+            options={
+                "verbose_name": "Member types",
+                "verbose_name_plural": "Member types",
+            },
         ),
         migrations.AlterField(
-            model_name='profile',
-            name='state',
-            field=models.CharField(choices=[('noob', 'Needs Induction'), ('active', 'Active'), ('inactive', 'Inactive'), ('accountonly', 'Account only')], default='noob', max_length=11),
+            model_name="profile",
+            name="state",
+            field=models.CharField(
+                choices=[
+                    ("noob", "Needs Induction"),
+                    ("active", "Active"),
+                    ("inactive", "Inactive"),
+                    ("accountonly", "Account only"),
+                ],
+                default="noob",
+                max_length=11,
+            ),
         ),
     ]

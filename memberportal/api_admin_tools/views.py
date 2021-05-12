@@ -193,12 +193,24 @@ class Interlocks(APIView):
 
         def get_interlock(interlock):
             cursor = connection.cursor()
-            cursor.execute('SELECT SUM((julianday(last_heartbeat)-julianday(first_heartbeat))*86400) AS onTime from access_interlocklog WHERE interlock_id = %s', [interlock.id])
+            cursor.execute(
+                "SELECT SUM((julianday(last_heartbeat)-julianday(first_heartbeat))*86400) AS onTime from access_interlocklog WHERE interlock_id = %s",
+                [interlock.id],
+            )
             result = cursor.fetchone()
             onTime = 0
-            
+
             if result[0] is not None:
-                onTime = humanize.precisedelta(round(result[0]), suppress=['months', 'days', 'seconds', 'milliseconds', 'microseconds'])
+                onTime = humanize.precisedelta(
+                    round(result[0]),
+                    suppress=[
+                        "months",
+                        "days",
+                        "seconds",
+                        "milliseconds",
+                        "microseconds",
+                    ],
+                )
 
             print(onTime)
             return {

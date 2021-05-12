@@ -6,6 +6,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install modules
+        working-directory: ./frontend
         run: npm i
       - name: Run ESLint
         working-directory: ./frontend
