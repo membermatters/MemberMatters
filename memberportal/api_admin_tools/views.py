@@ -12,6 +12,9 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from django.db.models import Sum
+import humanize
+from django.db import connection
 
 
 class GetMembers(APIView):
@@ -145,6 +148,7 @@ class Doors(APIView):
                 "playThemeOnSwipe": door.play_theme,
                 "exemptFromSignin": door.exempt_signin,
                 "hiddenToMembers": door.hidden,
+                "usage": models.DoorLog.objects.filter(door_id=door.id).count(),
             }
 
         return Response(map(get_door, doors))
@@ -188,6 +192,27 @@ class Interlocks(APIView):
         interlocks = models.Interlock.objects.all()
 
         def get_interlock(interlock):
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT SUM((julianday(last_heartbeat)-julianday(first_heartbeat))*86400) AS onTime from access_interlocklog WHERE interlock_id = %s",
+                [interlock.id],
+            )
+            result = cursor.fetchone()
+            onTime = 0
+
+            if result[0] is not None:
+                onTime = humanize.precisedelta(
+                    round(result[0]),
+                    suppress=[
+                        "months",
+                        "days",
+                        "seconds",
+                        "milliseconds",
+                        "microseconds",
+                    ],
+                )
+
+            print(onTime)
             return {
                 "id": interlock.id,
                 "name": interlock.name,
@@ -199,6 +224,7 @@ class Interlocks(APIView):
                 "playThemeOnSwipe": interlock.play_theme,
                 "exemptFromSignin": interlock.exempt_signin,
                 "hiddenToMembers": interlock.hidden,
+                "usage": onTime,
             }
 
         return Response(map(get_interlock, interlocks))
