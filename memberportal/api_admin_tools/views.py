@@ -212,7 +212,6 @@ class Interlocks(APIView):
                     ],
                 )
 
-            print(onTime)
             return {
                 "id": interlock.id,
                 "name": interlock.name,
