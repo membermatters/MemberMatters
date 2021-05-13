@@ -105,16 +105,6 @@ const PageAndRouteConfig = [
         component: () => import("pages/AdminTools/ManageTier"),
       },
       {
-        icon: icons.doors,
-        to: "/manage/doors/:doorId",
-        name: "manageDoor",
-        loggedIn: true,
-        admin: true,
-        hiddenMenu: true,
-        backButton: true,
-        component: () => import("pages/AdminTools/ManageDoor"),
-      },
-      {
         icon: icons.interlocks,
         to: "/manage/devices",
         name: "devices",
@@ -131,16 +121,6 @@ const PageAndRouteConfig = [
         hiddenMenu: true,
         backButton: true,
         component: () => import("pages/AdminTools/ManageDevice"),
-      },
-      {
-        icon: icons.interlocks,
-        to: "/manage/interlocks/:interlockId",
-        name: "manageInterlock",
-        loggedIn: true,
-        admin: true,
-        hiddenMenu: true,
-        backButton: true,
-        component: () => import("pages/AdminTools/ManageInterlock"),
       },
       {
         icon: icons.kiosks,

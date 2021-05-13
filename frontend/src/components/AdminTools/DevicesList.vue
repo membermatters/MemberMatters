@@ -6,7 +6,7 @@
     :filter="filter"
     :pagination.sync="pagination"
     :grid="$q.screen.xs"
-    :no-data-label="$t('interlocks.nodata')"
+    :no-data-label="$t(`${deviceChoice}.nodata`)"
   >
     <template v-slot:top-right>
       <q-input
@@ -74,7 +74,7 @@
                   class="q-mr-sm"
                   size="sm"
                   color="accent"
-                  @click="rebootDoor(props.row.id)"
+                  @click="rebootDevice(props.row.id)"
                 >
                   <q-icon :name="icons.reboot" />
                   <q-tooltip>
@@ -87,7 +87,10 @@
                   color="accent"
                   :to="{
                     name: 'manageDevice',
-                    params: { deviceId: String(props.row.id), deviceType: deviceChoice },
+                    params: {
+                      deviceId: String(props.row.id),
+                      deviceType: deviceChoice,
+                    },
                   }"
                 >
                   <q-icon :name="icons.settings" />
@@ -104,7 +107,7 @@
                   class="q-mr-sm"
                   size="sm"
                   color="accent"
-                  @click="rebootInterlock(props.row.id)"
+                  @click="rebootDevice(props.row.id)"
                 >
                   <q-icon :name="icons.reboot" />
                   <q-tooltip>
@@ -117,7 +120,10 @@
                   color="accent"
                   :to="{
                     name: 'manageDevice',
-                    params: { deviceId: String(props.row.id), deviceType: deviceChoice },
+                    params: {
+                      deviceId: String(props.row.id),
+                      deviceType: deviceChoice,
+                    },
                   }"
                 >
                   <q-icon :name="icons.settings" />
@@ -136,18 +142,21 @@
       <q-tr :props="props">
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
           <!-- <template v-if="deviceChoice === 'doors'"> -->
-            <router-link
-              v-if="col.label === 'Name'"
-              :to="{
-                name: 'manageDevice',
-                params: { deviceId: String(props.row.id), deviceType: deviceChoice },
-              }"
-            >
-              {{ col.value }}
-            </router-link>
-            <template v-else>
-              {{ col.value }}
-            </template>
+          <router-link
+            v-if="col.label === 'Name'"
+            :to="{
+              name: 'manageDevice',
+              params: {
+                deviceId: String(props.row.id),
+                deviceType: deviceChoice,
+              },
+            }"
+          >
+            {{ col.value }}
+          </router-link>
+          <template v-else>
+            {{ col.value }}
+          </template>
           <!-- </template>
           <template v-else>
             <router-link
@@ -184,7 +193,7 @@
               class="q-mr-sm"
               size="sm"
               color="accent"
-              @click="rebootDoor(props.row.id)"
+              @click="rebootDevice(props.row.id)"
             >
               <q-icon :name="icons.reboot" />
               <q-tooltip>
@@ -198,7 +207,7 @@
               class="q-mr-sm"
               size="sm"
               color="accent"
-              @click="rebootInterlock(props.row.id)"
+              @click="rebootDevice(props.row.id)"
             >
               <q-icon :name="icons.reboot" />
               <q-tooltip>
@@ -239,15 +248,7 @@ export default {
     };
   },
   computed: {
-    // manageLabel() {
-    //   let label = "";
-    //   if (this.deviceChoice === "doors") {
-    //     label = "manageDoor";
-    //   } else {
-    //     label = "manageInterlock";
-    //   }
-    //   return label;
-    // },
+    // TODO: Add table labels here for I18n translation and door/interlock differences
     columnI18n() {
       let columns = [];
       if (this.deviceChoice === "doors") {
@@ -301,17 +302,15 @@ export default {
       }
       return columns;
     },
-    // TODO: Add table labels here for I18n translation and door/interlock differences
     icons() {
       return icons;
     },
   },
   methods: {
-    // TODO: Remove dup of reboot and manage
-    rebootInterlock(interlockId) {
-      this.$refs[`${interlockId}-reboot`].loading = true;
+    rebootDevice(deviceId) {
+      this.$refs[`${deviceId}-reboot`].loading = true;
       this.$axios
-        .post(`/api/access/interlocks/${interlockId}/reboot/`)
+        .post(`/api/access/${this.deviceChoice}/${deviceId}/reboot/`)
         .catch(() => {
           this.$q.dialog({
             title: this.$t("error.error"),
@@ -319,21 +318,7 @@ export default {
           });
         })
         .finally(() => {
-          this.$refs[`${interlockId}-reboot`].loading = false;
-        });
-    },
-    rebootDoor(doorId) {
-      this.$refs[`${doorId}-reboot`].loading = true;
-      this.$axios
-        .post(`/api/access/doors/${doorId}/reboot/`)
-        .catch(() => {
-          this.$q.dialog({
-            title: this.$t("error.error"),
-            message: this.$t("error.requestFailed"),
-          });
-        })
-        .finally(() => {
-          this.$refs[`${doorId}-reboot`].loading = false;
+          this.$refs[`${deviceId}-reboot`].loading = false;
         });
     },
     unlockDoor(doorId) {
