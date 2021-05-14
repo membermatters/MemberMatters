@@ -113,16 +113,6 @@ const PageAndRouteConfig = [
         component: () => import("pages/AdminTools/Devices"),
       },
       {
-        icon: icons.interlocks,
-        to: "/manage/devices/:deviceId",
-        name: "manageDevice",
-        loggedIn: true,
-        admin: true,
-        hiddenMenu: true,
-        backButton: true,
-        component: () => import("pages/AdminTools/ManageDevice"),
-      },
-      {
         icon: icons.kiosks,
         to: "/manage/kiosks",
         name: "kiosks",

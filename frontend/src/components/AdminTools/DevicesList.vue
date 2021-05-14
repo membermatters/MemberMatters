@@ -33,7 +33,8 @@
       </q-tr>
     </template>
 
-    <template v-slot:item="props">
+
+ <template v-slot:item="props">
       <div
         class="q-pa-sm col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
       >
@@ -54,85 +55,46 @@
             </q-item>
 
             <q-separator />
-            <template v-if="deviceChoice === 'doors'">
-              <q-item class="q-mt-sm row justify-center">
+
+            <q-item class="q-mt-sm row justify-center">
+              <template v-if="deviceChoice === 'doors'">
                 <q-btn
                   :ref="`${props.row.id}-unlock`"
                   class="q-mr-sm"
                   size="sm"
                   color="accent"
-                  @click="unlockDoor(props.row.id)"
+                  @click.stop="unlockDoor(props.row.id)"
                 >
                   <q-icon :name="icons.unlock" />
                   <q-tooltip>
                     {{ $t("button.unlockDoor") }}
                   </q-tooltip>
                 </q-btn>
+              </template>
 
-                <q-btn
-                  :ref="`${props.row.id}-reboot`"
-                  class="q-mr-sm"
-                  size="sm"
-                  color="accent"
-                  @click="rebootDevice(props.row.id)"
-                >
-                  <q-icon :name="icons.reboot" />
-                  <q-tooltip>
-                    {{ $t("button.rebootDevice") }}
-                  </q-tooltip>
-                </q-btn>
-
-                <q-btn
-                  size="sm"
-                  color="accent"
-                  :to="{
-                    name: 'manageDevice',
-                    params: {
-                      deviceId: String(props.row.id),
-                      deviceType: deviceChoice,
-                    },
-                  }"
-                >
-                  <q-icon :name="icons.settings" />
-                  <q-tooltip>
-                    {{ $t("button.manage") }}
-                  </q-tooltip>
-                </q-btn>
-              </q-item>
-            </template>
-            <template v-else>
-              <q-item class="q-mt-sm row justify-center">
-                <q-btn
-                  :ref="`${props.row.id}-reboot`"
-                  class="q-mr-sm"
-                  size="sm"
-                  color="accent"
-                  @click="rebootDevice(props.row.id)"
-                >
-                  <q-icon :name="icons.reboot" />
-                  <q-tooltip>
-                    {{ $t("button.rebootDevice") }}
-                  </q-tooltip>
-                </q-btn>
-
-                <q-btn
-                  size="sm"
-                  color="accent"
-                  :to="{
-                    name: 'manageDevice',
-                    params: {
-                      deviceId: String(props.row.id),
-                      deviceType: deviceChoice,
-                    },
-                  }"
-                >
-                  <q-icon :name="icons.settings" />
-                  <q-tooltip>
-                    {{ $t("button.manage") }}
-                  </q-tooltip>
-                </q-btn>
-              </q-item>
-            </template>
+              <q-btn
+                :ref="`${props.row.id}-reboot`"
+                class="q-mr-sm"
+                size="sm"
+                color="accent"
+                @click.stop="rebootDevice(props.row.id)"
+              >
+                <q-icon :name="icons.reboot" />
+                <q-tooltip>
+                  {{ $t("button.rebootDevice") }}
+                </q-tooltip>
+              </q-btn>
+              <q-btn
+                size="sm"
+                color="accent"
+                @click.stop="manageDevice(props.row.id)"
+              >
+                <q-icon :name="icons.settings" />
+                <q-tooltip>
+                  {{ $t("button.manage") }}
+                </q-tooltip>
+              </q-btn>
+            </q-item>
           </q-list>
         </q-card>
       </div>
@@ -141,37 +103,9 @@
     <template v-slot:body="props">
       <q-tr :props="props">
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
-          <!-- <template v-if="deviceChoice === 'doors'"> -->
-          <router-link
-            v-if="col.label === 'Name'"
-            :to="{
-              name: 'manageDevice',
-              params: {
-                deviceId: String(props.row.id),
-                deviceType: deviceChoice,
-              },
-            }"
-          >
-            {{ col.value }}
-          </router-link>
-          <template v-else>
-            {{ col.value }}
-          </template>
-          <!-- </template>
-          <template v-else>
-            <router-link
-              v-if="col.label === 'Name'"
-              :to="{
-                name: 'manageInterlock',
-                params: { interlockId: String(props.row.id) },
-              }"
-            >
-              {{ col.value }}
-            </router-link>
-            <template v-else>
-              {{ col.value }}
-            </template>
-          </template> -->
+
+          {{ col.value }}
+
         </q-td>
         <q-td auto-width>
           <template v-if="deviceChoice === 'doors'">
@@ -180,41 +114,37 @@
               class="q-mr-sm"
               size="sm"
               color="accent"
-              @click="unlockDoor(props.row.id)"
+              @click.stop="unlockDoor(props.row.id)"
             >
               <q-icon :name="icons.unlock" />
               <q-tooltip>
                 {{ $t("button.unlockDoor") }}
               </q-tooltip>
             </q-btn>
+          </template>
+          <q-btn
+            :ref="`${props.row.id}-reboot`"
+            class="q-mr-sm"
+            size="sm"
+            color="accent"
+            @click.stop="rebootDevice(props.row.id)"
+          >
+            <q-icon :name="icons.reboot" />
+            <q-tooltip>
+              {{ $t("button.rebootDevice") }}
+            </q-tooltip>
+          </q-btn>
 
-            <q-btn
-              :ref="`${props.row.id}-reboot`"
-              class="q-mr-sm"
-              size="sm"
-              color="accent"
-              @click="rebootDevice(props.row.id)"
-            >
-              <q-icon :name="icons.reboot" />
-              <q-tooltip>
-                {{ $t("button.rebootDevice") }}
-              </q-tooltip>
-            </q-btn>
-          </template>
-          <template v-else>
-            <q-btn
-              :ref="`${props.row.id}-reboot`"
-              class="q-mr-sm"
-              size="sm"
-              color="accent"
-              @click="rebootDevice(props.row.id)"
-            >
-              <q-icon :name="icons.reboot" />
-              <q-tooltip>
-                {{ $t("button.rebootDevice") }}
-              </q-tooltip>
-            </q-btn>
-          </template>
+          <q-btn
+            size="sm"
+            color="accent"
+            @click.stop="manageDevice(props.row.id)"
+          >
+            <q-icon :name="icons.settings" />
+            <q-tooltip>
+              {{ $t("button.manage") }}
+            </q-tooltip>
+          </q-btn>
         </q-td>
       </q-tr>
     </template>
@@ -307,6 +237,9 @@ export default {
     },
   },
   methods: {
+    manageDevice(deviceId) {
+      this.$emit('openDevice', deviceId, this.deviceChoice)
+    },
     rebootDevice(deviceId) {
       this.$refs[`${deviceId}-reboot`].loading = true;
       this.$axios

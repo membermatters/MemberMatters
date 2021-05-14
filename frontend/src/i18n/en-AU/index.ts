@@ -63,6 +63,7 @@ export default {
     requestFailed: "Sorry, we're having trouble performing that action. Please try again later.",
     pageNotFound: "Page not found",
     noValue: "No Value",
+    noData: "No records found",
     400: " Sorry, there was an error with your request. (Error 400)",
     401: " Sorry, you need to be logged in to access this page. (Error 401)",
     403: " Sorry, you don't have permission to access this page. (Error 403)",
