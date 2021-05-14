@@ -1,15 +1,22 @@
 <template>
-  <q-page class="column flex content-center justify-start" >
-
-
-    <q-tabs v-model="tab" align="justify" narrow-indicator class="bg-accent text-white">
+  <q-page class="column flex content-center justify-start">
+    <q-tabs
+      v-model="tab"
+      align="justify"
+      narrow-indicator
+      class="bg-accent text-white"
+    >
       <q-tab name="doors" :label="$t('access.doors')" />
       <q-tab name="interlocks" :label="$t('access.interlocks')" />
     </q-tabs>
     <q-separator />
     <q-tab-panels v-model="tab" animated>
       <q-tab-panel name="doors">
-        <devices-list deviceChoice="doors" :tableData="doors" @openDevice="manageDevice"></devices-list>
+        <devices-list
+          deviceChoice="doors"
+          :tableData="doors"
+          @openDevice="manageDevice"
+        ></devices-list>
       </q-tab-panel>
       <q-tab-panel name="interlocks">
         <devices-list

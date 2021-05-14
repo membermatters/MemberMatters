@@ -5,7 +5,7 @@
       class="q-dialog-plugin"
       style="max-width: 1500px; width: 800px; height: 650px"
     >
-    <!-- <h3>
+      <!-- <h3>
       {{ device.name }}
     </h3> -->
       <q-tabs
@@ -197,17 +197,9 @@
       </q-tab-panels>
 
       <q-card-actions align="right" class="row">
-        <q-btn
-          color="primary"
-          label="Previous"
-          @click="onPreviousClick"
-        />
+        <q-btn color="primary" label="Previous" @click="onPreviousClick" />
         <q-btn color="primary" label="Next" @click="onNextClick" />
-        <q-btn
-          color="primary"
-          label="Close"
-          @click="onOKClick"
-        />
+        <q-btn color="primary" label="Close" @click="onOKClick" />
         <!-- <q-btn color="primary" label="Cancel" @click="onCancelClick" /> -->
       </q-card-actions>
     </q-card>
@@ -274,7 +266,7 @@ export default {
         usage: null,
         stats: [],
       },
-      deviceIndex: 1,  //TODO: get the actual index of the opened device
+      deviceIndex: 1, //TODO: get the actual index of the opened device
     };
   },
   mounted() {

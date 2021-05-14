@@ -33,8 +33,7 @@
       </q-tr>
     </template>
 
-
- <template v-slot:item="props">
+    <template v-slot:item="props">
       <div
         class="q-pa-sm col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
       >
@@ -103,9 +102,7 @@
     <template v-slot:body="props">
       <q-tr :props="props">
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
-
           {{ col.value }}
-
         </q-td>
         <q-td auto-width>
           <template v-if="deviceChoice === 'doors'">
@@ -238,7 +235,7 @@ export default {
   },
   methods: {
     manageDevice(deviceId) {
-      this.$emit('openDevice', deviceId, this.deviceChoice)
+      this.$emit("openDevice", deviceId, this.deviceChoice);
     },
     rebootDevice(deviceId) {
       this.$refs[`${deviceId}-reboot`].loading = true;
