@@ -1,8 +1,16 @@
 <template>
   <q-dialog ref="dialog" @hide="onDialogHide">
     <!-- <q-card class="q-dialog-plugin"> -->
-    <q-card class="q-dialog-plugin" style="max-width: 1500px;width:800px;height:650px">
-      <q-tabs v-model="tab" align="justify" narrow-indicator class="bg-accent text-white">
+    <q-card
+      class="q-dialog-plugin"
+      style="max-width: 1500px; width: 800px; height: 650px"
+    >
+      <q-tabs
+        v-model="tab"
+        align="justify"
+        narrow-indicator
+        class="bg-accent text-white"
+      >
         <q-tab name="profile" :label="$t('menuLink.profile')" />
         <q-tab name="stats" :label="$t('adminTools.stats')" />
       </q-tabs>
@@ -185,8 +193,18 @@
         </q-tab-panel>
       </q-tab-panels>
 
-      <q-card-actions align="right">
-        <q-btn color="primary" label="Close" @click="onOKClick" class="absolute-bottom-right q-mb-lg q-mr-lg"/>
+      <q-card-actions align="right" class="row">
+        <q-btn
+          color="primary"
+          label="Previous"
+          @click="onPreviousClick"
+        />
+        <q-btn color="primary" label="Next" @click="onNextClick" />
+        <q-btn
+          color="primary"
+          label="Close"
+          @click="onOKClick"
+        />
         <!-- <q-btn color="primary" label="Cancel" @click="onCancelClick" /> -->
       </q-card-actions>
     </q-card>
@@ -253,6 +271,7 @@ export default {
         usage: null,
         stats: [],
       },
+      deviceIndex: 1,  //TODO: get the actual index of the opened device
     };
   },
   mounted() {
@@ -267,18 +286,9 @@ export default {
   },
 
   methods: {
-      ...mapActions("adminTools", ["getDoors", "getInterlocks"]),
+    ...mapActions("adminTools", ["getDoors", "getInterlocks"]),
     initForm() {
-      this.device.name = this.currentDevice.name;
-      this.device.description = this.currentDevice.description;
-      this.device.ipAddress = this.currentDevice.ipAddress;
-      this.device.defaultAccess = this.currentDevice.defaultAccess;
-      this.device.maintenanceLockout = this.currentDevice.maintenanceLockout;
-      this.device.playThemeOnSwipe = this.currentDevice.playThemeOnSwipe;
-      this.device.exemptFromSignin = this.currentDevice.exemptFromSignin;
-      this.device.hiddenToMembers = this.currentDevice.hiddenToMembers;
-      this.device.usage = this.currentDevice.usage;
-      this.device.stats = this.currentDevice.stats;
+      this.device = this.currentDevice;
     },
     removeDevice() {
       this.$q
@@ -358,10 +368,39 @@ export default {
       this.hide();
     },
 
-    // onCancelClick() {
-      // we just need to hide dialog
-      // this.hide();
-    // },
+    onNextClick() {
+      let newDevice;
+      this.deviceIndex = this.deviceIndex + 1;
+      if (this.deviceType === "doors") {
+        if (this.deviceIndex === this.doors.length) {
+          this.deviceIndex = 0;
+        }
+        newDevice = this.doors[this.deviceIndex];
+      } else {
+        if (this.deviceIndex === this.interlocks.length) {
+          this.deviceIndex = 0;
+        }
+        newDevice = this.interlocks[this.deviceIndex];
+      }
+      this.device = newDevice;
+    },
+    onPreviousClick() {
+      let newDevice;
+      this.deviceIndex = this.deviceIndex - 1;
+      if (this.deviceType === "doors") {
+        newDevice = this.doors[this.deviceIndex];
+      } else {
+        newDevice = this.interlocks[this.deviceIndex];
+      }
+      if (this.deviceIndex === 0) {
+        if (this.deviceType === "doors") {
+          this.deviceIndex = this.doors.length;
+        } else {
+          this.deviceIndex = this.interlocks.length;
+        }
+      }
+      this.device = newDevice;
+    },
   },
   computed: {
     ...mapGetters("adminTools", ["doors", "interlocks"]),
@@ -418,6 +457,7 @@ export default {
     currentDevice() {
       // TODO: Could we implement Next/Previous buttons to cycle through them?
       let device;
+      console.log(this.doors);
       if (this.deviceType === "doors") {
         device = this.doors.find((item) => String(item.id) === this.deviceId);
       } else {

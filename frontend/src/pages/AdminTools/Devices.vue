@@ -1,5 +1,7 @@
 <template>
-  <q-page class="column flex content-center justify-start">
+  <q-page class="column flex content-center justify-start" >
+
+
     <q-tabs v-model="tab" align="justify" narrow-indicator class="bg-accent text-white">
       <q-tab name="doors" :label="$t('access.doors')" />
       <q-tab name="interlocks" :label="$t('access.interlocks')" />
