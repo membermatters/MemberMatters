@@ -5,6 +5,9 @@
       class="q-dialog-plugin"
       style="max-width: 1500px; width: 800px; height: 650px"
     >
+    <!-- <h3>
+      {{ device.name }}
+    </h3> -->
       <q-tabs
         v-model="tab"
         align="justify"
@@ -387,17 +390,17 @@ export default {
     onPreviousClick() {
       let newDevice;
       this.deviceIndex = this.deviceIndex - 1;
+      if (this.deviceIndex === -1) {
+        if (this.deviceType === "doors") {
+          this.deviceIndex += this.doors.length;
+        } else {
+          this.deviceIndex += this.interlocks.length;
+        }
+      }
       if (this.deviceType === "doors") {
         newDevice = this.doors[this.deviceIndex];
       } else {
         newDevice = this.interlocks[this.deviceIndex];
-      }
-      if (this.deviceIndex === 0) {
-        if (this.deviceType === "doors") {
-          this.deviceIndex = this.doors.length;
-        } else {
-          this.deviceIndex = this.interlocks.length;
-        }
       }
       this.device = newDevice;
     },
