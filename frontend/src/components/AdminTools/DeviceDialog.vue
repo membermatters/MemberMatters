@@ -196,11 +196,10 @@
         </q-tab-panel>
       </q-tab-panels>
 
-      <q-card-actions align="right" class="row">
+      <q-card-actions align="right" class="row absolute-bottom">
         <q-btn color="primary" label="Previous" @click="onPreviousClick" />
         <q-btn color="primary" label="Next" @click="onNextClick" />
         <q-btn color="primary" label="Close" @click="onOKClick" />
-        <!-- <q-btn color="primary" label="Cancel" @click="onCancelClick" /> -->
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -450,9 +449,7 @@ export default {
       return icons;
     },
     currentDevice() {
-      // TODO: Could we implement Next/Previous buttons to cycle through them?
       let device;
-      console.log(this.doors);
       if (this.deviceType === "doors") {
         device = this.doors.find((item) => String(item.id) === this.deviceId);
       } else {
