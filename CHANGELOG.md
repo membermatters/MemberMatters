@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Task queueing for non critical tasks like emails etc.
 
+## [v2.5.0] - 2021-05-13
+
+### Added
+
+- basic usage stats on each door/interlock
+- more documentation on how to run linting checks manually
+- configuration files for eslint github action and lint-staged/husky
+- configuration and documentation for setting up MM on AWS with terraform/copilot
+
+### Changed
+
+- moved from font awesome to material design icons
+- combined doors/interlocks into devices page
+- updated some python dependencies
+
+### Fixed
+
+- Plan/Tier card interval string error
+
 ## [v2.4.2] - 2021-04-26
 
 ### Fixed
