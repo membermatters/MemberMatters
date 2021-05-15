@@ -139,10 +139,15 @@ class Doors(APIView):
         def get_door(door):
 
             cursor = connection.cursor()
-            cursor.execute('SELECT access_doorlog.door_id, access_doorlog.user_id, pp.screen_name, COUNT(access_doorlog.user_id) as records, MAX(access_doorlog.date) as lastSeen FROM access_doorlog INNER JOIN profile_profile pp on access_doorlog.user_id = pp.user_id GROUP BY access_doorlog.door_id, access_doorlog.user_id HAVING access_doorlog.door_id = %s ORDER BY records DESC', [door.id])
+            cursor.execute(
+                "SELECT access_doorlog.door_id, access_doorlog.user_id, pp.screen_name, COUNT(access_doorlog.user_id) as records, MAX(access_doorlog.date) as lastSeen FROM access_doorlog INNER JOIN profile_profile pp on access_doorlog.user_id = pp.user_id GROUP BY access_doorlog.door_id, access_doorlog.user_id HAVING access_doorlog.door_id = %s ORDER BY records DESC",
+                [door.id],
+            )
             result = cursor.fetchall()
 
-            stats = [dict(zip([key[0] for key in cursor.description], row)) for row in result]
+            stats = [
+                dict(zip([key[0] for key in cursor.description], row)) for row in result
+            ]
 
             return {
                 "id": door.id,
@@ -201,18 +206,35 @@ class Interlocks(APIView):
 
         def get_interlock(interlock):
             cursor = connection.cursor()
-            cursor.execute('SELECT SUM((julianday(last_heartbeat)-julianday(first_heartbeat))*86400) AS onTime from access_interlocklog WHERE interlock_id = %s', [interlock.id])
+            cursor.execute(
+                "SELECT SUM((julianday(last_heartbeat)-julianday(first_heartbeat))*86400) AS onTime from access_interlocklog WHERE interlock_id = %s",
+                [interlock.id],
+            )
             result = cursor.fetchone()
             onTime = 0
-            
+
             if result[0] is not None:
-                onTime = humanize.precisedelta(round(result[0]), suppress=['months', 'days', 'seconds', 'milliseconds', 'microseconds'])
+                onTime = humanize.precisedelta(
+                    round(result[0]),
+                    suppress=[
+                        "months",
+                        "days",
+                        "seconds",
+                        "milliseconds",
+                        "microseconds",
+                    ],
+                )
 
             cursor = connection.cursor()
-            cursor.execute('SELECT access_interlocklog.interlock_id, access_interlocklog.user_id, pp.screen_name, COUNT(access_interlocklog.first_heartbeat) as records, round(SUM(julianday(access_interlocklog.last_heartbeat)-julianday(access_interlocklog.first_heartbeat))*1440) AS onTime FROM access_interlocklog INNER JOIN profile_profile pp on access_interlocklog.user_id = pp.user_id GROUP BY access_interlocklog.interlock_id, access_interlocklog.user_id HAVING access_interlocklog.interlock_id = %s ORDER BY onTime DESC', [interlock.id])
+            cursor.execute(
+                "SELECT access_interlocklog.interlock_id, access_interlocklog.user_id, pp.screen_name, COUNT(access_interlocklog.first_heartbeat) as records, round(SUM(julianday(access_interlocklog.last_heartbeat)-julianday(access_interlocklog.first_heartbeat))*1440) AS onTime FROM access_interlocklog INNER JOIN profile_profile pp on access_interlocklog.user_id = pp.user_id GROUP BY access_interlocklog.interlock_id, access_interlocklog.user_id HAVING access_interlocklog.interlock_id = %s ORDER BY onTime DESC",
+                [interlock.id],
+            )
             result = cursor.fetchall()
 
-            stats = [dict(zip([key[0] for key in cursor.description], row)) for row in result]
+            stats = [
+                dict(zip([key[0] for key in cursor.description], row)) for row in result
+            ]
 
             return {
                 "id": interlock.id,
