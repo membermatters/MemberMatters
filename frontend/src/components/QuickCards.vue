@@ -1,25 +1,24 @@
 <template>
   <div class="row items-stretch">
     <div
-      v-if="!$q.platform.is.electron && siteSignedIn"
+      v-if="siteSignedIn"
       class="q-pa-md col-12 col-sm-4">
-
-      <q-banner
-        inline-actions
-        rounded
-        class="bg-orange text-white q-ma-md"
-      >
-        <template v-slot:avatar>
-          <q-icon
-            :name="icons.warning"
-          />
-        </template>
-        {{ $t('dashboard.signedIn') }}
-      </q-banner>
-
       <a @click="signInCard.click" :disabled="signinDisable">
-        <q-card class="q-pa-xl column justify-center items-center">
-          <p class="text-h4">
+        <q-card class="q-pa-md column justify-center items-center">
+          <q-banner
+            inline-actions
+            rounded
+            class="bg-accent text-white q-mb-md"
+          >
+            <template v-slot:avatar>
+              <q-icon
+                :name="icons.warning"
+              />
+            </template>
+            {{ $t('dashboard.signedIn') }}
+          </q-banner>
+
+          <p class="text-h4 q-pa-md">
             {{ signInCard.title }}
           </p>
           <q-icon style="font-size: 100px" :name="signInCard.icon" />
@@ -29,7 +28,7 @@
 
 
     <div
-      v-else-if="$q.platform.is.electron"
+      v-else
       class="q-pa-md col-12 col-sm-4">
       <a @click="signInCard.click" :disabled="signinDisable">
         <q-card class="q-pa-xl column justify-center items-center">
@@ -77,11 +76,6 @@ export default {
         .post("/api/sitesessions/signin/", { guests: [] })
         .then(() => {
           this.setSiteSignedIn(true);
-          let diag = this.$q
-            .dialog({
-              title: "Alert",
-              message: this.$t("dashboard.signinSuccess"),
-            });
           this.signinDisable = false;
 
           try {
