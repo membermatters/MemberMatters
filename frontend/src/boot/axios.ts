@@ -5,7 +5,7 @@ import { Platform } from "quasar";
 export default ({ Vue, store }: {Vue: any, store: any}) => {
   const instance = axios.create({
     baseURL: process.env.apiBaseUrl || "",
-    // withCredentials: true,
+    withCredentials: true,
     xsrfCookieName: "csrftoken",
     xsrfHeaderName: "X-CSRFTOKEN",
   });
@@ -22,9 +22,10 @@ export default ({ Vue, store }: {Vue: any, store: any}) => {
   });
 
   instance.interceptors.response.use(function (response) {
+    console.log(response.headers);
     return response;
   }, function (error) {
-    if (error.response.status === 401) {
+    if (error.response && error.response.status === 401) {
       store.commit("auth/setAuth", {});
       return Promise.reject(error);
     } else {

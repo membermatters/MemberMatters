@@ -180,6 +180,8 @@ class PaymentPlanSignup(APIView):
             request.user.profile.save()
 
             if new_subscription.status == "active":
+                request.user.profile.subscription_status = True
+                request.user.profile.save()
                 return Response({"success": True})
 
             return Response({"success": False})

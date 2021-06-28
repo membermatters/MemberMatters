@@ -13,7 +13,7 @@ WORKDIR /usr/src/app/
 
 # Install nginx and other build dependencies
 RUN apk update \
-    && apk add make gcc g++ musl-dev libffi-dev openssl-dev zlib-dev jpeg-dev bash libpng-dev openrc cargo nginx vips-dev python2 python3 python3-dev py3-pip nodejs npm  \
+    && apk add make gcc g++ musl-dev libffi-dev openssl-dev zlib-dev jpeg-dev bash libpng-dev openrc cargo nginx vips-dev python2 python3 python3-dev py3-pip mariadb-dev nodejs npm  \
     # Create some base folders for everything
     && mkdir -p /usr/src/app/frontend && mkdir /usr/src/logs && mkdir /usr/src/data \
 

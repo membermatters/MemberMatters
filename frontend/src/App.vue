@@ -61,29 +61,12 @@ export default {
     },
   },
   beforeCreate() {
-    if (Platform.is.electron) {
-      this.$axios.interceptors.request.use(
-        async (config) => {
-          // Grab the csrf token
-          var cookie = this.$q.cookies.get("cookie_name");
-
-          if (!cookie) return config;
-
-          config.headers["X-CSRFTOKEN"] = cookie;
-
-          return config;
-        },
-        (error) => {
-          Promise.reject(error);
-        }
-      );
-    }
-
     this.$axios.interceptors.response.use(
       (response) => response,
       (error) => {
         // If we get a 401 and it's not the loggedin check endpoint, or reset password/login page, redirect user to login screen
         if (
+          error.response &&
           error.response.status === 401 &&
           !error.response.config.url.includes("/api/loggedin/")
         ) {

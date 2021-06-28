@@ -138,7 +138,7 @@
                     selectedPlan.intervalAmount > 1
                       ? "intervalPlurals"
                       : "interval"
-                  }.${selectedPlan.interval}`
+                  }.${selectedPlan.interval.toLowerCase()}`
                 ),
               }),
             })
