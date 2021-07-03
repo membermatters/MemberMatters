@@ -197,7 +197,10 @@ class PaymentPlanSignup(APIView):
             except stripe.error.InvalidRequestError as e:
                 error = e.json_body.get("error")
 
-                if error["code"] == "resource_missing" and "default payment method" in error["message"]:
+                if (
+                    error["code"] == "resource_missing"
+                    and "default payment method" in error["message"]
+                ):
                     log_user_event(
                         request.user,
                         "InvalidRequestError (missing default payment method) from Stripe while creating subscription.",
@@ -495,13 +498,19 @@ class StripeWebhook(APIView):
             invoice_status = data["status"]
 
             # They've signed up for a new subscription, but have already completed all the signup requirements
-            if member.can_signup()["success"] and invoice_status == "paid" and member.state != "active":
+            if (
+                member.can_signup()["success"]
+                and invoice_status == "paid"
+                and member.state != "active"
+            ):
                 # if the invoice was paid and the member isn't active, then activate them
                 subject = "Your payment was successful."
                 title = subject
-                message = "Thanks for making your first membership payment using our online payment system. " \
-                          "You've already met all of the requirements for activating your site access. Please check " \
-                          "for another email message confirming this was successful."
+                message = (
+                    "Thanks for making your first membership payment using our online payment system. "
+                    "You've already met all of the requirements for activating your site access. Please check "
+                    "for another email message confirming this was successful."
+                )
                 member.user.email_notification(subject, title, "", message)
 
                 # set the subscription status to active
@@ -516,9 +525,11 @@ class StripeWebhook(APIView):
             if invoice_status == "paid" and member.state != "active":
                 subject = "Your payment was successful."
                 title = subject
-                message = "Thanks for making your first membership payment using our online payment system. " \
-                          "You haven't yet met all of the requirements for activating your site access. Once this " \
-                          "happens, you'll receive an email confirmation that your access card was activated."
+                message = (
+                    "Thanks for making your first membership payment using our online payment system. "
+                    "You haven't yet met all of the requirements for activating your site access. Once this "
+                    "happens, you'll receive an email confirmation that your access card was activated."
+                )
                 member.user.email_notification(subject, title, "", message)
 
                 member.subscription_status = "active"
@@ -534,10 +545,12 @@ class StripeWebhook(APIView):
             subject = "Your membership payment failed"
             title = subject
             preheader = ""
-            message = "Hi there, we tried to collect your membership payment via our online payment system but " \
-                      "weren't successful. Please update your billing information via the member portal or contact " \
-                      "us to resolve this issue. We'll try again, but if we're unable to collect your payment, your " \
-                      "membership may be cancelled."
+            message = (
+                "Hi there, we tried to collect your membership payment via our online payment system but "
+                "weren't successful. Please update your billing information via the member portal or contact "
+                "us to resolve this issue. We'll try again, but if we're unable to collect your payment, your "
+                "membership may be cancelled."
+            )
 
             member.user.email_notification(self, subject, title, preheader, message)
 
@@ -546,8 +559,10 @@ class StripeWebhook(APIView):
             subject = "Your membership has been cancelled"
             title = subject
             preheader = ""
-            message = "You will receive another email shortly confirming that your access has been deactivated. Your " \
-                      "membership was cancelled because we couldn't collect your payment, or you chose not to renew it."
+            message = (
+                "You will receive another email shortly confirming that your access has been deactivated. Your "
+                "membership was cancelled because we couldn't collect your payment, or you chose not to renew it."
+            )
 
             member.user.email_notification(subject, title, preheader, message)
             member.deactivate()
@@ -558,8 +573,10 @@ class StripeWebhook(APIView):
 
             subject = f"The membership for {member.get_full_name()} was just cancelled"
             title = subject
-            message = f"The Stripe subscription for {member.get_full_name()} ended, so their membership has " \
-                      f"been cancelled. Their site access has been turned off."
+            message = (
+                f"The Stripe subscription for {member.get_full_name()} ended, so their membership has "
+                f"been cancelled. Their site access has been turned off."
+            )
             send_email_to_admin(subject, title, message)
 
         return Response()
