@@ -163,28 +163,109 @@ class PaymentPlanSignup(APIView):
 
     def post(self, request, plan_id):
         current_plan = request.user.profile.membership_plan
+        new_plan = PaymentPlan.objects.get(pk=plan_id)
 
         if current_plan:
             return Response({"success": False}, status=status.HTTP_409_CONFLICT)
 
-        else:
-            new_plan = PaymentPlan.objects.get(pk=plan_id)
-            new_subscription = stripe.Subscription.create(
-                customer=request.user.profile.stripe_customer_id,
-                items=[
-                    {"price": new_plan.stripe_id},
-                ],
-            )
-            request.user.profile.stripe_subscription_id = new_subscription.id
-            request.user.profile.membership_plan = new_plan
-            request.user.profile.save()
+        def create_subscription(attempts=0):
+            attempts += 1
 
+            if attempts > 3:
+                log_user_event(
+                    request.user,
+                    "Too many attempts while creating subscription.",
+                    "stripe",
+                    "",
+                )
+                return Response(
+                    {
+                        "success": False,
+                        "message": None,
+                    },
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+            try:
+                return stripe.Subscription.create(
+                    customer=request.user.profile.stripe_customer_id,
+                    items=[
+                        {"price": new_plan.stripe_id},
+                    ],
+                )
+
+            except stripe.error.InvalidRequestError as e:
+                error = e.json_body.get("error")
+
+                if error["code"] == "resource_missing" and "default payment method" in error["message"]:
+                    log_user_event(
+                        request.user,
+                        "InvalidRequestError (missing default payment method) from Stripe while creating subscription.",
+                        "stripe",
+                        error,
+                    )
+
+                    # try to set the default and try again
+                    stripe.Customer.modify(
+                        request.user.profile.stripe_customer_id,
+                        invoice_settings={
+                            "default_payment_method": request.user.profile.payment_method_id,
+                        },
+                    )
+
+                    return create_subscription(attempts)
+
+                else:
+                    log_user_event(
+                        request.user,
+                        "InvalidRequestError from Stripe while creating subscription.",
+                        "stripe",
+                        error,
+                    )
+                    return Response(
+                        {
+                            "success": False,
+                            "message": None,
+                        },
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    )
+
+            except Exception as e:
+                log_user_event(
+                    request.user,
+                    "InvalidRequestError from Stripe while creating subscription.",
+                    "stripe",
+                    e,
+                )
+                return Response(
+                    {
+                        "success": False,
+                        "message": None,
+                    },
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+        new_subscription = create_subscription()
+
+        try:
             if new_subscription.status == "active":
+                request.user.profile.stripe_subscription_id = new_subscription.id
+                request.user.profile.membership_plan = new_plan
                 request.user.profile.subscription_status = True
                 request.user.profile.save()
+
+                log_user_event(
+                    request.user,
+                    "Successfully created subscription in Stripe.",
+                    "stripe",
+                    "",
+                )
+
                 return Response({"success": True})
 
-            return Response({"success": False})
+        # if we can't access new_subscription.status, then return the Response() object
+        except:
+            return new_subscription
 
 
 class CanSignup(APIView):
@@ -405,20 +486,39 @@ class StripeWebhook(APIView):
         except Profile.DoesNotExist:
             return Response()
 
-        # Just in case the linked Stripe account also processes other payments we should just ignore a non existant customer.
+        # Just in case the linked Stripe account also processes other payments we should just ignore a non existent
+        # customer.
         if not member:
             return Response()
 
         if event_type == "invoice.paid":
-            print("INVOICE PAID EVENT")
-
             invoice_status = data["status"]
 
-            if invoice_status == "paid" and member.state != "active":
+            # They've signed up for a new subscription, but have already completed all the signup requirements
+            if member.can_signup()["success"] and invoice_status == "paid" and member.state != "active":
                 # if the invoice was paid and the member isn't active, then activate them
                 subject = "Your payment was successful."
                 title = subject
-                message = "Thanks for making your first membership payment. Once you have completed all steps required to become a member, you will receive an email confirmation."
+                message = "Thanks for making your first membership payment using our online payment system. " \
+                          "You've already met all of the requirements for activating your site access. Please check " \
+                          "for another email message confirming this was successful."
+                member.user.email_notification(subject, title, "", message)
+
+                # set the subscription status to active
+                member.subscription_status = "active"
+                member.save()
+
+                # activate their access card
+                member.activate()
+                member.email_enable_member()
+
+            # They've signed up for a new subscription, but are a new member
+            if invoice_status == "paid" and member.state != "active":
+                subject = "Your payment was successful."
+                title = subject
+                message = "Thanks for making your first membership payment using our online payment system. " \
+                          "You haven't yet met all of the requirements for activating your site access. Once this " \
+                          "happens, you'll receive an email confirmation that your access card was activated."
                 member.user.email_notification(subject, title, "", message)
 
                 member.subscription_status = "active"
@@ -428,26 +528,26 @@ class StripeWebhook(APIView):
                 if member.state != "noob":
                     send_submitted_application_emails(member)
 
-                # in all other instances, we don't care about the event and can ignore it
+            # in all other instances, we don't care about a paid invoice and can ignore it
 
         if event_type == "invoice.payment_failed":
-            print("INVOICE PAYMENT FAILED")
-
             subject = "Your membership payment failed"
             title = subject
             preheader = ""
-            message = "Hi there, your membership payment failed. Please update your billing information or contact us to resolve this issue. We'll try again, but if we're unable to collect your payment, your membership may be cancelled."
+            message = "Hi there, we tried to collect your membership payment via our online payment system but " \
+                      "weren't successful. Please update your billing information via the member portal or contact " \
+                      "us to resolve this issue. We'll try again, but if we're unable to collect your payment, your " \
+                      "membership may be cancelled."
 
             member.user.email_notification(self, subject, title, preheader, message)
 
         if event_type == "customer.subscription.deleted":
-            print("SUBSCRIPTION DELETED")
-
             # the subscription was deleted, so deactivate the member
             subject = "Your membership has been cancelled"
             title = subject
             preheader = ""
-            message = "You will receive another email shortly confirming that your access has been deactivated. Your membership was either cancelled at your request or because we couldn't collect your payment."
+            message = "You will receive another email shortly confirming that your access has been deactivated. Your " \
+                      "membership was cancelled because we couldn't collect your payment, or you chose not to renew it."
 
             member.user.email_notification(subject, title, preheader, message)
             member.deactivate()
@@ -458,7 +558,8 @@ class StripeWebhook(APIView):
 
             subject = f"The membership for {member.get_full_name()} was just cancelled"
             title = subject
-            message = f"The subscription for {member.get_full_name()} was deleted so their membership has been cancelled. Their site access has been turned off."
+            message = f"The Stripe subscription for {member.get_full_name()} ended, so their membership has " \
+                      f"been cancelled. Their site access has been turned off."
             send_email_to_admin(subject, title, message)
 
         return Response()
