@@ -1,9 +1,9 @@
 {
   "name": "frontend",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "The MemberMatters frontend",
   "productName": "MemberMatters",
-  "author": "Jaimyn Mayer <hello@jaimyn.com.au>",
+  "author": "Jaimyn Mayer <github@jaimyn.dev>",
   "private": true,
   "scripts": {
     "dev": "quasar dev -m spa",

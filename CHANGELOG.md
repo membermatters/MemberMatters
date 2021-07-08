@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Task queueing for non critical tasks like emails etc.
 
+## [v2.6.0] - 2021-07-08
+
+### Changed
+- More work on usage statistics
+
+### Fixed
+
+- new signups not receiving induction email
+- site sign in info box accent colour
+- fixed i18n display issue on plan confirmation page
+- improved reliability of stripe subscription creation with some new retry logic
+- Various minor bug fixes to the strip subscription flow
+
 ## [v2.5.0] - 2021-05-13
 
 ### Added
