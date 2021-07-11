@@ -385,18 +385,26 @@ class MemberTiers(APIView):
 
     def post(self, request):
         body = request.data
-        product = stripe.Product.create(
-            name=body["name"], description=body["description"]
-        )
-        tier = MemberTier.objects.create(
-            name=body["name"],
-            description=body["description"],
-            visible=body["visible"],
-            featured=body["featured"],
-            stripe_id=product.id,
-        )
 
-        return Response()
+        try:
+            product = stripe.Product.create(
+                name=body["name"], description=body["description"]
+            )
+            tier = MemberTier.objects.create(
+                name=body["name"],
+                description=body["description"],
+                visible=body["visible"],
+                featured=body["featured"],
+                stripe_id=product.id,
+            )
+
+            return Response()
+
+        except stripe.error.AuthenticationError:
+            return Response(
+                {"success": False, "message": "error.stripeNotConfigured"},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
 
     def delete(self, request):
         return Response()

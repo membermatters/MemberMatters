@@ -47,7 +47,7 @@
             </q-banner>
 
             <q-banner v-if="form.error" class="bg-negative text-white q-my-md">
-              {{ $t("tierForm.fail") }}
+              {{ $t(this.form.errorMessage || "tierForm.fail") }}
             </q-banner>
 
             <q-card-actions
@@ -150,6 +150,7 @@ export default defineComponent({
       loading: false,
       form: {
         error: false,
+        errorMessage: null,
         success: false,
         name: "",
         description: "",
@@ -188,8 +189,9 @@ export default defineComponent({
           this.form.success = true;
           this.getTiers();
         })
-        .catch(() => {
+        .catch((error) => {
           this.form.error = true;
+          this.form.errorMessage = error.response.data.message;
         })
         .finally(() => {
           this.loading = false;
@@ -199,6 +201,7 @@ export default defineComponent({
       this.form = {
         error: false,
         success: false,
+        errorMessage: null,
         name: "",
         description: "",
         visible: true,
