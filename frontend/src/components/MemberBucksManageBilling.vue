@@ -93,8 +93,21 @@ export default {
       this.$emit("ok");
     },
   },
+  mounted() {
+    // by default set the saved card exists to false (v-model)
+    this.$emit("card-exists", this.cardExists);
+  },
+  watch: {
+    cardExists() {
+      this.$emit("card-exists", this.cardExists);
+    },
+  },
   computed: {
     ...mapGetters("profile", ["profile"]),
+    ...mapGetters("config", ["features"]),
+    cardExists() {
+      return this.profile.financial.memberBucks.savedCard.last4;
+    },
   },
 };
 </script>

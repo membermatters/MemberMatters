@@ -10,11 +10,9 @@
         class="bg-blue text-white q-ma-md"
       >
         <template v-slot:avatar>
-          <q-icon
-            :name="icons.info"
-          />
+          <q-icon :name="icons.info" />
         </template>
-        {{ $t('paymentPlans.accountOnlyWarning') }}
+        {{ $t("paymentPlans.accountOnlyWarning") }}
       </q-banner>
     </div>
 
@@ -39,7 +37,7 @@
           <tier-card
             :class="{ featured: tier.featured }"
             class="col-xs-12 col-sm-6 col-md-4"
-            style="min-width: 180px;"
+            style="min-width: 180px"
             v-for="tier in tiers"
             :key="tier.id"
             :tier="tier"
@@ -88,12 +86,13 @@
           {{ $tc("memberbucks.selectToContinue") }}
         </div>
 
-        <member-bucks-manage-billing flat />
+        <member-bucks-manage-billing flat @card-exists="cardExistsHandler" />
 
         <div class="row justify-start q-mt-md">
           <q-btn @click="backToPlans" flat :label="$tc('button.back')" />
           <q-space />
           <q-btn
+            :disabled="!cardExists"
             @click="selectedBillingMethodEvent"
             color="primary"
             :label="$tc('button.continue')"
@@ -175,7 +174,10 @@
       </q-step>
     </q-stepper>
     <div class="text-center">
-      <p @click="skipSignup" style="text-decoration: underline; cursor: pointer;">
+      <p
+        @click="skipSignup"
+        style="text-decoration: underline; cursor: pointer"
+      >
         {{ $tc("tiers.skipSignup") }}
       </p>
     </div>
@@ -183,7 +185,7 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import { defineComponent } from "@vue/composition-api";
 import TierCard from "@components/Billing/TierCard.vue";
 import PlanCard from "@components/Billing/PlanCard.vue";
@@ -201,6 +203,7 @@ export default defineComponent({
       disableFinish: false,
       loading: false,
       finishSuccess: false,
+      cardExists: false,
     };
   },
   computed: {
@@ -297,6 +300,11 @@ export default defineComponent({
     },
     backToBilling() {
       this.step = 3;
+    },
+    cardExistsHandler(value) {
+      this.cardExists = value;
+      console.log("UPDATED CARD SAVED TO");
+      console.log(value);
     },
   },
 });

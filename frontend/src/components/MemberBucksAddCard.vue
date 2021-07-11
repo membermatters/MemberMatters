@@ -25,7 +25,7 @@
       </div>
 
       <q-banner v-if="error" class="text-white bg-red">
-        {{ error }}
+        {{ $t(this.error || "memberbucks.addCardError") }}
       </q-banner>
     </q-card-section>
   </div>
@@ -95,8 +95,8 @@ export default {
                   this.getProfile();
                   this.hide();
                 })
-                .catch(() => {
-                  this.error = this.$t("memberbucks.addCardError");
+                .catch((error) => {
+                  this.error = error.response.data.message;
                 })
                 .finally(() => (this.disableStripeForm = false));
             }
