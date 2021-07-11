@@ -71,6 +71,8 @@ export default {
     noData: "No records found",
     stripeNotConfigured:
       "There was an error completing that action as Stripe is not configured.",
+    sendgridNotConfigured:
+      "There was an error completing that action as Sendgrid is not configured.",
     stripeNotConfiguredFeature:
       "Sorry, but this organisation has not configured Stripe so you are unable to use this feature.",
     400: " Sorry, there was an error with your request. (Error 400)",
@@ -440,16 +442,16 @@ export default {
     dueToday: "Due Today: {amount}",
     intervalDescription: "{amount} {currency} every {intervalCount} {interval}",
     interval: {
-      days: "day",
-      weeks: "week",
-      months: "month",
-      years: "year",
+      day: "day",
+      week: "week",
+      month: "month",
+      year: "year",
     },
     intervalPlurals: {
-      days: "days",
-      weeks: "weeks",
-      months: "months",
-      years: "years",
+      day: "days",
+      week: "weeks",
+      month: "months",
+      year: "years",
     },
     signupFailed: "Signup failed",
     signupSuccess: "Signup success",
@@ -500,6 +502,7 @@ export default {
     errorDescription:
       "We're very sorry but there was an unexpected error when submitting your application. Please contact us at {email} for assistance.",
     errorMessageDescription: "Please include the error message below:",
+    requirementsNotMet: "Requirements not met:",
   },
   tiers: {
     disabledFeature:
@@ -542,6 +545,6 @@ export default {
   verifyEmail: {
     error:
       "There was a problem verifying your email address. We just sent you another link so please try again.",
-    success: "Your email was verified. You can now login.",
+    success: "Your email was verified. You will be logged in shortly.",
   },
 };
