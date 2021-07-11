@@ -1,56 +1,77 @@
 <template>
-  <q-table
-    :data="memberBucksTransactions"
-    :columns="[
-      {
-        name: 'description',
-        label: 'Description',
-        field: 'description',
-        sortable: true,
-      },
-      { name: 'amount', label: 'Amount', field: 'amount', sortable: true },
-      {
-        name: 'date',
-        label: 'When',
-        field: 'date',
-        sortable: true,
-        format: (val) => this.formatWhen(val),
-      },
-    ]"
-    row-key="id"
-    :filter="filter"
-    :pagination.sync="pagination"
-    :loading="loading"
-    :grid="$q.screen.xs"
-  >
-    <template v-slot:top-left>
-      <div class="row">
-        <q-btn
-          color="accent"
-          :icon="icons.add"
-          :label="$t('memberbucks.addFunds')"
-          class="q-mb-sm q-mr-sm"
-          @click="addFunds()"
-        />
+  <div v-if="this.features.stripe.enabled">
+    <q-table
+      :data="memberBucksTransactions"
+      :columns="[
+        {
+          name: 'description',
+          label: 'Description',
+          field: 'description',
+          sortable: true,
+        },
+        { name: 'amount', label: 'Amount', field: 'amount', sortable: true },
+        {
+          name: 'date',
+          label: 'When',
+          field: 'date',
+          sortable: true,
+          format: (val) => this.formatWhen(val),
+        },
+      ]"
+      row-key="id"
+      :filter="filter"
+      :pagination.sync="pagination"
+      :loading="loading"
+      :grid="$q.screen.xs"
+    >
+      <template v-slot:top-left>
+        <div class="row">
+          <q-btn
+            color="accent"
+            :icon="icons.add"
+            :label="$t('memberbucks.addFunds')"
+            class="q-mb-sm q-mr-sm"
+            @click="addFunds()"
+          />
 
-        <q-btn
-          color="accent"
-          :icon="icons.donate"
-          :label="$t('memberbucks.donateFunds')"
-          class="q-mb-sm q-mr-sm"
-          @click="donateFunds()"
-        />
+          <q-btn
+            color="accent"
+            :icon="icons.donate"
+            :label="$t('memberbucks.donateFunds')"
+            class="q-mb-sm q-mr-sm"
+            @click="donateFunds()"
+          />
 
-        <q-btn
-          color="accent"
-          :icon="icons.billing"
-          :label="$t('memberbucks.manageBilling')"
-          class="q-mb-sm q-mr-md"
-          @click="manageBilling()"
-        />
+          <q-btn
+            color="accent"
+            :icon="icons.billing"
+            :label="$t('memberbucks.manageBilling')"
+            class="q-mb-sm q-mr-md"
+            @click="manageBilling()"
+          />
 
+          <q-input
+            v-if="$q.screen.xs"
+            v-model="filter"
+            outlined
+            dense
+            debounce="300"
+            placeholder="Search"
+            style="margin-top: -3px"
+          >
+            <template v-slot:append>
+              <q-icon :name="icons.search" />
+            </template>
+          </q-input>
+        </div>
+        <div class="row">
+          {{ $t("memberbucks.currentBalance") }}
+          {{ $n(memberBucksBalance, "currency") }}
+        </div>
+      </template>
+
+      <template v-if="$q.screen.gt.xs" v-slot:top-right>
         <q-input
-          v-if="$q.screen.xs"
           v-model="filter"
           outlined
           dense
@@ -62,36 +83,29 @@
             <q-icon :name="icons.search" />
           </template>
         </q-input>
-      </div>
-      <div class="row">
-        {{ $t("memberbucks.currentBalance") }}
-        {{ $n(memberBucksBalance, "currency") }}
-      </div>
-    </template>
+      </template>
 
-    <template v-if="$q.screen.gt.xs" v-slot:top-right>
-      <q-input
-        v-model="filter"
-        outlined
-        dense
-        debounce="300"
-        placeholder="Search"
-        style="margin-top: -3px"
-      >
-        <template v-slot:append>
-          <q-icon :name="icons.search" />
-        </template>
-      </q-input>
-    </template>
-
-    <template v-slot:body-cell-amount="props">
-      <q-td>
-        <div :class="{ credit: props.value > 0, debit: props.value < 0 }">
-          ${{ props.value }}
+      <template v-slot:body-cell-amount="props">
+        <q-td>
+          <div :class="{ credit: props.value > 0, debit: props.value < 0 }">
+            ${{ props.value }}
+          </div>
+        </q-td>
+      </template>
+    </q-table>
+  </div>
+  <div v-else>
+    <q-card flat>
+      <q-card-section>
+        <div class="text-h6">
+          {{ $t("menuLink.memberbucks") }}
         </div>
-      </q-td>
-    </template>
-  </q-table>
+        <div class="text-subtitle2">
+          {{ $t("error.stripeNotConfiguredFeature") }}
+        </div>
+      </q-card-section>
+    </q-card>
+  </div>
 </template>
 
 <script>
@@ -198,6 +212,7 @@ export default {
   },
   computed: {
     ...mapGetters("tools", ["memberBucksTransactions", "memberBucksBalance"]),
+    ...mapGetters("config", ["features"]),
     icons() {
       return icons;
     },
