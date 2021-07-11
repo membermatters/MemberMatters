@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Task queueing for non critical tasks like emails etc.
 
+## [v2.6.1] - 2021-07-11
+### Fixed
+
+- Fixed checking induction requirements being skipped during signup
+- Added max width to credit card component
+- Prevent clicking next during signup if saved card doesn’t exist
+- Fixed various missing/wrong translations
+- Added send grid not configured error to payment card component
+- Added stripe not configured error to member bucks and manage billing components
+- Fixed add payment plan not closing/resetting correctly
+- Updated python dependencies
+- Fixed Django warning by specifying explicit ID field in models
+
 ## [v2.6.0] - 2021-07-08
 
 ### Changed
