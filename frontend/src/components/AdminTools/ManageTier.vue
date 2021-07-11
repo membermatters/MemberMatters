@@ -256,12 +256,7 @@
             </q-card-actions>
 
             <q-card-actions v-else align="right" class="text-primary">
-              <q-btn
-                v-close-popup
-                flat
-                :label="$t('button.close')"
-                @click="resetPlanForm()"
-              />
+              <q-btn v-close-popup flat :label="$t('button.close')" />
             </q-card-actions>
           </q-form>
         </q-card-actions>
@@ -406,6 +401,8 @@ export default defineComponent({
           this.getPlans();
           this.planForm.success = true;
           this.planForm.error = false;
+          this.addPlanDialog = false;
+          this.resetPlanForm();
         })
         .catch(() => {
           this.planForm.success = false;
@@ -439,6 +436,22 @@ export default defineComponent({
         description: "",
         visible: false,
         featured: false,
+      };
+    },
+    resetPlanForm() {
+      this.planForm = {
+        loading: false,
+        error: false,
+        success: false,
+        name: "",
+        memberTier: "",
+        stripeId: "",
+        visible: true,
+        currency: "aud",
+        costString: "",
+        cost: 0,
+        intervalCount: 1,
+        interval: "month",
       };
     },
   },
