@@ -157,7 +157,7 @@
           <div class="row justify-start q-mt-md">
             <q-space />
             <q-btn
-              @click="$router.push({ name: 'dashboard' })"
+              @click="$router.push({ name: 'dashboard' }).catch(() => {})"
               color="primary"
               :label="$tc('signup.continueToDashboard')"
             />

@@ -1,5 +1,12 @@
 <template>
-  <div style="min-width: 200px; border-radius: 10px">
+  <div
+    style="
+      min-width: 200px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: 0 auto;
+    "
+  >
     <q-card class="my-card bg-primary">
       <div class="my-card-inner">
         <q-card-section class="full-height column items-start">
