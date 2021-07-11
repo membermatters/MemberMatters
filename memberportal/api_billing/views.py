@@ -1,3 +1,5 @@
+import python_http_client.exceptions
+
 from profile.models import Profile
 from access.models import Doors, Interlock
 from api_admin_tools.models import *
@@ -111,15 +113,22 @@ class MemberBucksAddCard(APIView):
         )
 
         subject = f"You just added a payment card to your {config.SITE_OWNER} account."
-        request.user.email_notification(
-            subject,
-            subject,
-            subject,
-            "Don't worry, your card details are stored safe "
-            "with Stripe and are not on our servers. You "
-            "can remove this card at any time via the "
-            f"{config.SITE_NAME}.",
-        )
+
+        try:
+            request.user.email_notification(
+                subject,
+                subject,
+                subject,
+                "Don't worry, your card details are stored safe "
+                "with Stripe and are not on our servers. You "
+                "can remove this card at any time via the "
+                f"{config.SITE_NAME}.",
+            )
+        except python_http_client.exceptions.UnauthorizedError:
+            return Response(
+                {"message": "error.sendgridNotConfigured"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         return Response()
 
@@ -304,7 +313,7 @@ class CheckInductionStatus(APIView):
     """
 
     def post(self, request):
-        if "induction" not in request.user.profile.can_signup():
+        if "induction" not in request.user.profile.can_signup()["requiredSteps"]:
             return Response({"success": True, "score": 0, "notRequired": True})
 
         score = Canvas.get_student_score_for_course(

@@ -470,7 +470,7 @@ class Profile(models.Model):
             groups_string = groups[0]
 
         message = (
-            f"{self.get_full_name()} has just signed up. Their membership level is {self.member_type} and their selected {config.GROUP_NAME} are {groups_string}. "
+            f"{self.get_full_name()} has just signed up on the portal. Their selected {config.GROUP_NAME}(s) are {groups_string}. "
             f"Their email is {self.user.email}."
         )
         email_vars = {"preheader": "", "title": "New member signup", "message": message}
