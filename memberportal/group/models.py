@@ -15,6 +15,7 @@ class Group(models.Model):
             ("manage_member_groups", "Can manage member groups"),
         ]
 
+    id = models.AutoField(primary_key=True)
     name = models.CharField(f"{config.GROUP_NAME} Name", max_length=20, unique=True)
     description = models.CharField(f"{config.GROUP_NAME} Description", max_length=100)
     leaders = models.ManyToManyField("profile.User")

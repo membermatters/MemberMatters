@@ -15,6 +15,7 @@ class Meeting(models.Model):
         ("other", "Other"),
     )
 
+    id = models.AutoField(primary_key=True)
     date = models.DateTimeField("Date and time of meeting")
     type = models.CharField("Meeting Type", max_length=10, choices=MEETING_TYPES)
     group = models.ForeignKey(
@@ -38,6 +39,7 @@ class ProxyVote(models.Model):
     Model to store proxy votes that may be attached to a Meeting object.
     """
 
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     user_city = models.CharField(max_length=30, null=True, blank=True)
     proxy_user = models.ForeignKey(

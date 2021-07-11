@@ -13,6 +13,7 @@ utc = pytz.UTC
 
 
 class AccessControlledDevice(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField("Name", max_length=30, unique=True)
     description = models.CharField("Description/Location", max_length=100)
     ip_address = models.GenericIPAddressField(
@@ -189,12 +190,14 @@ class Interlock(AccessControlledDevice):
 
 
 class DoorLog(models.Model):
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     door = models.ForeignKey(Doors, on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
 
 
 class InterlockLog(models.Model):
+    id = models.AutoField(primary_key=True)
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     user_off = models.ForeignKey(

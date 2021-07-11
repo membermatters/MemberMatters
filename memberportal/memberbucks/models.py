@@ -15,6 +15,7 @@ class MemberBucks(models.Model):
         ("web", "Internal Web Payment"),
     )
 
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     amount = models.FloatField("Amount")
     transaction_type = models.CharField(

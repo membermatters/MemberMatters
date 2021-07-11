@@ -43,6 +43,7 @@ LOG_TYPES = (
 
 
 class Log(models.Model):
+    id = models.AutoField(primary_key=True)
     logtype = models.CharField("Type of action/event", choices=LOG_TYPES, max_length=30)
     description = models.CharField("Description of action/event", max_length=500)
     data = models.TextField("Extra data for debugging action/event")
@@ -112,6 +113,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=255,
         unique=True,
     )
+    id = models.AutoField(primary_key=True)
     email_verified = models.BooleanField(default=True)
     password_reset_key = models.UUIDField(default=None, blank=True, null=True)
     password_reset_expire = models.DateTimeField(default=None, blank=True, null=True)
@@ -265,6 +267,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class MemberTypes(models.Model):
     # TODO: remove this when the stripe billing is fully implemented
+    id = models.AutoField(primary_key=True)
     name = models.CharField("Member Type Name", max_length=20)
     conditions = models.CharField("Membership Conditions", max_length=100)
     cost = models.IntegerField("Monthly Cost (cents)")
@@ -321,6 +324,7 @@ class Profile(models.Model):
             ("generate_invoice", "Can generate a member invoice"),
         ]
 
+    id = models.AutoField(primary_key=True)
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile"
     )
