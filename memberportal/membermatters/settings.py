@@ -204,7 +204,7 @@ AUTH_USER_MODEL = "profile.User"
 REQUEST_TIMEOUT = 0.05
 
 # Django constance configuration
-CONSTANCE_BACKEND = "constance_backend.DatabaseBackend"
+CONSTANCE_BACKEND = "membermatters.constance_backend.DatabaseBackend"
 
 CONSTANCE_CONFIG = {
     # General site info
@@ -418,7 +418,7 @@ CONSTANCE_CONFIG = {
         "The API key used by the internal access system for device authentication.",
     ),
     "SENTRY_DSN_FRONTEND": (
-        "https://577dc95136cd402bb273d00f46c2a017@sentry.serv02.binarydigital.com.au/5",
+        "https://577dc95136cd402bb273d00f46c2a017@sentry.serv02.binarydigital.com.au/5/",
         "Enter a Sentry DSN to enable sentry logging of frontend errors.",
     ),
     "SENTRY_DSN_BACKEND": (

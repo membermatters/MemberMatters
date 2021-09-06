@@ -25,7 +25,6 @@ RUN apk update \
     && cd /usr/src/app/memberportal/ \
     $$ pip3 install --no-cache-dir pillow \
     && pip3 install --no-cache-dir -r requirements.txt \ 
-    && python3 manage.py collectstatic --noinput \
 
     # Build our frontend
     && cd /usr/src/app/frontend/ \

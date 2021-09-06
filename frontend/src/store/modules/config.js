@@ -108,7 +108,6 @@ export default {
               result.data.sentryDSN &&
               process.env.NODE_ENV !== "development"
             ) {
-              console.log(process.env.NODE_ENV);
               Sentry.init({
                 Vue,
                 dsn: result.data.sentryDSN,

@@ -79,6 +79,7 @@ export default {
   },
   computed: {
     ...mapGetters("profile", ["loggedIn"]),
+    ...mapGetters("config", ["features"]),
     visibleLinks() {
       return this.children.filter((link) => {
         if (link.loggedIn === true) {
@@ -88,6 +89,12 @@ export default {
         if (this.$q.platform.is.electron && !link.kiosk) {
           return false;
         }
+
+        if (
+          !this.features.stripe.enableMembershipPayments &&
+          link.name === "membershipTier"
+        )
+          return false;
 
         return true;
       });

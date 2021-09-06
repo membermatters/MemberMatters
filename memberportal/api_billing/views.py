@@ -556,7 +556,7 @@ class StripeWebhook(APIView):
                 "membership may be cancelled."
             )
 
-            member.user.email_notification(self, subject, title, preheader, message)
+            member.user.email_notification(subject, title, preheader, message)
 
         if event_type == "customer.subscription.deleted":
             # the subscription was deleted, so deactivate the member
