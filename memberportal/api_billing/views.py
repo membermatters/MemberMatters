@@ -221,7 +221,7 @@ class PaymentPlanSignup(APIView):
                     stripe.Customer.modify(
                         request.user.profile.stripe_customer_id,
                         invoice_settings={
-                            "default_payment_method": request.user.profile.payment_method_id,
+                            "default_payment_method": request.user.profile.stripe_payment_method_id,
                         },
                     )
 
@@ -296,15 +296,10 @@ class AssignAccessCard(APIView):
 
     def post(self, request):
         profile = request.user.profile
+        profile.rfid = request.data["accessCard"]
+        profile.save()
 
-        if not profile.rfid:
-            profile.rfid = request.data["accessCard"]
-            profile.save()
-
-            return Response({"success": True})
-
-        else:
-            return Response({"success": False}, status=status.HTTP_403_FORBIDDEN)
+        return Response({"success": True})
 
 
 class CheckInductionStatus(APIView):
@@ -351,7 +346,7 @@ class CompleteSignup(APIView):
         member = request.user.profile
         signupCheck = member.can_signup()
 
-        if member.state == "active":
+        if member.subscription_status == "active":
             return Response({"success": False, "message": "signup.existingMember"})
 
         elif signupCheck["success"]:
