@@ -1,8 +1,8 @@
-import axios, {AxiosStatic} from "axios";
+import axios, { AxiosStatic } from "axios";
 import { Platform } from "quasar";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default ({ Vue, store }: {Vue: any, store: any}) => {
+export default ({ Vue, store }: { Vue: any; store: any }) => {
   const instance = axios.create({
     baseURL: process.env.apiBaseUrl || "",
     withCredentials: true,
@@ -21,17 +21,19 @@ export default ({ Vue, store }: {Vue: any, store: any}) => {
     return config;
   });
 
-  instance.interceptors.response.use(function (response) {
-    console.log(response.headers);
-    return response;
-  }, function (error) {
-    if (error.response && error.response.status === 401) {
-      store.commit("auth/setAuth", {});
-      return Promise.reject(error);
-    } else {
-      return Promise.reject(error);
+  instance.interceptors.response.use(
+    function (response) {
+      return response;
+    },
+    function (error) {
+      if (error.response && error.response.status === 401) {
+        store.commit("auth/setAuth", {});
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(error);
+      }
     }
-  });
+  );
 
   Vue.prototype.$axios = instance;
 };
