@@ -1,7 +1,11 @@
 import address from "address";
 import sha256 from "crypto-js/sha256";
 import CryptoJS from "crypto-js";
+import router from "../../router";
 import Vue from "vue";
+import * as Sentry from "@sentry/vue";
+import { Integrations } from "@sentry/tracing";
+import { version } from "../../../package.json";
 
 export default {
   namespaced: true,
@@ -19,7 +23,7 @@ export default {
     kioskId: null,
     kioskIp: null,
     images: {},
-    theme: {}
+    theme: {},
   },
   getters: {
     siteName: (state) => state.siteName,
@@ -38,53 +42,54 @@ export default {
     theme: (state) => state.theme,
   },
   mutations: {
-    setSiteName (state, payload) {
+    setSiteName(state, payload) {
       state.siteName = payload;
     },
-    setSiteOwner (state, payload) {
+    setSiteOwner(state, payload) {
       state.siteOwner = payload;
     },
-    setContact (state, payload) {
+    setContact(state, payload) {
       state.contact = payload;
     },
-    setHomepageCards (state, payload) {
+    setHomepageCards(state, payload) {
       state.homepageCards = payload;
     },
-    setWebcamLinks (state, payload) {
+    setWebcamLinks(state, payload) {
       state.webcamLinks = payload;
     },
-    setGroups (state, payload) {
+    setGroups(state, payload) {
       state.groups = payload;
     },
-    setMaxGroups (state, payload) {
+    setMaxGroups(state, payload) {
       state.maxGroups = payload;
     },
-    setMemberTypes (state, payload) {
+    setMemberTypes(state, payload) {
       state.memberTypes = payload;
     },
-    setKeys (state, payload) {
+    setKeys(state, payload) {
       state.keys = payload;
     },
-    setFeatures (state, payload) {
+    setFeatures(state, payload) {
       state.features = payload;
     },
-    setKioskId (state, payload) {
+    setKioskId(state, payload) {
       state.kioskId = payload;
     },
-    setKioskIp (state, payload) {
+    setKioskIp(state, payload) {
       state.kioskIp = payload;
     },
-    setImages (state, payload) {
+    setImages(state, payload) {
       state.images = payload;
     },
-    setTheme (state, payload) {
+    setTheme(state, payload) {
       state.theme = payload;
     },
   },
   actions: {
-    getSiteConfig ({ commit }) {
+    getSiteConfig({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get("/api/config/")
+        Vue.prototype.$axios
+          .get("/api/config/")
           .then((result) => {
             commit("setSiteName", result.data.general.siteName);
             commit("setSiteOwner", result.data.general.siteOwner);
@@ -98,6 +103,35 @@ export default {
             commit("setFeatures", result.data.features);
             commit("setImages", result.data.images);
             commit("setTheme", result.data.theme);
+
+            if (result.data.sentryDSN) {
+              console.log(process.env.NODE_ENV);
+              Sentry.init({
+                Vue,
+                dsn: result.data.sentryDSN,
+                environment: process.env.NODE_ENV,
+                release: version,
+                integrations: [
+                  new Integrations.BrowserTracing({
+                    routingInstrumentation: Sentry.vueRouterInstrumentation(
+                      router
+                    ),
+                    tracingOrigins: ["localhost", /^\//],
+                  }),
+                ],
+                initialScope: {
+                  tags: {
+                    siteOwner: result.data.general.siteOwner,
+                    siteContact: result.data.contact.sysadmin,
+                  },
+                },
+                // Set tracesSampleRate to 1.0 to capture 100%
+                // of transactions for performance monitoring.
+                // We recommend adjusting this value in production
+                tracesSampleRate: 1.0,
+              });
+            }
+
             const { analyticsId } = result.data;
 
             if (analyticsId) {
@@ -113,7 +147,7 @@ export default {
           });
       });
     },
-    getKioskId ({ commit }) {
+    getKioskId({ commit }) {
       return new Promise((resolve) => {
         commit("setKioskIp", address.ip());
         address.mac((err, macAddress) => {
@@ -122,9 +156,10 @@ export default {
         });
       });
     },
-    pushKioskId ({ state }) {
+    pushKioskId({ state }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.put("/api/kiosks/", { name: state.kioskId, kioskId: state.kioskId })
+        Vue.prototype.$axios
+          .put("/api/kiosks/", { name: state.kioskId, kioskId: state.kioskId })
           .then((result) => {
             resolve(result);
           })

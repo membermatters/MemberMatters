@@ -26,6 +26,7 @@ ALLOWED_HOSTS = ["*"]
 SESSION_COOKIE_HTTPONLY = False
 SESSION_COOKIE_SAMESITE = None
 CSRF_COOKIE_SAMESITE = None
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 # this allows the frontend dev server to talk to the dev server
 CORS_ALLOW_ALL_ORIGINS = True
@@ -203,7 +204,7 @@ AUTH_USER_MODEL = "profile.User"
 REQUEST_TIMEOUT = 0.05
 
 # Django constance configuration
-CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
+CONSTANCE_BACKEND = "constance_backend.DatabaseBackend"
 
 CONSTANCE_CONFIG = {
     # General site info
@@ -416,6 +417,14 @@ CONSTANCE_CONFIG = {
         "PLEASE_CHANGE_ME",
         "The API key used by the internal access system for device authentication.",
     ),
+    "SENTRY_DSN_FRONTEND": (
+        "https://577dc95136cd402bb273d00f46c2a017@sentry.serv02.binarydigital.com.au/5",
+        "Enter a Sentry DSN to enable sentry logging of frontend errors.",
+    ),
+    "SENTRY_DSN_BACKEND": (
+        "https://8ba460796a9a40d4ac2584e0e8dca59a@sentry.serv02.binarydigital.com.au/4",
+        "Enter a Sentry DSN to enable sentry logging of backend errors.",
+    ),
     "SENDGRID_API_KEY": (
         "PLEASE_CHANGE_ME",
         "The API key used to send email with Sendgrid.",
@@ -465,6 +474,13 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "GOOGLE_ANALYTICS_PROPERTY_ID",
                 "API_SECRET_KEY",
                 "DEFAULT_MEMBER_TYPE",
+            ),
+        ),
+        (
+            "Sentry Error Reporting",
+            (
+                "SENTRY_DSN_FRONTEND",
+                "SENTRY_DSN_BACKEND",
             ),
         ),
         (

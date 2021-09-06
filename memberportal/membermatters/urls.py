@@ -1,9 +1,26 @@
 """membermatters URL Configuration
 """
+import os
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+from constance import config
+import json
+
+
+if config.SENTRY_DSN_BACKEND:
+    version = None
+    with open("../package.json") as f:
+        d = json.load(f)
+
+    sentry_sdk.init(
+        release=d.get("version"),
+        dsn=config.SENTRY_DSN_BACKEND,
+        integrations=[DjangoIntegration()],
+    )
 
 urlpatterns = [
     path("", include("access.urls")),

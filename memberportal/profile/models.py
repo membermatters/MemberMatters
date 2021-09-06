@@ -580,6 +580,7 @@ class Profile(models.Model):
                 "accountId": self.xero_account_id,
                 "accountNumber": self.xero_account_number,
             },
+            "subscriptionStatus": self.subscription_status,
         }
 
     def get_access_permissions(self):

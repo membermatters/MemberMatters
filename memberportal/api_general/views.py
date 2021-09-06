@@ -79,6 +79,7 @@ class GetConfig(APIView):
             "keys": keys,
             "features": features,
             "analyticsId": config.GOOGLE_ANALYTICS_PROPERTY_ID,
+            "sentryDSN": config.SENTRY_DSN_FRONTEND,
         }
 
         return Response(response)
