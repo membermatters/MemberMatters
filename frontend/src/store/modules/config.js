@@ -104,7 +104,10 @@ export default {
             commit("setImages", result.data.images);
             commit("setTheme", result.data.theme);
 
-            if (result.data.sentryDSN) {
+            if (
+              result.data.sentryDSN &&
+              process.env.NODE_ENV !== "development"
+            ) {
               console.log(process.env.NODE_ENV);
               Sentry.init({
                 Vue,

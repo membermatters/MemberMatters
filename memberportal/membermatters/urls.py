@@ -11,7 +11,11 @@ from constance import config
 import json
 
 
-if config.SENTRY_DSN_BACKEND:
+if (
+    config.SENTRY_DSN_BACKEND
+    and os.environ.get("PORTAL_ENV")
+    and os.environ.get("PORTAL_ENV") != "Development"
+):
     version = None
     with open("../package.json") as f:
         d = json.load(f)
