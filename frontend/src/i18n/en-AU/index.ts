@@ -322,6 +322,8 @@ export default {
     donateFundsSuccess: "Successfully donated funds.",
     donateFundsError:
       "There was an error donating your funds, check your balance or try again later.",
+    cardExpiry: "Card Expiry",
+    last4: "Card Last 4 Digits",
   },
   loginRfidCard: {
     swipeCard: "Tap Card",
@@ -417,6 +419,17 @@ export default {
     lastSeen: "Last Seen",
     openXero: "Open In Xero",
     createInvoice: "Create Invoice",
+    billing: "Billing",
+    memberState: "Member State",
+    memberbucksTransactions: "Memberbucks Transactions",
+    subscriptionInfo: "Subscription Info",
+    subscriptionStatus: "Stripe Subscription Status",
+    billingInfo: "Billing Info",
+    billingCycleAnchor: "Billing Cycle Anchor",
+    cancelAt: "Cancels At",
+    cancelAtPeriodEnd: "Cancels At Period End",
+    currentPeriodEnd: "Current Period End",
+    startDate: "Start Date",
   },
   doors: {
     nodata: "There are no doors in the system.",

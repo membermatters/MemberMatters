@@ -131,10 +131,10 @@
               intervalDescription: $t("paymentPlans.intervalDescription", {
                 currency: selectedPlan.currency.toUpperCase(),
                 amount: $n(selectedPlan.cost / 100, "currency"),
-                intervalCount: selectedPlan.intervalAmount,
+                intervalCount: selectedPlan.intervalCount,
                 interval: $tc(
                   `paymentPlans.${
-                    selectedPlan.intervalAmount > 1
+                    selectedPlan.intervalCount > 1
                       ? "intervalPlurals"
                       : "interval"
                   }.${selectedPlan.interval.toLowerCase()}`

@@ -5,7 +5,7 @@ import routes from "./routes";
 
 Vue.use(VueRouter);
 
-const router = () => new VueRouter({
+const router = new VueRouter({
   // const router = ({ store, ssrContext } ) => new VueRouter({
   scrollBehavior: () => ({ x: 0, y: 0 }),
   routes,

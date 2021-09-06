@@ -13,7 +13,8 @@
         (evt, row) => {
           $router.push({
             name: 'manageMember',
-            params: { memberId: row.id } });
+            params: { memberId: row.id },
+          });
         }
       "
     >
@@ -80,7 +81,7 @@
         <q-select
           v-model="memberState"
           class="q-mr-sm"
-          style="min-width: 100px;"
+          style="min-width: 100px"
           outlined
           emit-value
           :options="filterOptions"
@@ -176,12 +177,10 @@ export default {
           sortable: true,
         },
         {
-          name: "groups",
-          label: "Groups",
-          field: "groups",
+          name: "subscriptionStatus",
+          label: "Subscription Status",
+          field: "subscriptionStatus",
           sortable: true,
-          format: (val, row) =>
-            row.groups.map((group) => group.name).join(", "),
         },
         {
           name: "status",

@@ -11,6 +11,7 @@
       <q-tabs v-model="tab" align="justify" narrow-indicator>
         <q-tab name="profile" :label="$t('menuLink.profile')" />
         <q-tab name="access" :label="$t('adminTools.access')" />
+        <q-tab name="billing" :label="$t('adminTools.billing')" />
         <q-tab name="log" disable :label="$t('adminTools.log')" />
         <!--        <q-tab-->
         <!--          name="memberbucks"-->
@@ -36,7 +37,10 @@
               @click="setMemberState('active')"
             />
             <q-btn
-              v-else-if="selectedMember.state === 'Needs Induction' || selectedMember.state === 'Account only'"
+              v-else-if="
+                selectedMember.state === 'Needs Induction' ||
+                selectedMember.state === 'Account only'
+              "
               class="q-mr-sm q-mb-sm"
               color="primary"
               :label="$t('adminTools.makeMember')"
@@ -93,8 +97,11 @@
             </q-btn-dropdown>
           </div>
 
-          <div class="text-body1" :class="{ 'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs }">
-            Member State: {{selectedMember.state}}
+          <div
+            class="text-body1"
+            :class="{ 'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs }"
+          >
+            {{ $t("adminTools.memberState") }}: {{ selectedMember.state }}
           </div>
 
           <div class="row q-pt-md">
@@ -381,15 +388,212 @@
           <access-list :member-id="selectedMemberFiltered.id" />
         </q-tab-panel>
 
-        <q-tab-panel name="log">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-        </q-tab-panel>
+        <q-tab-panel name="log"> Coming Soon! </q-tab-panel>
 
-        <q-tab-panel name="memberbucks">
+        <q-tab-panel name="billing">
           <div class="text-h6">
-            {{ $t("menuLink.memberbucks") }}
+            {{ $t("adminTools.subscriptionInfo") }}
           </div>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+
+          <q-list bordered padding class="rounded-borders">
+            <q-item>
+              <q-item-section>
+                <q-item-label lines="1">
+                  {{ billing.subscription.status }}
+                </q-item-label>
+                <q-item-label caption>
+                  {{ $t(`adminTools.subscriptionStatus`) }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                <q-item-label lines="1">
+                  {{
+                    this.formatDateSimple(
+                      billing.subscription.billingCycleAnchor
+                    )
+                  }}
+                </q-item-label>
+                <q-item-label caption>
+                  {{ $t(`adminTools.billingCycleAnchor`) }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                <q-item-label lines="1">
+                  {{ this.formatDateSimple(billing.subscription.startDate) }}
+                </q-item-label>
+                <q-item-label caption>
+                  {{ $t(`adminTools.startDate`) }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                <q-item-label lines="1">
+                  {{
+                    this.formatDateSimple(billing.subscription.currentPeriodEnd)
+                  }}
+                </q-item-label>
+                <q-item-label caption>
+                  {{ $t(`adminTools.currentPeriodEnd`) }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                <q-item-label lines="1">
+                  {{ this.formatDateSimple(billing.subscription.cancelAt) }}
+                </q-item-label>
+                <q-item-label caption>
+                  {{ $t(`adminTools.cancelAt`) }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                <q-item-label lines="1">
+                  {{ billing.subscription.cancelAtPeriodEnd }}
+                </q-item-label>
+                <q-item-label caption>
+                  {{ $t(`adminTools.cancelAtPeriodEnd`) }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+
+          <br />
+          <div class="text-h6">
+            {{ $t("adminTools.billingInfo") }}
+          </div>
+
+          <q-list bordered padding class="rounded-borders">
+            <q-item>
+              <q-item-section>
+                <q-item-label lines="1">
+                  {{
+                    billing.memberbucks.lastPurchase
+                      ? this.formatWhen(billing.memberbucks.lastPurchase)
+                      : $t("error.noValue")
+                  }}
+                </q-item-label>
+                <q-item-label caption>
+                  {{ $t(`memberbucks.lastPurchase`) }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                <q-item-label lines="1">
+                  {{ billing.memberbucks.stripe_card_expiry }}
+                </q-item-label>
+                <q-item-label caption>
+                  {{ $t(`memberbucks.cardExpiry`) }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                <q-item-label lines="1">
+                  {{ billing.memberbucks.stripe_card_last_digits }}
+                </q-item-label>
+                <q-item-label caption>
+                  {{ $t(`memberbucks.last4`) }}
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+
+          <br />
+          <div class="text-h6">
+            {{ $t("adminTools.memberbucksTransactions") }}
+          </div>
+
+          <q-table
+            :data="this.billing.memberbucks.transactions"
+            :columns="[
+              {
+                name: 'description',
+                label: 'Description',
+                field: 'description',
+                sortable: true,
+              },
+              {
+                name: 'amount',
+                label: 'Amount',
+                field: 'amount',
+                sortable: true,
+              },
+              {
+                name: 'date',
+                label: 'When',
+                field: 'date',
+                sortable: true,
+                format: (val) => this.formatWhen(val),
+              },
+            ]"
+            row-key="id"
+            :filter="filter"
+            :pagination.sync="pagination"
+            :loading="loading"
+            :grid="$q.screen.xs"
+          >
+            <template v-slot:top-left>
+              <div class="row">
+                <q-input
+                  v-if="$q.screen.xs"
+                  v-model="filter"
+                  outlined
+                  dense
+                  debounce="300"
+                  placeholder="Search"
+                  style="margin-top: -3px"
+                >
+                  <template v-slot:append>
+                    <q-icon :name="icons.search" />
+                  </template>
+                </q-input>
+              </div>
+              <div class="row">
+                {{ $t("memberbucks.currentBalance") }}
+                {{ $n(billing.memberbucks.balance || 0, "currency") }}
+              </div>
+            </template>
+
+            <template v-if="$q.screen.gt.xs" v-slot:top-right>
+              <q-input
+                v-model="filter"
+                outlined
+                dense
+                debounce="300"
+                placeholder="Search"
+                style="margin-top: -3px"
+              >
+                <template v-slot:append>
+                  <q-icon :name="icons.search" />
+                </template>
+              </q-input>
+            </template>
+
+            <template v-slot:body-cell-amount="props">
+              <q-td>
+                <div
+                  :class="{ credit: props.value > 0, debit: props.value < 0 }"
+                >
+                  ${{ props.value }}
+                </div>
+              </q-td>
+            </template>
+          </q-table>
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
@@ -401,11 +605,13 @@ import AccessList from "components/AccessList";
 import formMixin from "src/mixins/formMixin";
 import SavedNotification from "components/SavedNotification";
 import { mapGetters } from "vuex";
+import icons from "../../icons";
+import formatMixin from "src/mixins/formatMixin";
 
 export default {
   name: "ManageMember",
   components: { AccessList, SavedNotification },
-  mixins: [formMixin],
+  mixins: [formMixin, formatMixin],
   props: {
     member: {
       type: Object,
@@ -450,10 +656,32 @@ export default {
         groups: false,
         memberType: false,
       },
+      billing: {
+        memberbucks: {
+          transactions: [],
+          balance: 0,
+        },
+        subscription: {
+          billingCycleAnchor: "",
+          cancelAt: "",
+          cancelAtPeriodEnd: "",
+          currentPeriodEnd: "",
+          startDate: "",
+          status: "",
+        },
+      },
+      filter: "",
+      loading: false,
+      pagination: {
+        sortBy: "date",
+        descending: true,
+        rowsPerPage: this.$q.screen.xs ? 3 : 12,
+      },
     };
   },
   beforeMount() {
     this.loadInitialForm();
+    this.getMemberBilling();
   },
   methods: {
     loadInitialForm() {
@@ -549,6 +777,26 @@ export default {
             });
         });
     },
+    getMemberBilling() {
+      this.$axios
+        .get(`/api/admin/members/${this.member.id}/billing/`)
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t("error.error"),
+            message: this.$t("error.requestFailed"),
+          });
+        })
+        .then((res) => {
+          console.log(res.data);
+          this.billing = res.data;
+        })
+        .finally(() => {
+          this.$emit("memberUpdated");
+          setTimeout(() => {
+            this.stateLoading = false;
+          }, 1200);
+        });
+    },
     setMemberState(state) {
       this.stateLoading = true;
       this.$axios
@@ -610,6 +858,9 @@ export default {
       delete newMember.access;
       delete newMember.groups;
       return newMember;
+    },
+    icons() {
+      return icons;
     },
   },
 };
