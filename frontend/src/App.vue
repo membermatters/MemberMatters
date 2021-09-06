@@ -71,7 +71,8 @@ export default {
           !error.response.config.url.includes("/api/loggedin/")
         ) {
           // this means our access token probably just expired so request a new one
-          if (error.response.data.code === "token_not_valid" &&
+          if (
+            error.response.data.code === "token_not_valid" &&
             Platform.is.capacitor &&
             error.response.data?.messages[0]?.token_class === "AccessToken"
           ) {
@@ -84,15 +85,18 @@ export default {
                 this.setLoggedIn(true);
                 return Promise.resolve();
               })
-            .catch(() => {
-              // if we fail to refresh, send them back to the login page
-              this.$router.push("/login");
-              return Promise.resolve();
-            })
+              .catch(() => {
+                // if we fail to refresh, send them back to the login page
+                this.$router.push("/login");
+                return Promise.resolve();
+              });
           } else {
             this.setLoggedIn(false);
             this.resetState();
-            if (!window.location.pathname.includes("/profile/password/reset") && !window.location.pathname.includes("/login")) {
+            if (
+              !window.location.pathname.includes("/profile/password/reset") &&
+              !window.location.pathname.includes("/login")
+            ) {
               this.$router.push("/login");
               return Promise.resolve();
             }
@@ -102,7 +106,7 @@ export default {
       }
     );
   },
-  mounted() {
+  async mounted() {
     if (Platform.is.electron) {
       this.getKioskId().then(() => {
         this.pushKioskId();
@@ -112,7 +116,7 @@ export default {
     this.setCardId(null);
 
     // Get initial portal configuration data
-    this.getPortalConfig();
+    await this.getPortalConfig();
   },
   methods: {
     ...mapMutations("config", [
@@ -133,24 +137,30 @@ export default {
       document.title = `${this.$t(nameKey)} | ${this.siteName}`;
     },
     getPortalConfig() {
-      this.getSiteConfig()
-        .then(() => {
-          this.updatePageTitle();
-          if (this.features.stripe.enabled) {
-            try {
-              Vue.prototype.$stripe = loadStripe(this.keys.stripePublishableKey);
-            } catch {
-              console.log("Failed to load Stripe...");
+      return new Promise((resolve, reject) => {
+        this.getSiteConfig()
+          .then(() => {
+            this.updatePageTitle();
+            if (this.features.stripe.enabled) {
+              try {
+                Vue.prototype.$stripe = loadStripe(
+                  this.keys.stripePublishableKey
+                );
+              } catch {
+                console.log("Failed to load Stripe...");
+              }
             }
-          }
             colors.setBrand("primary", this.theme?.themePrimary || "#278ab0");
             colors.setBrand("secondary", this.theme?.themeToolbar || "#0461b1");
             colors.setBrand("accent", this.theme?.themeAccent || "#189ab4");
-        })
-        .catch((e) => {
-          console.error(e);
-          console.error("Unable to get portal config!");
-        });
+            resolve();
+          })
+          .catch((e) => {
+            console.error(e);
+            console.error("Unable to get portal config!");
+            reject(e);
+          });
+      });
     },
   },
 };
