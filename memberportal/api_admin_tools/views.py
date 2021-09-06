@@ -1,6 +1,7 @@
 from profile.models import User
 from access import models
 from .models import MemberTier, PaymentPlan
+from memberbucks.models import MemberBucks
 from constance import config
 from services.emails import send_single_email
 import json
@@ -561,3 +562,50 @@ class ManageMemberTierPlan(APIView):
         plan.delete()
 
         return Response()
+
+
+class MemberBillingInfo(APIView):
+    """
+    get: This method gets a member's billing info.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request, member_id):
+        member = User.objects.get(id=member_id)
+        current_plan = member.profile.membership_plan
+
+        billing_info = {}
+
+        if current_plan:
+            s = stripe.Subscription.retrieve(
+                request.user.profile.stripe_subscription_id,
+            )
+
+            if s:
+                billing_info["subscription"] = {
+                    "status": member.profile.subscription_status,
+                    "billingCycleAnchor": s.billing_cycle_anchor,
+                    "currentPeriodEnd": s.current_period_end,
+                    "cancelAt": s.cancel_at,
+                    "cancelAtPeriodEnd": s.cancel_at_period_end,
+                    "startDate": s.start_date,
+                }
+            else:
+                billing_info["subscription"] = None
+
+        recent_transactions = MemberBucks.objects.filter(user=request.user).order_by(
+            "date"
+        )[::-1][:100]
+
+        def get_transaction(transaction):
+            return transaction.get_transaction_display()
+
+        billing_info["memberbucks"] = {
+            "balance": member.profile.memberbucks_balance,
+            "stripe_card_last_digits": member.profile.stripe_card_last_digits,
+            "stripe_card_expiry": member.profile.stripe_card_expiry,
+            "transactions": map(get_transaction, recent_transactions),
+        }
+
+        return Response(billing_info)
