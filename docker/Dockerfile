@@ -1,5 +1,5 @@
 # Specify our base image
-FROM alpine:3.13
+FROM alpine:3.14
 LABEL maintainer="Jaimyn Mayer (github@jaimyn.com.au)"
 LABEL description="Base Dockerfile for the MemberMatters software."
 
