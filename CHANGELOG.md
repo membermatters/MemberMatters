@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Task queueing for non critical tasks like emails etc.
 
+## [v2.6.2] - 2021-09-06
+### Fixed
+- Can't override existing card during signup
+- Occasional constance settings reset to default value
+
+### Added
+- Member billing and subscription info on admin page
+- Support for sentry error logging
+
+### Changed
+- Upgraded base docker image to Alpine 3.14
+
 ## [v2.6.1] - 2021-07-11
 ### Fixed
 
