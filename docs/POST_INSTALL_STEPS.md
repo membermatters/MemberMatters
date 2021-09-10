@@ -43,6 +43,8 @@ On this page you'll see a variety of settings. You should customise these settin
 
 A summary of the settings is available below. Most settings have a more detailed description and an example of the format required on the settings page itself.
 
+> NOTE: You *must* configure the SENDGRID_API_KEY setting or else you will have problems processing new signups.
+
 #### General
   * "SITE_NAME" - Name of the website.
   * "SITE_OWNER" - Name of the organisation running this website.

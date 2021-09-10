@@ -9,8 +9,8 @@ To get started, download the latest version from docker hub using the following 
 docker pull membermatters/membermatters
 ```
 
-Create a file to contain all of your environment variables. This file contains sensitive information so treat it like a
-password! Place it somewhere you won't forget like `/usr/app/env.list`. This file is where Docker gets the environment
+Create a file to contain all of your environment variables.
+Place it somewhere you won't forget like `/usr/app/env.list`. This file is where Docker gets the environment
 variables from.
 
 ```

@@ -1,0 +1,40 @@
+captainVersion: 4
+services:
+  # MemberMatters
+  $$cap_appname:
+    image: membermatters/membermatters:$$cap_version
+    restart: always
+    environment:
+      PORTAL_ENV: $$cap_env
+      PORTAL_DOMAIN: $$cap_url
+    volumes:
+      - $$cap_appname-data:/usr/src/data
+    caproverExtra:
+      containerHttpPort: '8000'
+caproverOneClickApp:
+  variables:
+    - id: $$cap_version
+      label: Version
+      defaultValue: 'latest'
+      description: Check out the docker page for the valid tags https://hub.docker.com/r/membermatters/membermatters/tags
+      validRegex: /^([^\s^\/])+$/
+    - id: $$cap_url
+      label: URL
+      defaultValue: 'https://portal.example.com'
+      description: The publicly accessible URL of your installation.
+      validRegex: /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+    - id: $$cap_env
+      label: Environment
+      defaultValue: 'Production'
+      description: The environment your installation is running in. You can set this to "Development" for additional debug logging.
+      validRegex: /^([^\s^\/])+$/
+  instructions:
+    start: >-
+      MemberMatters is an open source membership management platform for makerspaces and community groups.
+    end: >-
+      Done! 😄
+      Your service is available at http://$$cap_appname.$$cap_root_domain
+  displayName: 'MemberMatters'
+  isOfficial: true
+  description: Open source membership management platform for makerspaces and community groups.
+  documentation: https://membermatters.org
