@@ -1,15 +1,15 @@
 from memberbucks.models import MemberBucks
-
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 import stripe
-import json
 from constance import config
-from membermatters.helpers import log_user_event, log_event
+from django.db.utils import OperationalError
 
-stripe.api_key = config.STRIPE_SECRET_KEY
+try:
+    stripe.api_key = config.STRIPE_SECRET_KEY
+except OperationalError as e:
+    pass
 
 
 class MemberBucksTransactions(APIView):

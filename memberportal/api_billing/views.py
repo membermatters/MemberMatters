@@ -12,11 +12,14 @@ import stripe
 from services import canvas
 from services.emails import send_email_to_admin
 from constance import config
-from datetime import datetime, timedelta
 from membermatters.helpers import log_user_event
+from django.db.utils import OperationalError
 
-stripe.api_key = config.STRIPE_SECRET_KEY
-Canvas = canvas.Canvas()
+try:
+    stripe.api_key = config.STRIPE_SECRET_KEY
+    Canvas = canvas.Canvas()
+except OperationalError as e:
+    pass
 
 
 class MemberBucksAddCard(APIView):

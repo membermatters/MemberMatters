@@ -6,14 +6,17 @@ from constance import config
 from services.emails import send_single_email
 import json
 import stripe
+from django.db.utils import OperationalError
 
-stripe.api_key = config.STRIPE_SECRET_KEY
+try:
+    stripe.api_key = config.STRIPE_SECRET_KEY
+except OperationalError as e:
+    pass
 
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from django.db.models import Sum
 import humanize
 from django.db import connection
 

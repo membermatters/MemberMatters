@@ -1,5 +1,4 @@
 from django.db import models
-from constance import config
 
 
 def divround_down(value, step):
@@ -16,8 +15,8 @@ class Group(models.Model):
         ]
 
     id = models.AutoField(primary_key=True)
-    name = models.CharField(f"{config.GROUP_NAME} Name", max_length=20, unique=True)
-    description = models.CharField(f"{config.GROUP_NAME} Description", max_length=100)
+    name = models.CharField(f"Name", max_length=20, unique=True)
+    description = models.CharField(f"Description", max_length=100)
     leaders = models.ManyToManyField("profile.User")
     item_code = models.CharField("Xero Item Code", max_length=50)
     account_code = models.IntegerField("Xero Account Code")
