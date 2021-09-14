@@ -1,8 +1,6 @@
 """membermatters URL Configuration
 """
 import os
-import sqlite3
-
 import django.db.utils
 from django.contrib import admin
 from django.conf import settings
@@ -12,7 +10,6 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from constance import config
 import json
-
 
 try:
     if (
