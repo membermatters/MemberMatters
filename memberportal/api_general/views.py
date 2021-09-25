@@ -270,7 +270,7 @@ class ResetPassword(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        body = json.loads(request.body)
+        body = json.loads(request.data)
 
         # If we get a reset token and no password, the token is being validated
         if body.get("token") and not body.get("password"):

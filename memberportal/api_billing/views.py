@@ -262,25 +262,40 @@ class PaymentPlanSignup(APIView):
 
         new_subscription = create_subscription()
 
-        try:
-            if new_subscription.status == "active":
-                request.user.profile.stripe_subscription_id = new_subscription.id
-                request.user.profile.membership_plan = new_plan
-                request.user.profile.subscription_status = True
-                request.user.profile.save()
+        if new_subscription.status == "active":
+            request.user.profile.stripe_subscription_id = new_subscription.id
+            request.user.profile.membership_plan = new_plan
+            request.user.profile.subscription_status = True
+            request.user.profile.save()
 
-                log_user_event(
-                    request.user,
-                    "Successfully created subscription in Stripe.",
-                    "stripe",
-                    "",
-                )
+            log_user_event(
+                request.user,
+                "Successfully created subscription in Stripe.",
+                "stripe",
+                "",
+            )
 
-                return Response({"success": True})
+            return Response({"success": True})
 
-        # if we can't access new_subscription.status, then return the Response() object
-        except:
-            return new_subscription
+        elif new_subscription.status == "incomplete":
+            # if we got here, that means the subscription wasn't successfully created
+            log_user_event(
+                request.user,
+                f"Failed to create subscription in Stripe with status {new_subscription.status}.",
+                "stripe",
+                "",
+            )
+
+            return Response({"success": True, "message": "signup.subscriptionFailed"})
+
+        else:
+            log_user_event(
+                request.user,
+                f"Failed to create subscription in Stripe with status {new_subscription.status}.",
+                "stripe",
+                "",
+            )
+            return Response({"success": True})
 
 
 class CanSignup(APIView):
@@ -514,7 +529,7 @@ class StripeWebhook(APIView):
                 subject = "Your payment was successful."
                 title = subject
                 message = (
-                    "Thanks for making your first membership payment using our online payment system. "
+                    "Thanks for making a membership payment using our online payment system. "
                     "You've already met all of the requirements for activating your site access. Please check "
                     "for another email message confirming this was successful."
                 )
@@ -526,7 +541,7 @@ class StripeWebhook(APIView):
 
                 # activate their access card
                 member.activate()
-                member.email_enable_member()
+                member.user.email_enable_member()
 
             # They've signed up for a new subscription, but are a new member
             if invoice_status == "paid" and member.state != "active":

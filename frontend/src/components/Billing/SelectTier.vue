@@ -259,6 +259,12 @@ export default defineComponent({
             setTimeout(() => {
               location.reload();
             }, 3000);
+          } else if (response.data.message) {
+            this.disableFinish = false;
+            this.$q.dialog({
+              title: this.$t("paymentPlans.signupFailed"),
+              message: this.$t(response.data.message),
+            });
           } else {
             this.disableFinish = false;
             this.$q.dialog({

@@ -516,6 +516,8 @@ export default {
       "We're very sorry but there was an unexpected error when submitting your application. Please contact us at {email} for assistance.",
     errorMessageDescription: "Please include the error message below:",
     requirementsNotMet: "Requirements not met:",
+    subscriptionFailed:
+      "Sorry, but there was a problem creating your subscription. Please check the card you used had enough funds, try again, or contact us for help.",
   },
   tiers: {
     disabledFeature:
