@@ -1,4 +1,4 @@
-import * as Moment from "moment";
+import * as dayjs from "dayjs";
 
 export default {
   methods: {
@@ -16,14 +16,14 @@ export default {
       return current === newField;
     },
     validateFutureDate(date: string) {
-      return date >= Moment().format("YYYY/MM/DD");
+      return date >= dayjs().format("YYYY/MM/DD");
     },
     validateFutureTime(time: string) {
-      return time >= Moment().format("HH:MM");
+      return time >= dayjs().format("HH:MM");
     },
     validateFutureDateTime(date: string, disable: boolean) {
       if (disable) return true;
-      return date >= Moment().format("YYYY-MM-DD HH:MM");
+      return date >= dayjs().format("YYYY-MM-DD HH:MM");
     },
   },
   computed: {
@@ -32,11 +32,11 @@ export default {
     },
     intervalOptions() {
       return [
-        {label: "day(s)", value: "day"},
-        {label: "week(s)", value: "week"},
-        {label: "month(s)", value: "month"},
-        {label: "year(s)", value: "year"},
-      ]
-    }
+        { label: "day(s)", value: "day" },
+        { label: "week(s)", value: "week" },
+        { label: "month(s)", value: "month" },
+        { label: "year(s)", value: "year" },
+      ];
+    },
   },
 };

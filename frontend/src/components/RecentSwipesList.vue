@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="q-pl-lg q-pa-md"
-  >
+  <div class="q-pl-lg q-pa-md">
     <q-tabs
       v-model="tab"
       dense
@@ -10,29 +8,27 @@
       indicator-color="primary"
       align="justify"
     >
-      <q-tab
-        name="doors"
-        label="Doors"
-      />
-      <q-tab
-        name="interlocks"
-        label="Interlocks"
-      />
+      <q-tab name="doors" label="Doors" />
+      <q-tab name="interlocks" label="Interlocks" />
     </q-tabs>
 
     <q-separator />
 
-    <q-tab-panels
-      v-model="tab"
-      animated
-    >
+    <q-tab-panels v-model="tab" animated>
       <q-tab-panel name="doors">
         <div class="row flex content-start justify-center">
           <q-table
             :data="humanRecentDoorSwipes"
-            :columns="[{ name: 'user', label: 'User', field: 'user', sortable: true },
-                       { name: 'door', label: 'Door', field: 'name', sortable: true },
-                       { name: 'swipedAt', label: 'Swiped At', field: 'date', sortable: true },]"
+            :columns="[
+              { name: 'user', label: 'User', field: 'user', sortable: true },
+              { name: 'door', label: 'Door', field: 'name', sortable: true },
+              {
+                name: 'swipedAt',
+                label: 'Swiped At',
+                field: 'date',
+                sortable: true,
+              },
+            ]"
             row-key="key"
             :filter="filter"
             :pagination.sync="doorPagination"
@@ -62,22 +58,37 @@
         <div class="row flex content-start justify-center">
           <q-table
             :data="humanRecentInterlockSwipes"
-            :columns="[{ name: 'userOn', label: 'Turned On By', field: 'userOn', sortable: true },
-                       { name: 'door', label: 'Interlock', field: 'name', sortable: true },
-                       { name: 'sessionStart',
-                         label: 'Turned On At',
-                         field: 'sessionStart',
-                         sortable: true
-                       },
-                       { name: 'userOff',
-                         label: 'Turned Off By',
-                         field: 'userOff',
-                         sortable: true },
-                       { name: 'sessionEnd',
-                         label: 'Turned Off At',
-                         field: 'sessionEnd',
-                         sortable: true
-                       },
+            :columns="[
+              {
+                name: 'userOn',
+                label: 'Turned On By',
+                field: 'userOn',
+                sortable: true,
+              },
+              {
+                name: 'door',
+                label: 'Interlock',
+                field: 'name',
+                sortable: true,
+              },
+              {
+                name: 'sessionStart',
+                label: 'Turned On At',
+                field: 'sessionStart',
+                sortable: true,
+              },
+              {
+                name: 'userOff',
+                label: 'Turned Off By',
+                field: 'userOff',
+                sortable: true,
+              },
+              {
+                name: 'sessionEnd',
+                label: 'Turned Off At',
+                field: 'sessionEnd',
+                sortable: true,
+              },
             ]"
             row-key="key"
             :filter="filter"
@@ -110,13 +121,14 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import Moment from "moment";
 import icons from "../icons";
 import RefreshDataDialog from "./RefreshDataDialog";
+import formatMixin from "src/mixins/formatMixin";
 
 export default {
   name: "RecentSwipesList",
   components: { RefreshDataDialog },
+  mixins: [formatMixin],
   data() {
     return {
       tab: "doors",
@@ -150,10 +162,9 @@ export default {
       });
     this.updateInterval = setInterval(() => {
       this.loading = true;
-      this.getRecentSwipes()
-        .finally(() => {
-          this.loading = false;
-        });
+      this.getRecentSwipes().finally(() => {
+        this.loading = false;
+      });
     }, 30000);
   },
   destroyed() {
@@ -166,17 +177,14 @@ export default {
     },
     humanRecentDoorSwipes() {
       /**
-         * Returns an array of human readable swipe objects for the Doors.
-         */
+       * Returns an array of human readable swipe objects for the Doors.
+       */
       if (this.recentSwipes.doors) {
         return this.recentSwipes.doors.map((value) => {
-          const humanReadable = Moment.utc(value.date)
-            .local()
-            .format("Do MMM YYYY, h:mm a");
           return {
             key: value.user + value.date,
             user: value.user,
-            date: humanReadable,
+            date: this.formatDateSimple(value.date),
             name: value.name,
           };
         });
@@ -186,23 +194,24 @@ export default {
     },
     humanRecentInterlockSwipes() {
       /**
-         * Returns an array of human readable swipe objects for the Interlocks.
-         */
+       * Returns an array of human readable swipe objects for the Interlocks.
+       */
       if (this.recentSwipes.interlocks) {
         return this.recentSwipes.interlocks.map((value) => {
-          const humanReadableStart = Moment.utc(value.sessionStart)
-            .local()
-            .format("Do MMM YYYY, h:mm a");
-          const humanReadableEnd = Moment.utc(value.sessionEnd)
-            .local()
-            .format("Do MMM YYYY, h:mm a");
+          const humanReadableStart = this.formatDateSimple(value.sessionStart);
+          const humanReadableEnd = this.formatDateSimple(value.sessionEnd);
 
           return {
             name: value.name,
             userOn: value.userOn,
             sessionStart: humanReadableStart,
-            userOff: value.userOff === null ? this.$t("recentSwipes.timedOut") : value.userOff,
-            sessionEnd: value.sessionComplete ? humanReadableEnd : this.$t("recentSwipes.inProgress"),
+            userOff:
+              value.userOff === null
+                ? this.$t("recentSwipes.timedOut")
+                : value.userOff,
+            sessionEnd: value.sessionComplete
+              ? humanReadableEnd
+              : this.$t("recentSwipes.inProgress"),
           };
         });
       }
@@ -214,7 +223,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-  @media (max-width: $breakpoint-xs-max)
-    .access-list
-      width: 100%;
+@media (max-width: $breakpoint-xs-max)
+  .access-list
+    width: 100%;
 </style>
