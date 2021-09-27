@@ -170,6 +170,8 @@ import * as dayjs from "dayjs";
 import icons from "../icons";
 import formMixin from "../mixins/formMixin";
 
+let d;
+
 export default {
   name: "MeetingForm",
   mixins: [formMixin],
@@ -189,9 +191,9 @@ export default {
         type: "",
         group: "",
         date:
-          dayjs.minute() || dayjs.second() || dayjs.millisecond()
-            ? dayjs.add(1, "hour").startOf("hour").format("YYYY-MM-DD HH:mm")
-            : dayjs.startOf("hour").format("YYYY-MM-DD HH:mm"),
+          dayjs().minute() || dayjs().second() || dayjs().millisecond()
+            ? dayjs().add(1, "hour").startOf("hour").format("YYYY-MM-DD HH:mm")
+            : dayjs().startOf("hour").format("YYYY-MM-DD HH:mm"),
         chair: "",
       },
     };
