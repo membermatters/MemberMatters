@@ -16,8 +16,8 @@ export function formatCsvList(list: Array<string>) {
 }
 
 export function formatDate(date: Date, time = true) {
-  if (time) return dayjs(date).local().format("Do MMM YYYY, h:mm a");
-  return dayjs(date).local().format("Do MMM YYYY");
+  if (time) return dayjs(date).local().format("D MMM YYYY, h:mm a");
+  return dayjs(date).local().format("D MMM YYYY");
 }
 
 export function formatDateSimple(date: Date, time = true) {
