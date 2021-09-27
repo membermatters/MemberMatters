@@ -14,11 +14,12 @@ from services.emails import send_email_to_admin
 from constance import config
 from membermatters.helpers import log_user_event
 from django.db.utils import OperationalError
+from sentry_sdk import capture_exception
 
 try:
     stripe.api_key = config.STRIPE_SECRET_KEY
     Canvas = canvas.Canvas()
-except OperationalError as e:
+except OperationalError as error:
     pass
 
 
@@ -62,6 +63,7 @@ class MemberBucksAddCard(APIView):
                     "stripe",
                     request,
                 )
+                capture_exception(e)
 
                 return Response(
                     {
@@ -78,6 +80,7 @@ class MemberBucksAddCard(APIView):
                     "stripe",
                     request,
                 )
+                capture_exception(e)
                 return Response(
                     {
                         "success": False,
@@ -127,7 +130,8 @@ class MemberBucksAddCard(APIView):
                 "can remove this card at any time via the "
                 f"{config.SITE_NAME}.",
             )
-        except python_http_client.exceptions.UnauthorizedError:
+        except python_http_client.exceptions.UnauthorizedError as e:
+            capture_exception(e)
             return Response(
                 {"message": "error.sendgridNotConfigured"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -207,6 +211,7 @@ class PaymentPlanSignup(APIView):
                 )
 
             except stripe.error.InvalidRequestError as e:
+                capture_exception(e)
                 error = e.json_body.get("error")
 
                 if (
@@ -252,6 +257,7 @@ class PaymentPlanSignup(APIView):
                     "stripe",
                     e,
                 )
+                capture_exception(e)
                 return Response(
                     {
                         "success": False,
@@ -496,7 +502,8 @@ class StripeWebhook(APIView):
                 data = event["data"]
             except Exception as e:
                 print(e)
-                return Response({"error": "Error validaitng Stripe signature."})
+                capture_exception(e)
+                return Response({"error": "Error validating Stripe signature."})
 
             # Get the type of webhook event sent - used to check the status of PaymentIntents.
             event_type = event["type"]
@@ -508,7 +515,8 @@ class StripeWebhook(APIView):
         try:
             member = Profile.objects.get(stripe_customer_id=data["customer"])
 
-        except Profile.DoesNotExist:
+        except Profile.DoesNotExist as e:
+            capture_exception(e)
             return Response()
 
         # Just in case the linked Stripe account also processes other payments we should just ignore a non existent
