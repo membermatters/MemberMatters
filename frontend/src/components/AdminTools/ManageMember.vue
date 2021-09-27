@@ -804,7 +804,6 @@ export default {
           });
         })
         .then((res) => {
-          console.log(res.data);
           this.billing = res.data;
           if (!this.billing?.subscription) this.billing.subscription = null;
         })

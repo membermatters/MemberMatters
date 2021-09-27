@@ -5,9 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v2.6.3] - 2021-09-27
+### Fixed
+- Enable stripe billing menu visibility race condition
+- Sentry / stripe token race condition
+- Removed excess console logging
+- Django admin static css was excluded from docker image
+- Handled incomplete subscription with error message
+- Various minor bug fixes
+- Unhandled error breaks admin UI when member subscription doesn't exist
+- Date display issue on proxy form
 
-- Task queueing for non critical tasks like emails etc.
+### Changed
+- Replaced momentjs with dayjs
+  
+### Added
+- Caprover example template
+- Basic read the docs website
+- Build docker image GitHub action
 
 ## [v2.6.2] - 2021-09-06
 ### Fixed
