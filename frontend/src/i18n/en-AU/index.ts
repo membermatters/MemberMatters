@@ -430,6 +430,7 @@ export default {
     cancelAtPeriodEnd: "Cancels At Period End",
     currentPeriodEnd: "Current Period End",
     startDate: "Start Date",
+    noSubscription: "No subscription was found for this member.",
   },
   doors: {
     nodata: "There are no doors in the system.",

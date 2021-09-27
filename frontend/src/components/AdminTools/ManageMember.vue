@@ -395,7 +395,12 @@
             {{ $t("adminTools.subscriptionInfo") }}
           </div>
 
-          <q-list bordered padding class="rounded-borders">
+          <q-list
+            v-if="billing.subscription"
+            bordered
+            padding
+            class="rounded-borders"
+          >
             <q-item>
               <q-item-section>
                 <q-item-label lines="1">
@@ -469,6 +474,10 @@
             </q-item>
           </q-list>
 
+          <div v-else>
+            {{ $t(`adminTools.noSubscription`) }}
+          </div>
+
           <br />
           <div class="text-h6">
             {{ $t("adminTools.billingInfo") }}
@@ -493,7 +502,11 @@
             <q-item>
               <q-item-section>
                 <q-item-label lines="1">
-                  {{ billing.memberbucks.stripe_card_expiry }}
+                  {{
+                    billing.memberbucks.stripe_card_expiry
+                      ? this.formatWhen(billing.memberbucks.lastPurchase)
+                      : $t("error.noValue")
+                  }}
                 </q-item-label>
                 <q-item-label caption>
                   {{ $t(`memberbucks.cardExpiry`) }}
@@ -504,7 +517,11 @@
             <q-item>
               <q-item-section>
                 <q-item-label lines="1">
-                  {{ billing.memberbucks.stripe_card_last_digits }}
+                  {{
+                    billing.memberbucks.stripe_card_last_digits
+                      ? this.formatWhen(billing.memberbucks.lastPurchase)
+                      : $t("error.noValue")
+                  }}
                 </q-item-label>
                 <q-item-label caption>
                   {{ $t(`memberbucks.last4`) }}
@@ -789,6 +806,7 @@ export default {
         .then((res) => {
           console.log(res.data);
           this.billing = res.data;
+          if (!this.billing?.subscription) this.billing.subscription = null;
         })
         .finally(() => {
           this.$emit("memberUpdated");
