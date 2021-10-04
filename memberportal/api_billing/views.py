@@ -527,13 +527,13 @@ class StripeWebhook(APIView):
         if event_type == "invoice.paid":
             invoice_status = data["status"]
 
-            # They've signed up for a new subscription, but have already completed all the signup requirements
+            # If they aren't an active member, are allowed to signup, and have paid the invoice
+            # then lets activate their account (this could be a new OR returning member)
             if (
-                member.can_signup()["success"]
+                member.state != "active"
+                and member.can_signup()["success"]
                 and invoice_status == "paid"
-                and member.state != "active"
             ):
-                # if the invoice was paid and the member isn't active, then activate them
                 subject = "Your payment was successful."
                 title = subject
                 message = (
@@ -551,21 +551,25 @@ class StripeWebhook(APIView):
                 member.activate()
                 member.user.email_enable_member()
 
-            # They've signed up for a new subscription, but are a new member
-            if invoice_status == "paid" and member.state != "active":
+            # If they aren't an active member, are NOT allowed to signup, and have paid the invoice
+            # then we need to let them know and mark the subscription as active
+            # (this could be a new OR returning member that's been too long since induction etc.)
+            if member.state != "active" and invoice_status == "paid":
                 subject = "Your payment was successful."
                 title = subject
                 message = (
-                    "Thanks for making your first membership payment using our online payment system. "
+                    "Thanks for making a membership payment using our online payment system. "
                     "You haven't yet met all of the requirements for activating your site access. Once this "
-                    "happens, you'll receive an email confirmation that your access card was activated."
+                    "happens, you'll receive an email confirmation that your access card was activated. "
+                    "If you are unsure how to proceed, or this email is unexpected, please contact us."
                 )
                 member.user.email_notification(subject, title, "", message)
 
                 member.subscription_status = "active"
                 member.save()
 
-                # if the member isn't signing up for the first time
+                # if this is a returning member then send the exec an email (new members have
+                # already had this sent)
                 if member.state != "noob":
                     send_submitted_application_emails(member)
 
