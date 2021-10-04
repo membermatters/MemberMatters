@@ -270,7 +270,7 @@ class ResetPassword(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        body = json.loads(request.data)
+        body = request.data
 
         # If we get a reset token and no password, the token is being validated
         if body.get("token") and not body.get("password"):
@@ -316,7 +316,7 @@ class ResetPassword(APIView):
                 user.reset_password()
                 return Response({"success": True})
 
-            except ObjectDoesNotExist:
+            except:
                 return Response({"success": False})
 
 
