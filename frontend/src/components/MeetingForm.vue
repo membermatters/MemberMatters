@@ -40,21 +40,6 @@
           </q-tooltip>
         </div>
 
-        <q-select
-          v-if="form.type.value === 'group'"
-          v-model="form.group"
-          outlined
-          :label="$t('group')"
-          :options="groups"
-          option-value="id"
-          option-label="name"
-          :rules="[
-            (val) => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
-          ]"
-          class="q-mb-md"
-          :disable="form.success || !!meetingId"
-        />
-
         <div>
           <q-tooltip v-if="pastMeeting" :offset="[0, -10]">
             {{ $t("meetingForm.updatePastMeeting") }}
@@ -187,9 +172,7 @@ export default {
       form: {
         error: false,
         success: false,
-
         type: "",
-        group: "",
         date:
           dayjs().minute() || dayjs().second() || dayjs().millisecond()
             ? dayjs().add(1, "hour").startOf("hour").format("YYYY-MM-DD HH:mm")
@@ -241,9 +224,8 @@ export default {
   mounted() {
     // If true this means we're editing an existing meeting
     if (this.meetingId) {
-      const meetingInfo = this.meetings[
-        this.meetings.findIndex((p) => p.id === this.meetingId)
-      ];
+      const meetingInfo =
+        this.meetings[this.meetings.findIndex((p) => p.id === this.meetingId)];
 
       this.form.type = meetingInfo.type;
       this.form.date = meetingInfo.date;
@@ -252,7 +234,6 @@ export default {
   },
   computed: {
     ...mapGetters("adminTools", ["meetings", "meetingTypes"]),
-    ...mapGetters("config", ["groups"]),
     pastMeeting() {
       return dayjs(this.form.date) < dayjs();
     },

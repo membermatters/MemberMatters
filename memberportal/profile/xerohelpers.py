@@ -248,20 +248,16 @@ def create_membership_invoice(user, email_invoice=False):
         }
     ]
 
-    groups = user.profile.groups.all()
-    length = groups.count()
-
-    if length:
-        for group in groups:
-            item = {
-                "Description": f"{config.GROUP_NAME} Membership: " + group.name,
-                "Quantity": "1",
-                "ItemCode": group.item_code,
-                "UnitAmount": round(user.profile.member_type.cost * (0.3 / length), 2),
-                "TaxType": tax_type,
-                "AccountCode": group.account_code,
-            }
-            line_items.append(item)
+    # TODO: make Xero invoices for Stripe payments
+    # item = {
+    #     "Description": f"{config.GROUP_NAME} Membership: " + group.name,
+    #     "Quantity": "1",
+    #     "ItemCode": group.item_code,
+    #     "UnitAmount": round(user.profile.member_type.cost * (0.3 / length), 2),
+    #     "TaxType": tax_type,
+    #     "AccountCode": group.account_code,
+    # }
+    # line_items.append(item)
 
     payload = {
         "Type": "ACCREC",
@@ -346,74 +342,3 @@ def create_membership_invoice(user, email_invoice=False):
 
     else:
         return "Error created invoice in Xero. No Xero API details."
-
-
-def create_group_donation_invoice(user, group, amount):
-    tax_type = os.environ.get("INVOICE_TAX_TYPE", "EXEMPTOUTPUT")
-
-    line_items = [
-        {
-            "Description": f"Debit funds from {config.MEMBERBUCKS_NAME} account code.",
-            "Quantity": "1",
-            "ItemCode": f"{config.MEMBERBUCKS_NAME} Cause Donation",
-            "UnitAmount": amount * -1,
-            "TaxType": tax_type,
-            "AccountCode": "264",  # Memberbucks account in Xero
-        },
-        {
-            "Description": "Credit funds to {}.".format(group.name),
-            "Quantity": "1",
-            "ItemCode": group.item_code,
-            "UnitAmount": amount,
-            "TaxType": tax_type,
-            "AccountCode": group.account_code,
-        },
-    ]
-
-    payload = {
-        "Type": "ACCREC",
-        "Contact": {"ContactID": user.profile.xero_account_id},
-        "DueDate": datetime.datetime.today(),
-        "LineAmountTypes": "Inclusive",
-        "LineItems": line_items,
-        "Status": "AUTHORISED",
-        "Reference": user.profile.xero_account_number,
-        "Url": "https://portal.hsbne.org",
-    }
-
-    if "PORTAL_XERO_CONSUMER_KEY" in os.environ:
-        with open(xero_rsa) as keyfile:
-            rsa_key = keyfile.read()
-        credentials = PrivateCredentials(
-            os.environ.get("PORTAL_XERO_CONSUMER_KEY", "/usr/src/data/xerkey.pem"),
-            rsa_key,
-        )
-        xero = Xero(credentials)
-
-        try:
-            from membermatters.helpers import log_user_event
-
-            # try to create the invoice
-            result = xero.invoices.put(payload)
-            invoice_number = result[0]["InvoiceNumber"]
-
-            log_user_event(
-                user, "Created invoice for donation to {}.".format(group.name), "xero"
-            )
-
-        except XeroBadRequest as e:
-            log_user_event(
-                user,
-                "Error creating invoice for $" + str(user.profile.member_type.cost),
-                "xero",
-            )
-            return "Error: " + str(e)
-
-        if result:
-            return "Successfully created invoice {} in Xero.".format(invoice_number)
-
-        else:
-            return "Error creating invoice in Xero."
-
-    else:
-        return "Error creating invoice in Xero. No Xero API details."

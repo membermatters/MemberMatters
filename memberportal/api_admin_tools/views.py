@@ -332,13 +332,6 @@ class MemberProfile(APIView):
         member.profile.screen_name = body.get("screenName")
         member.profile.member_type_id = body.get("memberType")["id"]
 
-        groups = []
-
-        for x in body.get("groups"):
-            groups.append(x["id"])
-
-        member.profile.groups.set(groups)
-
         member.save()
         member.profile.save()
 

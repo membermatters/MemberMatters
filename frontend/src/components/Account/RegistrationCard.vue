@@ -1,22 +1,16 @@
 <template>
   <div class="q-pa-md">
-    <q-card
-      class="register-card"
-    >
+    <q-card class="register-card">
       <h6 class="q-ma-none q-pa-md">
-        {{ $t('registrationCard.register') }}
+        {{ $t("registrationCard.register") }}
       </h6>
 
       <q-card-section>
         <p class="q-pb-md">
-          {{ $t('form.allFieldsRequired') }}
+          {{ $t("form.allFieldsRequired") }}
         </p>
 
-        <q-form
-          class="q-gutter-md"
-          @submit="onSubmit"
-          @reset="onReset"
-        >
+        <q-form class="q-gutter-md" @submit="onSubmit" @reset="onReset">
           <q-input
             v-model="form.email"
             autofocus
@@ -24,7 +18,9 @@
             type="email"
             :label="$t('form.email')"
             lazy-rules
-            :rules="[ val => validateEmail(val) || $t('validation.invalidEmail')]"
+            :rules="[
+              (val) => validateEmail(val) || $t('validation.invalidEmail'),
+            ]"
           />
 
           <div class="row items-start no-wrap">
@@ -35,7 +31,8 @@
               :label="$t('form.firstName')"
               lazy-rules
               :rules="[
-                val => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+                (val) =>
+                  validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
               ]"
             />
             <q-input
@@ -44,7 +41,8 @@
               :label="$t('form.lastName')"
               lazy-rules
               :rules="[
-                val => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+                (val) =>
+                  validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
               ]"
             />
           </div>
@@ -57,7 +55,8 @@
               :label="$t('form.screenName')"
               lazy-rules
               :rules="[
-                val => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+                (val) =>
+                  validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
               ]"
             />
             <q-input
@@ -67,12 +66,11 @@
               :label="$t('form.mobile')"
               lazy-rules
               :rules="[
-                val => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+                (val) =>
+                  validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
               ]"
             />
           </div>
-
-          <group-select v-model="form.groups" />
 
           <q-input
             v-model="form.password"
@@ -81,7 +79,8 @@
             :type="isPwd ? 'password' : 'text'"
             lazy-rules
             :rules="[
-              val => validateNotEmpty(val) || $t('validation.invalidPassword'),
+              (val) =>
+                validateNotEmpty(val) || $t('validation.invalidPassword'),
             ]"
           >
             <template v-slot:append>
@@ -93,27 +92,21 @@
             </template>
           </q-input>
 
-          <q-banner
-            v-if="error"
-            class="bg-negative text-white"
-          >
-            {{ $t('error.requestFailed') }}
+          <q-banner v-if="error" class="bg-negative text-white">
+            {{ $t("error.requestFailed") }}
           </q-banner>
 
-          <q-banner
-            v-if="errorExists"
-            class="bg-negative text-white"
-          >
+          <q-banner v-if="errorExists" class="bg-negative text-white">
             {{ $t(errorExists) }}
           </q-banner>
 
           <p class="text-caption">
-            {{ $t('registrationCard.alreadyAMember') }}
+            {{ $t("registrationCard.alreadyAMember") }}
             <router-link
               :to="{ name: 'login' }"
               :class="$q.dark.isActive ? 'text-white' : 'text-black'"
             >
-              {{ $t('registrationCard.loginHere') }}
+              {{ $t("registrationCard.loginHere") }}
             </router-link>
           </p>
 
@@ -135,13 +128,11 @@
 
 <script>
 import { mapGetters } from "vuex";
-import GroupSelect from "components/FormElements/GroupSelect";
 import formMixin from "../../mixins/formMixin";
 import icons from "../../icons";
 
 export default {
   name: "RegistrationCard",
-  components: { GroupSelect },
   mixins: [formMixin],
   data() {
     return {
@@ -157,7 +148,6 @@ export default {
         email: null,
         screenName: null,
         mobile: null,
-        groups: [],
         password: null,
       },
     };
@@ -187,15 +177,15 @@ export default {
       this.error = false;
       this.buttonLoading = true;
 
-      this.$axios.post("/api/register/", {
-        firstName: this.form.firstName,
-        lastName: this.form.lastName,
-        email: this.form.email,
-        screenName: this.form.screenName,
-        mobile: this.form.mobile,
-        groups: this.form.groups,
-        password: this.form.password,
-      })
+      this.$axios
+        .post("/api/register/", {
+          firstName: this.form.firstName,
+          lastName: this.form.lastName,
+          email: this.form.email,
+          screenName: this.form.screenName,
+          mobile: this.form.mobile,
+          password: this.form.password,
+        })
         .then(() => {
           this.failed = false;
           this.error = false;
@@ -221,7 +211,7 @@ export default {
 </script>
 
 <style scoped>
-  .register-card {
-    width: 420px;
-  }
+.register-card {
+  width: 420px;
+}
 </style>

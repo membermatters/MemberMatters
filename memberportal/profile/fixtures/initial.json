@@ -20,7 +20,6 @@
       "password_reset_expire": null,
       "staff": true,
       "admin": true,
-      "groups": [],
       "user_permissions": []
     }
   },
@@ -46,7 +45,6 @@
       "stripe_card_last_digits": "",
       "xero_account_id": "",
       "xero_account_number": "",
-      "groups": [],
       "doors": [],
       "interlocks": []
     }

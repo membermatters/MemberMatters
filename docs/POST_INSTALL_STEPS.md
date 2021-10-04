@@ -59,7 +59,6 @@ A summary of the settings is available below. Most settings have a more detailed
   * "MAX_INDUCTION_DAYS" -  Maximum number of days since they were inducted before they require another induction.
   * "MIN_INDUCTION_SCORE" - The minimum score considered a "pass" for the induction course.
   * "REQUIRE_ACCESS_CARD" - Require the member to submit their RFID access card number during signup.
-  * "MAX_GROUPS" - Maximum groups the member can select during signup.
 
 #### Canvas Integration
   * "CANVAS_API_TOKEN" - the API token for the Canvas LMS integration.

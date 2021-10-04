@@ -15,11 +15,9 @@ export default {
     manageTier: "Manage Tier",
 
     adminTools: "Admin Tools",
-    groupMembers: "Group Members",
     meetings: "Meetings",
     members: "Members",
     manageMember: "Manage Member",
-    groups: "Groups",
     doors: "Doors",
     manageDoor: "Manage Door",
     manageInterlock: "Manage Interlock",
@@ -191,13 +189,6 @@ export default {
     success: "Your issue was reported successfully.",
     fail: "There was a problem reporting your issue.",
   },
-  memberGroups: {
-    pageDescription:
-      "You can browse our list of groups and see each group's membership and " +
-      "quorum.",
-    activeMembers: "Active Members",
-    quorum: "Quorum",
-  },
   form: {
     saved: "Saved",
     error: "Error Saving",
@@ -361,9 +352,7 @@ export default {
     memberList: "Members On Site",
   },
   entityType: "Association",
-  groups: "Groups",
   members: "Members",
-  group: "Group",
   member: "Member",
   failed: "Action failed",
   success: "Action was successful",

@@ -16,7 +16,6 @@ export default {
   settings: "mdi-cog",
   manageMembers: "mdi-account-cog",
   meetings: "mdi-calendar-clock",
-  groups: "mdi-account-group",
   plans: "mdi-badge-account-horizontal",
   dollar: "fas fa-dollar-sign",
   doors: "mdi-door-closed-lock",
@@ -26,7 +25,7 @@ export default {
   tools: "mdi-tools",
   admintools: "mdi-toolbox",
   reportIssue: "mdi-alert",
-  submitProxy:  "mdi-ballot",
+  submitProxy: "mdi-ballot",
   groupMembers: "mdi-account-multiple",
   recentSwipes: "mdi-history",
   lastSeen: "mdi-account-clock",
@@ -73,5 +72,5 @@ export default {
   induction: "mdi-account-hard-hat",
   accessCard: "mdi-card-account-details",
   doorOpen: "mdi-door-open",
-  interlock: "mdi-tools"
+  interlock: "mdi-tools",
 };

@@ -69,14 +69,6 @@ const PageAndRouteConfig = [
         component: () => import("pages/Meetings"),
       },
       {
-        icon: icons.groups,
-        to: "/manage/groups",
-        name: "groups",
-        loggedIn: true,
-        admin: true,
-        component: () => import("pages/Error501"),
-      },
-      {
         icon: icons.plans,
         to: "/manage/tiers",
         name: "manageTiers",
@@ -145,15 +137,6 @@ const PageAndRouteConfig = [
         kiosk: true,
         memberOnly: true,
         component: () => import("pages/Proxy"),
-      },
-      {
-        icon: icons.groupMembers,
-        to: "/tools/groups/",
-        name: "groupMembers",
-        loggedIn: true,
-        kiosk: true,
-        memberOnly: true,
-        component: () => import("pages/MemberGroups"),
       },
       {
         icon: icons.recentSwipes,
