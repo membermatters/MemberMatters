@@ -46,13 +46,13 @@ class Canvas:
         scores = {}
 
         for student in students:
-            scores[student.get("user").get("email")] = student.get("grades").get(
-                "finalScore"
-            )
+            scores[student.get("user").get("email").lower()] = student.get(
+                "grades"
+            ).get("finalScore")
 
         return scores
 
     def get_student_score_for_course(self, course_id, email):
         scores = self.get_course_scores(course_id)
 
-        return scores.get(email)
+        return scores.get(email.lower())
