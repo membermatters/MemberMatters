@@ -335,18 +335,21 @@ class CheckInductionStatus(APIView):
         if "induction" not in request.user.profile.can_signup()["requiredSteps"]:
             return Response({"success": True, "score": 0, "notRequired": True})
 
-        score = Canvas.get_student_score_for_course(
-            config.INDUCTION_COURSE_ID, request.user.email
-        )
-        if score:
-            induction_passed = score >= config.MIN_INDUCTION_SCORE
+        try:
+            score = Canvas.get_student_score_for_course(
+                config.INDUCTION_COURSE_ID, request.user.email
+            )
+            if score:
+                induction_passed = score >= config.MIN_INDUCTION_SCORE
 
-            if induction_passed:
-                request.user.profile.update_last_induction()
+                if induction_passed:
+                    request.user.profile.update_last_induction()
 
-                return Response({"success": True, "score": score})
+                    return Response({"success": True, "score": score})
+            return Response({"success": False, "score": score})
 
-        return Response({"success": False, "score": score})
+        except:
+            return Response({"success": False, "score": 0})
 
 
 def send_submitted_application_emails(member):
