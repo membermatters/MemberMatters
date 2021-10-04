@@ -212,7 +212,7 @@ export default {
       if (
         this.profile.memberStatus === "Needs Induction" &&
         this.$route.name !== "membershipTier" &&
-        this.features.stripe.enableMembershipPayments
+        this.features.enableMembershipPayments
       ) {
         next({ name: "membershipTier" });
       }

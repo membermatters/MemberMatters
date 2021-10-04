@@ -136,6 +136,7 @@ const PageAndRouteConfig = [
         loggedIn: true,
         kiosk: true,
         memberOnly: true,
+        featureEnabledFlag: "enableProxyVoting",
         component: () => import("pages/Proxy"),
       },
       {
@@ -181,6 +182,7 @@ const PageAndRouteConfig = [
       },
       {
         icon: icons.memberbucks,
+        featureEnabledFlag: "enableMemberBucks",
         to: "/account/memberbucks/:dialog",
         defaultParams: { dialog: "transactions" },
         name: "memberbucks",
@@ -189,6 +191,7 @@ const PageAndRouteConfig = [
       },
       {
         icon: icons.billing,
+        featureEnabledFlag: "enableStripe",
         to: "/account/billing",
         name: "billing",
         loggedIn: true,
@@ -196,6 +199,7 @@ const PageAndRouteConfig = [
       },
       {
         icon: icons.plans,
+        featureEnabledFlag: "enableMembershipPayments",
         to: "/account/membership-tier",
         name: "membershipTier",
         loggedIn: true,

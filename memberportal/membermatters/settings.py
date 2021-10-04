@@ -377,6 +377,7 @@ CONSTANCE_CONFIG = {
         "[]",
         "A JSON list of strings (URLs) to project sites like wikis, GitHub, etc.",
     ),
+    "ENABLE_MEMBERBUCKS": (True, "Enable the memberbucks functionality."),
     "MEMBERBUCKS_MAX_TOPUP": ("50", "The maximum topup allowed in dollars."),
     "MEMBERBUCKS_CURRENCY": (
         "aud",
@@ -458,6 +459,7 @@ CONSTANCE_CONFIG = {
         "PLEASE_CHANGE_ME",
         "Canvas API token.",
     ),
+    "ENABLE_PROXY_VOTING": (True, "Enables the proxy voting management feature."),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -471,6 +473,18 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "GOOGLE_ANALYTICS_PROPERTY_ID",
                 "API_SECRET_KEY",
                 "DEFAULT_MEMBER_TYPE",
+            ),
+        ),
+        (
+            "Features",
+            (
+                "ENABLE_PROXY_VOTING",
+                "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS",
+                "ENABLE_MEMBERBUCKS",
+                "ENABLE_DISCOURSE_SSO_PROTOCOL",
+                "ENABLE_DISCORD_INTEGRATION",
+                "SPACE_DIRECTORY_ENABLED",
+                "ENABLE_THEME_SWIPE",
             ),
         ),
         (
@@ -509,7 +523,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
         ),
         (
             "Discourse SSO Protocol",
-            ("ENABLE_DISCOURSE_SSO_PROTOCOL", "DISCOURSE_SSO_PROTOCOL_SECRET_KEY"),
+            ("DISCOURSE_SSO_PROTOCOL_SECRET_KEY",),
         ),
         ("URLs", ("SITE_URL", "MAIN_SITE_URL", "INDUCTION_URL")),
         ("Memberbucks", ("MEMBERBUCKS_MAX_TOPUP", "MEMBERBUCKS_CURRENCY")),
@@ -535,7 +549,6 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "STRIPE_PUBLISHABLE_KEY",
                 "STRIPE_SECRET_KEY",
                 "STRIPE_WEBHOOK_SECRET",
-                "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS",
                 "STRIPE_MEMBERBUCKS_TOPUP_OPTIONS",
             ),
         ),
@@ -551,7 +564,6 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
         (
             "Space Directory",
             (
-                "SPACE_DIRECTORY_ENABLED",
                 "SPACE_DIRECTORY_OPEN",
                 "SPACE_DIRECTORY_MESSAGE",
                 "SPACE_DIRECTORY_ICON_OPEN",
@@ -570,11 +582,10 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SPACE_DIRECTORY_PROJECTS",
             ),
         ),
-        ("Theme Swipe Integration", ("THEME_SWIPE_URL", "ENABLE_THEME_SWIPE")),
+        ("Theme Swipe Integration", ("THEME_SWIPE_URL",)),
         (
             "Discord Integration",
             (
-                "ENABLE_DISCORD_INTEGRATION",
                 "DISCORD_DOOR_WEBHOOK",
                 "DISCORD_INTERLOCK_WEBHOOK",
             ),

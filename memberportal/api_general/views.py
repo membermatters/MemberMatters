@@ -33,15 +33,16 @@ class GetConfig(APIView):
         membership_types = list(MemberTypes.objects.values())
 
         features = {
-            "stripe": {
-                "enabled": len(config.STRIPE_PUBLISHABLE_KEY) > 0,
-                "enableMembershipPayments": config.ENABLE_STRIPE_MEMBERSHIP_PAYMENTS,
-                "memberbucks_topup_options": json.loads(
-                    config.STRIPE_MEMBERBUCKS_TOPUP_OPTIONS
-                ),
-            },
+            "memberbucks_topup_options": json.loads(
+                config.STRIPE_MEMBERBUCKS_TOPUP_OPTIONS
+            ),
             "trelloIntegration": config.ENABLE_TRELLO_INTEGRATION,
             "inductionLink": config.INDUCTION_ENROL_LINK,
+            "enableProxyVoting": config.ENABLE_PROXY_VOTING,
+            "enableStripe": len(config.STRIPE_PUBLISHABLE_KEY) > 0
+            and len(config.STRIPE_SECRET_KEY) > 0,
+            "enableMembershipPayments": config.ENABLE_STRIPE_MEMBERSHIP_PAYMENTS,
+            "enableMemberBucks": config.ENABLE_MEMBERBUCKS,
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}

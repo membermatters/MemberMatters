@@ -82,19 +82,23 @@ export default {
     ...mapGetters("config", ["features"]),
     visibleLinks() {
       return this.children.filter((link) => {
+        // if we require being logged in to display it
         if (link.loggedIn === true) {
           if (!this.loggedIn) return false;
         }
 
+        // if we are not allowed to display it in kiosk mode
         if (this.$q.platform.is.electron && !link.kiosk) {
           return false;
         }
 
+        // all other feature flags
         if (
-          !this.features.stripe.enableMembershipPayments &&
-          link.name === "membershipTier"
-        )
+          link.featureEnabledFlag &&
+          this.features[link.featureEnabledFlag] === false
+        ) {
           return false;
+        }
 
         return true;
       });
