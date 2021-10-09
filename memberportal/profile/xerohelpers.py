@@ -1,10 +1,10 @@
-from django.utils import timezone
 from xero import Xero
 from xero.auth import PrivateCredentials
 from xero.exceptions import XeroBadRequest
 from constance import config
 import datetime
 import os
+from membermatters.helpers import log_user_event
 
 xero_rsa = os.environ.get("PORTAL_XERO_RSA_FILE", "/usr/src/data/xerkey.pem")
 
@@ -67,7 +67,6 @@ def generate_account_number(profile):
 
 
 def sync_xero_accounts(users):
-    print(users)
     if "PORTAL_XERO_CONSUMER_KEY" in os.environ:
         with open(xero_rsa) as keyfile:
             rsa_key = keyfile.read()
@@ -225,51 +224,7 @@ def add_to_xero(profile):
         return "Error adding to Xero. No Xero API details."
 
 
-def create_membership_invoice(user, email_invoice=False):
-    tax_type = os.environ.get("INVOICE_TAX_TYPE", "EXEMPTOUTPUT")
-
-    next_month = datetime.date.today().month + 1
-    this_year = datetime.date.today().year
-    if next_month == 13:
-        next_month = 1
-        this_year += 1
-
-    next_month_date = datetime.datetime(this_year, next_month, 1)
-
-    line_items = [
-        {
-            "Description": f"{config.SITE_OWNER} Membership: "
-            + user.profile.member_type.name,
-            "Quantity": "1",
-            "ItemCode": user.profile.member_type.name,
-            "UnitAmount": round(user.profile.member_type.cost * 0.7, 2),
-            "TaxType": tax_type,
-            "AccountCode": "261",
-        }
-    ]
-
-    # TODO: make Xero invoices for Stripe payments
-    # item = {
-    #     "Description": f"{config.GROUP_NAME} Membership: " + group.name,
-    #     "Quantity": "1",
-    #     "ItemCode": group.item_code,
-    #     "UnitAmount": round(user.profile.member_type.cost * (0.3 / length), 2),
-    #     "TaxType": tax_type,
-    #     "AccountCode": group.account_code,
-    # }
-    # line_items.append(item)
-
-    payload = {
-        "Type": "ACCREC",
-        "Contact": {"ContactID": user.profile.xero_account_id},
-        "DueDate": next_month_date,
-        "LineAmountTypes": "Inclusive",
-        "LineItems": line_items,
-        "Status": "AUTHORISED",
-        "Reference": user.profile.xero_account_number,
-        "Url": config.SITE_URL,
-    }
-
+def _create_xero_invoice(payload):
     if "PORTAL_XERO_CONSUMER_KEY" in os.environ:
         with open(xero_rsa) as keyfile:
             rsa_key = keyfile.read()
@@ -291,54 +246,177 @@ def create_membership_invoice(user, email_invoice=False):
 
         xero.invoices.get_onlineinvoice = xero.invoices._get_data(get_onlineinvoice)
 
-        try:
-            from membermatters.helpers import log_user_event
+        # try to create the invoice
+        result = xero.invoices.put(payload)
 
-            # try to create the invoice
-            result = xero.invoices.put(payload)
+        invoice_url = xero.invoices.get_onlineinvoice(result[0]["InvoiceID"])[
+            "OnlineInvoices"
+        ][0]["OnlineInvoiceUrl"]
 
-            invoice_id = result[0]["InvoiceID"]
-            invoice_number = result[0]["InvoiceNumber"]
-            invoice_reference = result[0]["Reference"]
-            invoice_link = xero.invoices.get_onlineinvoice(invoice_id)[
-                "OnlineInvoices"
-            ][0]["OnlineInvoiceUrl"]
-
-            # if we're successful and email == True send it
-            if email_invoice:
-                user.email_invoice(
-                    user.profile.first_name,
-                    user.profile.member_type.cost,
-                    invoice_number,
-                    next_month_date.strftime("%d-%m-%Y"),
-                    invoice_reference,
-                    invoice_link,
-                )
-
-            log_user_event(
-                user,
-                "Created invoice for $"
-                + str(user.profile.member_type.cost)
-                + "("
-                + invoice_id
-                + ")",
-                "xero",
-            )
-            user.profile.save()
-
-        except XeroBadRequest as e:
-            log_user_event(
-                user,
-                "Error creating invoice for $" + str(user.profile.member_type.cost),
-                "xero",
-            )
-            return "Error: " + str(e)
-
-        if result:
-            return "Successfully created invoice {} in Xero.".format(invoice_number)
-
-        else:
-            return "Error creating invoice in Xero."
+        return {
+            "invoice_id": result[0]["InvoiceID"],
+            "invoice_number": result[0]["InvoiceNumber"],
+            "invoice_reference": result[0]["Reference"],
+            "invoice_link": invoice_url,
+        }
 
     else:
-        return "Error created invoice in Xero. No Xero API details."
+        return None
+
+
+def create_membership_invoice(user, email_invoice=False):
+    next_month = datetime.date.today().month + 1
+    this_year = datetime.date.today().year
+    if next_month == 13:
+        next_month = 1
+        this_year += 1
+
+    next_month_date = datetime.datetime(this_year, next_month, 1)
+
+    line_items = [
+        {
+            "Description": f"{config.SITE_OWNER}: " + user.profile.member_type.name,
+            "Quantity": "1",
+            "ItemCode": user.profile.member_type.name,
+            "UnitAmount": round(user.profile.member_type.cost * 0.7, 2),
+            "TaxType": config.XERO_TAX_TYPE,
+            "AccountCode": config.XERO_MEMBERSHIP_ACCOUNT_CODE,
+        }
+    ]
+
+    payload = {
+        "Type": "ACCREC",
+        "Contact": {"ContactID": user.profile.xero_account_id},
+        "DueDate": next_month_date,
+        "LineAmountTypes": "Inclusive",
+        "LineItems": line_items,
+        "Status": "AUTHORISED",
+        "Reference": user.profile.xero_account_number,
+        "Url": config.SITE_URL,
+    }
+
+    try:
+        invoice = _create_xero_invoice(payload)
+    except:
+        return "Error creating Xero Invoice"
+
+    # if we're successful and email == True send it
+    if email_invoice:
+        user.email_invoice(
+            user.profile.first_name,
+            user.profile.member_type.cost,
+            invoice["invoice_number"],
+            next_month_date.strftime("%d-%m-%Y"),
+            invoice["invoice_reference"],
+            invoice["invoice_link"],
+        )
+
+    log_user_event(
+        user,
+        "Created invoice for $"
+        + str(user.profile.member_type.cost)
+        + "("
+        + invoice["invoice_id"]
+        + ")",
+        "xero",
+    )
+
+    if invoice:
+        return "Successfully created invoice {} in Xero.".format(
+            invoice["invoice_number"]
+        )
+
+    else:
+        return "Error creating invoice in Xero."
+
+
+def create_stripe_membership_invoice(user, amount, fee_amount):
+    line_items = [
+        {
+            "Description": f"{config.SITE_OWNER} ",
+            "Quantity": "1",
+            "ItemCode": config.XERO_MEMBERSHIP_ITEM_CODE,
+            "UnitAmount": amount,
+            "TaxType": config.XERO_TAX_TYPE,
+            "AccountCode": config.XERO_MEMBERSHIP_ACCOUNT_CODE,
+        },
+        {
+            "Description": f"Stripe fee",
+            "Quantity": "1",
+            "ItemCode": config.XERO_STRIPE_FEE_ITEM_CODE,
+            "UnitAmount": fee_amount,
+            "TaxType": config.XERO_TAX_TYPE,
+            "AccountCode": config.XERO_STRIPE_FEE_ACCOUNT_CODE,
+        },
+    ]
+
+    payload = {
+        "Type": "ACCREC",
+        "Contact": {"ContactID": user.profile.xero_account_id},
+        "DueDate": datetime.datetime.now(),
+        "LineAmountTypes": "Inclusive",
+        "LineItems": line_items,
+        "Status": "AUTHORISED",
+        "Reference": user.profile.xero_account_number,
+        "Url": config.SITE_URL,
+    }
+
+    invoice = _create_xero_invoice(payload)
+
+    log_user_event(
+        user,
+        "Created invoice for $" + str(amount) + "(" + invoice["invoice_id"] + ")",
+        "xero",
+    )
+
+    if invoice:
+        return invoice
+
+    else:
+        return None
+
+
+def create_stripe_memberbucks_invoice(user, amount, fee_amount):
+    line_items = [
+        {
+            "Description": f"{config.SITE_OWNER} ",
+            "Quantity": "1",
+            "ItemCode": config.XERO_MEMBERBUCKS_ITEM_CODE,
+            "UnitAmount": amount,
+            "TaxType": config.XERO_TAX_TYPE,
+            "AccountCode": config.XERO_MEMBERBUCKS_ACCOUNT_CODE,
+        },
+        {
+            "Description": f"Stripe fee",
+            "Quantity": "1",
+            "ItemCode": config.XERO_STRIPE_FEE_ITEM_CODE,
+            "UnitAmount": fee_amount,
+            "TaxType": config.XERO_TAX_TYPE,
+            "AccountCode": config.XERO_STRIPE_FEE_ACCOUNT_CODE,
+        },
+    ]
+
+    payload = {
+        "Type": "ACCREC",
+        "Contact": {"ContactID": user.profile.xero_account_id},
+        "DueDate": datetime.datetime.now(),
+        "LineAmountTypes": "Inclusive",
+        "LineItems": line_items,
+        "Status": "AUTHORISED",
+        "Reference": user.profile.xero_account_number,
+        "Url": config.SITE_URL,
+    }
+
+    invoice = _create_xero_invoice(payload)
+
+    log_user_event(
+        user,
+        "Created invoice for $" + str(amount) + "(" + invoice["invoice_id"] + ")",
+        "xero",
+    )
+
+    if invoice:
+        return invoice
+
+    else:
+        return None
