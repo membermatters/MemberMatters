@@ -320,6 +320,31 @@ CONSTANCE_CONFIG = {
         "[1000, 2000, 3000]",
         "This is a JSON array of top-up amounts in cents.",
     ),
+    "STRIPE_CREATE_XERO_INVOICES": (
+        False,
+        "Creates an invoice in Xero for every successful Stripe membership payment.",
+    ),
+    "XERO_TAX_TYPE": ("EXEMPTOUTPUT", "Tax type to use on Xero invoices."),
+    "XERO_MEMBERSHIP_ACCOUNT_CODE": (
+        "100",
+        "Account code to use on Xero invoices for membership.",
+    ),
+    "XERO_MEMBERSHIP_ITEM_CODE": (
+        "membership",
+        "Item code to use on Xero invoices for membership.",
+    ),
+    "XERO_STRIPE_FEE_ACCOUNT_CODE": (
+        "100",
+        "Account code to use on Xero invoices for membership.",
+    ),
+    "XERO_STRIPE_FEE_ITEM_CODE": (
+        "stripe",
+        "Item code to use on Xero invoices for membership.",
+    ),
+    "XERO_MEMBERBUCKS_ACCOUNT_CODE": (
+        "100",
+        "Account code to use on Xero invoices for memberbucks.",
+    ),
     "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS": (
         False,
         "Enable integration with stripe for membership payments.",
