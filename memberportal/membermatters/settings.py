@@ -578,6 +578,18 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ),
         ),
         (
+            "Xero Integration",
+            (
+                "STRIPE_CREATE_XERO_INVOICES",
+                "XERO_MEMBERBUCKS_ACCOUNT_CODE",
+                "XERO_MEMBERSHIP_ACCOUNT_CODE",
+                "XERO_MEMBERSHIP_ITEM_CODE",
+                "XERO_STRIPE_FEE_ACCOUNT_CODE",
+                "XERO_STRIPE_FEE_ITEM_CODE",
+                "XERO_TAX_TYPE",
+            ),
+        ),
+        (
             "Trello Integration",
             (
                 "ENABLE_TRELLO_INTEGRATION",

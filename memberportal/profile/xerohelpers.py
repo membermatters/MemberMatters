@@ -4,7 +4,6 @@ from xero.exceptions import XeroBadRequest
 from constance import config
 import datetime
 import os
-from membermatters.helpers import log_user_event
 
 xero_rsa = os.environ.get("PORTAL_XERO_RSA_FILE", "/usr/src/data/xerkey.pem")
 
@@ -311,15 +310,16 @@ def create_membership_invoice(user, email_invoice=False):
             invoice["invoice_link"],
         )
 
-    log_user_event(
-        user,
-        "Created invoice for $"
-        + str(user.profile.member_type.cost)
-        + "("
-        + invoice["invoice_id"]
-        + ")",
-        "xero",
-    )
+    # TODO fix the import of this helper
+    # log_user_event(
+    #     user,
+    #     "Created invoice for $"
+    #     + str(user.profile.member_type.cost)
+    #     + "("
+    #     + invoice["invoice_id"]
+    #     + ")",
+    #     "xero",
+    # )
 
     if invoice:
         return "Successfully created invoice {} in Xero.".format(
@@ -363,11 +363,12 @@ def create_stripe_membership_invoice(user, amount, fee_amount):
 
     invoice = _create_xero_invoice(payload)
 
-    log_user_event(
-        user,
-        "Created invoice for $" + str(amount) + "(" + invoice["invoice_id"] + ")",
-        "xero",
-    )
+    # TODO fix the import of this helper
+    # log_user_event(
+    #     user,
+    #     "Created invoice for $" + str(amount) + "(" + invoice["invoice_id"] + ")",
+    #     "xero",
+    # )
 
     if invoice:
         return invoice
@@ -409,11 +410,12 @@ def create_stripe_memberbucks_invoice(user, amount, fee_amount):
 
     invoice = _create_xero_invoice(payload)
 
-    log_user_event(
-        user,
-        "Created invoice for $" + str(amount) + "(" + invoice["invoice_id"] + ")",
-        "xero",
-    )
+    # TODO fix the import of this helper
+    # log_user_event(
+    #     user,
+    #     "Created invoice for $" + str(amount) + "(" + invoice["invoice_id"] + ")",
+    #     "xero",
+    # )
 
     if invoice:
         return invoice
