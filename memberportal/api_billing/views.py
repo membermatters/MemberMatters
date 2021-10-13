@@ -577,7 +577,7 @@ class StripeWebhook(APIView):
                 if member.state != "noob":
                     send_submitted_application_emails(member)
 
-            if member:
+            if member and config.STRIPE_CREATE_XERO_INVOICES:
                 # check if the subscription is a membership subscription
                 subscription = MemberTier.objects.get(stripe_id=data["subscription"])
 
