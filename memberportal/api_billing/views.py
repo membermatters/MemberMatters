@@ -16,14 +16,15 @@ from membermatters.helpers import log_user_event
 from django.db.utils import OperationalError
 from sentry_sdk import capture_exception
 
-try:
-    stripe.api_key = config.STRIPE_SECRET_KEY
-    Canvas = canvas.Canvas()
-except OperationalError as error:
-    pass
+
+class StripeAPIView(APIView):
+    try:
+        stripe.api_key = config.STRIPE_SECRET_KEY
+    except OperationalError as error:
+        capture_exception(error)
 
 
-class MemberBucksAddCard(APIView):
+class MemberBucksAddCard(StripeAPIView):
     """
     get: gets the client secret used to add new card details.
     post: saves the customers card details.
@@ -31,8 +32,30 @@ class MemberBucksAddCard(APIView):
 
     def get(self, request):
         profile = request.user.profile
+        customer_exists = True
 
-        if not profile.stripe_customer_id:
+        # check that the customer exists and isn't deleted
+        if profile.stripe_customer_id:
+            try:
+                customer = stripe.Customer.retrieve(profile.stripe_customer_id)
+                if customer["deleted"] or not customer:
+                    customer_exists = False
+
+            except stripe.error.InvalidRequestError as error:
+                # Invalid parameters were supplied to Stripe's API
+                capture_exception(error)
+
+                # if the customer doesn't exist then remove the Stripe customer id
+                if error.http_status == 404:
+                    profile.stripe_customer_id = None
+                    profile.save()
+
+                    customer_exists = False
+
+        else:
+            customer_exists = False
+
+        if not customer_exists:
             try:
                 log_user_event(
                     request.user, "Attempting to create stripe customer.", "stripe"
@@ -152,7 +175,7 @@ class MemberBucksAddCard(APIView):
         return Response()
 
 
-class MemberTiers(APIView):
+class MemberTiers(StripeAPIView):
     """
     get: gets a list of all member tiers.
     """
@@ -172,7 +195,7 @@ class MemberTiers(APIView):
         return Response(formatted_tiers)
 
 
-class PaymentPlanSignup(APIView):
+class PaymentPlanSignup(StripeAPIView):
     """
     post: attempts to sign the member up to a new membership payment plan.
     """
@@ -306,7 +329,7 @@ class PaymentPlanSignup(APIView):
 
 class CanSignup(APIView):
     """
-    get: checks if the member is elligible to signup, and what actions they need to complete.
+    get: checks if the member is eligible to signup, and what actions they need to complete.
     """
 
     def get(self, request):
@@ -332,11 +355,17 @@ class CheckInductionStatus(APIView):
     """
 
     def post(self, request):
+        try:
+            canvas_api = canvas.Canvas()
+        except OperationalError as error:
+            capture_exception(error)
+            return Response({"success": False, "score": 0})
+
         if "induction" not in request.user.profile.can_signup()["requiredSteps"]:
             return Response({"success": True, "score": 0, "notRequired": True})
 
         try:
-            score = Canvas.get_student_score_for_course(
+            score = canvas_api.get_student_score_for_course(
                 config.INDUCTION_COURSE_ID, request.user.email
             )
             if score:
@@ -364,7 +393,7 @@ def send_submitted_application_emails(member):
     send_email_to_admin(subject, title, message)
 
 
-class CompleteSignup(APIView):
+class CompleteSignup(StripeAPIView):
     """
     post: completes the member's signup if they have completed all requirements and enables access
     """
@@ -412,7 +441,7 @@ class SkipSignup(APIView):
         return Response({"success": True})
 
 
-class SubscriptionInfo(APIView):
+class SubscriptionInfo(StripeAPIView):
     """
     get: retrieves information about the members subscription.
     """
@@ -441,7 +470,7 @@ class SubscriptionInfo(APIView):
             return Response({"success": False})
 
 
-class PaymentPlanResumeCancel(APIView):
+class PaymentPlanResumeCancel(StripeAPIView):
     """
     post: attempts to cancel a member's payment plan.
     """
@@ -483,7 +512,7 @@ class PaymentPlanResumeCancel(APIView):
             return Response({"success": False})
 
 
-class StripeWebhook(APIView):
+class StripeWebhook(StripeAPIView):
     """
     post: processes a Stripe webhook event.
     """
