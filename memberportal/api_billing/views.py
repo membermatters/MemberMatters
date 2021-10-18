@@ -407,7 +407,7 @@ class CheckInductionStatus(APIView):
 
         except Exception as e:
             capture_exception(e)
-            return Response({"success": False, "score": 0, "error": e})
+            return Response({"success": False, "score": 0, "error": str(e)})
 
 
 def send_submitted_application_emails(member):
