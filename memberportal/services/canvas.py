@@ -1,5 +1,4 @@
 import requests
-from django.conf import settings
 from constance import config
 
 
@@ -37,6 +36,8 @@ class Canvas:
 
     def get_course_scores(self, course_id):
         students = self.get_course_details(course_id)
+        print("query")
+        print(students)
         students = students.get("data")
 
         if not students:
@@ -46,6 +47,7 @@ class Canvas:
         scores = {}
 
         for student in students:
+            print("student: " + str(student))
             scores[student.get("user").get("email").lower()] = student.get(
                 "grades"
             ).get("finalScore")
@@ -54,5 +56,7 @@ class Canvas:
 
     def get_student_score_for_course(self, course_id, email):
         scores = self.get_course_scores(course_id)
+        print("scores")
+        print(scores)
 
         return scores.get(email.lower())

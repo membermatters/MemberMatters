@@ -376,8 +376,9 @@ class CheckInductionStatus(APIView):
                     return Response({"success": True, "score": score})
             return Response({"success": False, "score": score})
 
-        except:
-            return Response({"success": False, "score": 0})
+        except Exception as e:
+            capture_exception(e)
+            return Response({"success": False, "score": 0, "error": e})
 
 
 def send_submitted_application_emails(member):
