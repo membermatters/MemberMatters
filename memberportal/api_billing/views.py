@@ -269,40 +269,47 @@ class PaymentPlanSignup(APIView):
 
         new_subscription = create_subscription()
 
-        if new_subscription.status == "active":
-            request.user.profile.stripe_subscription_id = new_subscription.id
-            request.user.profile.membership_plan = new_plan
-            request.user.profile.subscription_status = True
-            request.user.profile.save()
+        try:
+            if new_subscription.status == "active":
+                request.user.profile.stripe_subscription_id = new_subscription.id
+                request.user.profile.membership_plan = new_plan
+                request.user.profile.subscription_status = True
+                request.user.profile.save()
 
-            log_user_event(
-                request.user,
-                "Successfully created subscription in Stripe.",
-                "stripe",
-                "",
-            )
+                log_user_event(
+                    request.user,
+                    "Successfully created subscription in Stripe.",
+                    "stripe",
+                    "",
+                )
 
-            return Response({"success": True})
+                return Response({"success": True})
 
-        elif new_subscription.status == "incomplete":
-            # if we got here, that means the subscription wasn't successfully created
-            log_user_event(
-                request.user,
-                f"Failed to create subscription in Stripe with status {new_subscription.status}.",
-                "stripe",
-                "",
-            )
+            elif new_subscription.status == "incomplete":
+                # if we got here, that means the subscription wasn't successfully created
+                log_user_event(
+                    request.user,
+                    f"Failed to create subscription in Stripe with status {new_subscription.status}.",
+                    "stripe",
+                    "",
+                )
 
-            return Response({"success": True, "message": "signup.subscriptionFailed"})
+                return Response(
+                    {"success": True, "message": "signup.subscriptionFailed"}
+                )
 
-        else:
-            log_user_event(
-                request.user,
-                f"Failed to create subscription in Stripe with status {new_subscription.status}.",
-                "stripe",
-                "",
-            )
-            return Response({"success": True})
+            else:
+                log_user_event(
+                    request.user,
+                    f"Failed to create subscription in Stripe with status {new_subscription.status}.",
+                    "stripe",
+                    "",
+                )
+                return Response({"success": True})
+
+        except KeyError as e:
+            capture_exception(e)
+            return new_subscription or e
 
 
 class CanSignup(APIView):
