@@ -1,6 +1,7 @@
 import python_http_client.exceptions
 
 from profile.models import Profile
+from profile.xerohelpers import create_stripe_membership_invoice
 from access.models import Doors, Interlock
 from api_admin_tools.models import *
 
@@ -258,6 +259,26 @@ class PaymentPlanSignup(StripeAPIView):
 
                     return create_subscription(attempts)
 
+                if (
+                    error["code"] == "resource_missing"
+                    and "a similar object exists in live mode" in error["message"]
+                ):
+                    log_user_event(
+                        request.user,
+                        "InvalidRequestError (used test key with production object) from Stripe while "
+                        "creating subscription.",
+                        "stripe",
+                        error,
+                    )
+
+                    return Response(
+                        {
+                            "success": False,
+                            "message": error["message"],
+                        },
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    )
+
                 else:
                     log_user_event(
                         request.user,
@@ -291,40 +312,47 @@ class PaymentPlanSignup(StripeAPIView):
 
         new_subscription = create_subscription()
 
-        if new_subscription.status == "active":
-            request.user.profile.stripe_subscription_id = new_subscription.id
-            request.user.profile.membership_plan = new_plan
-            request.user.profile.subscription_status = True
-            request.user.profile.save()
+        try:
+            if new_subscription.status == "active":
+                request.user.profile.stripe_subscription_id = new_subscription.id
+                request.user.profile.membership_plan = new_plan
+                request.user.profile.subscription_status = True
+                request.user.profile.save()
 
-            log_user_event(
-                request.user,
-                "Successfully created subscription in Stripe.",
-                "stripe",
-                "",
-            )
+                log_user_event(
+                    request.user,
+                    "Successfully created subscription in Stripe.",
+                    "stripe",
+                    "",
+                )
 
-            return Response({"success": True})
+                return Response({"success": True})
 
-        elif new_subscription.status == "incomplete":
-            # if we got here, that means the subscription wasn't successfully created
-            log_user_event(
-                request.user,
-                f"Failed to create subscription in Stripe with status {new_subscription.status}.",
-                "stripe",
-                "",
-            )
+            elif new_subscription.status == "incomplete":
+                # if we got here, that means the subscription wasn't successfully created
+                log_user_event(
+                    request.user,
+                    f"Failed to create subscription in Stripe with status {new_subscription.status}.",
+                    "stripe",
+                    "",
+                )
 
-            return Response({"success": True, "message": "signup.subscriptionFailed"})
+                return Response(
+                    {"success": True, "message": "signup.subscriptionFailed"}
+                )
 
-        else:
-            log_user_event(
-                request.user,
-                f"Failed to create subscription in Stripe with status {new_subscription.status}.",
-                "stripe",
-                "",
-            )
-            return Response({"success": True})
+            else:
+                log_user_event(
+                    request.user,
+                    f"Failed to create subscription in Stripe with status {new_subscription.status}.",
+                    "stripe",
+                    "",
+                )
+                return Response({"success": True})
+
+        except KeyError as e:
+            capture_exception(e)
+            return new_subscription or e
 
 
 class CanSignup(APIView):
@@ -377,8 +405,9 @@ class CheckInductionStatus(APIView):
                     return Response({"success": True, "score": score})
             return Response({"success": False, "score": score})
 
-        except:
-            return Response({"success": False, "score": 0})
+        except Exception as e:
+            capture_exception(e)
+            return Response({"success": False, "score": 0, "error": e})
 
 
 def send_submitted_application_emails(member):
@@ -586,7 +615,7 @@ class StripeWebhook(StripeAPIView):
             # If they aren't an active member, are NOT allowed to signup, and have paid the invoice
             # then we need to let them know and mark the subscription as active
             # (this could be a new OR returning member that's been too long since induction etc.)
-            if member.state != "active" and invoice_status == "paid":
+            elif member.state != "active" and invoice_status == "paid":
                 subject = "Your payment was successful."
                 title = subject
                 message = (
@@ -604,6 +633,28 @@ class StripeWebhook(StripeAPIView):
                 # already had this sent)
                 if member.state != "noob":
                     send_submitted_application_emails(member)
+
+            if member and config.STRIPE_CREATE_XERO_INVOICES:
+                # check if the subscription is a membership subscription
+                subscription = MemberTier.objects.get(stripe_id=data["subscription"])
+
+                # return if the subscription is not a membership subscription
+                if not subscription:
+                    return Response()
+
+                # get the charge object so we can check how much the Stripe fee was
+                charge = stripe.Charge.retrieve(
+                    data["charge"], expand=["balance_transaction"]
+                )
+
+                # grab the amount and the Stripe fee
+                amount = charge.balance_transaction["amount"]
+                fee = charge.balance_transaction["fee"]
+
+                # generate a new Xero invoice
+                create_stripe_membership_invoice(
+                    user=member, amount=amount, fee_amount=fee
+                )
 
             # in all other instances, we don't care about a paid invoice and can ignore it
 
