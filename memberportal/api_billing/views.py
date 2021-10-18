@@ -236,6 +236,26 @@ class PaymentPlanSignup(APIView):
 
                     return create_subscription(attempts)
 
+                if (
+                    error["code"] == "resource_missing"
+                    and "a similar object exists in live mode" in error["message"]
+                ):
+                    log_user_event(
+                        request.user,
+                        "InvalidRequestError (used test key with production object) from Stripe while "
+                        "creating subscription.",
+                        "stripe",
+                        error,
+                    )
+
+                    return Response(
+                        {
+                            "success": False,
+                            "message": error["message"],
+                        },
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    )
+
                 else:
                     log_user_event(
                         request.user,
