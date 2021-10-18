@@ -27,6 +27,11 @@ class Canvas:
         return response.json()
 
     def get_course_details(self, course_id):
+        """
+        Build the query and get the course details.
+        :param course_id:
+        :return:
+        """
         query = {
             "query": "query MyQuery {course(id: "
             + str(course_id)
@@ -35,28 +40,38 @@ class Canvas:
         return self._query_graph(query)
 
     def get_course_scores(self, course_id):
+        """
+        Get all of the scores for a given course_id.
+        :param course_id:
+        :return:
+        """
+        # get the course details
         students = self.get_course_details(course_id)
-        print("query")
-        print(students)
         students = students.get("data")
 
         if not students:
+            # if there are no students just return an empty dict
             return {}
 
+        # get the result of our query
         students = students["course"]["enrollmentsConnection"]["nodes"]
         scores = {}
 
+        # loop through each student, and if they have an email, add them to the scores dict
         for student in students:
-            print("student: " + str(student))
-            scores[student.get("user").get("email").lower()] = student.get(
-                "grades"
-            ).get("finalScore")
+            student_email = student.get("user").get("email")
+            if student_email:
+                scores[student_email.lower()] = student.get("grades").get("finalScore")
 
         return scores
 
     def get_student_score_for_course(self, course_id, email):
+        """
+        Get the student's score for a particular course_id. Returns None if nonexistent.
+        :param course_id:
+        :param email:
+        :return:
+        """
         scores = self.get_course_scores(course_id)
-        print("scores")
-        print(scores)
 
         return scores.get(email.lower())
