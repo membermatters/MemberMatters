@@ -492,7 +492,7 @@ class ManageMemberTierPlans(APIView):
         member_tier = MemberTier.objects.get(pk=body["memberTier"])
 
         stripe_plan = stripe.Price.create(
-            unit_amount=int(body["cost"]),
+            unit_amount=round(body["cost"]),
             currency=str(body["currency"]).lower(),
             recurring={
                 "interval": body["interval"],
@@ -507,7 +507,7 @@ class ManageMemberTierPlans(APIView):
             member_tier_id=body["memberTier"],
             visible=body["visible"],
             currency=str(body["currency"]).lower(),
-            cost=int(body["cost"]),
+            cost=round(body["cost"]),
             interval_count=body["intervalCount"],
             interval=body["interval"],
         )
