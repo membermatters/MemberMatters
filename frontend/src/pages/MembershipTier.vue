@@ -14,7 +14,7 @@
           {{ $t("signup.requiredSteps") }}
         </div>
 
-        <signup-required-steps :steps="requiredSteps" />
+        <signup-required-steps />
       </template>
 
       <template v-else>
@@ -104,9 +104,7 @@ export default defineComponent({
   },
   data() {
     return {
-      requiredSteps: [],
       canSignup: null,
-      requiredSteps: [],
       disableButton: false,
       loadingButton: false,
       cancelSuccess: false,
@@ -167,7 +165,6 @@ export default defineComponent({
             this.canSignup = true;
           } else {
             this.canSignup = false;
-            this.requiredSteps = result.data.requiredSteps;
           }
         })
         .catch(() => {

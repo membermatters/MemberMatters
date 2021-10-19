@@ -37,12 +37,16 @@ class GetConfig(APIView):
                 config.STRIPE_MEMBERBUCKS_TOPUP_OPTIONS
             ),
             "trelloIntegration": config.ENABLE_TRELLO_INTEGRATION,
-            "inductionLink": config.INDUCTION_ENROL_LINK,
             "enableProxyVoting": config.ENABLE_PROXY_VOTING,
             "enableStripe": len(config.STRIPE_PUBLISHABLE_KEY) > 0
             and len(config.STRIPE_SECRET_KEY) > 0,
             "enableMembershipPayments": config.ENABLE_STRIPE_MEMBERSHIP_PAYMENTS,
             "enableMemberBucks": config.ENABLE_MEMBERBUCKS,
+            "signup": {
+                "inductionLink": config.INDUCTION_ENROL_LINK,
+                "requireAccessCard": config.REQUIRE_ACCESS_CARD,
+                "contactPageUrl": config.CONTACT_PAGE_URL,
+            },
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}

@@ -117,6 +117,7 @@ export default {
     select: "Select",
     continue: "Continue",
     back: "Back",
+    contactUs: "Contact Us",
   },
   loginCard: {
     login: "Login",
@@ -493,10 +494,13 @@ export default {
     waitingCompletion: "Waiting for completion...",
     accessCard: "Access Card",
     accessCardNumber: "Access Card Number",
-    assignAccessCard: "Assign your access card",
+    assignAccessCard: "Access Card",
     assignAccessCardDescription: "Please enter your access card number below.",
     assignAccessCardWarning:
       "Double check before continuing as you will need to contact us to change it.",
+    collectAccessCardDescription:
+      "Thanks for completing all of the required steps. The final thing you need to do is pop in during our open " +
+      "hours to collect your access card. Please bring photo ID with you.",
     submitted: "Membership application submitted",
     submittedDescription:
       "Your membership application has been submitted and you are now a 'member applicant'. Your membership will be officially accepted after 7 days, but we have granted site access immediately. You will receive an email confirming that your access card has been enabled. If for some reason your membership is rejected within this period, you will receive an email with further information.",

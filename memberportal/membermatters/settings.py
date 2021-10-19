@@ -244,6 +244,11 @@ CONSTANCE_CONFIG = {
         "The publicly accessible URL of your MemberMatters instance.",
     ),
     "MAIN_SITE_URL": ("https://membermatters.org", "The URL of your main website."),
+    "CONTACT_PAGE_URL": (
+        "https://membermatters.org",
+        "The URL of your contact page (displayed during signup if "
+        "requireAccessCard == False).",
+    ),
     "INDUCTION_URL": (
         "https://eventbrite.com.au",
         "The URL members should visit to book in for a site induction.",
@@ -550,7 +555,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             "Discourse SSO Protocol",
             ("DISCOURSE_SSO_PROTOCOL_SECRET_KEY",),
         ),
-        ("URLs", ("SITE_URL", "MAIN_SITE_URL", "INDUCTION_URL")),
+        ("URLs", ("SITE_URL", "MAIN_SITE_URL", "CONTACT_PAGE_URL", "INDUCTION_URL")),
         ("Memberbucks", ("MEMBERBUCKS_MAX_TOPUP", "MEMBERBUCKS_CURRENCY")),
         (
             "Images",

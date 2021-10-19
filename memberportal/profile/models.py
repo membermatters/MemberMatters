@@ -618,11 +618,9 @@ class Profile(models.Model):
         ):
             required_steps.append("induction")
 
-        # if we require an rfid card to sign up
-        if config.REQUIRE_ACCESS_CARD:
-            # check if they have an RFID card assigned
-            if self.rfid is None or not len(self.rfid):
-                required_steps.append("accessCard")
+        # check if they have an RFID card assigned
+        if not self.rfid:
+            required_steps.append("accessCard")
 
         if len(required_steps):
             return {"success": False, "requiredSteps": required_steps}
