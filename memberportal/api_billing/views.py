@@ -39,7 +39,7 @@ class MemberBucksAddCard(StripeAPIView):
         if profile.stripe_customer_id:
             try:
                 customer = stripe.Customer.retrieve(profile.stripe_customer_id)
-                if customer["deleted"] or not customer:
+                if customer.get("deleted") or not customer:
                     customer_exists = False
 
             except stripe.error.InvalidRequestError as error:
@@ -316,7 +316,7 @@ class PaymentPlanSignup(StripeAPIView):
             if new_subscription.status == "active":
                 request.user.profile.stripe_subscription_id = new_subscription.id
                 request.user.profile.membership_plan = new_plan
-                request.user.profile.subscription_status = True
+                request.user.profile.subscription_status = "active"
                 request.user.profile.save()
 
                 log_user_event(
@@ -366,7 +366,7 @@ class CanSignup(APIView):
 
 class AssignAccessCard(APIView):
     """
-    post: assigns the access card to the member - can ony be called if they don't have one.
+    post: assigns the access card to the member.
     """
 
     def post(self, request):
