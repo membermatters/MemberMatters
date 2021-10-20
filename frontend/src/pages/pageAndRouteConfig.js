@@ -34,6 +34,7 @@ const PageAndRouteConfig = [
     name: "webcams",
     loggedIn: true,
     kiosk: true,
+    featureEnabledFlag: "enableWebcams",
     component: () => import("pages/Webcams"),
   },
   {

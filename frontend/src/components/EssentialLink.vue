@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span v-if="linkVisible">
     <template v-if="!children && !hiddenMenu">
       <q-item clickable :to="{ name: name, params: defaultParams }">
         <q-item-section v-if="icon" avatar>
@@ -76,10 +76,20 @@ export default {
       type: Boolean,
       default: false,
     },
+    featureEnabledFlag: {
+      type: String,
+      default: "",
+    },
   },
   computed: {
     ...mapGetters("profile", ["loggedIn"]),
     ...mapGetters("config", ["features"]),
+    linkVisible() {
+      return !(
+        this.featureEnabledFlag.length &&
+        this.features[this.featureEnabledFlag] === false
+      );
+    },
     visibleLinks() {
       return this.children.filter((link) => {
         // if we require being logged in to display it

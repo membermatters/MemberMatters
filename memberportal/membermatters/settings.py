@@ -374,8 +374,8 @@ CONSTANCE_CONFIG = {
         "Set this to the ID of your card list you want issue " "to go to.",
     ),
     # Space API config
-    "SPACE_DIRECTORY_ENABLED": (
-        True,
+    "ENABLE_SPACE_DIRECTORY": (
+        False,
         "Turn on the space directory API available at /api/spacedirectory.",
     ),
     "SPACE_DIRECTORY_OPEN": (False, "Sets the open state."),
@@ -415,7 +415,7 @@ CONSTANCE_CONFIG = {
         "[]",
         "A JSON list of strings (URLs) to project sites like wikis, GitHub, etc.",
     ),
-    "ENABLE_MEMBERBUCKS": (True, "Enable the memberbucks functionality."),
+    "ENABLE_MEMBERBUCKS": (False, "Enable the memberbucks functionality."),
     "MEMBERBUCKS_MAX_TOPUP": ("50", "The maximum topup allowed in dollars."),
     "MEMBERBUCKS_CURRENCY": (
         "aud",
@@ -497,7 +497,11 @@ CONSTANCE_CONFIG = {
         "PLEASE_CHANGE_ME",
         "Canvas API token.",
     ),
-    "ENABLE_PROXY_VOTING": (True, "Enables the proxy voting management feature."),
+    "ENABLE_PROXY_VOTING": (False, "Enables the proxy voting management feature."),
+    "ENABLE_WEBCAMS": (
+        False,
+        "Enables a webcams page in the portal. Configure with the WEBCAM_PAGE_URLS setting.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -517,12 +521,13 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
         (
             "Features",
             (
+                "ENABLE_WEBCAMS",
                 "ENABLE_PROXY_VOTING",
                 "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS",
                 "ENABLE_MEMBERBUCKS",
                 "ENABLE_DISCOURSE_SSO_PROTOCOL",
                 "ENABLE_DISCORD_INTEGRATION",
-                "SPACE_DIRECTORY_ENABLED",
+                "ENABLE_SPACE_DIRECTORY",
                 "ENABLE_THEME_SWIPE",
             ),
         ),
