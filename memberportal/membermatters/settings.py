@@ -325,6 +325,10 @@ CONSTANCE_CONFIG = {
         "[1000, 2000, 3000]",
         "This is a JSON array of top-up amounts in cents.",
     ),
+    "MAKEMEMBER_CREATE_XERO_INVOICES": (
+        False,
+        "Creates a Xero invoice when 'Make Member' is clicked in the admin tools area.",
+    ),
     "STRIPE_CREATE_XERO_INVOICES": (
         False,
         "Creates an invoice in Xero for every successful Stripe membership payment.",
@@ -585,6 +589,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
         (
             "Xero Integration",
             (
+                "MAKEMEMBER_CREATE_XERO_INVOICES",
                 "STRIPE_CREATE_XERO_INVOICES",
                 "XERO_MEMBERBUCKS_ACCOUNT_CODE",
                 "XERO_MEMBERSHIP_ACCOUNT_CODE",

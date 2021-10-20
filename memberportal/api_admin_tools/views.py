@@ -7,6 +7,7 @@ from services.emails import send_single_email
 import json
 import stripe
 from django.db.utils import OperationalError
+from sentry_sdk import capture_message
 
 try:
     stripe.api_key = config.STRIPE_SECRET_KEY
@@ -73,6 +74,8 @@ class MakeMember(APIView):
 
     def post(self, request, member_id):
         user = User.objects.get(id=member_id)
+
+        # if they're a new member or account only
         if user.profile.state == "noob" or user.profile.state == "accountonly":
             # give default door access
             for door in models.Doors.objects.filter(all_members=True):
@@ -82,21 +85,33 @@ class MakeMember(APIView):
             for interlock in models.Interlock.objects.filter(all_members=True):
                 user.profile.interlocks.add(interlock)
 
+            # send the welcome email
             email = user.email_welcome()
-            xero = user.profile.add_to_xero()
-            invoice = user.profile.create_membership_invoice()
-            user.profile.state = (
-                "inactive"  # an admin should activate them when they pay their invoice
-            )
-            user.profile.update_last_induction()
-            user.profile.save()
+
+            xero = None
+            invoice = None
+
+            # if we should generate a Xero invoice and mark them as "inactive" until it's been paid
+            if config.MAKEMEMBER_CREATE_XERO_INVOICES:
+                xero = user.profile.add_to_xero()
+                invoice = user.profile.create_membership_invoice()
+
+                user.profile.state = "inactive"  # an admin should activate them when they pay their invoice
+                user.profile.update_last_induction()
+                user.profile.save()
+
+            # if we should not generate a Xero invoice, mark them as "active" if their subscription is active
+            elif user.profile.subscription_status == "active":
+                user.profile.state = "active"
+                user.profile.save()
 
             subject = f"{user.profile.get_full_name()} just got turned into a member!"
             send_single_email(
                 request.user, config.EMAIL_ADMIN, subject, subject, subject
             )
 
-            if "Error" not in xero and "Error" not in invoice and email:
+            # if we don't have to make a Xero invoice, we're done
+            if not config.MAKEMEMBER_CREATE_XERO_INVOICES and email:
                 return Response(
                     {
                         "success": True,
@@ -104,15 +119,28 @@ class MakeMember(APIView):
                     }
                 )
 
-            elif "Error" in invoice:
+            # if there were no errors when making the Xero invoice, then we're done
+            elif "Error" not in xero and "Error" not in invoice and email:
+                return Response(
+                    {
+                        "success": True,
+                        "message": "adminTools.makeMemberSuccess",
+                    }
+                )
+
+            # if there was an error creating the Xero invoice
+            elif invoice is not None and "Error" in invoice:
                 return Response({"success": False, "message": invoice})
 
+            # if there was an error sending the welcome email
             elif email is False:
                 return Response(
                     {"success": False, "message": "adminTools.makeMemberErrorEmail"}
                 )
 
+            # otherwise some other error happened
             else:
+                capture_message("Unknown error occurred when running makemember.")
                 return Response(
                     {
                         "success": False,
