@@ -221,6 +221,10 @@ CONSTANCE_CONFIG = {
         "Association",
         "This is the type of group you are such as an association, club, etc.",
     ),
+    "SITE_BANNER": (
+        "",
+        "A site wide banner that can display useful information. Leave empty to turn off.",
+    ),
     # Email config
     "EMAIL_SYSADMIN": (
         "example@example.com",
@@ -507,6 +511,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "GOOGLE_ANALYTICS_PROPERTY_ID",
                 "API_SECRET_KEY",
                 "DEFAULT_MEMBER_TYPE",
+                "SITE_BANNER",
             ),
         ),
         (

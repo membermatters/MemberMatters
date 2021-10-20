@@ -47,6 +47,7 @@ class GetConfig(APIView):
                 "requireAccessCard": config.REQUIRE_ACCESS_CARD,
                 "contactPageUrl": config.CONTACT_PAGE_URL,
             },
+            "siteBanner": config.SITE_BANNER,
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}
