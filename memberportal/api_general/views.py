@@ -9,7 +9,6 @@ import json
 from django.utils.timezone import make_aware
 import datetime
 from pytz import UTC as utc
-from group.models import Group
 from profile.models import User, Profile, MemberTypes
 
 from rest_framework import status, permissions, generics
@@ -31,19 +30,25 @@ class GetConfig(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request):
-        groups = list(Group.objects.filter(hidden=False).values())
         membership_types = list(MemberTypes.objects.values())
 
         features = {
-            "stripe": {
-                "enabled": len(config.STRIPE_PUBLISHABLE_KEY) > 0,
-                "enableMembershipPayments": config.ENABLE_STRIPE_MEMBERSHIP_PAYMENTS,
-                "memberbucks_topup_options": json.loads(
-                    config.STRIPE_MEMBERBUCKS_TOPUP_OPTIONS
-                ),
-            },
+            "memberbucks_topup_options": json.loads(
+                config.STRIPE_MEMBERBUCKS_TOPUP_OPTIONS
+            ),
             "trelloIntegration": config.ENABLE_TRELLO_INTEGRATION,
-            "inductionLink": config.INDUCTION_ENROL_LINK,
+            "enableProxyVoting": config.ENABLE_PROXY_VOTING,
+            "enableStripe": len(config.STRIPE_PUBLISHABLE_KEY) > 0
+            and len(config.STRIPE_SECRET_KEY) > 0,
+            "enableMembershipPayments": config.ENABLE_STRIPE_MEMBERSHIP_PAYMENTS,
+            "enableMemberBucks": config.ENABLE_MEMBERBUCKS,
+            "signup": {
+                "inductionLink": config.INDUCTION_ENROL_LINK,
+                "requireAccessCard": config.REQUIRE_ACCESS_CARD,
+                "contactPageUrl": config.CONTACT_PAGE_URL,
+            },
+            "enableWebcams": config.ENABLE_WEBCAMS,
+            "siteBanner": config.SITE_BANNER,
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}
@@ -73,8 +78,6 @@ class GetConfig(APIView):
             },
             "homepageCards": json.loads(config.HOME_PAGE_CARDS),
             "webcamLinks": json.loads(config.WEBCAM_PAGE_URLS),
-            "groups": groups,
-            "maxGroups": config.MAX_GROUPS,
             "memberTypes": membership_types,
             "keys": keys,
             "features": features,
@@ -270,7 +273,7 @@ class ResetPassword(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        body = json.loads(request.data)
+        body = request.data
 
         # If we get a reset token and no password, the token is being validated
         if body.get("token") and not body.get("password"):
@@ -316,7 +319,7 @@ class ResetPassword(APIView):
                 user.reset_password()
                 return Response({"success": True})
 
-            except ObjectDoesNotExist:
+            except:
                 return Response({"success": False})
 
 
@@ -343,7 +346,6 @@ class ProfileDetail(generics.GenericAPIView):
             "lastSeen": p.last_seen,
             "firstJoined": p.created,
             "profileUpdateRequired": p.must_update_profile,
-            "groups": list(p.groups.values()),
             "memberLevel": {
                 "name": str(p.member_type.name),
                 "id": str(p.member_type.id),
@@ -382,10 +384,6 @@ class ProfileDetail(generics.GenericAPIView):
         p.last_name = body.get("lastName")
         p.phone = body.get("phone")
         p.screen_name = body.get("screenName")
-        p.groups.set([])
-
-        for group in body.get("groups"):
-            p.groups.add(Group.objects.get(id=group["id"]))
 
         request.user.save()
         p.save()
@@ -613,9 +611,6 @@ class Register(APIView):
             phone=body.get("mobile"),
         )
 
-        # for group in data.
-        for group in body.get("groups"):
-            profile.groups.add(Group.objects.get(id=group["id"]))
         profile.save()
 
         verification_token = EmailVerificationToken.objects.create(user=new_user)

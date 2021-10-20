@@ -1,6 +1,6 @@
 <template>
   <q-card :flat="flat">
-    <template v-if="this.features.stripe.enabled">
+    <template v-if="this.features.enableStripe">
       <template v-if="cardExists">
         <q-card-section>
           <div class="text-h6">

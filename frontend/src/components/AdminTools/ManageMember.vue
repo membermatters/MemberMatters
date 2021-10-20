@@ -234,30 +234,6 @@
                 </q-input>
 
                 <q-select
-                  v-model="profileForm.groups"
-                  outlined
-                  :label="$t('groups')"
-                  use-chips
-                  multiple
-                  :options="groups"
-                  option-value="id"
-                  option-label="name"
-                  :rules="[
-                    (val) =>
-                      validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
-                  ]"
-                  @input="saveChange('groups')"
-                >
-                  <template #append>
-                    <saved-notification
-                      v-model="saved.groups"
-                      show-text
-                      :error="saved.error"
-                    />
-                  </template>
-                </q-select>
-
-                <q-select
                   v-model="profileForm.memberType"
                   outlined
                   :label="$t('form.memberType')"
@@ -657,7 +633,6 @@ export default {
         lastName: "",
         phone: "",
         screenName: "",
-        groups: [],
         memberType: "",
       },
       saved: {
@@ -670,7 +645,6 @@ export default {
         lastName: false,
         phone: false,
         screenName: false,
-        groups: false,
         memberType: false,
       },
       billing: {
@@ -708,7 +682,6 @@ export default {
       this.profileForm.lastName = this.selectedMember.name.last;
       this.profileForm.phone = this.selectedMember.phone;
       this.profileForm.screenName = this.selectedMember.screenName;
-      this.profileForm.groups = this.selectedMember.groups;
       this.profileForm.memberType = this.selectedMember.memberType;
     },
     saveChange(field) {
@@ -863,7 +836,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("config", ["groups", "memberTypes"]),
+    ...mapGetters("config", ["memberTypes"]),
     selectedMember() {
       if (this.members) {
         return this.members.find((e) => e.id === this.member.id);
@@ -873,7 +846,6 @@ export default {
     selectedMemberFiltered() {
       const newMember = { ...this.selectedMember };
       delete newMember.access;
-      delete newMember.groups;
       return newMember;
     },
     icons() {

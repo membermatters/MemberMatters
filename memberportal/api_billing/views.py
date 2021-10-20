@@ -1,6 +1,7 @@
 import python_http_client.exceptions
 
 from profile.models import Profile
+from profile.xerohelpers import create_stripe_membership_invoice
 from access.models import Doors, Interlock
 from api_admin_tools.models import *
 
@@ -14,15 +15,17 @@ from services.emails import send_email_to_admin
 from constance import config
 from membermatters.helpers import log_user_event
 from django.db.utils import OperationalError
-
-try:
-    stripe.api_key = config.STRIPE_SECRET_KEY
-    Canvas = canvas.Canvas()
-except OperationalError as e:
-    pass
+from sentry_sdk import capture_exception
 
 
-class MemberBucksAddCard(APIView):
+class StripeAPIView(APIView):
+    try:
+        stripe.api_key = config.STRIPE_SECRET_KEY
+    except OperationalError as error:
+        capture_exception(error)
+
+
+class MemberBucksAddCard(StripeAPIView):
     """
     get: gets the client secret used to add new card details.
     post: saves the customers card details.
@@ -30,8 +33,30 @@ class MemberBucksAddCard(APIView):
 
     def get(self, request):
         profile = request.user.profile
+        customer_exists = True
 
-        if not profile.stripe_customer_id:
+        # check that the customer exists and isn't deleted
+        if profile.stripe_customer_id:
+            try:
+                customer = stripe.Customer.retrieve(profile.stripe_customer_id)
+                if customer.get("deleted") or not customer:
+                    customer_exists = False
+
+            except stripe.error.InvalidRequestError as error:
+                # Invalid parameters were supplied to Stripe's API
+                capture_exception(error)
+
+                # if the customer doesn't exist then remove the Stripe customer id
+                if error.http_status == 404:
+                    profile.stripe_customer_id = None
+                    profile.save()
+
+                    customer_exists = False
+
+        else:
+            customer_exists = False
+
+        if not customer_exists:
             try:
                 log_user_event(
                     request.user, "Attempting to create stripe customer.", "stripe"
@@ -62,6 +87,7 @@ class MemberBucksAddCard(APIView):
                     "stripe",
                     request,
                 )
+                capture_exception(e)
 
                 return Response(
                     {
@@ -78,6 +104,7 @@ class MemberBucksAddCard(APIView):
                     "stripe",
                     request,
                 )
+                capture_exception(e)
                 return Response(
                     {
                         "success": False,
@@ -127,7 +154,8 @@ class MemberBucksAddCard(APIView):
                 "can remove this card at any time via the "
                 f"{config.SITE_NAME}.",
             )
-        except python_http_client.exceptions.UnauthorizedError:
+        except python_http_client.exceptions.UnauthorizedError as e:
+            capture_exception(e)
             return Response(
                 {"message": "error.sendgridNotConfigured"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -148,7 +176,7 @@ class MemberBucksAddCard(APIView):
         return Response()
 
 
-class MemberTiers(APIView):
+class MemberTiers(StripeAPIView):
     """
     get: gets a list of all member tiers.
     """
@@ -168,7 +196,7 @@ class MemberTiers(APIView):
         return Response(formatted_tiers)
 
 
-class PaymentPlanSignup(APIView):
+class PaymentPlanSignup(StripeAPIView):
     """
     post: attempts to sign the member up to a new membership payment plan.
     """
@@ -207,6 +235,7 @@ class PaymentPlanSignup(APIView):
                 )
 
             except stripe.error.InvalidRequestError as e:
+                capture_exception(e)
                 error = e.json_body.get("error")
 
                 if (
@@ -230,6 +259,26 @@ class PaymentPlanSignup(APIView):
 
                     return create_subscription(attempts)
 
+                if (
+                    error["code"] == "resource_missing"
+                    and "a similar object exists in live mode" in error["message"]
+                ):
+                    log_user_event(
+                        request.user,
+                        "InvalidRequestError (used test key with production object) from Stripe while "
+                        "creating subscription.",
+                        "stripe",
+                        error,
+                    )
+
+                    return Response(
+                        {
+                            "success": False,
+                            "message": error["message"],
+                        },
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    )
+
                 else:
                     log_user_event(
                         request.user,
@@ -252,6 +301,7 @@ class PaymentPlanSignup(APIView):
                     "stripe",
                     e,
                 )
+                capture_exception(e)
                 return Response(
                     {
                         "success": False,
@@ -262,45 +312,52 @@ class PaymentPlanSignup(APIView):
 
         new_subscription = create_subscription()
 
-        if new_subscription.status == "active":
-            request.user.profile.stripe_subscription_id = new_subscription.id
-            request.user.profile.membership_plan = new_plan
-            request.user.profile.subscription_status = True
-            request.user.profile.save()
+        try:
+            if new_subscription.status == "active":
+                request.user.profile.stripe_subscription_id = new_subscription.id
+                request.user.profile.membership_plan = new_plan
+                request.user.profile.subscription_status = "active"
+                request.user.profile.save()
 
-            log_user_event(
-                request.user,
-                "Successfully created subscription in Stripe.",
-                "stripe",
-                "",
-            )
+                log_user_event(
+                    request.user,
+                    "Successfully created subscription in Stripe.",
+                    "stripe",
+                    "",
+                )
 
-            return Response({"success": True})
+                return Response({"success": True})
 
-        elif new_subscription.status == "incomplete":
-            # if we got here, that means the subscription wasn't successfully created
-            log_user_event(
-                request.user,
-                f"Failed to create subscription in Stripe with status {new_subscription.status}.",
-                "stripe",
-                "",
-            )
+            elif new_subscription.status == "incomplete":
+                # if we got here, that means the subscription wasn't successfully created
+                log_user_event(
+                    request.user,
+                    f"Failed to create subscription in Stripe with status {new_subscription.status}.",
+                    "stripe",
+                    "",
+                )
 
-            return Response({"success": True, "message": "signup.subscriptionFailed"})
+                return Response(
+                    {"success": True, "message": "signup.subscriptionFailed"}
+                )
 
-        else:
-            log_user_event(
-                request.user,
-                f"Failed to create subscription in Stripe with status {new_subscription.status}.",
-                "stripe",
-                "",
-            )
-            return Response({"success": True})
+            else:
+                log_user_event(
+                    request.user,
+                    f"Failed to create subscription in Stripe with status {new_subscription.status}.",
+                    "stripe",
+                    "",
+                )
+                return Response({"success": True})
+
+        except KeyError as e:
+            capture_exception(e)
+            return new_subscription or e
 
 
 class CanSignup(APIView):
     """
-    get: checks if the member is elligible to signup, and what actions they need to complete.
+    get: checks if the member is eligible to signup, and what actions they need to complete.
     """
 
     def get(self, request):
@@ -309,7 +366,7 @@ class CanSignup(APIView):
 
 class AssignAccessCard(APIView):
     """
-    post: assigns the access card to the member - can ony be called if they don't have one.
+    post: assigns the access card to the member.
     """
 
     def post(self, request):
@@ -326,21 +383,31 @@ class CheckInductionStatus(APIView):
     """
 
     def post(self, request):
+        try:
+            canvas_api = canvas.Canvas()
+        except OperationalError as error:
+            capture_exception(error)
+            return Response({"success": False, "score": 0})
+
         if "induction" not in request.user.profile.can_signup()["requiredSteps"]:
             return Response({"success": True, "score": 0, "notRequired": True})
 
-        score = Canvas.get_student_score_for_course(
-            config.INDUCTION_COURSE_ID, request.user.email
-        )
-        if score:
-            induction_passed = score >= config.MIN_INDUCTION_SCORE
+        try:
+            score = canvas_api.get_student_score_for_course(
+                config.INDUCTION_COURSE_ID, request.user.email
+            )
+            if score:
+                induction_passed = score >= config.MIN_INDUCTION_SCORE
 
-            if induction_passed:
-                request.user.profile.update_last_induction()
+                if induction_passed:
+                    request.user.profile.update_last_induction()
 
-                return Response({"success": True, "score": score})
+                    return Response({"success": True, "score": score})
+            return Response({"success": False, "score": score})
 
-        return Response({"success": False, "score": score})
+        except Exception as e:
+            capture_exception(e)
+            return Response({"success": False, "score": 0, "error": str(e)})
 
 
 def send_submitted_application_emails(member):
@@ -355,7 +422,7 @@ def send_submitted_application_emails(member):
     send_email_to_admin(subject, title, message)
 
 
-class CompleteSignup(APIView):
+class CompleteSignup(StripeAPIView):
     """
     post: completes the member's signup if they have completed all requirements and enables access
     """
@@ -403,7 +470,7 @@ class SkipSignup(APIView):
         return Response({"success": True})
 
 
-class SubscriptionInfo(APIView):
+class SubscriptionInfo(StripeAPIView):
     """
     get: retrieves information about the members subscription.
     """
@@ -432,7 +499,7 @@ class SubscriptionInfo(APIView):
             return Response({"success": False})
 
 
-class PaymentPlanResumeCancel(APIView):
+class PaymentPlanResumeCancel(StripeAPIView):
     """
     post: attempts to cancel a member's payment plan.
     """
@@ -474,7 +541,7 @@ class PaymentPlanResumeCancel(APIView):
             return Response({"success": False})
 
 
-class StripeWebhook(APIView):
+class StripeWebhook(StripeAPIView):
     """
     post: processes a Stripe webhook event.
     """
@@ -496,7 +563,8 @@ class StripeWebhook(APIView):
                 data = event["data"]
             except Exception as e:
                 print(e)
-                return Response({"error": "Error validaitng Stripe signature."})
+                capture_exception(e)
+                return Response({"error": "Error validating Stripe signature."})
 
             # Get the type of webhook event sent - used to check the status of PaymentIntents.
             event_type = event["type"]
@@ -508,7 +576,8 @@ class StripeWebhook(APIView):
         try:
             member = Profile.objects.get(stripe_customer_id=data["customer"])
 
-        except Profile.DoesNotExist:
+        except Profile.DoesNotExist as e:
+            capture_exception(e)
             return Response()
 
         # Just in case the linked Stripe account also processes other payments we should just ignore a non existent
@@ -519,13 +588,13 @@ class StripeWebhook(APIView):
         if event_type == "invoice.paid":
             invoice_status = data["status"]
 
-            # They've signed up for a new subscription, but have already completed all the signup requirements
+            # If they aren't an active member, are allowed to signup, and have paid the invoice
+            # then lets activate their account (this could be a new OR returning member)
             if (
-                member.can_signup()["success"]
+                member.state != "active"
+                and member.can_signup()["success"]
                 and invoice_status == "paid"
-                and member.state != "active"
             ):
-                # if the invoice was paid and the member isn't active, then activate them
                 subject = "Your payment was successful."
                 title = subject
                 message = (
@@ -543,23 +612,49 @@ class StripeWebhook(APIView):
                 member.activate()
                 member.user.email_enable_member()
 
-            # They've signed up for a new subscription, but are a new member
-            if invoice_status == "paid" and member.state != "active":
+            # If they aren't an active member, are NOT allowed to signup, and have paid the invoice
+            # then we need to let them know and mark the subscription as active
+            # (this could be a new OR returning member that's been too long since induction etc.)
+            elif member.state != "active" and invoice_status == "paid":
                 subject = "Your payment was successful."
                 title = subject
                 message = (
-                    "Thanks for making your first membership payment using our online payment system. "
+                    "Thanks for making a membership payment using our online payment system. "
                     "You haven't yet met all of the requirements for activating your site access. Once this "
-                    "happens, you'll receive an email confirmation that your access card was activated."
+                    "happens, you'll receive an email confirmation that your access card was activated. "
+                    "If you are unsure how to proceed, or this email is unexpected, please contact us."
                 )
                 member.user.email_notification(subject, title, "", message)
 
                 member.subscription_status = "active"
                 member.save()
 
-                # if the member isn't signing up for the first time
+                # if this is a returning member then send the exec an email (new members have
+                # already had this sent)
                 if member.state != "noob":
                     send_submitted_application_emails(member)
+
+            if member and config.STRIPE_CREATE_XERO_INVOICES:
+                # check if the subscription is a membership subscription
+                subscription = MemberTier.objects.get(stripe_id=data["subscription"])
+
+                # return if the subscription is not a membership subscription
+                if not subscription:
+                    return Response()
+
+                # get the charge object so we can check how much the Stripe fee was
+                charge = stripe.Charge.retrieve(
+                    data["charge"], expand=["balance_transaction"]
+                )
+
+                # grab the amount and the Stripe fee
+                amount = charge.balance_transaction["amount"]
+                fee = charge.balance_transaction["fee"]
+
+                # generate a new Xero invoice
+                create_stripe_membership_invoice(
+                    user=member, amount=amount, fee_amount=fee
+                )
 
             # in all other instances, we don't care about a paid invoice and can ignore it
 

@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.7.0] - 2021-10-20
+### Added
+- Feature flag system
+- Most optional features to feature flags
+- Option for collecting access card instead of inputting it
+- A site banner feature
+- Generate Xero invoices on stripe invoice payments
+- Xero configuration options to database config
+
+### Fixed
+- Canvas randomly failing to sync user induction progress (canvas have started including a random null user for some reason)
+- Canvas api failure logic
+- Sentry error logging
+- Bug with canvas email being case sensitive
+- Stripe invoice payment logic improvement
+- Password reset bug
+- Logout bug on mobile devices
+- Sentry sdk old version causing issues
+- Behaviour around Stripe subscription signups when they fail the first time
+- Javascript floating point conversion error when making payment plan with decimal value
+- Subscription status is not displayed correctly in member list
+- Excessively wide credit card form during signup
+
+### Removed
+- Groups feature
+
+### Deprecated
+- Access device HTTP endpoints. In a future release the current HTTP endpoints for access control devices will be removed and replaced with the new websocket protocol.
+
 ## [v2.6.3] - 2021-09-27
 ### Fixed
 - Enable stripe billing menu visibility race condition

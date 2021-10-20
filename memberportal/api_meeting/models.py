@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-from group.models import Group
 
 
 class Meeting(models.Model):
@@ -11,27 +10,20 @@ class Meeting(models.Model):
     MEETING_TYPES = (
         ("general", "General"),
         ("agm", "Annual General"),
-        ("group", "Group"),
         ("other", "Other"),
     )
 
     id = models.AutoField(primary_key=True)
     date = models.DateTimeField("Date and time of meeting")
     type = models.CharField("Meeting Type", max_length=10, choices=MEETING_TYPES)
-    group = models.ForeignKey(
-        Group,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-    )
     chair = models.CharField(max_length=20, null=True, blank=True)
     attendees = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
     def get_type(self):
-        return self.group.name if self.type == "group" else self.get_type_display()
+        return self.get_type_display()
 
     def __str__(self):
-        return f"{self.date} - {self.group if self.group else ''} {self.type} meeting"
+        return f"{self.date} - {self.type} meeting"
 
 
 class ProxyVote(models.Model):

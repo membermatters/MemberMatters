@@ -86,7 +86,11 @@
           {{ $tc("memberbucks.selectToContinue") }}
         </div>
 
-        <member-bucks-manage-billing flat @card-exists="cardExistsHandler" />
+        <member-bucks-manage-billing
+          style="max-width: 400px"
+          flat
+          @card-exists="cardExistsHandler"
+        />
 
         <div class="row justify-start q-mt-md">
           <q-btn @click="backToPlans" flat :label="$tc('button.back')" />

@@ -13,27 +13,30 @@ export default {
     refreshToken: (state) => state.refreshToken,
   },
   actions: {
-    async retrieveAuth ({ commit }) {
+    async retrieveAuth({ commit }) {
       const accessToken = await Storage.get({ key: "accessToken" });
-      const refreshToken = await Storage.get({ key: "refreshToken"});
-      commit("setAuth", {access: accessToken.value, refresh: refreshToken.value});
+      const refreshToken = await Storage.get({ key: "refreshToken" });
+      commit("setAuth", {
+        access: accessToken.value,
+        refresh: refreshToken.value,
+      });
     },
   },
   mutations: {
     async setAuth(state, payload) {
-      if (payload.access) {
+      if (payload.access || payload.access === "") {
         state.accessToken = payload.access;
         await Storage.set({
           key: "accessToken",
-          value: payload.access
+          value: payload.access,
         });
       }
 
-      if (payload.refresh) {
+      if (payload.refresh || payload.refresh === "") {
         state.refreshToken = payload.refresh;
         await Storage.set({
           key: "refreshToken",
-          value: payload.refresh
+          value: payload.refresh,
         });
       }
     },

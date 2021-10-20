@@ -1,5 +1,5 @@
 <template>
-  <div v-if="this.features.stripe.enabled">
+  <div v-if="this.features.enableStripe">
     <q-table
       :data="memberBucksTransactions"
       :columns="[

@@ -14,7 +14,14 @@ const menuRoutes = mainMenu.map((menuItem) => {
           : () => import("pages/Error404.vue"),
         name: child.name ? child.name : null,
         props: true,
-        meta: { title: child.name, loggedIn: child.loggedIn, kiosk: child.kiosk, backButton: child.backButton, memberOnly: child.memberOnly },
+        meta: {
+          title: child.name,
+          featureEnabledFlag: child.featureEnabledFlag,
+          loggedIn: child.loggedIn,
+          kiosk: child.kiosk,
+          backButton: child.backButton,
+          memberOnly: child.memberOnly,
+        },
       });
     });
 
@@ -26,7 +33,14 @@ const menuRoutes = mainMenu.map((menuItem) => {
         : () => import("pages/Error404.vue"),
       name: menuItem.name ? menuItem.name : null,
       props: true,
-      meta: { title: menuItem.name, loggedIn: menuItem.loggedIn, kiosk: menuItem.kiosk, backButton: menuItem.backButton, memberOnly: menuItem.memberOnly },
+      meta: {
+        title: menuItem.name,
+        featureEnabledFlag: menuItem.featureEnabledFlag,
+        loggedIn: menuItem.loggedIn,
+        kiosk: menuItem.kiosk,
+        backButton: menuItem.backButton,
+        memberOnly: menuItem.memberOnly,
+      },
     };
   }
 
@@ -38,7 +52,14 @@ const menuRoutes = mainMenu.map((menuItem) => {
       : () => import("pages/Error404.vue"),
     name: menuItem.name ? menuItem.name : null,
     props: true,
-    meta: { title: menuItem.name, loggedIn: menuItem.loggedIn, kiosk: menuItem.kiosk, backButton: menuItem.backButton, memberOnly: menuItem.memberOnly },
+    meta: {
+      title: menuItem.name,
+      featureEnabledFlag: menuItem.featureEnabledFlag,
+      loggedIn: menuItem.loggedIn,
+      kiosk: menuItem.kiosk,
+      backButton: menuItem.backButton,
+      memberOnly: menuItem.memberOnly,
+    },
   };
 });
 

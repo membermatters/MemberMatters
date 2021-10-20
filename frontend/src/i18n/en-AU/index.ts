@@ -15,11 +15,9 @@ export default {
     manageTier: "Manage Tier",
 
     adminTools: "Admin Tools",
-    groupMembers: "Group Members",
     meetings: "Meetings",
     members: "Members",
     manageMember: "Manage Member",
-    groups: "Groups",
     doors: "Doors",
     manageDoor: "Manage Door",
     manageInterlock: "Manage Interlock",
@@ -119,6 +117,7 @@ export default {
     select: "Select",
     continue: "Continue",
     back: "Back",
+    contactUs: "Contact Us",
   },
   loginCard: {
     login: "Login",
@@ -190,13 +189,6 @@ export default {
     pageDescription: "Report an issue",
     success: "Your issue was reported successfully.",
     fail: "There was a problem reporting your issue.",
-  },
-  memberGroups: {
-    pageDescription:
-      "You can browse our list of groups and see each group's membership and " +
-      "quorum.",
-    activeMembers: "Active Members",
-    quorum: "Quorum",
   },
   form: {
     saved: "Saved",
@@ -361,9 +353,7 @@ export default {
     memberList: "Members On Site",
   },
   entityType: "Association",
-  groups: "Groups",
   members: "Members",
-  group: "Group",
   member: "Member",
   failed: "Action failed",
   success: "Action was successful",
@@ -504,10 +494,13 @@ export default {
     waitingCompletion: "Waiting for completion...",
     accessCard: "Access Card",
     accessCardNumber: "Access Card Number",
-    assignAccessCard: "Assign your access card",
+    assignAccessCard: "Access Card",
     assignAccessCardDescription: "Please enter your access card number below.",
     assignAccessCardWarning:
       "Double check before continuing as you will need to contact us to change it.",
+    collectAccessCardDescription:
+      "Thanks for completing all of the required steps. The final thing you need to do is pop in during our open " +
+      "hours to collect your access card. Please bring photo ID with you.",
     submitted: "Membership application submitted",
     submittedDescription:
       "Your membership application has been submitted and you are now a 'member applicant'. Your membership will be officially accepted after 7 days, but we have granted site access immediately. You will receive an email confirming that your access card has been enabled. If for some reason your membership is rejected within this period, you will receive an email with further information.",

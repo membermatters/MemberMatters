@@ -141,7 +141,7 @@ export default {
         this.getSiteConfig()
           .then(() => {
             this.updatePageTitle();
-            if (this.features.stripe.enabled) {
+            if (this.features.enableStripe) {
               try {
                 Vue.prototype.$stripe = loadStripe(
                   this.keys.stripePublishableKey

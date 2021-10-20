@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span v-if="linkVisible">
     <template v-if="!children && !hiddenMenu">
       <q-item clickable :to="{ name: name, params: defaultParams }">
         <q-item-section v-if="icon" avatar>
@@ -76,25 +76,39 @@ export default {
       type: Boolean,
       default: false,
     },
+    featureEnabledFlag: {
+      type: String,
+      default: "",
+    },
   },
   computed: {
     ...mapGetters("profile", ["loggedIn"]),
     ...mapGetters("config", ["features"]),
+    linkVisible() {
+      return !(
+        this.featureEnabledFlag.length &&
+        this.features[this.featureEnabledFlag] === false
+      );
+    },
     visibleLinks() {
       return this.children.filter((link) => {
+        // if we require being logged in to display it
         if (link.loggedIn === true) {
           if (!this.loggedIn) return false;
         }
 
+        // if we are not allowed to display it in kiosk mode
         if (this.$q.platform.is.electron && !link.kiosk) {
           return false;
         }
 
+        // all other feature flags
         if (
-          !this.features.stripe.enableMembershipPayments &&
-          link.name === "membershipTier"
-        )
+          link.featureEnabledFlag &&
+          this.features[link.featureEnabledFlag] === false
+        ) {
           return false;
+        }
 
         return true;
       });

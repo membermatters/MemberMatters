@@ -1,23 +1,13 @@
 <template>
   <q-page class="flex flex-center">
-    <q-spinner
-      v-if="spinner && !error"
-      color="primary-btn"
-      size="3em"
-    />
+    <q-spinner v-if="spinner && !error" color="primary-btn" size="3em" />
 
-    <q-banner
-      v-if="!spinner"
-      class="bg-positive text-white"
-    >
-      {{ $t('logoutPage.logoutSuccess') }}
+    <q-banner v-if="!spinner" class="bg-positive text-white">
+      {{ $t("logoutPage.logoutSuccess") }}
     </q-banner>
 
-    <q-banner
-      v-if="error"
-      class="bg-negative text-white"
-    >
-      {{ $t('logoutPage.logoutFailed') }}
+    <q-banner v-if="error" class="bg-negative text-white">
+      {{ $t("logoutPage.logoutFailed") }}
     </q-banner>
   </q-page>
 </template>
@@ -53,7 +43,7 @@ export default {
     ...mapMutations("auth", ["setAuth"]),
     completeLogout() {
       this.resetState();
-      this.setAuth({accessToken: "", refreshToken: ""});
+      this.setAuth({ access: "", refresh: "" });
       this.setLoggedIn(false);
       this.error = false;
       this.spinner = false;
