@@ -41,10 +41,16 @@ You should see `(venv) $` at your command prompt, letting you know that you’re
 deactivate
 ```
 
-#####
-Notes: if you're running macOS Big Sur (and/or an Apple Silicon Mac), you may need to run this command to install the dependencies:
+#### Notes
+
+If you're running macOS Big Sur (and/or an Apple Silicon Mac), you may need to run this command to install the dependencies:
 ```
 CFLAGS='-I/usr/local/opt/zlib/include -L/usr/local/opt/zlib/lib' pip3 install -r requirements.txt
+```
+
+You may need to install `mysql` if you don't have it already. It's required when installing the `mysqlclient` Python dependency:
+```
+brew install mysql
 ```
 
 ## Windows
