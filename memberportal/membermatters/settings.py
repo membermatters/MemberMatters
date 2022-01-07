@@ -502,6 +502,14 @@ CONSTANCE_CONFIG = {
         False,
         "Enables a webcams page in the portal. Configure with the WEBCAM_PAGE_URLS setting.",
     ),
+    "ENABLE_PORTAL_SITE_SIGN_IN": (
+        False,
+        "Enable if you want to allow members to sign into site via the portal.",
+    ),
+    "ENABLE_PORTAL_MEMBERS_ON_SITE": (
+        False,
+        "Enable if you want to see the members signed into site on the portal dashboard.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -529,6 +537,8 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "ENABLE_DISCORD_INTEGRATION",
                 "ENABLE_SPACE_DIRECTORY",
                 "ENABLE_THEME_SWIPE",
+                "ENABLE_PORTAL_SITE_SIGN_IN",
+                "ENABLE_PORTAL_MEMBERS_ON_SITE",
             ),
         ),
         (
