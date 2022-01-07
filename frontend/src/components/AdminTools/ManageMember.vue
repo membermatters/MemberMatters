@@ -234,30 +234,6 @@
                 </q-input>
 
                 <q-select
-                  v-model="profileForm.groups"
-                  outlined
-                  :label="$t('groups')"
-                  use-chips
-                  multiple
-                  :options="groups"
-                  option-value="id"
-                  option-label="name"
-                  :rules="[
-                    (val) =>
-                      validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
-                  ]"
-                  @input="saveChange('groups')"
-                >
-                  <template #append>
-                    <saved-notification
-                      v-model="saved.groups"
-                      show-text
-                      :error="saved.error"
-                    />
-                  </template>
-                </q-select>
-
-                <q-select
                   v-model="profileForm.memberType"
                   outlined
                   :label="$t('form.memberType')"
@@ -395,7 +371,12 @@
             {{ $t("adminTools.subscriptionInfo") }}
           </div>
 
-          <q-list bordered padding class="rounded-borders">
+          <q-list
+            v-if="billing.subscription"
+            bordered
+            padding
+            class="rounded-borders"
+          >
             <q-item>
               <q-item-section>
                 <q-item-label lines="1">
@@ -469,6 +450,10 @@
             </q-item>
           </q-list>
 
+          <div v-else>
+            {{ $t(`adminTools.noSubscription`) }}
+          </div>
+
           <br />
           <div class="text-h6">
             {{ $t("adminTools.billingInfo") }}
@@ -493,7 +478,11 @@
             <q-item>
               <q-item-section>
                 <q-item-label lines="1">
-                  {{ billing.memberbucks.stripe_card_expiry }}
+                  {{
+                    billing.memberbucks.stripe_card_expiry
+                      ? this.formatWhen(billing.memberbucks.lastPurchase)
+                      : $t("error.noValue")
+                  }}
                 </q-item-label>
                 <q-item-label caption>
                   {{ $t(`memberbucks.cardExpiry`) }}
@@ -504,7 +493,11 @@
             <q-item>
               <q-item-section>
                 <q-item-label lines="1">
-                  {{ billing.memberbucks.stripe_card_last_digits }}
+                  {{
+                    billing.memberbucks.stripe_card_last_digits
+                      ? this.formatWhen(billing.memberbucks.lastPurchase)
+                      : $t("error.noValue")
+                  }}
                 </q-item-label>
                 <q-item-label caption>
                   {{ $t(`memberbucks.last4`) }}
@@ -640,7 +633,6 @@ export default {
         lastName: "",
         phone: "",
         screenName: "",
-        groups: [],
         memberType: "",
       },
       saved: {
@@ -653,7 +645,6 @@ export default {
         lastName: false,
         phone: false,
         screenName: false,
-        groups: false,
         memberType: false,
       },
       billing: {
@@ -691,7 +682,6 @@ export default {
       this.profileForm.lastName = this.selectedMember.name.last;
       this.profileForm.phone = this.selectedMember.phone;
       this.profileForm.screenName = this.selectedMember.screenName;
-      this.profileForm.groups = this.selectedMember.groups;
       this.profileForm.memberType = this.selectedMember.memberType;
     },
     saveChange(field) {
@@ -787,8 +777,8 @@ export default {
           });
         })
         .then((res) => {
-          console.log(res.data);
           this.billing = res.data;
+          if (!this.billing?.subscription) this.billing.subscription = null;
         })
         .finally(() => {
           this.$emit("memberUpdated");
@@ -846,7 +836,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("config", ["groups", "memberTypes"]),
+    ...mapGetters("config", ["memberTypes"]),
     selectedMember() {
       if (this.members) {
         return this.members.find((e) => e.id === this.member.id);
@@ -856,7 +846,6 @@ export default {
     selectedMemberFiltered() {
       const newMember = { ...this.selectedMember };
       delete newMember.access;
-      delete newMember.groups;
       return newMember;
     },
     icons() {

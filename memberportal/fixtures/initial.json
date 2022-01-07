@@ -9,16 +9,6 @@
     }
   },
   {
-    "model": "group.group",
-    "pk": 1,
-    "fields": {
-      "name": "Default Cause",
-      "description": "Nothing to describe really!",
-      "account_code": 200,
-      "item_code": "Change Me"
-    }
-  },
-  {
     "model": "profile.user",
     "pk": 1,
     "fields": {
@@ -30,7 +20,6 @@
       "password_reset_expire": null,
       "staff": true,
       "admin": true,
-      "groups": [],
       "user_permissions": []
     }
   },
@@ -57,7 +46,6 @@
       "stripe_card_last_digits": "",
       "xero_account_id": "",
       "xero_account_number": "",
-      "groups": [],
       "doors": [],
       "interlocks": []
     }

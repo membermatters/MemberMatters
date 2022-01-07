@@ -6,8 +6,7 @@
   "webDir": "www",
   "server": {
     "iosScheme": "ionic",
-    "androidScheme": "ionic",
-    "url": "http://10.10.1.182:8080"
+    "androidScheme": "ionic"
   },
   "plugins": {
     "SplashScreen": {

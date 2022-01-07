@@ -128,12 +128,13 @@
 import { mapGetters, mapActions } from "vuex";
 import icons from "../icons";
 import ProxyCard from "./ProxyCard";
-import formMixin from "../mixins/formMixin";
+import formMixin from "src/mixins/formMixin";
+import formatMixin from "src/mixins/formatMixin";
 
 export default {
   name: "ProxyForm",
   components: { ProxyCard },
-  mixins: [formMixin],
+  mixins: [formMixin, formatMixin],
   data() {
     return {
       memberNames: [],
@@ -192,7 +193,7 @@ export default {
     },
     displayUpcomingMeetings() {
       return this.upcomingMeetings.map((meeting) => ({
-        selectName: `${meeting.name} (${meeting.date})`,
+        selectName: `${meeting.name} (${this.formatDate(meeting.date)})`,
         name: meeting.name,
         id: meeting.id,
         date: meeting.date,

@@ -350,7 +350,6 @@ class Profile(models.Model):
     member_type = models.ForeignKey(
         MemberTypes, on_delete=models.PROTECT, related_name="member_type"
     )
-    groups = models.ManyToManyField("group.Group")
     membership_plan = models.ForeignKey(
         PaymentPlan,
         on_delete=models.PROTECT,
@@ -459,18 +458,8 @@ class Profile(models.Model):
         self.save()
 
     def email_profile_to(self, to_email):
-        groups = self.groups.all()
-        groups_string = "none :("
-
-        if groups.count() == 3:
-            groups_string = "{}, {} and {}".format(groups[0], groups[1], groups[2])
-        elif groups.count() == 2:
-            groups_string = "{} and {}".format(groups[0], groups[1])
-        elif groups.count() == 1:
-            groups_string = groups[0]
-
         message = (
-            f"{self.get_full_name()} has just signed up on the portal. Their selected {config.GROUP_NAME}(s) are {groups_string}. "
+            f"{self.get_full_name()} has just signed up on the portal."
             f"Their email is {self.user.email}."
         )
         email_vars = {"preheader": "", "title": "New member signup", "message": message}
@@ -555,7 +544,6 @@ class Profile(models.Model):
                 "name": self.member_type.name,
                 "id": self.member_type_id,
             },
-            "groups": self.groups.all().values(),
             "rfid": self.rfid,
             "memberBucks": {
                 "balance": self.memberbucks_balance,
@@ -630,11 +618,9 @@ class Profile(models.Model):
         ):
             required_steps.append("induction")
 
-        # if we require an rfid card to sign up
-        if config.REQUIRE_ACCESS_CARD:
-            # check if they have an RFID card assigned
-            if self.rfid is None or not len(self.rfid):
-                required_steps.append("accessCard")
+        # check if they have an RFID card assigned
+        if not self.rfid:
+            required_steps.append("accessCard")
 
         if len(required_steps):
             return {"success": False, "requiredSteps": required_steps}

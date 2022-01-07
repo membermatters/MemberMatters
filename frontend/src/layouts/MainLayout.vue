@@ -1,6 +1,12 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-header v-if="loggedIn || ($q.platform.is.mobile && loggedIn)" elevated>
+      <q-banner
+        v-if="features.siteBanner"
+        class="bg-primary text-white text-center"
+      >
+        {{ features.siteBanner }}
+      </q-banner>
       <q-toolbar class="bg-toolbar">
         <template v-if="$route.meta.backButton">
           <q-btn
@@ -212,7 +218,7 @@ export default {
       if (
         this.profile.memberStatus === "Needs Induction" &&
         this.$route.name !== "membershipTier" &&
-        this.features.stripe.enableMembershipPayments
+        this.features.enableMembershipPayments
       ) {
         next({ name: "membershipTier" });
       }

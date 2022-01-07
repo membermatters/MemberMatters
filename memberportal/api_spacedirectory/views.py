@@ -11,7 +11,7 @@ class SpaceDirectoryStatus(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request):
-        if not config.SPACE_DIRECTORY_ENABLED:
+        if not config.ENABLE_SPACE_DIRECTORY:
             return Response(
                 "Space Directory is not enabled on this server.",
                 status=status.HTTP_404_NOT_FOUND,

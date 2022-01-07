@@ -59,7 +59,6 @@ A summary of the settings is available below. Most settings have a more detailed
   * "MAX_INDUCTION_DAYS" -  Maximum number of days since they were inducted before they require another induction.
   * "MIN_INDUCTION_SCORE" - The minimum score considered a "pass" for the induction course.
   * "REQUIRE_ACCESS_CARD" - Require the member to submit their RFID access card number during signup.
-  * "MAX_GROUPS" - Maximum groups the member can select during signup.
 
 #### Canvas Integration
   * "CANVAS_API_TOKEN" - the API token for the Canvas LMS integration.
@@ -113,7 +112,7 @@ A summary of the settings is available below. Most settings have a more detailed
   * "TRELLO_ID_LIST" - [Deprecated]
 
 #### Space Directory
-  * "SPACE_DIRECTORY_ENABLED" - enable a space directory compliant API. The various configuration options in this section should be self explannatory.
+  * "ENABLE_SPACE_DIRECTORY" - enable a space directory compliant API. The various configuration options in this section should be self explannatory.
 
 #### Theme Swipe Integration
   * "THEME_SWIPE_URL" - a URL to hit on each door/interlock swipe that can trigger a theme song played over your intercom system, or something else.

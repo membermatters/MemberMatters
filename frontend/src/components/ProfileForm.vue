@@ -93,30 +93,6 @@
           />
         </template>
       </q-input>
-
-      <q-select
-        v-model="form.groups"
-        outlined
-        :label="$t('groups')"
-        use-input
-        use-chips
-        multiple
-        :options="groups"
-        option-value="id"
-        option-label="name"
-        :rules="[
-          (val) => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
-        ]"
-        @input="saveChange('groups')"
-      >
-        <template v-slot:append>
-          <saved-notification
-            v-model="saved.groups"
-            show-text
-            :error="saved.error"
-          />
-        </template>
-      </q-select>
     </q-form>
   </div>
 </template>
@@ -141,7 +117,6 @@ export default {
         lastName: "",
         phone: "",
         screenName: "",
-        groups: [],
       },
       saved: {
         // if there was an error saving the form
@@ -152,7 +127,6 @@ export default {
         lastName: false,
         phone: false,
         screenName: false,
-        groups: false,
       },
     };
   },
@@ -164,7 +138,6 @@ export default {
       this.form.lastName = this.profile.lastName;
       this.form.phone = this.profile.phone;
       this.form.screenName = this.profile.screenName;
-      this.form.groups = this.profile.groups;
     },
     saveChange(field) {
       this.$refs.formRef.validate(false).then(() => {
@@ -196,7 +169,6 @@ export default {
   },
   computed: {
     ...mapGetters("profile", ["profile"]),
-    ...mapGetters("config", ["groups"]),
     icons() {
       return icons;
     },

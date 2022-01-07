@@ -2,8 +2,10 @@
   <div>
     <q-table
       :data="humanLastSeen"
-      :columns="[{ name: 'user', label: 'User', field: 'user', sortable: true },
-                 { name: 'lastSeen', label: 'Last Seen', field: 'date', sortable: true },]"
+      :columns="[
+        { name: 'user', label: 'User', field: 'user', sortable: true },
+        { name: 'lastSeen', label: 'Last Seen', field: 'date', sortable: true },
+      ]"
       row-key="id"
       :filter="filter"
       :pagination.sync="pagination"
@@ -30,13 +32,14 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import Moment from "moment";
 import icons from "../icons";
 import RefreshDataDialog from "./RefreshDataDialog";
+import formatMixin from "src/mixins/formatMixin";
 
 export default {
   name: "LastSeenList",
   components: { RefreshDataDialog },
+  mixins: [formatMixin],
   data() {
     return {
       filter: "",
@@ -76,9 +79,11 @@ export default {
     },
     humanLastSeen() {
       return this.lastSeen.map((value) => {
-        const humanReadable = Moment.utc(value.date).local().format("Do MMM YYYY, h:mm a");
         return {
-          id: value.id, user: value.user, date: humanReadable, never: value.never,
+          id: value.id,
+          user: value.user,
+          date: this.formatDateSimple(value.date),
+          never: value.never,
         };
       });
     },
@@ -87,7 +92,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-  @media (max-width: $breakpoint-xs-max)
-    .access-list
-      width: 100%;
+@media (max-width: $breakpoint-xs-max)
+  .access-list
+    width: 100%;
 </style>

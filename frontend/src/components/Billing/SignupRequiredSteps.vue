@@ -27,7 +27,7 @@
           <template v-if="!inductionComplete">
             <div>
               <p>
-                <a :href="features.inductionLink" target="_blank">
+                <a :href="features.signup.inductionLink" target="_blank">
                   <img
                     class="q-pa-sm rounded-borders"
                     style="max-height: 70px; border: 1px solid"
@@ -56,7 +56,7 @@
         <div class="row justify-start q-mt-md">
           <q-space />
           <q-btn
-            @click="step++"
+            @click="inductionCompleted()"
             :disable="!inductionComplete"
             color="primary"
             :label="$tc('button.continue')"
@@ -74,40 +74,65 @@
         <div class="text-h6 q-py-md">
           {{ $tc("signup.assignAccessCard") }}
         </div>
-        <div class="row items-stretch">
-          <div style="width: 100%">
-            <p>
-              {{ $t("signup.assignAccessCardDescription") }}
-            </p>
 
-            <p>
-              <b>
-                {{
-                  $t("signup.assignAccessCardWarning", { email: profile.email })
-                }}
-              </b>
-            </p>
+        <template v-if="features.signup.requireAccessCard">
+          <div class="row items-stretch">
+            <div style="width: 100%">
+              <p>
+                {{ $t("signup.assignAccessCardDescription") }}
+              </p>
 
-            <div>
-              <q-input
-                style="max-width: 300px"
-                outlined
-                v-model="accessCard"
-                :label="$t('signup.accessCardNumber')"
-              />
+              <p>
+                <b>
+                  {{
+                    $t("signup.assignAccessCardWarning", {
+                      email: profile.email,
+                    })
+                  }}
+                </b>
+              </p>
+
+              <div>
+                <q-input
+                  style="max-width: 300px"
+                  outlined
+                  v-model="accessCard"
+                  :label="$t('signup.accessCardNumber')"
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="row justify-start q-mt-md">
-          <q-space />
-          <q-btn
-            :disable="accessCardLoading"
-            @click="submitAccessCard"
-            color="primary"
-            :label="$tc('button.continue')"
-          />
-        </div>
+          <div class="row justify-start q-mt-md">
+            <q-space />
+            <q-btn
+              :disable="accessCardLoading"
+              @click="submitAccessCard"
+              color="primary"
+              :label="$tc('button.continue')"
+            />
+          </div>
+        </template>
+        <template v-else>
+          <div class="row items-stretch">
+            <div style="max-width: 400px">
+              <p>
+                {{ $t("signup.collectAccessCardDescription") }}
+              </p>
+            </div>
+          </div>
+
+          <div class="row justify-start q-mt-md">
+            <q-space />
+            <q-btn
+              type="a"
+              :href="features.signup.contactPageUrl"
+              target="_blank"
+              color="primary"
+              :label="$tc('button.contactUs')"
+            />
+          </div>
+        </template>
       </q-step>
 
       <q-step
@@ -157,7 +182,8 @@
           <div class="row justify-start q-mt-md">
             <q-space />
             <q-btn
-              @click="$router.push({ name: 'dashboard' }).catch(() => {})"
+              type="a"
+              :to="{ name: 'dashboard' }"
               color="primary"
               :label="$tc('signup.continueToDashboard')"
             />
@@ -175,12 +201,6 @@ import icons from "@icons";
 
 export default defineComponent({
   name: "SignupRequiredSteps",
-  props: {
-    steps: {
-      type: Array,
-      required: true,
-    },
-  },
   data() {
     return {
       step: 1,
@@ -203,41 +223,59 @@ export default defineComponent({
     icons() {
       return icons;
     },
-    allStepsDone() {
-      if (this.steps.includes("induction")) {
-        if (!this.inductionComplete) return false;
-      }
-      if (this.steps.includes("accessCard")) {
-        if (!this.accessCardComplete) return false;
-      }
-
-      return true;
-    },
   },
   mounted() {
     this.updateInductionStatus();
     this.interval = setInterval(async () => {
       this.updateInductionStatus();
     }, 10000);
+
+    this.$axios.get("api/billing/can-signup/").then((result) => {
+      if (result.data.success) {
+        this.step = 3; // skip straight to the end
+      } else {
+        // if we don't need the access card, that step is complete
+        this.accessCardComplete =
+          !result.data.requiredSteps.includes("accessCard");
+      }
+    });
   },
   beforeRouteLeave() {
     clearInterval(this.interval);
   },
   methods: {
-    selectPlan() {
-      this.$emit("selected", this.plan);
-    },
     async updateInductionStatus() {
       let result = await this.$axios.post("/api/billing/check-induction/");
       this.inductionComplete = result.data.success;
       this.inductionScore = Math.floor(result.data.score);
-      if (this.inductionComplete) {
-        clearInterval(this.interval);
-      }
 
-      if (result.data.notRequired) {
-        this.step++;
+      if (this.inductionComplete || result.data.notRequired) {
+        this.inductionCompleted();
       }
+    },
+    inductionCompleted() {
+      this.step++;
+      if (this.accessCardComplete) this.step++;
+      clearInterval(this.interval);
+    },
+    async completeSignup() {
+      this.$axios
+        .post("/api/billing/complete-signup/")
+        .then((result) => {
+          if (!result.data.success) {
+            this.signupError = true;
+            this.signupErrorMessage = result.data.message;
+            this.signupErrorItems = result.data.items;
+          } else {
+            this.signupError = false;
+          }
+        })
+        .catch(() => {
+          this.signupError = true;
+        })
+        .finally(() => {
+          this.step++;
+        });
     },
     async submitAccessCard() {
       this.accessCardLoading = true;
@@ -247,23 +285,7 @@ export default defineComponent({
         })
         .then((result) => {
           if (result.data.success) {
-            this.$axios
-              .post("/api/billing/complete-signup/")
-              .then((result) => {
-                if (!result.data.success) {
-                  this.signupError = true;
-                  this.signupErrorMessage = result.data.message;
-                  this.signupErrorItems = result.data.items;
-                } else {
-                  this.signupError = false;
-                }
-              })
-              .catch(() => {
-                this.signupError = true;
-              })
-              .finally(() => {
-                this.step++;
-              });
+            this.completeSignup();
           } else {
             this.accessCardError = true;
           }

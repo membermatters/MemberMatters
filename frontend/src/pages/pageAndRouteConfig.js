@@ -34,6 +34,7 @@ const PageAndRouteConfig = [
     name: "webcams",
     loggedIn: true,
     kiosk: true,
+    featureEnabledFlag: "enableWebcams",
     component: () => import("pages/Webcams"),
   },
   {
@@ -67,14 +68,6 @@ const PageAndRouteConfig = [
         loggedIn: true,
         admin: true,
         component: () => import("pages/Meetings"),
-      },
-      {
-        icon: icons.groups,
-        to: "/manage/groups",
-        name: "groups",
-        loggedIn: true,
-        admin: true,
-        component: () => import("pages/Error501"),
       },
       {
         icon: icons.plans,
@@ -144,16 +137,8 @@ const PageAndRouteConfig = [
         loggedIn: true,
         kiosk: true,
         memberOnly: true,
+        featureEnabledFlag: "enableProxyVoting",
         component: () => import("pages/Proxy"),
-      },
-      {
-        icon: icons.groupMembers,
-        to: "/tools/groups/",
-        name: "groupMembers",
-        loggedIn: true,
-        kiosk: true,
-        memberOnly: true,
-        component: () => import("pages/MemberGroups"),
       },
       {
         icon: icons.recentSwipes,
@@ -198,6 +183,7 @@ const PageAndRouteConfig = [
       },
       {
         icon: icons.memberbucks,
+        featureEnabledFlag: "enableMemberBucks",
         to: "/account/memberbucks/:dialog",
         defaultParams: { dialog: "transactions" },
         name: "memberbucks",
@@ -206,6 +192,7 @@ const PageAndRouteConfig = [
       },
       {
         icon: icons.billing,
+        featureEnabledFlag: "enableStripe",
         to: "/account/billing",
         name: "billing",
         loggedIn: true,
@@ -213,6 +200,7 @@ const PageAndRouteConfig = [
       },
       {
         icon: icons.plans,
+        featureEnabledFlag: "enableMembershipPayments",
         to: "/account/membership-tier",
         name: "membershipTier",
         loggedIn: true,

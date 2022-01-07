@@ -1,5 +1,4 @@
 from profile.models import User, Profile
-from group.models import Group
 from api_meeting.models import Meeting
 from constance import config
 from membermatters.helpers import log_user_event
@@ -171,52 +170,6 @@ class IssueDetail(APIView):
                 return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class MemberGroupList(APIView):
-    """
-    get: This method returns a list of all active members and their groups.
-    """
-
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get(self, request):
-        def get_groups(groups):
-            temp_groups = []
-
-            for group in groups:
-                if group.hidden:
-                    continue
-                else:
-                    temp_groups.append(group.name)
-
-            return temp_groups
-
-        members = User.objects.filter(profile__state="active")
-
-        groups = Group.objects.filter(hidden=False).prefetch_related()
-        parsed_groups = []
-        parsed_members = []
-
-        for member in members:
-            parsed_members.append(
-                {
-                    "member": f"{member.profile.get_full_name()} ({member.profile.screen_name})",
-                    "groups": get_groups(member.profile.groups.all()),
-                }
-            )
-
-        for group in groups:
-            parsed_groups.append(
-                {
-                    "name": group.name,
-                    "activeMembers": group.get_active_count(),
-                    "quorum": group.get_quorum(),
-                }
-            )
-
-        response = {"groups": parsed_groups, "members": parsed_members}
-        return Response(response, status=status.HTTP_200_OK)
-
-
 class MeetingList(APIView):
     """
     get: Returns a list of upcoming meetings that a member is entitled to vote at.
@@ -229,28 +182,13 @@ class MeetingList(APIView):
         def get_meeting(meeting):
             date = timezone.localtime(meeting.date).strftime("%x %X")
 
-            if meeting.type == "group":
-                return {
-                    "id": meeting.id,
-                    "name": meeting.group.name,
-                    "date": date,
-                }
             return {
                 "id": meeting.id,
                 "name": meeting.get_type_display(),
                 "date": date,
             }
 
-        def check_meeting(meeting):
-            if meeting.type != "group":
-                return True
-
-            elif meeting.group in request.user.profile.groups.all():
-                return True
-
-            return False
-
-        response = list(map(get_meeting, filter(check_meeting, self.queryset.all())))
+        response = list(map(get_meeting, self.queryset.all()))
 
         return Response(response)
 

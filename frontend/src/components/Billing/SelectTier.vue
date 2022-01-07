@@ -86,7 +86,11 @@
           {{ $tc("memberbucks.selectToContinue") }}
         </div>
 
-        <member-bucks-manage-billing flat @card-exists="cardExistsHandler" />
+        <member-bucks-manage-billing
+          style="max-width: 400px"
+          flat
+          @card-exists="cardExistsHandler"
+        />
 
         <div class="row justify-start q-mt-md">
           <q-btn @click="backToPlans" flat :label="$tc('button.back')" />
@@ -259,6 +263,12 @@ export default defineComponent({
             setTimeout(() => {
               location.reload();
             }, 3000);
+          } else if (response.data.message) {
+            this.disableFinish = false;
+            this.$q.dialog({
+              title: this.$t("paymentPlans.signupFailed"),
+              message: this.$t(response.data.message),
+            });
           } else {
             this.disableFinish = false;
             this.$q.dialog({

@@ -79,6 +79,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "membermatters.middleware.Sentry",
     "membermatters.middleware.ForceCsrfCookieMiddleware",
 ]
 
@@ -243,6 +244,10 @@ CONSTANCE_CONFIG = {
         "Association",
         "This is the type of group you are such as an association, club, etc.",
     ),
+    "SITE_BANNER": (
+        "",
+        "A site wide banner that can display useful information. Leave empty to turn off.",
+    ),
     # Email config
     "EMAIL_SYSADMIN": (
         "example@example.com",
@@ -266,6 +271,11 @@ CONSTANCE_CONFIG = {
         "The publicly accessible URL of your MemberMatters instance.",
     ),
     "MAIN_SITE_URL": ("https://membermatters.org", "The URL of your main website."),
+    "CONTACT_PAGE_URL": (
+        "https://membermatters.org",
+        "The URL of your contact page (displayed during signup if "
+        "requireAccessCard == False).",
+    ),
     "INDUCTION_URL": (
         "https://eventbrite.com.au",
         "The URL members should visit to book in for a site induction.",
@@ -342,6 +352,35 @@ CONSTANCE_CONFIG = {
         "[1000, 2000, 3000]",
         "This is a JSON array of top-up amounts in cents.",
     ),
+    "MAKEMEMBER_CREATE_XERO_INVOICES": (
+        False,
+        "Creates a Xero invoice when 'Make Member' is clicked in the admin tools area.",
+    ),
+    "STRIPE_CREATE_XERO_INVOICES": (
+        False,
+        "Creates an invoice in Xero for every successful Stripe membership payment.",
+    ),
+    "XERO_TAX_TYPE": ("EXEMPTOUTPUT", "Tax type to use on Xero invoices."),
+    "XERO_MEMBERSHIP_ACCOUNT_CODE": (
+        "100",
+        "Account code to use on Xero invoices for membership.",
+    ),
+    "XERO_MEMBERSHIP_ITEM_CODE": (
+        "membership",
+        "Item code to use on Xero invoices for membership.",
+    ),
+    "XERO_STRIPE_FEE_ACCOUNT_CODE": (
+        "100",
+        "Account code to use on Xero invoices for membership.",
+    ),
+    "XERO_STRIPE_FEE_ITEM_CODE": (
+        "stripe",
+        "Item code to use on Xero invoices for membership.",
+    ),
+    "XERO_MEMBERBUCKS_ACCOUNT_CODE": (
+        "100",
+        "Account code to use on Xero invoices for memberbucks.",
+    ),
     "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS": (
         False,
         "Enable integration with stripe for membership payments.",
@@ -358,8 +397,8 @@ CONSTANCE_CONFIG = {
         "Set this to the ID of your card list you want issue " "to go to.",
     ),
     # Space API config
-    "SPACE_DIRECTORY_ENABLED": (
-        True,
+    "ENABLE_SPACE_DIRECTORY": (
+        False,
         "Turn on the space directory API available at /api/spacedirectory.",
     ),
     "SPACE_DIRECTORY_OPEN": (False, "Sets the open state."),
@@ -399,6 +438,7 @@ CONSTANCE_CONFIG = {
         "[]",
         "A JSON list of strings (URLs) to project sites like wikis, GitHub, etc.",
     ),
+    "ENABLE_MEMBERBUCKS": (False, "Enable the memberbucks functionality."),
     "MEMBERBUCKS_MAX_TOPUP": ("50", "The maximum topup allowed in dollars."),
     "MEMBERBUCKS_CURRENCY": (
         "aud",
@@ -452,10 +492,6 @@ CONSTANCE_CONFIG = {
         "PLEASE_CHANGE_ME",
         "The API key used to send email with Sendgrid.",
     ),
-    "MAX_GROUPS": (
-        3,
-        "The maximum number groups allowed to be selected during signup.",
-    ),
     "INDUCTION_ENROL_LINK": (
         "",
         "The link that a member can use to enrol into an induction.",
@@ -484,6 +520,11 @@ CONSTANCE_CONFIG = {
         "PLEASE_CHANGE_ME",
         "Canvas API token.",
     ),
+    "ENABLE_PROXY_VOTING": (False, "Enables the proxy voting management feature."),
+    "ENABLE_WEBCAMS": (
+        False,
+        "Enables a webcams page in the portal. Configure with the WEBCAM_PAGE_URLS setting.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -497,6 +538,20 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "GOOGLE_ANALYTICS_PROPERTY_ID",
                 "API_SECRET_KEY",
                 "DEFAULT_MEMBER_TYPE",
+                "SITE_BANNER",
+            ),
+        ),
+        (
+            "Features",
+            (
+                "ENABLE_WEBCAMS",
+                "ENABLE_PROXY_VOTING",
+                "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS",
+                "ENABLE_MEMBERBUCKS",
+                "ENABLE_DISCOURSE_SSO_PROTOCOL",
+                "ENABLE_DISCORD_INTEGRATION",
+                "ENABLE_SPACE_DIRECTORY",
+                "ENABLE_THEME_SWIPE",
             ),
         ),
         (
@@ -514,7 +569,6 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "MAX_INDUCTION_DAYS",
                 "MIN_INDUCTION_SCORE",
                 "REQUIRE_ACCESS_CARD",
-                "MAX_GROUPS",
             ),
         ),
         (
@@ -536,9 +590,9 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
         ),
         (
             "Discourse SSO Protocol",
-            ("ENABLE_DISCOURSE_SSO_PROTOCOL", "DISCOURSE_SSO_PROTOCOL_SECRET_KEY"),
+            ("DISCOURSE_SSO_PROTOCOL_SECRET_KEY",),
         ),
-        ("URLs", ("SITE_URL", "MAIN_SITE_URL", "INDUCTION_URL")),
+        ("URLs", ("SITE_URL", "MAIN_SITE_URL", "CONTACT_PAGE_URL", "INDUCTION_URL")),
         ("Memberbucks", ("MEMBERBUCKS_MAX_TOPUP", "MEMBERBUCKS_CURRENCY")),
         (
             "Images",
@@ -562,8 +616,20 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "STRIPE_PUBLISHABLE_KEY",
                 "STRIPE_SECRET_KEY",
                 "STRIPE_WEBHOOK_SECRET",
-                "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS",
                 "STRIPE_MEMBERBUCKS_TOPUP_OPTIONS",
+            ),
+        ),
+        (
+            "Xero Integration",
+            (
+                "MAKEMEMBER_CREATE_XERO_INVOICES",
+                "STRIPE_CREATE_XERO_INVOICES",
+                "XERO_MEMBERBUCKS_ACCOUNT_CODE",
+                "XERO_MEMBERSHIP_ACCOUNT_CODE",
+                "XERO_MEMBERSHIP_ITEM_CODE",
+                "XERO_STRIPE_FEE_ACCOUNT_CODE",
+                "XERO_STRIPE_FEE_ITEM_CODE",
+                "XERO_TAX_TYPE",
             ),
         ),
         (
@@ -578,7 +644,6 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
         (
             "Space Directory",
             (
-                "SPACE_DIRECTORY_ENABLED",
                 "SPACE_DIRECTORY_OPEN",
                 "SPACE_DIRECTORY_MESSAGE",
                 "SPACE_DIRECTORY_ICON_OPEN",
@@ -597,11 +662,10 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SPACE_DIRECTORY_PROJECTS",
             ),
         ),
-        ("Theme Swipe Integration", ("THEME_SWIPE_URL", "ENABLE_THEME_SWIPE")),
+        ("Theme Swipe Integration", ("THEME_SWIPE_URL",)),
         (
             "Discord Integration",
             (
-                "ENABLE_DISCORD_INTEGRATION",
                 "DISCORD_DOOR_WEBHOOK",
                 "DISCORD_INTERLOCK_WEBHOOK",
             ),

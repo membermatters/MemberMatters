@@ -6,7 +6,6 @@ export default {
     lastSeen: [],
     recentSwipes: [],
     memberList: [],
-    groupList: [],
     upcomingMeetings: [],
     proxies: [],
     members: [],
@@ -18,7 +17,6 @@ export default {
     lastSeen: (state) => state.lastSeen,
     recentSwipes: (state) => state.recentSwipes,
     memberList: (state) => state.memberList,
-    groupList: (state) => state.groupList,
     upcomingMeetings: (state) => state.upcomingMeetings,
     proxies: (state) => state.proxies,
     members: (state) => state.members,
@@ -35,9 +33,6 @@ export default {
     },
     setMemberList(state, payload) {
       state.memberList = payload;
-    },
-    setGroupList(state, payload) {
-      state.groupList = payload;
     },
     setUpcomingMeetings(state, payload) {
       state.upcomingMeetings = payload;
@@ -61,7 +56,8 @@ export default {
   actions: {
     getLastSeen({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get("/api/tools/lastseen/")
+        Vue.prototype.$axios
+          .get("/api/tools/lastseen/")
           .then((result) => {
             commit("setLastSeen", result.data);
             resolve();
@@ -74,7 +70,8 @@ export default {
     },
     getRecentSwipes({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get("/api/tools/swipes/")
+        Vue.prototype.$axios
+          .get("/api/tools/swipes/")
           .then((result) => {
             commit("setRecentSwipes", result.data);
             resolve();
@@ -85,23 +82,10 @@ export default {
           });
       });
     },
-    getMemberGroups({ commit }) {
-      return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get("/api/tools/groups/")
-          .then((result) => {
-            commit("setGroupList", result.data.groups);
-            commit("setMemberList", result.data.members);
-            resolve();
-          })
-          .catch((error) => {
-            reject();
-            throw error;
-          });
-      });
-    },
     getUpcomingMeetings({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get("/api/tools/meetings/")
+        Vue.prototype.$axios
+          .get("/api/tools/meetings/")
           .then((result) => {
             commit("setUpcomingMeetings", result.data);
             resolve();
@@ -114,7 +98,8 @@ export default {
     },
     getProxies({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get("/api/proxies/")
+        Vue.prototype.$axios
+          .get("/api/proxies/")
           .then((result) => {
             commit("setProxies", result.data);
             resolve();
@@ -127,7 +112,8 @@ export default {
     },
     getMembers({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get("/api/tools/members/")
+        Vue.prototype.$axios
+          .get("/api/tools/members/")
           .then((result) => {
             commit("setMembers", result.data);
             resolve();
@@ -140,7 +126,8 @@ export default {
     },
     getMemberBucksTransactions({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get("/api/memberbucks/transactions/")
+        Vue.prototype.$axios
+          .get("/api/memberbucks/transactions/")
           .then((result) => {
             commit("setMemberBucksTransactions", result.data);
             resolve();
@@ -153,7 +140,8 @@ export default {
     },
     getMemberBucksBalance({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get("/api/memberbucks/balance/")
+        Vue.prototype.$axios
+          .get("/api/memberbucks/balance/")
           .then((result) => {
             commit("setMemberBucksBalance", result.data.balance);
             resolve();
@@ -166,7 +154,8 @@ export default {
     },
     getStatistics({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios.get("/api/statistics/")
+        Vue.prototype.$axios
+          .get("/api/statistics/")
           .then((result) => {
             commit("setStatistics", result.data);
             resolve();

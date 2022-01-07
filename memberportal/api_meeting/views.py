@@ -39,8 +39,6 @@ class Meetings(APIView):
                 "chair": meeting.chair,
                 "type": meeting.get_type(),
                 "typeValue": meeting.type,
-                "group": meeting.group.name if meeting.group else None,
-                "groupValue": meeting.group.id if meeting.group else None,
                 "attendeeCount": meeting.attendees.count(),
                 "attendees": list(map(get_attendee, meeting.attendees.all())),
                 "proxyList": list(map(get_proxy, meeting.proxyvote_set.all())),
@@ -56,7 +54,6 @@ class Meetings(APIView):
         meeting = Meeting.objects.create(
             date=make_aware(datetime.strptime(body["date"], "%Y-%m-%d %H:%M")),
             type=body["type"]["value"],
-            group_id=body["group"]["id"] if len(body["group"]) else "",
             chair=body["chair"],
         )
 

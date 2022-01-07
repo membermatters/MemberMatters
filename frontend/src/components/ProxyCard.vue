@@ -1,18 +1,12 @@
 <template>
   <q-card class="q-pa-md card">
-    <i18n
-      path="proxyForm.proxyTo"
-      tag="p"
-    >
+    <i18n path="proxyForm.proxyTo" tag="p">
       <template v-slot:siteOwner>
         <span>{{ siteOwner }}</span>
       </template>
     </i18n>
 
-    <i18n
-      path="proxyForm.proxyBody"
-      tag="p"
-    >
+    <i18n path="proxyForm.proxyBody" tag="p">
       <template v-slot:memberName>
         <span class="proxy-field">{{ profile.fullName }}</span>
       </template>
@@ -33,10 +27,7 @@
       </template>
     </i18n>
 
-    <i18n
-      path="proxyForm.proxySignature"
-      tag="p"
-    >
+    <i18n path="proxyForm.proxySignature" tag="p">
       <template v-slot:memberName>
         <span class="proxy-field">{{ profile.fullName }}</span>
       </template>
@@ -49,22 +40,25 @@
 
 <script>
 import { mapGetters } from "vuex";
-import Moment from "moment";
 import icons from "../icons";
+import * as dayjs from "dayjs";
 
 export default {
   name: "ProxyCard",
   props: {
     proxyCardInfo: {
       type: Object,
-      default: () => { {} },
+      default: () => {
+        {
+        }
+      },
     },
   },
   computed: {
     ...mapGetters("config", ["siteOwner"]),
     ...mapGetters("profile", ["profile"]),
     currentDate() {
-      return Moment().format("Do MMMM YYYY");
+      return dayjs().format("Do MMMM YYYY");
     },
     icons() {
       return icons;
@@ -74,11 +68,11 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-  .card
-    max-width: 400px
+.card
+  max-width: 400px
 
-  .proxy-field
-    font-style: italic
-    font-weight: bold
-    text-decoration: underline
+.proxy-field
+  font-style: italic
+  font-weight: bold
+  text-decoration: underline
 </style>

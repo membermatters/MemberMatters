@@ -150,7 +150,7 @@
 
 <script>
 import icons from "../../icons";
-import formatMixin from "../../mixins/formatMixin";
+import formatMixin from "src/mixins/formatMixin";
 
 export default {
   props: {

@@ -3,17 +3,18 @@
     <div v-if="loggedIn">
       <div class="column flex content-start justify-center">
         <q-banner
-          v-if="profile.memberStatus !== 'Active' && profile.memberStatus !== 'Account only'"
+          v-if="
+            profile.memberStatus !== 'Active' &&
+            profile.memberStatus !== 'Account only'
+          "
           inline-actions
           rounded
           class="bg-orange text-white q-ma-md"
         >
           <template v-slot:avatar>
-            <q-icon
-              :name="icons.warning"
-            />
+            <q-icon :name="icons.warning" />
           </template>
-          {{ $t('access.inactive') }}
+          {{ $t("access.inactive") }}
         </q-banner>
       </div>
 
@@ -72,7 +73,7 @@ export default {
     if (
       this.profile.memberStatus === "Needs Induction" &&
       this.$route.name !== "membershipTier" &&
-      this.features.stripe.enableMembershipPayments
+      this.features.enableMembershipPayments
     ) {
       this.$router.push({ name: "membershipTier" });
     }
