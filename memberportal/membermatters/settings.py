@@ -525,6 +525,10 @@ CONSTANCE_CONFIG = {
         False,
         "Enables a webcams page in the portal. Configure with the WEBCAM_PAGE_URLS setting.",
     ),
+    "MAILCHIMP_API_KEY": ("", "Enable Mailchimp sync by specifying an API key."),
+    "MAILCHIMP_SERVER": ("", "Required if enabling the Mailchimp integration."),
+    "MAILCHIMP_LIST_ID": ("", "Required if enabling the Mailchimp integration."),
+    "MAILCHIMP_TAG": ("Member", "Add this tag to all members synced to mailchimp."),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -580,37 +584,6 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ("SENDGRID_API_KEY",),
         ),
         (
-            "Contact Information",
-            (
-                "EMAIL_SYSADMIN",
-                "EMAIL_ADMIN",
-                "EMAIL_DEFAULT_FROM",
-                "SITE_MAIL_ADDRESS",
-            ),
-        ),
-        (
-            "Discourse SSO Protocol",
-            ("DISCOURSE_SSO_PROTOCOL_SECRET_KEY",),
-        ),
-        ("URLs", ("SITE_URL", "MAIN_SITE_URL", "CONTACT_PAGE_URL", "INDUCTION_URL")),
-        ("Memberbucks", ("MEMBERBUCKS_MAX_TOPUP", "MEMBERBUCKS_CURRENCY")),
-        (
-            "Images",
-            ("SITE_LOGO", "SITE_FAVICON", "STATS_CARD_IMAGE", "MENU_BACKGROUND"),
-        ),
-        ("Theme", ("THEME_PRIMARY", "THEME_TOOLBAR", "THEME_ACCENT")),
-        (
-            "Group Localisation",
-            (
-                "MEMBERBUCKS_NAME",
-                "GROUP_NAME",
-                "ADMIN_NAME",
-                "WEBCAM_PAGE_URLS",
-                "HOME_PAGE_CARDS",
-                "WELCOME_EMAIL_CARDS",
-            ),
-        ),
-        (
             "Stripe Integration",
             (
                 "STRIPE_PUBLISHABLE_KEY",
@@ -642,6 +615,47 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ),
         ),
         (
+            "Mailchimp",
+            (
+                "MAILCHIMP_API_KEY",
+                "MAILCHIMP_SERVER",
+                "MAILCHIMP_LIST_ID",
+                "MAILCHIMP_TAG",
+            ),
+        ),
+        ("Theme Swipe Integration", ("THEME_SWIPE_URL",)),
+        (
+            "Contact Information",
+            (
+                "EMAIL_SYSADMIN",
+                "EMAIL_ADMIN",
+                "EMAIL_DEFAULT_FROM",
+                "SITE_MAIL_ADDRESS",
+            ),
+        ),
+        (
+            "Discourse SSO Protocol",
+            ("DISCOURSE_SSO_PROTOCOL_SECRET_KEY",),
+        ),
+        ("URLs", ("SITE_URL", "MAIN_SITE_URL", "CONTACT_PAGE_URL", "INDUCTION_URL")),
+        ("Memberbucks", ("MEMBERBUCKS_MAX_TOPUP", "MEMBERBUCKS_CURRENCY")),
+        (
+            "Images",
+            ("SITE_LOGO", "SITE_FAVICON", "STATS_CARD_IMAGE", "MENU_BACKGROUND"),
+        ),
+        ("Theme", ("THEME_PRIMARY", "THEME_TOOLBAR", "THEME_ACCENT")),
+        (
+            "Group Localisation",
+            (
+                "MEMBERBUCKS_NAME",
+                "GROUP_NAME",
+                "ADMIN_NAME",
+                "WEBCAM_PAGE_URLS",
+                "HOME_PAGE_CARDS",
+                "WELCOME_EMAIL_CARDS",
+            ),
+        ),
+        (
             "Space Directory",
             (
                 "SPACE_DIRECTORY_OPEN",
@@ -662,7 +676,6 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SPACE_DIRECTORY_PROJECTS",
             ),
         ),
-        ("Theme Swipe Integration", ("THEME_SWIPE_URL",)),
         (
             "Discord Integration",
             (

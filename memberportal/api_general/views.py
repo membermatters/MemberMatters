@@ -1,3 +1,4 @@
+import sentry_sdk
 from django.contrib.auth import (
     authenticate,
     login,
@@ -49,6 +50,8 @@ class GetConfig(APIView):
             },
             "enableWebcams": config.ENABLE_WEBCAMS,
             "siteBanner": config.SITE_BANNER,
+            "enablePortalSiteSignIn": config.ENABLE_PORTAL_SITE_SIGN_IN,
+            "enablePortalMembersOnSite": config.ENABLE_PORTAL_MEMBERS_ON_SITE,
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}
@@ -640,6 +643,40 @@ class Register(APIView):
                 f"{config.INDUCTION_URL}",
                 "Register for Induction",
             )
+
+        try:
+            import mailchimp_marketing as MailchimpMarketing
+            from mailchimp_marketing.api_client import ApiClientError
+
+            client = MailchimpMarketing.Client()
+            client.set_config(
+                {"api_key": config.MAILCHIMP_API_KEY, "server": config.MAILCHIMP_SERVER}
+            )
+
+            list_id = config.MAILCHIMP_LIST_ID
+            merge_fields = {
+                "*|FNAME|*": new_user.profile.first_name,
+                "*|LNAME|*": new_user.profile.last_name,
+                "*|PHONE|*": new_user.profile.phone,
+            }
+
+            payload = {
+                "email_address": new_user.email,
+                "email_type": "html",
+                "status": "subscribed",
+                "merge_fields": merge_fields,
+                "vip": False,
+                "tags": [
+                    config.MAILCHIMP_TAG,
+                ],
+            }
+            response = client.lists.add_list_member(list_id, payload)
+
+            print(response)
+
+        except Exception as e:
+            # gracefully catch and move on
+            sentry_sdk.capture_exception(e)
 
         return Response()
 
