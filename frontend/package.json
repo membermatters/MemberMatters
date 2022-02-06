@@ -12,7 +12,7 @@
     "dev:android": "quasar dev -m capacitor -T android",
     "build": "quasar build -m spa",
     "build:pwa": "quasar build -m pwa",
-    "build:ios": "node update-ios-version.js && API_BASE_URL=https://portal.hsbne.org quasar build -m capacitor -T ios --ide",
+    "build:ios": "node update-ios-version.js && API_BASE_URL=https://portal.brisbanemaker.space quasar build -m capacitor -T ios --ide",
     "build:android": "quasar build -m capacitor -T android --ide",
     "build:electron": "quasar build -m electron",
     "lint": "eslint --cache --fix --ext .js,.vue,.ts ./",

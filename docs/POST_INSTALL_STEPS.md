@@ -136,22 +136,15 @@ An example with 3 cards is below:
 ```json
 [
   {
-    "title": "HSBNE Wiki",
-    "description": "Our wiki is like the rule book for HSBNE. It contains all the information about our tools, processes and other helpful tips.",
+    "title": "Brisbane Makerspace Wiki",
+    "description": "Our wiki is like the rule book for BMS. It contains all the information about our tools, processes and other helpful tips.",
     "icon": "class",
-    "url": "https://wiki.hsbne.org",
+    "url": "https://bms.wiki",
     "btn_text": "Read Wiki"
   },
   {
-    "title": "Trello",
-    "description": "We use Trello for task management. If you want to help out around the space check out Trello for stuff to fix and improve.",
-    "icon": "view_list",
-    "url": "https://trello.com/b/xxxxxxx/inbox",
-    "btn_text": "Visit Trello"
-  },
-  {
     "title": "Report Issue",
-    "description": "Found something broken at HSBNE that you don't have the time or skills to fix? You can submit an issue report.",
+    "description": "Found something broken? You can submit an issue report.",
     "icon": "bug_report",
     "url": "/issue/report/",
     "btn_text": "Report Issue"

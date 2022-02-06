@@ -5,8 +5,6 @@
         {{ $t("loginCard.loginToContinue") }}
       </h6>
 
-      <form action="https://portal.hsbne.org"></form>
-
       <q-card-section>
         <q-form class="q-gutter-md" @submit="onSubmit" @reset="onReset">
           <q-input
