@@ -282,15 +282,15 @@ CONSTANCE_CONFIG = {
     ),
     # Logo and favicon
     "SITE_LOGO": (
-        "https://hsbne-public-assets.s3-ap-southeast-2.amazonaws.com/main-logo.png",
+        "https://brisbanemaker.space/wp-content/uploads/2021/10/BMS-Logo-ONLY.png",
         "Site logo (rectangular)",
     ),
     "SITE_FAVICON": (
-        "https://hsbne-public-assets.s3-ap-southeast-2.amazonaws.com/logo-favicon.png",
+        "https://brisbanemaker.space/wp-content/uploads/2021/10/favicon.png",
         "Site favicon (square)",
     ),
     "STATS_CARD_IMAGE": (
-        "https://hsbne.org/assets/img/carousel/00.jpg",
+        "https://brisbanemaker.space/wp-content/uploads/2021/09/cool-students-studying-with-books-in-classroom-Y2DA4MC.jpg.webp",
         "Image to use for the site statistics card.",
     ),
     "MENU_BACKGROUND": (
