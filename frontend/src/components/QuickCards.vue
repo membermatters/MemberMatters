@@ -35,7 +35,7 @@
       </div>
     </template>
 
-    <div v-if="enablePortalMembersOnSite" class="q-pa-md col-12 col-sm-4">
+    <div v-if="enableMembersOnSite" class="q-pa-md col-12 col-sm-4">
       <members-onsite-card />
     </div>
 
@@ -116,8 +116,10 @@ export default {
     enableSiteSignIn() {
       return this.features.enableSiteSignIn;
     },
-    enablePortalMembersOnSite() {
-      return this.features.enablePortalMembersOnSite;
+    enableMembersOnSite() {
+      return (
+        this.features.enableMembersOnSite && this.features.enableSiteSignIn
+      );
     },
     icons() {
       return icons;

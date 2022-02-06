@@ -49,6 +49,8 @@ class GetConfig(APIView):
             },
             "enableWebcams": config.ENABLE_WEBCAMS,
             "siteBanner": config.SITE_BANNER,
+            "enableSiteSignIn": config.ENABLE_PORTAL_SITE_SIGN_IN,
+            "enableMembersOnSite": config.ENABLE_PORTAL_MEMBERS_ON_SITE,
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}

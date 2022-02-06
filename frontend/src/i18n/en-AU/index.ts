@@ -53,8 +53,8 @@ export default {
       "There was a problem signing you out. Please contact the executive committee if this problem persists.",
     signinError:
       "There was a problem signing you in. Please contact the executive committee if this problem persists.",
-    signIn: "Site Sign In",
-    signOut: "Site Sign Out",
+    signIn: "On-site Check In",
+    signOut: "On-site Check Out",
   },
   error: {
     error: "Error",
