@@ -10,23 +10,24 @@
           {{ $t("form.allFieldsRequired") }}
         </p>
 
-        <q-form class="q-gutter-md" @submit="onSubmit" @reset="onReset">
-          <q-input
-            v-model="form.email"
-            autofocus
-            filled
-            type="email"
-            :label="$t('form.email')"
-            lazy-rules
-            :rules="[
-              (val) => validateEmail(val) || $t('validation.invalidEmail'),
-            ]"
-          />
+        <q-form @submit="onSubmit" @reset="onReset">
+          <div class="row q-pb-sm q-col-gutter-sm">
+            <q-input
+              v-model="form.email"
+              class="col-12"
+              autofocus
+              filled
+              type="email"
+              :label="$t('form.email')"
+              lazy-rules
+              :rules="[
+                (val) => validateEmail(val) || $t('validation.invalidEmail'),
+              ]"
+            />
 
-          <div class="row items-start no-wrap">
             <q-input
               v-model="form.firstName"
-              class="q-pr-md"
+              class="col-12 col-sm-6"
               filled
               :label="$t('form.firstName')"
               lazy-rules
@@ -37,6 +38,7 @@
             />
             <q-input
               v-model="form.lastName"
+              class="col-12 col-sm-6"
               filled
               :label="$t('form.lastName')"
               lazy-rules
@@ -45,12 +47,10 @@
                   validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
               ]"
             />
-          </div>
 
-          <div class="row items-start no-wrap">
             <q-input
               v-model="form.screenName"
-              class="q-pr-md"
+              class="col-12 col-sm-6"
               filled
               :label="$t('form.screenName')"
               lazy-rules
@@ -61,6 +61,7 @@
             />
             <q-input
               v-model="form.mobile"
+              class="col-12 col-sm-6"
               filled
               type="tel"
               :label="$t('form.mobile')"
@@ -70,27 +71,28 @@
                   validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
               ]"
             />
-          </div>
 
-          <q-input
-            v-model="form.password"
-            :label="$t('form.password')"
-            filled
-            :type="isPwd ? 'password' : 'text'"
-            lazy-rules
-            :rules="[
-              (val) =>
-                validateNotEmpty(val) || $t('validation.invalidPassword'),
-            ]"
-          >
-            <template v-slot:append>
-              <q-icon
-                :name="isPwd ? icons.visibilityOff : icons.visibility"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
-              />
-            </template>
-          </q-input>
+            <q-input
+              class="col-12"
+              v-model="form.password"
+              :label="$t('form.password')"
+              filled
+              :type="isPwd ? 'password' : 'text'"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  validateNotEmpty(val) || $t('validation.invalidPassword'),
+              ]"
+            >
+              <template v-slot:append>
+                <q-icon
+                  :name="isPwd ? icons.visibilityOff : icons.visibility"
+                  class="cursor-pointer"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
+            </q-input>
+          </div>
 
           <q-banner v-if="error" class="bg-negative text-white">
             {{ $t("error.requestFailed") }}
@@ -212,6 +214,7 @@ export default {
 
 <style scoped>
 .register-card {
-  width: 420px;
+  width: 100%;
+  max-width: 500px;
 }
 </style>
