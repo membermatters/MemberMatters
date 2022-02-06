@@ -10,7 +10,7 @@
     "pre-commit": "lint-staged"
   },
   "lint-staged": {
-    "*.{js,ts,vue,json}": [
+    "*.{js,ts,vue}": [
       "echo Linting Frontend",
       "npm run lint:precommit --prefix frontend -- "
     ],

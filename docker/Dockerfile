@@ -1,6 +1,6 @@
 # Specify our base image
 FROM alpine:3.14
-LABEL maintainer="Jaimyn Mayer (github@jaimyn.com.au)"
+LABEL maintainer="Jaimyn Mayer (github@jaimyn.dev)"
 LABEL description="Base Dockerfile for the MemberMatters software."
 
 VOLUME /usr/src/data/
@@ -13,7 +13,7 @@ WORKDIR /usr/src/app/
 
 # Install nginx and other build dependencies
 RUN apk update \
-    && apk add make gcc g++ musl-dev libffi-dev openssl-dev zlib-dev jpeg-dev bash libpng-dev openrc cargo nginx vips-dev python2 python3 python3-dev py3-pip mariadb-dev nodejs npm  \
+    && apk add --no-cache make gcc g++ musl-dev libffi-dev openssl-dev zlib-dev jpeg-dev bash libpng-dev openrc cargo nginx vips-dev git python2 python3 python3-dev py3-pip mariadb-dev nodejs npm  \
     # Create some base folders for everything
     && mkdir -p /usr/src/app/frontend && mkdir /usr/src/logs && mkdir /usr/src/data \
 
@@ -35,7 +35,7 @@ RUN apk update \
     && rm -rf .npmrc node_modules/ \
 
     # Remove build deps we don't need anymore
-    && apk del --no-cache --purge make gcc g++ musl-dev libffi-dev openssl-dev zlib-dev jpeg-dev bash libpng-dev cargo vips-dev python2 python3-dev npm \
+    && apk del --no-cache --purge make gcc g++ musl-dev libffi-dev openssl-dev zlib-dev jpeg-dev bash libpng-dev cargo vips-dev git python2 python3-dev npm \
     && rm -rf /var/cache/apk/* \
 
     # Expose the port and run the app
