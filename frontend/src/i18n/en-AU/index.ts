@@ -95,8 +95,7 @@ export default {
     title: "About MemberMatters",
     description:
       "This is an open source, full featured membership portal. It is designed for " +
-      "HSBNE (Hackerspace Brisbane). It was created by Jaimyn Mayer, with a little help from some " +
-      "HSBNE members.",
+      "managing makerspaces. It's primary author is Jaimyn Mayer.",
     linkText: "on GitHub",
   },
   button: {

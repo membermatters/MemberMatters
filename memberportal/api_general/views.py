@@ -645,20 +645,22 @@ class Register(APIView):
             )
 
         try:
-            import mailchimp_marketing as MailchimpMarketing
+            import mailchimp_marketing
             from mailchimp_marketing.api_client import ApiClientError
 
-            client = MailchimpMarketing.Client()
+            client = mailchimp_marketing.Client()
             client.set_config(
                 {"api_key": config.MAILCHIMP_API_KEY, "server": config.MAILCHIMP_SERVER}
             )
 
             list_id = config.MAILCHIMP_LIST_ID
             merge_fields = {
-                "*|FNAME|*": new_user.profile.first_name,
-                "*|LNAME|*": new_user.profile.last_name,
-                "*|PHONE|*": new_user.profile.phone,
+                "FNAME": new_user.profile.first_name,
+                "LNAME": new_user.profile.last_name,
+                "PHONE": new_user.profile.phone,
             }
+            print("merge fields")
+            print(merge_fields)
 
             payload = {
                 "email_address": new_user.email,
@@ -671,12 +673,12 @@ class Register(APIView):
                 ],
             }
             response = client.lists.add_list_member(list_id, payload)
-
             print(response)
 
         except Exception as e:
             # gracefully catch and move on
             sentry_sdk.capture_exception(e)
+            print(e)
 
         return Response()
 
