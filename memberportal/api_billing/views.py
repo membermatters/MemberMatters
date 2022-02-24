@@ -154,10 +154,10 @@ class MemberBucksAddCard(StripeAPIView):
                 "can remove this card at any time via the "
                 f"{config.SITE_NAME}.",
             )
-        except python_http_client.exceptions.UnauthorizedError as e:
+        except Exception as e:
             capture_exception(e)
             return Response(
-                {"message": "error.sendgridNotConfigured"},
+                {"message": "error.postmarkNotConfigured"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 

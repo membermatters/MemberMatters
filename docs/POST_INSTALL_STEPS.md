@@ -2,7 +2,7 @@
 Once you have completed the [getting started](/docs/GETTING_STARTED.md) instructions, you should complete the following steps to setup and customise your instance of MemberMatters.
 
 ## Important Notice
-Currently, a valid sendgrid API key is required for MemberMatters to function correctly. Emails are sent on various tasks like sign ups, MemberBucks actions etc. You will receive errors if you try to use these functions without a correctly configured Sendgrid API key. They have a free tier which should be more than enough for testing, however we recommend upgrading to a paid tier before deployment.
+Currently, a valid Postmark API key is required for MemberMatters to function correctly. Emails are sent on various tasks like sign ups, MemberBucks actions etc. You will receive errors if you try to use these functions without a correctly configured Postmark API key. They have a free trial (100 emails/mth) which should be more than enough for testing, however we recommend upgrading to a paid tier before use in production.
 
 ## Set up a reverse proxy
 MemberMatters is designed to run behind some form of reverse proxy, or at the minimum, an SSL terminating CDN like Cloudflare (not recommended). You *should not ever* run MemberMatters in production without some form of HTTPS. The recommended way is with an nginx reverse proxy as explained below. Unfortunately, reverse proxy configurations are highly dependant on your specific environment, so only general guidance can be given. Please consult your favourite search engine if you have any trouble and only open a GitHub issue if you think you've found a bug or way to improve this documentation.
@@ -43,7 +43,7 @@ On this page you'll see a variety of settings. You should customise these settin
 
 A summary of the settings is available below. Most settings have a more detailed description and an example of the format required on the settings page itself.
 
-> NOTE: You *must* configure the SENDGRID_API_KEY setting or else you will have problems processing new signups.
+> NOTE: You *must* configure the POSTMARK_API_KEY setting or else you will have problems processing new signups.
 
 #### General
   * "SITE_NAME" - Name of the website.
@@ -63,13 +63,13 @@ A summary of the settings is available below. Most settings have a more detailed
 #### Canvas Integration
   * "CANVAS_API_TOKEN" - the API token for the Canvas LMS integration.
 
-#### Sendgrid Integration
-  * "SENDGRID_API_KEY" - the API token for the Sendgrid integration. NOTE: required to process signups and emails.
+#### Postmark Integration
+* "POSTMARK_API_KEY" - the API token for the Postmark integration. NOTE: required to process signups and emails.
 
 #### Contact Information
   * "EMAIL_SYSADMIN" - email address used for sysadmin related notifications.
   * "EMAIL_ADMIN" - email address used for general notifcations.
-  * "EMAIL_DEFAULT_FROM" - default "from" address that emails from MM will be sent as. NOTE: must be authenticated / approved in Sendgrid to use.
+  * "EMAIL_DEFAULT_FROM" - default "from" address that emails from MM will be sent as. NOTE: must be authenticated / approved in Postmark to use.
   * "SITE_MAIL_ADDRESS" - the physical address of the organisation for inclusion in the email footer to comply with anti spam requirements.
 
 #### Discourse SSO Protocol
@@ -136,22 +136,15 @@ An example with 3 cards is below:
 ```json
 [
   {
-    "title": "HSBNE Wiki",
-    "description": "Our wiki is like the rule book for HSBNE. It contains all the information about our tools, processes and other helpful tips.",
+    "title": "Brisbane Makerspace Wiki",
+    "description": "Our wiki is like the rule book for BMS. It contains all the information about our tools, processes and other helpful tips.",
     "icon": "class",
-    "url": "https://wiki.hsbne.org",
+    "url": "https://bms.wiki",
     "btn_text": "Read Wiki"
   },
   {
-    "title": "Trello",
-    "description": "We use Trello for task management. If you want to help out around the space check out Trello for stuff to fix and improve.",
-    "icon": "view_list",
-    "url": "https://trello.com/b/xxxxxxx/inbox",
-    "btn_text": "Visit Trello"
-  },
-  {
     "title": "Report Issue",
-    "description": "Found something broken at HSBNE that you don't have the time or skills to fix? You can submit an issue report.",
+    "description": "Found something broken? You can submit an issue report.",
     "icon": "bug_report",
     "url": "/issue/report/",
     "btn_text": "Report Issue"

@@ -36,8 +36,7 @@
         <div class="row items-stretch">
           <tier-card
             :class="{ featured: tier.featured }"
-            class="col-xs-12 col-sm-6 col-md-4"
-            style="min-width: 180px"
+            class="col-xs-12 col-sm-6 col-md"
             v-for="tier in tiers"
             :key="tier.id"
             :tier="tier"
@@ -58,7 +57,7 @@
 
         <div class="row items-stretch">
           <plan-card
-            class="col-xs-12 col-sm-6 col-md-4"
+            class="col-xs-12 col-sm-6 col-md"
             v-for="plan in selectedTier.plans"
             :key="plan.id"
             :plan="plan"

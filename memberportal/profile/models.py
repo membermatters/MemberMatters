@@ -1,13 +1,9 @@
 from django.db import models
-from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta, datetime
 import pytz
 import os
-import sendgrid
-from sendgrid.helpers.mail import *
 from django.utils.timezone import make_aware
-import uuid
 from django.template.loader import render_to_string
 from django.contrib.auth.models import (
     BaseUserManager,
@@ -23,6 +19,7 @@ from api_general.models import SiteSession
 from api_admin_tools.models import MemberTier, PaymentPlan
 import json
 import uuid
+from postmarker.core import PostmarkClient
 
 utc = pytz.UTC
 
@@ -139,22 +136,20 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.admin
 
     def __send_email(self, subject, body):
-        sg = sendgrid.SendGridAPIClient(config.SENDGRID_API_KEY)
-        from_email = From(config.EMAIL_DEFAULT_FROM)
-        to_email = To(self.email)
-        subject = subject
-        content = Content("text/html", body)
-        mail = Mail(from_email, to_email, subject, content)
-        response = sg.send(mail)
-
-        if response.status_code == 202:
-            log_user_event(
-                self,
-                "Sent email with subject: " + subject,
-                "email",
-                "Email content: " + body,
-            )
-            return True
+        postmark = PostmarkClient(server_token=config.POSTMARK_API_KEY)
+        postmark.emails.send(
+            From=config.EMAIL_DEFAULT_FROM,
+            To=self.email,
+            Subject=subject,
+            HtmlBody=body,
+        )
+        log_user_event(
+            self,
+            "Sent email with subject: " + subject,
+            "email",
+            "Email content: " + body,
+        )
+        return True
 
     def email_notification(self, subject, title, preheader, message):
         email_vars = {"preheader": preheader, "title": title, "message": message}
@@ -468,22 +463,21 @@ class Profile(models.Model):
         )
         subject = "A new member signed up! ({})".format(self.get_full_name())
 
-        sg = sendgrid.SendGridAPIClient(config.SENDGRID_API_KEY)
+        postmark = PostmarkClient(server_token=config.POSTMARK_API_KEY)
+        postmark.emails.send(
+            From=config.EMAIL_DEFAULT_FROM,
+            To=to_email,
+            Subject=subject,
+            HtmlBody=email_string,
+        )
 
-        from_email = From(config.EMAIL_DEFAULT_FROM)
-        to_email = To(to_email)
-        content = Content("text/html", email_string)
-        mail = Mail(from_email, to_email, subject, content)
-        response = sg.send(mail)
-
-        if response.status_code == 202:
-            log_user_event(
-                self.user,
-                "Sent email with subject: " + subject,
-                "email",
-                "Email content: " + email_string,
-            )
-            return True
+        log_user_event(
+            self.user,
+            "Sent email with subject: " + subject,
+            "email",
+            "Email content: " + email_string,
+        )
+        return True
 
     def get_logs(self):
         return UserEventLog.objects.filter(user=self.user)

@@ -14,7 +14,10 @@ MemberMatters is an open source membership and access management solution.
 * And many more! Look through the screenshots below or setup your own instance to play around.
 
 ### Deprecation Warning
-The following features have now been deprecated and will be removed in a future release:
+The following features have been removed:
+* Sendgrid integration - please use our Postmark integration instead.
+
+The following features have now been deprecated and will be removed in a **future** release:
 * Xero integration
 
 ## Getting Started
@@ -48,7 +51,7 @@ this, the webpack dev server has been setup to proxy all requests to `/api` to `
 you'll need to make sure the django dev server is running there.
 
 ## Door, Interlock & Vending Machine Resources
-This software was developed out of HSBNE Inc (Australia's largest makerspace!). As part of our access control system (including doors and machine interlocks) we have developed a set of standard hardware components and firmware that is compatible with MemberMatters. Below is a list of useful resources for building your own hardware using off the shelf components. Once the hardware is built and firmware is flashed, you can add them to MemberMatters for a complete access system and/or billing system for physical purchases.
+This software was initially developed by Jaimyn Mayer for HSBNE, and later adopted for use at Brisbane Makerspace and others. As part of our access control system (including doors and machine interlocks) we have developed a set of standard hardware components and firmware that is compatible with MemberMatters. Below is a list of useful resources for building your own hardware using off the shelf components. Once the hardware is built and firmware is flashed, you can add them to MemberMatters for a complete access system and/or billing system for physical purchases.
 
 * [HSBNE Inc Access Control Wiki Page](https://wiki.hsbne.org/infrastructure/services/accesscontrol) - Information about our current and past access control hardware.
 * [HSBNE Access Control Firmware](https://github.com/HSBNE/AccessControl) - Arduino based software that runs on ESPxx devices that run each of our interlock/door controllers.
@@ -78,5 +81,5 @@ performance algorithm. Your contributions *will* be rejected if you do not follo
 Feel free to add your organisation to this list (via a pull request) if you're actively using or trialling MemberMatters and are a not for profit or similar. Make sure to include a link to your website and the date you added it.
 
 * [Brisbane Makerspace](https://brisbanemaker.space) (October 2021) - A community workshop for makers in Brisbane, with a focus on high quality tools.
-* [HSBNE Inc](https://hsbne.org) (January 2020) - Australia's largest makerspace based in Brisbane, QLD.
-* [SparkCC](https://www.sparkcc.org) (September 2021) - A community of makers on the NSW Central Coast.
+* [HSBNE Inc](https://hsbne.org) (January 2020) - A hackerspace based in Brisbane, QLD.
+* [SparkCC](https://www.sparkcc.org) (September 2021) - A community of makers on the NSW Central Coast

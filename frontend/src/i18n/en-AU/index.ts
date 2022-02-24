@@ -53,8 +53,8 @@ export default {
       "There was a problem signing you out. Please contact the executive committee if this problem persists.",
     signinError:
       "There was a problem signing you in. Please contact the executive committee if this problem persists.",
-    signIn: "Site Sign In",
-    signOut: "Site Sign Out",
+    signIn: "On-site Check In",
+    signOut: "On-site Check Out",
   },
   error: {
     error: "Error",
@@ -69,8 +69,8 @@ export default {
     noData: "No records found",
     stripeNotConfigured:
       "There was an error completing that action as Stripe is not configured.",
-    sendgridNotConfigured:
-      "There was an error completing that action as Sendgrid is not configured.",
+    postmarkNotConfigured:
+      "There was an error completing that action as Postmark is not configured correctly.",
     stripeNotConfiguredFeature:
       "Sorry, but this organisation has not configured Stripe so you are unable to use this feature.",
     400: " Sorry, there was an error with your request. (Error 400)",
@@ -95,8 +95,7 @@ export default {
     title: "About MemberMatters",
     description:
       "This is an open source, full featured membership portal. It is designed for " +
-      "HSBNE (Hackerspace Brisbane). It was created by Jaimyn Mayer, with a little help from some " +
-      "HSBNE members.",
+      "managing makerspaces. It's primary author is Jaimyn Mayer.",
     linkText: "on GitHub",
   },
   button: {

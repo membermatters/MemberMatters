@@ -3,9 +3,6 @@
 # Start nginx
 nginx
 
-# Navigate to the app and start gunicorn
-cd memberportal
-
 # We should migrate on startup in case there's been any db changes
 python3 manage.py migrate
 

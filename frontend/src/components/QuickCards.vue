@@ -1,46 +1,41 @@
 <template>
   <div class="row items-stretch">
-    <div
-      v-if="siteSignedIn"
-      class="q-pa-md col-12 col-sm-4">
-      <a @click="signInCard.click" :disabled="signinDisable">
-        <q-card class="q-pa-md column justify-center items-center">
-          <q-banner
-            inline-actions
-            rounded
-            class="bg-accent text-white q-mb-md"
-          >
-            <template v-slot:avatar>
-              <q-icon
-                :name="icons.warning"
-              />
-            </template>
-            {{ $t('dashboard.signedIn') }}
-          </q-banner>
+    <template v-if="enableSiteSignIn">
+      <div v-if="siteSignedIn" class="q-pa-md col-12 col-sm-4">
+        <a @click="signInCard.click" :disabled="signinDisable">
+          <q-card class="q-pa-md column justify-center items-center">
+            <q-banner
+              inline-actions
+              rounded
+              class="bg-accent text-white q-mb-md"
+            >
+              <template v-slot:avatar>
+                <q-icon :name="icons.warning" />
+              </template>
+              {{ $t("dashboard.signedIn") }}
+            </q-banner>
 
-          <p class="text-h4 q-pa-md">
-            {{ signInCard.title }}
-          </p>
-          <q-icon style="font-size: 100px" :name="signInCard.icon" />
-        </q-card>
-      </a>
-    </div>
+            <p class="text-h4 q-pa-md">
+              {{ signInCard.title }}
+            </p>
+            <q-icon style="font-size: 100px" :name="signInCard.icon" />
+          </q-card>
+        </a>
+      </div>
 
+      <div v-else class="q-pa-md col-12 col-sm-4">
+        <a @click="signInCard.click" :disabled="signinDisable">
+          <q-card class="q-pa-xl column justify-center items-center">
+            <p class="text-h4">
+              {{ signInCard.title }}
+            </p>
+            <q-icon style="font-size: 100px" :name="signInCard.icon" />
+          </q-card>
+        </a>
+      </div>
+    </template>
 
-    <div
-      v-else
-      class="q-pa-md col-12 col-sm-4">
-      <a @click="signInCard.click" :disabled="signinDisable">
-        <q-card class="q-pa-xl column justify-center items-center">
-          <p class="text-h4">
-            {{ signInCard.title }}
-          </p>
-          <q-icon style="font-size: 100px" :name="signInCard.icon" />
-        </q-card>
-      </a>
-    </div>
-
-    <div class="q-pa-md col-12 col-sm-4">
+    <div v-if="enableMembersOnSite" class="q-pa-md col-12 col-sm-4">
       <members-onsite-card />
     </div>
 
@@ -85,11 +80,10 @@ export default {
         .catch((e) => {
           console.log(e);
           this.setSiteSignedIn(false);
-          let diag = this.$q
-            .dialog({
-              title: "Alert",
-              message: this.$t("dashboard.signinError"),
-            })
+          let diag = this.$q.dialog({
+            title: "Alert",
+            message: this.$t("dashboard.signinError"),
+          });
           this.signinDisable = false;
 
           try {
@@ -103,7 +97,7 @@ export default {
         .then(() => {
           this.setSiteSignedIn(false);
           if (this.$q.platform.is.electron) {
-            this.$router.push({name: "logout"});
+            this.$router.push({ name: "logout" });
           }
         })
         .catch(() => {
@@ -118,6 +112,15 @@ export default {
   },
   computed: {
     ...mapGetters("profile", ["siteSignedIn"]),
+    ...mapGetters("config", ["features"]),
+    enableSiteSignIn() {
+      return this.features.enableSiteSignIn;
+    },
+    enableMembersOnSite() {
+      return (
+        this.features.enableMembersOnSite && this.features.enableSiteSignIn
+      );
+    },
     icons() {
       return icons;
     },

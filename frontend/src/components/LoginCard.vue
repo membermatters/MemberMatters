@@ -1,11 +1,9 @@
 <template>
-  <div class="q-pa-md">
-    <q-card v-if="!resetToken" class="login-card">
+  <div class="q-pa-md login-card">
+    <q-card v-if="!resetToken">
       <h6 class="q-ma-none q-pa-md">
         {{ $t("loginCard.loginToContinue") }}
       </h6>
-
-      <form action="https://portal.hsbne.org"></form>
 
       <q-card-section>
         <q-form class="q-gutter-md" @submit="onSubmit" @reset="onReset">
@@ -268,8 +266,7 @@ export default {
     // if we're logged in then open the app straight away, then
     if (this.loggedIn) {
       this.redirectLoggedIn(false);
-    }
-    else {
+    } else {
       await SplashScreen.hide();
       // if we're not in electron, auto focus the first field
       if (!this.$q.platform.is.electron) this.$refs.focusInput.focus();
@@ -518,6 +515,7 @@ export default {
 
 <style scoped>
 .login-card {
-  width: 320px;
+  max-width: 400px;
+  width: 100%;
 }
 </style>
