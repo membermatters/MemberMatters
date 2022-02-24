@@ -16,7 +16,7 @@
     ],
     "*.py": [
       "echo Linting Backend",
-      "black --check -- "
+      "black -- "
     ]
   }
 }

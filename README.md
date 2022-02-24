@@ -14,7 +14,10 @@ MemberMatters is an open source membership and access management solution.
 * And many more! Look through the screenshots below or setup your own instance to play around.
 
 ### Deprecation Warning
-The following features have now been deprecated and will be removed in a future release:
+The following features have been removed:
+* Sendgrid integration - please use our Postmark integration instead.
+
+The following features have now been deprecated and will be removed in a **future** release:
 * Xero integration
 
 ## Getting Started

@@ -2,11 +2,10 @@ import socket
 import time
 from zeroconf import IPVersion, ServiceInfo, Zeroconf, InterfaceChoice
 
-zeroconf = Zeroconf(ip_version=IPVersion.All, interfaces=InterfaceChoice.All)
-
 
 def run():
     try:
+        zeroconf = Zeroconf(ip_version=IPVersion.All, interfaces=InterfaceChoice.All)
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("1.1.1.1", 80))
         ip = s.getsockname()[0]

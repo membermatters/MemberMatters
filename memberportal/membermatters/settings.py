@@ -17,11 +17,11 @@ from datetime import timedelta
 from multiprocessing import Process
 from . import mdns
 
-try:
-    p = Process(target=mdns.run)
-    p.start()
-except:
-    pass
+# try:
+#     p = Process(target=mdns.run)
+#     p.start()
+# except:
+#     pass
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get(
@@ -488,9 +488,9 @@ CONSTANCE_CONFIG = {
         "https://8ba460796a9a40d4ac2584e0e8dca59a@sentry.serv02.binarydigital.com.au/4",
         "Enter a Sentry DSN to enable sentry logging of backend errors.",
     ),
-    "SENDGRID_API_KEY": (
+    "POSTMARK_API_KEY": (
         "PLEASE_CHANGE_ME",
-        "The API key used to send email with Sendgrid.",
+        "The API key used to send email with Postmark.",
     ),
     "INDUCTION_ENROL_LINK": (
         "",
@@ -589,10 +589,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             "Canvas Integration",
             ("CANVAS_API_TOKEN",),
         ),
-        (
-            "Sendgrid Integration",
-            ("SENDGRID_API_KEY",),
-        ),
+        ("Postmark Integration", ("POSTMARK_API_KEY",)),
         (
             "Stripe Integration",
             (
