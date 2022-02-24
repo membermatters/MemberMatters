@@ -9,10 +9,12 @@ VOLUME /usr/src/logs/
 RUN mkdir -p /usr/src/app/frontend && mkdir /usr/src/logs && mkdir /usr/src/data
 ADD memberportal/requirements.txt /usr/src/app/memberportal/requirements.txt
 
-RUN apt-get update && apt-get install -y nginx curl
+RUN apt-get update && apt-get install -y nginx curl build-essential gcc make
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
 # Install python deps
 WORKDIR /usr/src/app/memberportal/
+RUN python -m pip install --upgrade pip
 RUN pip3 install --no-cache-dir pillow
 RUN pip3 install --no-cache-dir -r requirements.txt
 
