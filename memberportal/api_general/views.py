@@ -645,35 +645,39 @@ class Register(APIView):
             )
 
         try:
-            import mailchimp_marketing
-            from mailchimp_marketing.api_client import ApiClientError
+            if config.MAILCHIMP_API_KEY:
+                import mailchimp_marketing
+                from mailchimp_marketing.api_client import ApiClientError
 
-            client = mailchimp_marketing.Client()
-            client.set_config(
-                {"api_key": config.MAILCHIMP_API_KEY, "server": config.MAILCHIMP_SERVER}
-            )
+                client = mailchimp_marketing.Client()
+                client.set_config(
+                    {
+                        "api_key": config.MAILCHIMP_API_KEY,
+                        "server": config.MAILCHIMP_SERVER,
+                    }
+                )
 
-            list_id = config.MAILCHIMP_LIST_ID
-            merge_fields = {
-                "FNAME": new_user.profile.first_name,
-                "LNAME": new_user.profile.last_name,
-                "PHONE": new_user.profile.phone,
-            }
-            print("merge fields")
-            print(merge_fields)
+                list_id = config.MAILCHIMP_LIST_ID
+                merge_fields = {
+                    "FNAME": new_user.profile.first_name,
+                    "LNAME": new_user.profile.last_name,
+                    "PHONE": new_user.profile.phone,
+                }
+                print("merge fields")
+                print(merge_fields)
 
-            payload = {
-                "email_address": new_user.email,
-                "email_type": "html",
-                "status": "subscribed",
-                "merge_fields": merge_fields,
-                "vip": False,
-                "tags": [
-                    config.MAILCHIMP_TAG,
-                ],
-            }
-            response = client.lists.add_list_member(list_id, payload)
-            print(response)
+                payload = {
+                    "email_address": new_user.email,
+                    "email_type": "html",
+                    "status": "subscribed",
+                    "merge_fields": merge_fields,
+                    "vip": False,
+                    "tags": [
+                        config.MAILCHIMP_TAG,
+                    ],
+                }
+                response = client.lists.add_list_member(list_id, payload)
+                print(response)
 
         except Exception as e:
             # gracefully catch and move on
