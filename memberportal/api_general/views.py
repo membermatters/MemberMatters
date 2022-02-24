@@ -683,6 +683,7 @@ class Register(APIView):
             # gracefully catch and move on
             sentry_sdk.capture_exception(e)
             print(e)
+            return Response()
 
         return Response()
 
