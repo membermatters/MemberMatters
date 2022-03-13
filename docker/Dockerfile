@@ -9,8 +9,7 @@ VOLUME /usr/src/logs/
 RUN mkdir -p /usr/src/app/frontend && mkdir /usr/src/logs && mkdir /usr/src/data
 ADD memberportal/requirements.txt /usr/src/app/memberportal/requirements.txt
 
-RUN apt-get update && apt-get install -y nginx curl build-essential gcc make
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+RUN apt-get update -y && apt-get install -y nginx curl daphne
 
 # Install python deps
 WORKDIR /usr/src/app/memberportal/
@@ -33,8 +32,6 @@ ADD frontend/package* /usr/src/app/frontend/
 RUN npm ci
 
 ADD frontend /usr/src/app/frontend
-ADD memberportal /usr/src/app/memberportal
-ADD docker /usr/src/app/docker
 ADD package.json /usr/src/app/package.json
 
 # Build our frontend
@@ -45,11 +42,13 @@ RUN npm run build
 RUN rm -rf .npmrc
 
 # collect static files from Django
+ADD memberportal /usr/src/app/memberportal
 WORKDIR /usr/src/app/memberportal/
 RUN python3 manage.py collectstatic --noinput
 
 # Copy over the nginx config and requirement files
 ADD docker/nginx.conf /etc/nginx/nginx.conf
+ADD docker /usr/src/app/docker
 
 # Expose the port and run the app
 EXPOSE 8000
