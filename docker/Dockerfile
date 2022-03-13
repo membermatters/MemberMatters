@@ -7,15 +7,8 @@ VOLUME /usr/src/data/
 VOLUME /usr/src/logs/
 
 RUN mkdir -p /usr/src/app/frontend && mkdir /usr/src/logs && mkdir /usr/src/data
-ADD memberportal/requirements.txt /usr/src/app/memberportal/requirements.txt
 
 RUN apt-get update -y && apt-get install -y nginx curl daphne
-
-# Install python deps
-WORKDIR /usr/src/app/memberportal/
-RUN python -m pip install --upgrade pip
-RUN pip3 install --no-cache-dir pillow
-RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Install Node
 ENV NODE_VERSION=14.15.0
@@ -40,6 +33,13 @@ RUN npm run build
 
 # Remove our .npmrc
 RUN rm -rf .npmrc
+
+# Install python deps
+WORKDIR /usr/src/app/memberportal/
+ADD memberportal/requirements.txt /usr/src/app/memberportal/requirements.txt
+RUN python -m pip install --upgrade pip
+RUN pip3 install --no-cache-dir pillow
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # collect static files from Django
 ADD memberportal /usr/src/app/memberportal

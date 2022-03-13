@@ -5,7 +5,7 @@ import logging
 import datetime
 from access.models import Doors
 
-logger = logging.getLogger("app")
+logger = logging.getLogger()
 
 
 class AccessDoorConsumer(JsonWebsocketConsumer):
@@ -40,7 +40,7 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
 
     def disconnect(self, close_code):
         logger.info("Door disconnected!")
-        logger.info("Door was connected for %s", self.connected_at - self.last_seen)
+        logger.info("Door was connected for %s", self.last_seen - self.connected_at)
 
     def receive_json(self, content=None, **kwargs):
         """

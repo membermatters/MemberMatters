@@ -20,3 +20,4 @@ git+https://github.com/mailchimp/mailchimp-marketing-python.git
 channels~=3.0.4
 zeroconf~=0.38.3
 postmarker~=1.0
+channels_redis~=3.4.0
