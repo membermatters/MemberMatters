@@ -1,4 +1,4 @@
-import python_http_client.exceptions
+from asgiref.sync import sync_to_async
 
 from profile.models import Profile
 from profile.xerohelpers import create_stripe_membership_invoice
@@ -18,9 +18,14 @@ from django.db.utils import OperationalError
 from sentry_sdk import capture_exception
 
 
+@sync_to_async
+def safe_constance_get(fld: str):
+    return getattr(config, fld)
+
+
 class StripeAPIView(APIView):
     try:
-        stripe.api_key = config.STRIPE_SECRET_KEY
+        stripe.api_key = safe_constance_get("STRIPE_SECRET_KEY")
     except OperationalError as error:
         capture_exception(error)
 

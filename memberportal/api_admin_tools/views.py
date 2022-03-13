@@ -1,3 +1,5 @@
+from asgiref.sync import sync_to_async
+
 from profile.models import User
 from access import models
 from .models import MemberTier, PaymentPlan
@@ -6,13 +8,13 @@ from constance import config
 from services.emails import send_single_email
 import json
 import stripe
-from django.db.utils import OperationalError
 from sentry_sdk import capture_message
 
-try:
-    stripe.api_key = config.STRIPE_SECRET_KEY
-except OperationalError as e:
-    pass
+
+@sync_to_async
+def safe_constance_get(fld: str):
+    return getattr(config, fld)
+
 
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -412,6 +414,7 @@ class MemberTiers(APIView):
         body = request.data
 
         try:
+            stripe.api_key = safe_constance_get("STRIPE_SECRET_KEY")
             product = stripe.Product.create(
                 name=body["name"], description=body["description"]
             )
@@ -519,6 +522,7 @@ class ManageMemberTierPlans(APIView):
 
         member_tier = MemberTier.objects.get(pk=body["memberTier"])
 
+        stripe.api_key = safe_constance_get("STRIPE_SECRET_KEY")
         stripe_plan = stripe.Price.create(
             unit_amount=round(body["cost"]),
             currency=str(body["currency"]).lower(),
