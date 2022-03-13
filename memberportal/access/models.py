@@ -19,7 +19,10 @@ class AccessControlledDevice(models.Model):
     ip_address = models.GenericIPAddressField(
         "IP Address of device", unique=True, null=True, blank=True
     )
-    last_seen = models.DateTimeField(null=True)
+    serial_number = models.CharField(
+        "Serial Number", max_length=50, unique=True, null=True, blank=True
+    )
+    last_seen = models.DateTimeField(null=True, blank=True)
     all_members = models.BooleanField("Members have access by default", default=False)
     locked_out = models.BooleanField("Maintenance lockout enabled", default=False)
     play_theme = models.BooleanField("Play theme on door swipe", default=False)
