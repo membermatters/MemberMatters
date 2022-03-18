@@ -107,13 +107,19 @@ TEMPLATES = [
 ASGI_APPLICATION = "membermatters.asgi.application"
 
 if ENVIRONMENT == "Production":
+    # CHANNEL_LAYERS = {
+    #     "default": {
+    #         # Via local Redis
+    #         "BACKEND": "channels_redis.core.RedisChannelLayer",
+    #         "CONFIG": {
+    #             "hosts": [("mm_redis", 6379)],
+    #         },
+    #     },
+    # }
     CHANNEL_LAYERS = {
         "default": {
-            # Via local Redis
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": [("mm_redis", 6379)],
-            },
+            # Via In-memory channel layer
+            "BACKEND": "channels.layers.InMemoryChannelLayer"
         },
     }
 
@@ -174,7 +180,7 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",
+            "level": "INFO",
             "class": "logging.StreamHandler",
             "stream": sys.stdout,
             "formatter": "console",

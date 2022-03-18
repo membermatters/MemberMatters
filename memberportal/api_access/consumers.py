@@ -1,5 +1,6 @@
 import json
 from channels.generic.websocket import JsonWebsocketConsumer
+from asgiref.sync import async_to_sync
 from constance import config
 import logging
 import datetime
@@ -26,6 +27,8 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
 
         self.door_id = self.scope["url_route"]["kwargs"]["door_id"]
         self.door_group_name = "door_" + self.door_id
+        async_to_sync(self.channel_layer.group_add)(self.door_group_name, self.channel_name)
+
         self.connected_at = datetime.datetime.now()
         self.last_seen = self.connected_at
         self.door = Doors.objects.get(serial_number=self.door_id)
@@ -41,6 +44,7 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
     def disconnect(self, close_code):
         logger.info("Door disconnected!")
         logger.info("Door was connected for %s", self.last_seen - self.connected_at)
+        async_to_sync(self.channel_layer.group_discard)(self.door_group_name, self.channel_name)
 
     def receive_json(self, content=None, **kwargs):
         """
@@ -72,7 +76,17 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
                 logger.debug("Received a ping packet from " + self.door_id)
                 self.ping_count += 1
                 self.send_json({"command": "pong"})
+
+            if content.get("command") == "ip_address":
+                logger.debug("Received an IP address packet from " + self.door_id)
+                self.door.ip_address = content.get("ip_address")
+                self.door.save()
+
         except Exception as e:
             logger.error("Error receiving message from door: %s", e)
             logger.error(e)
             self.send_json({"command": "error", "error": str(e)})
+
+    def door_bump(self, event):
+        # Handles the "door.bump" event when it's sent to us.
+        self.send_json({"command": "bump"})
