@@ -4,7 +4,7 @@ from django.contrib.auth import (
     login,
     logout,
 )
-from django.core.exceptions import ObjectDoesNotExist
+import logging
 from constance import config
 import json
 from django.utils.timezone import make_aware
@@ -21,6 +21,8 @@ import base64
 from urllib.parse import parse_qs, urlencode
 import hmac
 import hashlib
+
+logger = logging.getLogger("app")
 
 
 class GetConfig(APIView):
@@ -208,8 +210,8 @@ class Login(APIView):
                     status=status.HTTP_403_FORBIDDEN,
                 )
 
-        print("user was None")
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        logger.info("user was None")
+        return Response(status=status.HTTP_401_UNAUTHORIZED, data={})
 
 
 class LoginKiosk(APIView):

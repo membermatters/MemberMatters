@@ -1,3 +1,5 @@
+from asgiref.sync import sync_to_async
+
 from memberbucks.models import MemberBucks
 from rest_framework import status, permissions
 from rest_framework.response import Response
@@ -7,10 +9,10 @@ from constance import config
 from django.db.utils import OperationalError
 from profile.xerohelpers import create_stripe_membership_invoice
 
-try:
-    stripe.api_key = config.STRIPE_SECRET_KEY
-except OperationalError as e:
-    pass
+
+@sync_to_async
+def safe_constance_get(fld: str):
+    return getattr(config, fld)
 
 
 class MemberBucksTransactions(APIView):
@@ -65,6 +67,7 @@ class MemberBucksAddFunds(APIView):
             )
 
         try:
+            stripe.api_key = safe_constance_get("STRIPE_SECRET_KEY")
             payment_intent = stripe.PaymentIntent.create(
                 amount=payment_amount,
                 currency=config.MEMBERBUCKS_CURRENCY,
@@ -83,6 +86,7 @@ class MemberBucksAddFunds(APIView):
                 )
 
             payment_intent_id = err.payment_intent["id"]
+            stripe.api_key = safe_constance_get("STRIPE_SECRET_KEY")
             payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
             print(payment_intent)
 
@@ -101,6 +105,7 @@ class MemberBucksAddFunds(APIView):
 
                 for charge in payment_intent.charges:
                     # get the charge object so we can check how much the Stripe fee was
+                    stripe.api_key = safe_constance_get("STRIPE_SECRET_KEY")
                     charge = stripe.Charge.retrieve(
                         charge["id"], expand=["balance_transaction"]
                     )

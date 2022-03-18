@@ -10,24 +10,32 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from constance import config
 import json
+from asgiref.sync import sync_to_async
 
-try:
-    if (
-        config.SENTRY_DSN_BACKEND
-        and os.environ.get("PORTAL_ENV")
-        and os.environ.get("PORTAL_ENV") != "Development"
-    ):
-        version = None
-        with open("../package.json") as f:
-            d = json.load(f)
 
-        sentry_sdk.init(
-            release=d.get("version"),
-            dsn=config.SENTRY_DSN_BACKEND,
-            integrations=[DjangoIntegration()],
-        )
-except django.db.utils.OperationalError as e:
-    pass
+@sync_to_async
+def safe_constance_get(fld: str):
+    return getattr(config, fld)
+
+
+# try:
+#     SENTRY_DSN_BACKEND = safe_constance_get("SENTRY_DSN_BACKEND")
+#     if (
+#             SENTRY_DSN_BACKEND
+#             and os.environ.get("PORTAL_ENV")
+#             and os.environ.get("PORTAL_ENV") != "Development"
+#     ):
+#         version = None
+#         with open("../package.json") as f:
+#             d = json.load(f)
+#
+#         sentry_sdk.init(
+#             release=d.get("version"),
+#             dsn=SENTRY_DSN_BACKEND,
+#             integrations=[DjangoIntegration()],
+#         )
+# except django.db.utils.OperationalError as e:
+#     pass
 
 urlpatterns = [
     path("", include("access.urls")),

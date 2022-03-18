@@ -30,19 +30,26 @@
         :icon="icons.plans"
         :done="step > 1"
       >
-        <div class="text-h6 q-py-md">
-          {{ $tc("tiers.selectToContinue") }}
-        </div>
-        <div class="row items-stretch">
-          <tier-card
-            :class="{ featured: tier.featured }"
-            class="col-xs-12 col-sm-6 col-md"
-            v-for="tier in tiers"
-            :key="tier.id"
-            :tier="tier"
-            @selected="selectedTierEvent"
-          />
-        </div>
+        <template v-if="tiers.length === 0">
+          <div class="text-center text-h6">
+            {{ $tc("tiers.noTiers") }}
+          </div>
+        </template>
+        <template v-else>
+          <div class="text-h6 q-py-md">
+            {{ $tc("tiers.selectToContinue") }}
+          </div>
+          <div class="row items-stretch">
+            <tier-card
+              :class="{ featured: tier.featured }"
+              class="col-xs-12 col-sm-6 col-md"
+              v-for="tier in tiers"
+              :key="tier.id"
+              :tier="tier"
+              @selected="selectedTierEvent"
+            />
+          </div>
+        </template>
       </q-step>
 
       <q-step
@@ -51,28 +58,35 @@
         :icon="icons.dollar"
         :done="step > 2"
       >
-        <div class="text-h6 q-py-md">
-          {{ $tc("paymentPlans.selectToContinue") }}
-        </div>
+        <template v-if="selectedTier.plans && selectedTier.plans.length === 0">
+          <div class="text-center text-h6">
+            {{ $tc("paymentPlans.noPlans") }}
+          </div>
+        </template>
+        <template v-else>
+          <div class="text-h6 q-py-md">
+            {{ $tc("paymentPlans.selectToContinue") }}
+          </div>
 
-        <div class="row items-stretch">
-          <plan-card
-            class="col-xs-12 col-sm-6 col-md"
-            v-for="plan in selectedTier.plans"
-            :key="plan.id"
-            :plan="plan"
-            @selected="selectedPlanEvent"
-          />
-        </div>
+          <div class="row items-stretch">
+            <plan-card
+              class="col-xs-12 col-sm-6 col-md"
+              v-for="plan in selectedTier.plans"
+              :key="plan.id"
+              :plan="plan"
+              @selected="selectedPlanEvent"
+            />
+          </div>
 
-        <div class="row justify-start">
-          <q-btn
-            class="q-mt-md"
-            @click="backToTiers"
-            flat
-            :label="$tc('button.back')"
-          />
-        </div>
+          <div class="row justify-start">
+            <q-btn
+              class="q-mt-md"
+              @click="backToTiers"
+              flat
+              :label="$tc('button.back')"
+            />
+          </div>
+        </template>
       </q-step>
 
       <q-step

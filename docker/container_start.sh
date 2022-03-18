@@ -12,4 +12,5 @@ if [ ! -f /usr/src/data/setupcomplete ]; then
     touch /usr/src/data/setupcomplete
 fi
 
-exec gunicorn membermatters.wsgi:application --bind unix:/tmp/gunicorn.sock --access-logfile '/usr/src/logs/access.log' --error-logfile '/usr/src/logs/error.log' --workers 6
+#exec gunicorn membermatters.wsgi:application --bind unix:/tmp/gunicorn.sock --access-logfile '/usr/src/logs/access.log' --error-logfile '/usr/src/logs/error.log' --workers 6
+exec daphne -b 0.0.0.0 -p 8001 membermatters.asgi:application

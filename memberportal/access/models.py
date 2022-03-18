@@ -2,11 +2,13 @@ from django.db import models
 from datetime import timedelta
 from django.utils import timezone
 from membermatters.helpers import log_event
-from django.contrib.auth import get_user_model
 import pytz
 from django.conf import settings
 from django.contrib import auth
 import uuid
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 
 User = auth.get_user_model()
 utc = pytz.UTC
@@ -19,7 +21,10 @@ class AccessControlledDevice(models.Model):
     ip_address = models.GenericIPAddressField(
         "IP Address of device", unique=True, null=True, blank=True
     )
-    last_seen = models.DateTimeField(null=True)
+    serial_number = models.CharField(
+        "Serial Number", max_length=50, unique=True, null=True, blank=True
+    )
+    last_seen = models.DateTimeField(null=True, blank=True)
     all_members = models.BooleanField("Members have access by default", default=False)
     locked_out = models.BooleanField("Maintenance lockout enabled", default=False)
     play_theme = models.BooleanField("Play theme on door swipe", default=False)
@@ -36,7 +41,7 @@ class AccessControlledDevice(models.Model):
 
     def get_unavailable(self):
         if self.last_seen:
-            if timezone.now() - timedelta(minutes=5) > self.last_seen:
+            if timezone.now() - timedelta(minutes=3) > self.last_seen:
                 return True
 
         return False
@@ -85,21 +90,27 @@ class Doors(AccessControlledDevice):
     def unlock(self):
         import requests
 
-        r = requests.get("http://{}/bump".format(self.ip_address), timeout=10)
-        if r.status_code == 200:
-            log_event(
-                self.name + " bumped from admin interface.",
-                "door",
-                "Status: {}. Content: {}".format(r.status_code, r.content),
-            )
-            return True
-        else:
-            log_event(
-                self.name + " bumped from admin interface failed.",
-                "door",
-                "Status: {}. Content: {}".format(r.status_code, r.content),
-            )
-            return False
+        if self.serial_number:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)("door_" + self.serial_number, {"type": "door.bump"})
+
+        elif self.ip_address:
+            r = requests.get("http://{}/bump".format(self.ip_address), timeout=5)
+            if r.status_code == 200:
+                log_event(
+                    self.name + " bumped from admin interface.",
+                    "door",
+                    "Status: {}. Content: {}".format(r.status_code, r.content),
+                )
+            else:
+                log_event(
+                    self.name + " bumped from admin interface failed.",
+                    "door",
+                    "Status: {}. Content: {}".format(r.status_code, r.content),
+                )
+                return False
+
+        return True
 
     def reboot(self):
         import requests
