@@ -41,8 +41,6 @@ def play_theme_song(user):
 
 @api_auth
 def check_door_access(request, rfid_code, door_id=None):
-    log_event("TEST.", "error", request)
-    print("TEST2 ({}).".format(request.META.keys()))
     try:
         user = Profile.objects.get(rfid=rfid_code).user
 

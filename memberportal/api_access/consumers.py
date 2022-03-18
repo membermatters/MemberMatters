@@ -6,7 +6,8 @@ from constance import config
 import logging
 import datetime
 from access.models import Doors
-from access.views import get_door_tags
+from access.views import get_door_tags, post_door_swipe_to_discord
+from profile.models import Profile
 
 logger = logging.getLogger()
 
@@ -88,6 +89,26 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
             if content.get("command") == "sync":
                 logger.debug("Received a sync packet from " + self.door_id)
                 self.door_sync()
+
+            if content.get("command") == "log_access":
+                logger.debug("Received a log_access packet from " + self.door_id)
+
+                card_id = content.get("card_id")
+                user = Profile.objects.get(card_id=card_id)
+
+                post_door_swipe_to_discord(
+                    user.profile.get_full_name(), self.door.name, True
+                )
+
+            if content.get("command") == "log_access_denied":
+                logger.debug("Received a log_access_denied packet from " + self.door_id)
+
+                card_id = content.get("card_id")
+                user = Profile.objects.get(card_id=card_id)
+
+                post_door_swipe_to_discord(
+                    user.profile.get_full_name(), self.door.name, False
+                )
 
         except Exception as e:
             logger.error("Error receiving message from door: %s", e)
