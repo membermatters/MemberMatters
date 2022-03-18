@@ -1,3 +1,4 @@
+import hashlib
 import json
 from channels.generic.websocket import JsonWebsocketConsumer
 from asgiref.sync import async_to_sync
@@ -5,6 +6,7 @@ from constance import config
 import logging
 import datetime
 from access.models import Doors
+from access.views import get_door_tags
 
 logger = logging.getLogger()
 
@@ -61,6 +63,7 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
                     logger.debug("Authorisation successful!")
                     self.authorised = True
                     self.send_json({"authorised": True})
+                    self.door_sync()  # sync the cards down
                 else:
                     logger.debug("Authorisation failed!")
                     self.authorised = False
@@ -82,11 +85,26 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
                 self.door.ip_address = content.get("ip_address")
                 self.door.save()
 
+            if content.get("command") == "sync":
+                logger.debug("Received a sync packet from " + self.door_id)
+                self.door_sync()
+
         except Exception as e:
             logger.error("Error receiving message from door: %s", e)
             logger.error(e)
             self.send_json({"command": "error", "error": str(e)})
 
-    def door_bump(self, event):
+    def door_bump(self, **kwargs):
         # Handles the "door.bump" event when it's sent to us.
         self.send_json({"command": "bump"})
+
+    def door_sync(self, **kwargs):
+        # Handles the "door.sync" event when it's sent to us.
+        tags = get_door_tags(self.door.id)
+        tags_hash = hashlib.md5(str(tags).encode("utf-8")).hexdigest()
+
+        self.send_json({
+            "command": "sync",
+            "tags": tags,
+            "hash": tags_hash
+        })
