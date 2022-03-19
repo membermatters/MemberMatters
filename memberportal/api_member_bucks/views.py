@@ -1,5 +1,3 @@
-from asgiref.sync import sync_to_async
-
 from memberbucks.models import MemberBucks
 from rest_framework import status, permissions
 from rest_framework.response import Response
@@ -7,12 +5,17 @@ from rest_framework.views import APIView
 import stripe
 from constance import config
 from django.db.utils import OperationalError
+from sentry_sdk import capture_exception
 from profile.xerohelpers import create_stripe_membership_invoice
 
 
-@sync_to_async
-def safe_constance_get(fld: str):
-    return getattr(config, fld)
+class StripeAPIView(APIView):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        try:
+            stripe.api_key = config.STRIPE_SECRET_KEY
+        except OperationalError as error:
+            capture_exception(error)
 
 
 class MemberBucksTransactions(APIView):
@@ -49,7 +52,7 @@ class MemberBucksBalance(APIView):
         )
 
 
-class MemberBucksAddFunds(APIView):
+class MemberBucksAddFunds(StripeAPIView):
     """
     post: attempts to charge the saved card and add funds.
     """
@@ -67,7 +70,6 @@ class MemberBucksAddFunds(APIView):
             )
 
         try:
-            stripe.api_key = safe_constance_get("STRIPE_SECRET_KEY")
             payment_intent = stripe.PaymentIntent.create(
                 amount=payment_amount,
                 currency=config.MEMBERBUCKS_CURRENCY,
@@ -86,7 +88,6 @@ class MemberBucksAddFunds(APIView):
                 )
 
             payment_intent_id = err.payment_intent["id"]
-            stripe.api_key = safe_constance_get("STRIPE_SECRET_KEY")
             payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
             print(payment_intent)
 
@@ -104,8 +105,7 @@ class MemberBucksAddFunds(APIView):
                 fee = 0
 
                 for charge in payment_intent.charges:
-                    # get the charge object so we can check how much the Stripe fee was
-                    stripe.api_key = safe_constance_get("STRIPE_SECRET_KEY")
+                    # get the charge object, so we can check how much the Stripe fee was
                     charge = stripe.Charge.retrieve(
                         charge["id"], expand=["balance_transaction"]
                     )

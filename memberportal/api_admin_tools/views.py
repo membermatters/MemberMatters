@@ -1,5 +1,3 @@
-from asgiref.sync import sync_to_async
-
 from profile.models import User
 from access import models
 from .models import MemberTier, PaymentPlan
@@ -10,18 +8,23 @@ import json
 import stripe
 from sentry_sdk import capture_message
 
-
-@sync_to_async
-def safe_constance_get(fld: str):
-    return getattr(config, fld)
-
-
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 import humanize
 from django.db import connection
+from django.db.utils import OperationalError
+from sentry_sdk import capture_exception
+
+
+class StripeAPIView(APIView):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        try:
+            stripe.api_key = config.STRIPE_SECRET_KEY
+        except OperationalError as error:
+            capture_exception(error)
 
 
 class GetMembers(APIView):
@@ -383,7 +386,7 @@ class MemberCreateNewInvoice(APIView):
         return Response()
 
 
-class MemberTiers(APIView):
+class MemberTiers(StripeAPIView):
     """
     get: gets a list of all member tiers.
     post: creates a new member tier.
@@ -414,7 +417,6 @@ class MemberTiers(APIView):
         body = request.data
 
         try:
-            stripe.api_key = safe_constance_get("STRIPE_SECRET_KEY")
             product = stripe.Product.create(
                 name=body["name"], description=body["description"]
             )
@@ -438,7 +440,7 @@ class MemberTiers(APIView):
         return Response()
 
 
-class ManageMemberTier(APIView):
+class ManageMemberTier(StripeAPIView):
     """
     get: gets a member tier.
     put: updates a member tier.
@@ -486,7 +488,7 @@ class ManageMemberTier(APIView):
         return Response()
 
 
-class ManageMemberTierPlans(APIView):
+class ManageMemberTierPlans(StripeAPIView):
     """
     post: creates a new member tier plan.
     """
@@ -522,7 +524,6 @@ class ManageMemberTierPlans(APIView):
 
         member_tier = MemberTier.objects.get(pk=body["memberTier"])
 
-        stripe.api_key = safe_constance_get("STRIPE_SECRET_KEY")
         stripe_plan = stripe.Price.create(
             unit_amount=round(body["cost"]),
             currency=str(body["currency"]).lower(),
@@ -547,7 +548,7 @@ class ManageMemberTierPlans(APIView):
         return Response()
 
 
-class ManageMemberTierPlan(APIView):
+class ManageMemberTierPlan(StripeAPIView):
     """
     get: gets a member tier plan.
     put: updates a member tier plan.
@@ -592,7 +593,7 @@ class ManageMemberTierPlan(APIView):
         return Response()
 
 
-class MemberBillingInfo(APIView):
+class MemberBillingInfo(StripeAPIView):
     """
     get: This method gets a member's billing info.
     """

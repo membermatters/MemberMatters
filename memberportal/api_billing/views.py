@@ -18,16 +18,13 @@ from django.db.utils import OperationalError
 from sentry_sdk import capture_exception
 
 
-@sync_to_async
-def safe_constance_get(fld: str):
-    return getattr(config, fld)
-
-
 class StripeAPIView(APIView):
-    try:
-        stripe.api_key = safe_constance_get("STRIPE_SECRET_KEY")
-    except OperationalError as error:
-        capture_exception(error)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        try:
+            stripe.api_key = config.STRIPE_SECRET_KEY
+        except OperationalError as error:
+            capture_exception(error)
 
 
 class MemberBucksAddCard(StripeAPIView):
