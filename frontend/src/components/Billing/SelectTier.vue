@@ -90,6 +90,7 @@
       </q-step>
 
       <q-step
+        class="flex flex-center"
         :name="3"
         :title="$tc('menuLink.billing')"
         :icon="icons.billing"
@@ -100,7 +101,7 @@
         </div>
 
         <member-bucks-manage-billing
-          style="max-width: 400px"
+          style="max-width: 500px"
           flat
           @card-exists="cardExistsHandler"
         />

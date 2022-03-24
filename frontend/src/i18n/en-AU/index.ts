@@ -12,7 +12,7 @@ export default {
     register: "Register",
     registerSuccess: "Successfully Registered",
     manageTiers: "Membership Plans",
-    manageTier: "Manage Tier",
+    manageTier: "Manage Plan",
 
     adminTools: "Admin Tools",
     meetings: "Meetings",
@@ -35,7 +35,7 @@ export default {
     billing: "Billing Method",
     profile: "Profile",
     checkAccess: "Access Permissions",
-    memberbucks: "Spacebucks",
+    memberbucks: "Memberbucks",
     membershipPlan: "Membership Plan",
 
     Error404: "Page Not Found",
@@ -286,14 +286,14 @@ export default {
   memberbucks: {
     currentBalance: "Current Balance",
     lastPurchase: "Last Purchase",
-    addFunds: "Add Funds",
+    addFunds: "Load Funds",
     addFundsDescription:
-      "Click one of the buttons above to top up your account. This will " +
+      "Tap one of the buttons to load funds to your account. This will " +
       "immediately charge your saved card ending in {savedCard}.",
     noSavedBilling:
       "Sorry, but you don't have any valid billing methods. Please add a new " +
       "billing method by clicking the button below.",
-    manageBilling: "Manage Billing",
+    manageBilling: "Billing Method",
     selectToContinue: "Select your billing method to continue.",
     addCard: "Add Card",
     addCardDescription:
@@ -311,7 +311,7 @@ export default {
     quickAdd: "Quick Add",
     totalAmount: "Total Amount",
     donateFundsDescription:
-      'Click the quick add buttons or enter an amount above, then click "donate funds". You can use this to pay for things that don\'t have a payment terminal.',
+      'Click the quick add buttons or enter an amount above, then click "donate funds". You can use this to pay for things like consumables or drinks.',
     donateFundsSuccess: "Successfully donated funds.",
     donateFundsError:
       "There was an error donating your funds, check your balance or try again later.",
@@ -473,7 +473,7 @@ export default {
     resumeButton: "Resume membership",
     cancelling: "Your membership is about to be cancelled",
     cancellingDescription:
-      "Your Membership Plan and membership are scheduled to be cancelled on {date}. If you'd like to resume your plan (listed above), please click below.",
+      "Your membership is scheduled to be cancelled on {date}. If you'd like to resume your plan (listed above), please click below.",
     renewalDate: "Renewal Date",
     signupDate: "Signup Date",
     subscriptionInfo: "Subscription Info",
@@ -514,19 +514,21 @@ export default {
     requirementsNotMet: "Requirements not met:",
     subscriptionFailed:
       "Sorry, but there was a problem creating your subscription. Please check the card you used had enough funds, try again, or contact us for help.",
+    existingMemberSubscription:
+      "Sorry, you already have an active Stripe subscription.",
   },
   tiers: {
     disabledFeature:
       "Warning! This feature is disabled. You can make changes but your users won't be able to use it.",
-    select: "Tier",
+    select: "Plan",
     selectToContinue: "Select a membership plan to continue.",
     noTiers: "There are no membership plans available right now.",
     selected: "Selected Membership Plan",
     nodata: "There are no membership plans in the system.",
-    name: "Tier Name",
-    description: "Tier Description",
-    remove: "Remove this tier",
-    add: "Add a new tier",
+    name: "Plan Name",
+    description: "Plan Description",
+    remove: "Remove this plan",
+    add: "Add a new plan",
     becomeMember: "Become a member",
     confirm:
       "Please confirm your selected membership plan and billing plan. By continuing you agree to pay for your selected plan using the provided credit card. Your first payment will be collected today, and future payments of {intervalDescription}.",
@@ -537,8 +539,8 @@ export default {
     skipSignup: "Skip Signup (if you just want an account)",
   },
   tierForm: {
-    fail: "Failed to add a new tier.",
-    success: "Successfully added new tier.",
+    fail: "Failed to add a new membership plan.",
+    success: "Successfully added new membership plan.",
   },
   interlocks: {
     nodata: "There are no interlocks in the system.",
