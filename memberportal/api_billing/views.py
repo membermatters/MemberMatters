@@ -200,7 +200,7 @@ class MemberTiers(StripeAPIView):
 
 class PaymentPlanSignup(StripeAPIView):
     """
-    post: attempts to sign the member up to a new membership payment plan.
+    post: attempts to sign the member up to a new membership plan.
     """
 
     def post(self, request, plan_id):
@@ -503,7 +503,7 @@ class SubscriptionInfo(StripeAPIView):
 
 class PaymentPlanResumeCancel(StripeAPIView):
     """
-    post: attempts to cancel a member's payment plan.
+    post: attempts to cancel a member's membership plan.
     """
 
     def post(self, request, resume):
@@ -517,7 +517,7 @@ class PaymentPlanResumeCancel(StripeAPIView):
             )
 
         else:
-            # this will modify the subscription to automatically cancel at the end of the current payment plan
+            # this will modify the subscription to automatically cancel at the end of the current payment period
             if resume:
                 modified_subscription = stripe.Subscription.modify(
                     request.user.profile.stripe_subscription_id,

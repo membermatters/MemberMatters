@@ -201,10 +201,10 @@ const PageAndRouteConfig = [
       {
         icon: icons.plans,
         featureEnabledFlag: "enableMembershipPayments",
-        to: "/account/membership-tier",
-        name: "membershipTier",
+        to: "/account/membership-plan",
+        name: "membershipPlan",
         loggedIn: true,
-        component: () => import("pages/MembershipTier"),
+        component: () => import("pages/MembershipPlan"),
       },
     ],
   },

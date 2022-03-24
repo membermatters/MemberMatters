@@ -16,7 +16,7 @@ export default {
   settings: "mdi-cog",
   manageMembers: "mdi-account-cog",
   meetings: "mdi-calendar-clock",
-  plans: "mdi-badge-account-horizontal",
+  plans: "mdi-receipt",
   dollar: "fas fa-dollar-sign",
   doors: "mdi-door-closed-lock",
   interlocks: "mdi-power-plug",
