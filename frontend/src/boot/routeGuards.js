@@ -21,7 +21,12 @@ export default ({ router, store }) => {
     if (to.meta.loggedIn === true) {
       if (store.getters["profile/loggedIn"] === true) next();
       else {
-        return next({ name: "login" });
+        return next({
+          name: "login",
+          query: {
+            nextUrl: to.fullPath,
+          },
+        });
       }
     }
 
@@ -34,7 +39,11 @@ export default ({ router, store }) => {
     }
 
     // check if the user must be a member
-    if (to.meta.memberOnly && store.getters["profile/profile"].memberStatus !== "Active") next({ name: "Error403MemberOnly" });
+    if (
+      to.meta.memberOnly &&
+      store.getters["profile/profile"].memberStatus !== "Active"
+    )
+      next({ name: "Error403MemberOnly" });
 
     // if we are authenticating via SSO then don't update the route unless we're registering
     if (!from.query.sso || to.name === "register") {
@@ -43,14 +52,14 @@ export default ({ router, store }) => {
   });
 
   router.afterEach(() => {
-    if (typeof (ga) !== "undefined") {
+    if (typeof ga !== "undefined") {
       ga("send", "pageview");
     }
   });
 
-  router.onError(error => {
+  router.onError((error) => {
     if (/loading chunk \d* failed./i.test(error.message)) {
-      window.location.reload()
+      window.location.reload();
     }
-  })
+  });
 };

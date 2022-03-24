@@ -50,9 +50,9 @@ export default {
     signinSuccess:
       "Successfully signed you in. Please remember to sign out when you leave.",
     signoutError:
-      "There was a problem signing you out. Please contact the executive committee if this problem persists.",
+      "There was a problem signing you out. Please report an issue if this problem persists.",
     signinError:
-      "There was a problem signing you in. Please contact the executive committee if this problem persists.",
+      "There was a problem signing you in. Please report an issue if this problem persists.",
     signIn: "On-site Check In",
     signOut: "On-site Check Out",
   },
@@ -158,7 +158,7 @@ export default {
   access: {
     pageDescription:
       "Your access permissions for doors and interlocks are shown below. Please " +
-      "contact the executive committee if you believe you should have access to something that " +
+      "report an issue if you believe you should have access to something that " +
       "you don't.",
     inactive:
       "Your membership is currently inactive. This may affect your access.",
@@ -166,8 +166,10 @@ export default {
     unauthorised: "Unauthorised",
     door: "Door",
     doors: "Doors",
+    noDoors: "There are no doors in the system.",
     interlock: "Interlock",
     interlocks: "Interlocks",
+    noInterlocks: "There are no interlocks in the system.",
     defaultAccess: "Members have access by default",
     maintenanceLockout: "Maintenance lockout is enabled",
     playTheme: "Play theme on swipe",
