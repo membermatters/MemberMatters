@@ -388,10 +388,10 @@ class MemberCreateNewInvoice(APIView):
 
 class MemberTiers(StripeAPIView):
     """
-    get: gets a list of all member tiers.
-    post: creates a new member tier.
-    put: updates a new member tier.
-    delete: a member tier.
+    get: gets a list of all membership plans.
+    post: creates a new membership plan.
+    put: updates a new membership plan.
+    delete: a membership plan.
     """
 
     permission_classes = (permissions.IsAdminUser,)

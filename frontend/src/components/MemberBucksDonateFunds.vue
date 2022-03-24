@@ -168,7 +168,10 @@ export default {
       return icons;
     },
     balance() {
-      return this.$n(this.profile.financial.memberBucks.balance, "currency");
+      return this.$n(
+        this?.profile?.financial?.memberBucks?.balance,
+        "currency"
+      );
     },
   },
 };

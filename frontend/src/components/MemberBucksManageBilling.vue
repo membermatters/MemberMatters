@@ -106,7 +106,7 @@ export default {
     ...mapGetters("profile", ["profile"]),
     ...mapGetters("config", ["features"]),
     cardExists() {
-      return this.profile.financial.memberBucks.savedCard.last4;
+      return this?.profile?.financial?.memberBucks?.savedCard?.last4;
     },
   },
 };

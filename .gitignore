@@ -144,3 +144,5 @@ frontend/src-electron/icons/
 tmp/
 .ackrc
 .terragrunt-cache/
+
+errors.log*

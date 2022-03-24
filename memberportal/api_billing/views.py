@@ -180,7 +180,7 @@ class MemberBucksAddCard(StripeAPIView):
 
 class MemberTiers(StripeAPIView):
     """
-    get: gets a list of all member tiers.
+    get: gets a list of all membership plans.
     """
 
     def get(self, request):
@@ -395,10 +395,13 @@ class CheckInductionStatus(APIView):
             return Response({"success": True, "score": 0, "notRequired": True})
 
         try:
-            score = canvas_api.get_student_score_for_course(
-                config.INDUCTION_COURSE_ID, request.user.email
+            score = (
+                canvas_api.get_student_score_for_course(
+                    config.INDUCTION_COURSE_ID, request.user.email
+                )
+                or 0
             )
-            if score:
+            if score or config.MIN_INDUCTION_SCORE == 0:
                 induction_passed = score >= config.MIN_INDUCTION_SCORE
 
                 if induction_passed:
@@ -434,7 +437,9 @@ class CompleteSignup(StripeAPIView):
         signupCheck = member.can_signup()
 
         if member.subscription_status == "active":
-            return Response({"success": False, "message": "signup.existingMember"})
+            return Response(
+                {"success": False, "message": "signup.existingMemberSubscription"}
+            )
 
         elif signupCheck["success"]:
             member.activate()

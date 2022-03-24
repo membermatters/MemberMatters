@@ -70,7 +70,7 @@ class Canvas:
         Get the student's score for a particular course_id. Returns None if nonexistent.
         :param course_id:
         :param email:
-        :return:
+        :return: score or None
         """
         scores = self.get_course_scores(course_id)
 
