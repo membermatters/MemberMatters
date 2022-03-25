@@ -12,6 +12,23 @@
 
       <template v-if="profile.financial.memberBucks.savedCard.last4">
         <q-card-section>
+          <i18n path="memberbucks.addFundsDescription" tag="p">
+            <template v-slot:savedCard>
+              <span class="proxy-field">
+                <b>{{ profile.financial.memberBucks.savedCard.last4 }}</b>
+              </span>
+            </template>
+          </i18n>
+
+          <q-banner v-if="addFundsError" class="text-white bg-red">
+            {{ addFundsError }}
+          </q-banner>
+          <q-banner v-if="addFundsSuccess" class="text-white bg-success">
+            {{ $t("memberbucks.addFundsSuccess") }}
+          </q-banner>
+        </q-card-section>
+
+        <q-card-section>
           <q-btn
             :disable="addingFunds"
             :label="$n(10, 'currency')"
@@ -33,23 +50,6 @@
           />
           <br />
           <q-spinner v-if="addingFunds" color="primary" />
-        </q-card-section>
-
-        <q-card-section>
-          <i18n path="memberbucks.addFundsDescription" tag="p">
-            <template v-slot:savedCard>
-              <span class="proxy-field">
-                <b>{{ profile.financial.memberBucks.savedCard.last4 }}</b>
-              </span>
-            </template>
-          </i18n>
-
-          <q-banner v-if="addFundsError" class="text-white bg-red">
-            {{ addFundsError }}
-          </q-banner>
-          <q-banner v-if="addFundsSuccess" class="text-white bg-success">
-            {{ $t("memberbucks.addFundsSuccess") }}
-          </q-banner>
         </q-card-section>
       </template>
 
@@ -145,7 +145,10 @@ export default {
       return icons;
     },
     balance() {
-      return this.$n(this.profile.financial.memberBucks.balance, "currency");
+      return this.$n(
+        this?.profile?.financial?.memberBucks?.balance,
+        "currency"
+      );
     },
   },
 };

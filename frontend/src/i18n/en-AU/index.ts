@@ -11,8 +11,8 @@ export default {
     logout: "Logout",
     register: "Register",
     registerSuccess: "Successfully Registered",
-    manageTiers: "Membership Tiers",
-    manageTier: "Manage Tier",
+    manageTiers: "Membership Plans",
+    manageTier: "Manage Plan",
 
     adminTools: "Admin Tools",
     meetings: "Meetings",
@@ -35,8 +35,8 @@ export default {
     billing: "Billing Method",
     profile: "Profile",
     checkAccess: "Access Permissions",
-    memberbucks: "Spacebucks",
-    membershipTier: "Membership Tier",
+    memberbucks: "Memberbucks",
+    membershipPlan: "Membership Plan",
 
     Error404: "Page Not Found",
     Error403: "Error 403",
@@ -50,9 +50,9 @@ export default {
     signinSuccess:
       "Successfully signed you in. Please remember to sign out when you leave.",
     signoutError:
-      "There was a problem signing you out. Please contact the executive committee if this problem persists.",
+      "There was a problem signing you out. Please report an issue if this problem persists.",
     signinError:
-      "There was a problem signing you in. Please contact the executive committee if this problem persists.",
+      "There was a problem signing you in. Please report an issue if this problem persists.",
     signIn: "On-site Check In",
     signOut: "On-site Check Out",
   },
@@ -158,7 +158,7 @@ export default {
   access: {
     pageDescription:
       "Your access permissions for doors and interlocks are shown below. Please " +
-      "contact the executive committee if you believe you should have access to something that " +
+      "report an issue if you believe you should have access to something that " +
       "you don't.",
     inactive:
       "Your membership is currently inactive. This may affect your access.",
@@ -166,8 +166,10 @@ export default {
     unauthorised: "Unauthorised",
     door: "Door",
     doors: "Doors",
+    noDoors: "There are no doors in the system.",
     interlock: "Interlock",
     interlocks: "Interlocks",
+    noInterlocks: "There are no interlocks in the system.",
     defaultAccess: "Members have access by default",
     maintenanceLockout: "Maintenance lockout is enabled",
     playTheme: "Play theme on swipe",
@@ -284,14 +286,14 @@ export default {
   memberbucks: {
     currentBalance: "Current Balance",
     lastPurchase: "Last Purchase",
-    addFunds: "Add Funds",
+    addFunds: "Load Funds",
     addFundsDescription:
-      "Click one of the buttons above to top up your account. This will " +
+      "Tap one of the buttons to load funds to your account. This will " +
       "immediately charge your saved card ending in {savedCard}.",
     noSavedBilling:
       "Sorry, but you don't have any valid billing methods. Please add a new " +
       "billing method by clicking the button below.",
-    manageBilling: "Manage Billing",
+    manageBilling: "Billing Method",
     selectToContinue: "Select your billing method to continue.",
     addCard: "Add Card",
     addCardDescription:
@@ -309,7 +311,7 @@ export default {
     quickAdd: "Quick Add",
     totalAmount: "Total Amount",
     donateFundsDescription:
-      'Click the quick add buttons or enter an amount above, then click "donate funds". You can use this to pay for things that don\'t have a payment terminal.',
+      'Click the quick add buttons or enter an amount above, then click "donate funds". You can use this to pay for things like consumables or drinks.',
     donateFundsSuccess: "Successfully donated funds.",
     donateFundsError:
       "There was an error donating your funds, check your balance or try again later.",
@@ -429,20 +431,20 @@ export default {
     remove: "Remove this door",
   },
   paymentPlans: {
-    title: "Payment Plans",
-    nodata: "There are no payment plans available.",
+    title: "Membership Plans",
+    nodata: "There are no Membership Plans available.",
     name: "Plan Name",
-    description: "Payment Plan Description",
+    description: "Membership Plan Description",
     recurringDescription: "Bill for this plan every:",
-    remove: "Remove this payment plan",
-    add: "Add a new payment plan",
-    success: "Successfully added a new payment plan.",
-    fail: "Failed to add a new payment plan.",
+    remove: "Remove this Membership Plan",
+    add: "Add a new Membership Plan",
+    success: "Successfully added a new Membership Plan.",
+    fail: "Failed to add a new Membership Plan.",
     select: "Plan",
-    selected: "Selected Payment Plan",
+    selected: "Selected Membership Plan",
     confirmSelection: "Confirm",
     selectToContinue: "Select a plan to continue.",
-    noPlans: "There are no plans available for this membership tier.",
+    noPlans: "There are no billing plans available for this membership plan.",
     dueToday: "Due Today: {amount}",
     intervalDescription: "{amount} {currency} every {intervalCount} {interval}",
     interval: {
@@ -471,14 +473,14 @@ export default {
     resumeButton: "Resume membership",
     cancelling: "Your membership is about to be cancelled",
     cancellingDescription:
-      "Your payment plan and membership are scheduled to be cancelled on {date}. If you'd like to resume your plan (listed above), please click below.",
+      "Your membership is scheduled to be cancelled on {date}. If you'd like to resume your plan (listed above), please click below.",
     renewalDate: "Renewal Date",
     signupDate: "Signup Date",
     subscriptionInfo: "Subscription Info",
     accountOnlyWarning:
       "Your profile is currently set to 'account only'. This is because you skipped this process last time. You're welcome to continue using this account for our online services, or you can signup to become a member below. ",
     profileAccountOnlyWarning:
-      "Your profile is currently set to 'account only'. This is because you skipped the signup process and did not become a member. You're welcome to continue using this account for our online services, or you can signup to become a member from the menu ('Membership' > 'Membership Tier').",
+      "Your profile is currently set to 'account only'. This is because you skipped the signup process and did not become a member. You're welcome to continue using this account for our online services, or you can signup to become a member from the menu ('Membership' > 'Membership Plan').",
   },
   signup: {
     induction: "Induction",
@@ -512,22 +514,24 @@ export default {
     requirementsNotMet: "Requirements not met:",
     subscriptionFailed:
       "Sorry, but there was a problem creating your subscription. Please check the card you used had enough funds, try again, or contact us for help.",
+    existingMemberSubscription:
+      "Sorry, you already have an active Stripe subscription.",
   },
   tiers: {
     disabledFeature:
       "Warning! This feature is disabled. You can make changes but your users won't be able to use it.",
-    select: "Tier",
-    selectToContinue: "Select a membership tier to continue.",
-    noTiers: "There are no membership tiers available right now.",
-    selected: "Selected Membership Tier",
-    nodata: "There are no membership tiers in the system.",
-    name: "Tier Name",
-    description: "Tier Description",
-    remove: "Remove this tier",
-    add: "Add a new tier",
+    select: "Plan",
+    selectToContinue: "Select a membership plan to continue.",
+    noTiers: "There are no membership plans available right now.",
+    selected: "Selected Membership Plan",
+    nodata: "There are no membership plans in the system.",
+    name: "Plan Name",
+    description: "Plan Description",
+    remove: "Remove this plan",
+    add: "Add a new plan",
     becomeMember: "Become a member",
     confirm:
-      "Please confirm your selected membership tier and plan. By continuing you agree to pay for your selected plan using the provided credit card. Your first payment will be collected today, and future payments of {intervalDescription}.",
+      "Please confirm your selected membership plan and billing plan. By continuing you agree to pay for your selected plan using the provided credit card. Your first payment will be collected today, and future payments of {intervalDescription}.",
     confirmDelay:
       "Your membership application will be submitted after you complete the next steps.",
     finish: "Pay & Continue",
@@ -535,8 +539,8 @@ export default {
     skipSignup: "Skip Signup (if you just want an account)",
   },
   tierForm: {
-    fail: "Failed to add a new tier.",
-    success: "Successfully added new tier.",
+    fail: "Failed to add a new membership plan.",
+    success: "Successfully added new membership plan.",
   },
   interlocks: {
     nodata: "There are no interlocks in the system.",

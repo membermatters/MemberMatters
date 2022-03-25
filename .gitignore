@@ -123,7 +123,6 @@ webpack-stats.json
 
 frontend/src-capacitor/ios/App/App/Assets.xcassets/Splash.imageset/
 
-frontend/.npmrc
 memberportal/static/
 
 .vscode
@@ -144,3 +143,5 @@ frontend/src-electron/icons/
 tmp/
 .ackrc
 .terragrunt-cache/
+
+errors.log*

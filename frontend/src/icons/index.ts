@@ -1,9 +1,6 @@
 export default {
   /**
-   * This object defines the font awesome classes for each icon. It will also detect if pro icons
-   * are enabled (which is by default) or disabled and return the appropriate class. You will need
-   * to follow the font awesome instructions for adding your secret key to a .npmrc file to download
-   * the required pro libraries.
+   * This object defines the icons for our project.
    */
   sadFace: "mdi-emoticon-sad-outline",
 
@@ -16,7 +13,7 @@ export default {
   settings: "mdi-cog",
   manageMembers: "mdi-account-cog",
   meetings: "mdi-calendar-clock",
-  plans: "mdi-badge-account-horizontal",
+  plans: "mdi-receipt",
   dollar: "fas fa-dollar-sign",
   doors: "mdi-door-closed-lock",
   interlocks: "mdi-power-plug",

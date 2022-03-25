@@ -25,7 +25,7 @@
       :grid="$q.screen.xs"
     >
       <template v-slot:top-left>
-        <div class="row">
+        <div class="row q-pt-sm">
           <q-btn
             color="accent"
             :icon="icons.add"
@@ -49,41 +49,32 @@
             class="q-mb-sm q-mr-md"
             @click="manageBilling()"
           />
+          <q-space />
 
           <q-input
-            v-if="$q.screen.xs"
             v-model="filter"
             outlined
             dense
             debounce="300"
             placeholder="Search"
-            style="margin-top: -3px"
+            class="q-mt-none q-pt-none"
           >
             <template v-slot:append>
               <q-icon :name="icons.search" />
             </template>
           </q-input>
         </div>
-        <div class="row">
+        <div class="row q-pt-sm">
           {{ $t("memberbucks.currentBalance") }}
           {{ $n(memberBucksBalance, "currency") }}
         </div>
       </template>
 
-      <template v-if="$q.screen.gt.xs" v-slot:top-right>
-        <q-input
-          v-model="filter"
-          outlined
-          dense
-          debounce="300"
-          placeholder="Search"
-          style="margin-top: -3px"
-        >
-          <template v-slot:append>
-            <q-icon :name="icons.search" />
-          </template>
-        </q-input>
-      </template>
+      <!--      <template v-if="$q.screen.gt.xs" v-slot:top-right>-->
+      <!--        <div class="row">-->
+      <!--          -->
+      <!--        </div>-->
+      <!--      </template>-->
 
       <template v-slot:body-cell-amount="props">
         <q-td>

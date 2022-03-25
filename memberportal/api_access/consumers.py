@@ -30,7 +30,9 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
 
         self.door_id = self.scope["url_route"]["kwargs"]["door_id"]
         self.door_group_name = "door_" + self.door_id
-        async_to_sync(self.channel_layer.group_add)(self.door_group_name, self.channel_name)
+        async_to_sync(self.channel_layer.group_add)(
+            self.door_group_name, self.channel_name
+        )
 
         self.connected_at = datetime.datetime.now()
         self.last_seen = self.connected_at
@@ -47,7 +49,9 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
     def disconnect(self, close_code):
         logger.info("Door disconnected!")
         logger.info("Door was connected for %s", self.last_seen - self.connected_at)
-        async_to_sync(self.channel_layer.group_discard)(self.door_group_name, self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)(
+            self.door_group_name, self.channel_name
+        )
 
     def receive_json(self, content=None, **kwargs):
         """
@@ -124,8 +128,4 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
         tags = get_door_tags(self.door.id)
         tags_hash = hashlib.md5(str(tags).encode("utf-8")).hexdigest()
 
-        self.send_json({
-            "command": "sync",
-            "tags": tags,
-            "hash": tags_hash
-        })
+        self.send_json({"command": "sync", "tags": tags, "hash": tags_hash})

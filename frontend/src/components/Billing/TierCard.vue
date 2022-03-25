@@ -86,6 +86,7 @@ export default defineComponent({
 
 .q-card {
   height: 100%;
+  max-width: 500px;
 }
 
 .dark-border {
