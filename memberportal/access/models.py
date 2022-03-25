@@ -92,7 +92,9 @@ class Doors(AccessControlledDevice):
 
         if self.serial_number:
             channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)("door_" + self.serial_number, {"type": "door.bump"})
+            async_to_sync(channel_layer.group_send)(
+                "door_" + self.serial_number, {"type": "door.bump"}
+            )
 
         elif self.ip_address:
             r = requests.get("http://{}/bump".format(self.ip_address), timeout=5)
