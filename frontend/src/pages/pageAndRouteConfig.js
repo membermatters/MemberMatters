@@ -1,5 +1,4 @@
 import icons from "../icons";
-import store from "../store";
 
 const PageAndRouteConfig = [
   {

@@ -90,6 +90,7 @@ import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "MemberBucksAddFunds",
+  emits: ["ok", "cancel"],
   data() {
     return {
       addFundsError: null,

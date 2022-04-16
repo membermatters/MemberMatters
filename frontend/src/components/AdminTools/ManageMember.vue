@@ -512,7 +512,7 @@
           </div>
 
           <q-table
-            :data="this.billing.memberbucks.transactions"
+            :rows="this.billing.memberbucks.transactions"
             :columns="[
               {
                 name: 'description',
@@ -536,7 +536,7 @@
             ]"
             row-key="id"
             :filter="filter"
-            :pagination.sync="pagination"
+            v-model:pagination="pagination"
             :loading="loading"
             :grid="$q.screen.xs"
           >

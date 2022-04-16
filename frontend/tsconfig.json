@@ -11,7 +11,8 @@
       ],
       "@icons": [
         "icons/"
-      ],
+      ]
     },
+    "allowSyntheticDefaultImports": true
   }
 }

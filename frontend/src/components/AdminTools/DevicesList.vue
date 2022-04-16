@@ -1,10 +1,10 @@
 <template>
   <q-table
-    :data="tableData"
+    :rows="tableData"
     :columns="columnI18n"
     row-key="id"
     :filter="filter"
-    :pagination.sync="pagination"
+    v-model:pagination="pagination"
     :grid="$q.screen.xs"
     :no-data-label="$t(`${deviceChoice}.nodata`)"
   >
@@ -269,10 +269,8 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
-@media (max-width: $breakpoint-xs-max) {
-  .access-list {
-    width: 100%;
-  }
-}
+<style lang="sass" scoped>
+@media (max-width: $breakpoint-xs-max)
+  .access-list
+    width: 100%
 </style>

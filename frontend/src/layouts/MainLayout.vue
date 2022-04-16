@@ -76,8 +76,8 @@
         style="border-right: 1px solid #ddd"
       >
         <q-list>
-          <template v-for="link in filteredLinks">
-            <EssentialLink :key="link.title" v-bind="link" />
+          <template v-for="link in filteredLinks" :key="link.title">
+            <EssentialLink v-bind="link" />
           </template>
         </q-list>
       </q-scroll-area>
@@ -95,9 +95,9 @@
     </q-drawer>
 
     <q-page-container>
-      <fade-transition>
-        <router-view />
-      </fade-transition>
+      <!--      <fade-transition>-->
+      <router-view />
+      <!--      </fade-transition>-->
     </q-page-container>
 
     <q-dialog v-model="aboutMemberMatters">
@@ -137,20 +137,22 @@
 <script>
 import EssentialLink from "components/EssentialLink";
 import { mapActions, mapGetters } from "vuex";
-import Transitions, { FadeTransition } from "vue2-transitions";
-import Vue from "vue";
+// import Transitions, { FadeTransition } from "vue2-transitions";
+// import { FadeTransition } from "vue2-transitions";
+// import Vue from "vue";
+import { defineComponent } from "vue";
 import { Platform } from "quasar";
 import icons from "../icons";
 import MainMenu from "../pages/pageAndRouteConfig";
 import mainMixin from "../mixins/mainMixin";
 
-Vue.use(Transitions);
+// Vue.use(Transitions);
 
-export default {
+export default defineComponent({
   name: "MainLayout",
   components: {
     EssentialLink,
-    FadeTransition,
+    // FadeTransition,
   },
   mixins: [mainMixin],
   data() {
@@ -224,7 +226,7 @@ export default {
       }
     }
   },
-};
+});
 </script>
 
 <style lang="sass" scoped>

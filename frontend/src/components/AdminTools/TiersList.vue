@@ -85,14 +85,14 @@
 
     <q-table
       @row-click="manageTier"
-      :data="tiers"
+      :rows="tiers"
       :columns="[
         { name: 'name', label: 'Name', field: 'name', sortable: true },
         { name: 'description', label: 'Description', field: 'description' },
       ]"
       row-key="id"
       :filter="filter"
-      :pagination.sync="pagination"
+      v-model:pagination="pagination"
       :grid="$q.screen.xs"
       :no-data-label="$t('tiers.nodata')"
     >
@@ -124,11 +124,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from "vue";
 import { createNamespacedHelpers } from "vuex-composition-helpers";
 import icons from "../../icons";
 import formatMixin from "../../mixins/formatMixin";
 import formMixin from "../../mixins/formMixin";
+import { api } from "boot/axios";
 
 export default defineComponent({
   name: "TiersList",
@@ -182,7 +183,7 @@ export default defineComponent({
     submitTier() {
       this.loading = true;
 
-      this.$axios
+      api
         .post("/api/admin/tiers/", this.form)
         .then(() => {
           this.form.error = false;
@@ -213,10 +214,8 @@ export default defineComponent({
 });
 </script>
 
-<style lang="stylus" scoped>
-@media (max-width: $breakpoint-xs-max) {
-  .access-list {
-    width: 100%;
-  }
-}
+<style lang="sass" scoped>
+@media (max-width: $breakpoint-xs-max)
+  .access-list
+    width: 100%
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div v-if="this.features.enableStripe">
     <q-table
-      :data="memberBucksTransactions"
+      :rows="memberBucksTransactions"
       :columns="[
         {
           name: 'description',
@@ -20,7 +20,7 @@
       ]"
       row-key="id"
       :filter="filter"
-      :pagination.sync="pagination"
+      v-model:pagination="pagination"
       :loading="loading"
       :grid="$q.screen.xs"
     >
@@ -141,13 +141,11 @@ export default {
     openAddFundsDialog() {
       this.$q.dialog({
         component: MemberBucksAddFunds,
-        parent: this,
       });
     },
     openDonateFundsDialog() {
       this.$q.dialog({
         component: MemberBucksDonateFunds,
-        parent: this,
       });
     },
     addFunds() {

@@ -1,11 +1,11 @@
 <template>
   <div style="max-width: 100%">
     <q-table
-      :data="displayMemberList"
+      :rows="displayMemberList"
       :columns="columns"
       row-key="email"
       :filter="filter"
-      :pagination.sync="pagination"
+      v-model:pagination="pagination"
       :loading="loading"
       :grid="$q.screen.lt.md"
       class="full-width"

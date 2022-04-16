@@ -188,10 +188,8 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
-@media (max-width: $breakpoint-xs-max) {
-  .access-list {
-    width: 100%;
-  }
-}
+<style lang="sass" scoped>
+@media (max-width: $breakpoint-xs-max)
+  .access-list
+    width: 100%
 </style>

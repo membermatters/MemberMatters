@@ -1,17 +1,23 @@
-import axios, { AxiosStatic } from "axios";
+import axios, { AxiosInstance } from "axios";
 import { Platform } from "quasar";
+import { boot } from "quasar/wrappers";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default ({ Vue, store }: { Vue: any; store: any }) => {
-  const instance = axios.create({
-    baseURL: process.env.apiBaseUrl || "",
-    withCredentials: true,
-    xsrfCookieName: "csrftoken",
-    xsrfHeaderName: "X-CSRFTOKEN",
-  });
+declare module "@vue/runtime-core" {
+  interface ComponentCustomProperties {
+    $axios: AxiosInstance;
+  }
+}
 
+const api = axios.create({
+  baseURL: process.env.apiBaseUrl || "",
+  withCredentials: true,
+  xsrfCookieName: "csrftoken",
+  xsrfHeaderName: "X-CSRFTOKEN",
+});
+
+export default boot(({ app, store }) => {
   // This interceptor adds the JWT to the request if it exists (ie mobile app)
-  instance.interceptors.request.use(function (config) {
+  api.interceptors.request.use(function (config) {
     const token = store.state.auth?.accessToken;
 
     if (Platform.is.capacitor && token) {
@@ -21,7 +27,7 @@ export default ({ Vue, store }: { Vue: any; store: any }) => {
     return config;
   });
 
-  instance.interceptors.response.use(
+  api.interceptors.response.use(
     function (response) {
       return response;
     },
@@ -35,11 +41,7 @@ export default ({ Vue, store }: { Vue: any; store: any }) => {
     }
   );
 
-  Vue.prototype.$axios = instance;
-};
+  app.config.globalProperties.$axios = api;
+});
 
-declare module "vue/types/vue" {
-  interface Vue {
-    $axios: AxiosStatic;
-  }
-}
+export { api };

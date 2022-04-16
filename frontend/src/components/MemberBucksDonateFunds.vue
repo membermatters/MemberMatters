@@ -101,6 +101,7 @@ import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "MemberBucksDonateFunds",
+  emits: ["ok", "cancel"],
   data() {
     return {
       donateFundsError: null,

@@ -16,7 +16,10 @@ module.exports = configure((ctx) => ({
   // https://quasar.dev/quasar-cli/supporting-ts
   supportTS: {
     tsCheckerConfig: {
-      eslint: true,
+      eslint: {
+        enabled: true,
+        files: "./src/**/*.{ts,tsx,js,jsx,vue}",
+      },
     },
   },
 
@@ -26,32 +29,15 @@ module.exports = configure((ctx) => ({
   // app boot file (/src/boot)
   // --> boot files are part of "main.js"
   // https://quasar.dev/quasar-cli/boot-files
-  boot: [
-    "vueCompositionApi",
-    "sentry",
-    "i18n",
-    "axios",
-    "routeGuards",
-    "capacitor",
-  ],
+  boot: ["sentry", "i18n", "axios", "routeGuards", "capacitor"],
 
   // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
-  css: [
-    "app.scss",
-  ],
+  css: ["app.scss"],
 
   // https://github.com/quasarframework/quasar/tree/dev/extras
   extras: [
-    // 'ionicons-v4',
     "mdi-v5",
-    // 'fontawesome-v5',
-    // 'eva-icons',
-    // 'themify',
-    // 'line-awesome',
-    // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
-
     "roboto-font", // optional, you are not bound to it
-    // 'material-icons', // optional, you are not bound to it
   ],
 
   // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
@@ -84,7 +70,7 @@ module.exports = configure((ctx) => ({
     // extractCSS: false,
 
     // https://quasar.dev/quasar-cli/handling-webpack
-    extendWebpack (cfg) {
+    extendWebpack(cfg) {
       // linting is slow in TS projects, we execute it only for production builds
       if (ctx.prod) {
         cfg.module.rules.push({
@@ -95,18 +81,14 @@ module.exports = configure((ctx) => ({
         });
       }
 
-      cfg.module.rules.push(
-        {
-          test: /\.(afphoto)$/,
-          use: "null-loader",
-        },
-      );
-      cfg.module.rules.push(
-        {
-          test: /(LICENSE)$/,
-          use: "null-loader",
-        },
-      );
+      cfg.module.rules.push({
+        test: /\.(afphoto)$/,
+        use: "null-loader",
+      });
+      cfg.module.rules.push({
+        test: /(LICENSE)$/,
+        use: "null-loader",
+      });
 
       cfg.resolve.alias = {
         ...cfg.resolve.alias,
@@ -116,6 +98,15 @@ module.exports = configure((ctx) => ({
         "@mixins": path.resolve(__dirname, "src/mixins/"),
         "@assets": path.resolve(__dirname, "src/assets/"),
       };
+
+      cfg.resolve.fallback = {
+        fs: false,
+        child_process: false,
+      };
+    },
+    chainWebpack(chain) {
+      const nodePolyfillWebpackPlugin = require("node-polyfill-webpack-plugin");
+      chain.plugin("node-polyfill").use(nodePolyfillWebpackPlugin);
     },
   },
 
@@ -143,7 +134,7 @@ module.exports = configure((ctx) => ({
 
   // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
   framework: {
-    lang: "en-us", // Quasar language pack
+    lang: "en-US", // Quasar language pack
     config: {
       dark: "auto", // or Boolean true/false
       loadingBar: { color: "accent", skipHijack: ctx.mode.capacitor },
@@ -163,11 +154,7 @@ module.exports = configure((ctx) => ({
     // directives: [],
 
     // Quasar plugins
-    plugins: [
-      "Dialog",
-      "LoadingBar",
-      "Cookies",
-    ],
+    plugins: ["Dialog", "LoadingBar", "Cookies"],
   },
 
   // animations: 'all', // --- includes all animations
@@ -238,27 +225,17 @@ module.exports = configure((ctx) => ({
 
     packager: {
       // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
-
-      // OS X / Mac App Store
-      // appBundleId: '',
-      // appCategoryType: '',
-      // osxSign: '',
-      // protocol: 'myapp://path',
-
-      // Windows only
-      // win32metadata: { ... }
     },
 
     builder: {
       // https://www.electron.build/configuration/configuration
-
       appId: "membermatters",
     },
 
     // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
     nodeIntegration: true,
 
-    extendWebpack (/* cfg */) {
+    extendWebpack(/* cfg */) {
       // do something with Electron main process Webpack cfg
       // chainWebpack also available besides this extendWebpack
     },

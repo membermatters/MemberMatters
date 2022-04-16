@@ -1,7 +1,8 @@
-import Moment from "moment";
+import dayjs from "dayjs";
 import idleTimeout from "idle-timeout";
 import { Platform } from "quasar";
-import Vue from "vue";
+import { api } from "src/boot/axios";
+// import Vue from "vue";
 
 const getDefaultState = () => ({
   loggedIn: false,
@@ -27,7 +28,11 @@ export default {
     },
     setLoggedIn(state, payload) {
       // If we're on electron, logged in, and not in dev then enable auto logout after 20s
-      if (Platform.is.electron && payload === true && process.env.NODE_ENV !== "Development") {
+      if (
+        Platform.is.electron &&
+        payload === true &&
+        process.env.NODE_ENV !== "Development"
+      ) {
         window.IDLETIMEOUT = idleTimeout(
           () => {
             this.$router.push({ name: "logout" });
@@ -36,7 +41,7 @@ export default {
             element: document,
             timeout: 1000 * 20,
             loop: false,
-          },
+          }
         );
       }
       state.loggedIn = payload;
@@ -57,28 +62,29 @@ export default {
   actions: {
     getAccess({ commit }) {
       return new Promise((resolve) => {
-        Vue.prototype.$axios.get("/api/access/permissions/")
-          .then((response) => {
-            commit("setDoorAccess", response.data.doors);
-            commit("setInterlockAccess", response.data.interlocks);
-            resolve();
-          })
+        api.get("/api/access/permissions/").then((response) => {
+          commit("setDoorAccess", response.data.doors);
+          commit("setInterlockAccess", response.data.interlocks);
+          resolve();
+        });
       });
     },
     getProfile({ commit }) {
       return new Promise((resolve) => {
-        Vue.prototype.$axios.get("/api/profile/")
-          .then((response) => {
-            response.data.firstJoined = Moment(response.data.firstJoined).format("Do MMMM YYYY");
-            commit("setProfile", response.data);
-            commit("setLoggedIn", true);
-            resolve();
-          })
+        api.get("/api/profile/").then((response) => {
+          response.data.firstJoined = dayjs(response.data.firstJoined).format(
+            "Do MMMM YYYY"
+          );
+          commit("setProfile", response.data);
+          commit("setLoggedIn", true);
+          resolve();
+        });
       });
     },
     getLoggedIn({ commit }) {
       return new Promise((resolve) => {
-        Vue.prototype.$axios.get("/api/loggedin/")
+        api
+          .get("/api/loggedin/")
           .then(() => {
             commit("setLoggedIn", true);
             resolve();
@@ -91,7 +97,8 @@ export default {
     },
     getSiteSignedIn({ commit }) {
       return new Promise((resolve) => {
-        Vue.prototype.$axios.get("/api/sitesessions/check/")
+        api
+          .get("/api/sitesessions/check/")
           .then((response) => {
             commit("setSiteSignedIn", response.data);
             resolve();

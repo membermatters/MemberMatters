@@ -1,18 +1,20 @@
 <template>
   <q-table
-    :data="proxies"
-    :columns="[{ name: 'name', label: 'Proxy Name', field: 'name', sortable: true },
-               { name: 'date',
-                 label: 'Date',
-                 field: 'date',
-                 sortable: true,
-                 format: (val, row) => this.formatDate(val)
-               },
-               { name: 'type', label: 'Meeting Type', field: 'type', sortable: true },
+    :rows="proxies"
+    :columns="[
+      { name: 'name', label: 'Proxy Name', field: 'name', sortable: true },
+      {
+        name: 'date',
+        label: 'Date',
+        field: 'date',
+        sortable: true,
+        format: (val, row) => this.formatDate(val),
+      },
+      { name: 'type', label: 'Meeting Type', field: 'type', sortable: true },
     ]"
     row-key="id"
     :filter="filter"
-    :pagination.sync="pagination"
+    v-model:pagination="pagination"
     :loading="loading"
     :grid="$q.screen.xs"
   >
@@ -25,9 +27,7 @@
         @click="newProxy = true"
       />
 
-      <q-dialog
-        v-model="newProxy"
-      >
+      <q-dialog v-model="newProxy">
         <proxy-form @close-form="proxySubmitted()" />
       </q-dialog>
     </template>
@@ -48,26 +48,16 @@
 
     <template #header="props">
       <q-tr :props="props">
-        <q-th
-          v-for="col in props.cols"
-          :key="col.name"
-          :props="props"
-        >
+        <q-th v-for="col in props.cols" :key="col.name" :props="props">
           {{ col.label }}
         </q-th>
-        <q-th auto-width>
-          Delete
-        </q-th>
+        <q-th auto-width> Delete </q-th>
       </q-tr>
     </template>
 
     <template #body="props">
       <q-tr :props="props">
-        <q-td
-          v-for="col in props.cols"
-          :key="col.name"
-          :props="props"
-        >
+        <q-td v-for="col in props.cols" :key="col.name" :props="props">
           {{ col.value }}
         </q-td>
         <q-td auto-width>
@@ -84,13 +74,17 @@
 
     <template #item="props">
       <div
-        class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
+        class="
+          q-pa-xs
+          col-xs-12 col-sm-6 col-md-4 col-lg-3
+          grid-style-transition
+        "
         :style="props.selected ? 'transform: scale(0.95);' : ''"
       >
         <q-card :class="props.selected ? 'bg-grey-2' : ''">
           <q-list dense>
             <q-item
-              v-for="col in props.cols.filter(col => col.name !== 'desc')"
+              v-for="col in props.cols.filter((col) => col.name !== 'desc')"
               :key="col.name"
             >
               <q-item-section>
@@ -149,33 +143,33 @@ export default {
       this.getProxies();
     },
     confirmDelete(id) {
-      this.$q.dialog({
-        title: this.$t("proxyForm.deleteTitle"),
-        message: this.$t("proxyForm.delete"),
-        persistent: true,
-        ok: {
-          label: this.$t("button.ok"),
-          color: "primary",
-        },
-        cancel: {
-          label: this.$t("button.cancel"),
-          color: "primary",
-          flat: true,
-        },
-      }).onOk(() => {
-        this.$axios.delete(`api/proxies/${id}/`)
-          .then(() => {
+      this.$q
+        .dialog({
+          title: this.$t("proxyForm.deleteTitle"),
+          message: this.$t("proxyForm.delete"),
+          persistent: true,
+          ok: {
+            label: this.$t("button.ok"),
+            color: "primary",
+          },
+          cancel: {
+            label: this.$t("button.cancel"),
+            color: "primary",
+            flat: true,
+          },
+        })
+        .onOk(() => {
+          this.$axios.delete(`api/proxies/${id}/`).then(() => {
             this.getProxies();
           });
-      });
+        });
     },
   },
   mounted() {
     this.loading = true;
-    this.getProxies()
-      .finally(() => {
-        this.loading = false;
-      });
+    this.getProxies().finally(() => {
+      this.loading = false;
+    });
   },
   computed: {
     ...mapGetters("tools", ["proxies"]),
