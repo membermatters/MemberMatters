@@ -422,6 +422,7 @@ export default {
     currentPeriodEnd: "Current Period End",
     startDate: "Start Date",
     noSubscription: "No subscription was found for this member.",
+    noMembers: "No members were found that match your filter(s).",
   },
   doors: {
     nodata: "There are no doors in the system.",

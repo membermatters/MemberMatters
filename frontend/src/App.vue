@@ -11,8 +11,6 @@
 </template>
 
 <script>
-// We should include Stripe everywhere to enable better fraud protection
-// import { loadStripe } from "@stripe/stripe-js";
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import { defineComponent } from "vue";
 import { setCssVar, Platform } from "quasar";

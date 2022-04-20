@@ -2,6 +2,7 @@
   <div style="max-width: 100%">
     <q-table
       :rows="displayMemberList"
+      :no-data-label="$t('adminTools.noMembers')"
       :columns="columns"
       row-key="email"
       :filter="filter"
