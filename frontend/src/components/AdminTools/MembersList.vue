@@ -24,7 +24,7 @@
           <template v-if="$q.screen.lt.md">
             <div class="full-width">
               <q-btn-dropdown
-                class="q-mb-xs-sm"
+                class="q-mb-sm"
                 color="primary"
                 :label="$t('adminTools.exportOptions')"
               >
@@ -50,7 +50,7 @@
             <div class="full-width">
               <q-select
                 v-model="memberState"
-                class="q-mb-xs-sm"
+                class="q-mb-sm"
                 outlined
                 emit-value
                 :options="filterOptions"
