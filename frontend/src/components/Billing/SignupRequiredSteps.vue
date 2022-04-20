@@ -125,7 +125,6 @@
           <div class="row justify-start q-mt-md">
             <q-space />
             <q-btn
-              type="a"
               :href="features.signup.contactPageUrl"
               target="_blank"
               color="primary"
@@ -182,7 +181,6 @@
           <div class="row justify-start q-mt-md">
             <q-space />
             <q-btn
-              type="a"
               :to="{ name: 'dashboard' }"
               color="primary"
               :label="$tc('signup.continueToDashboard')"

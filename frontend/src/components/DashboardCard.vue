@@ -21,44 +21,20 @@
 
       <q-separator dark />
 
-      <q-card-actions
-        v-if="Platform.is.electron"
-      >
-        <q-btn
-          v-if="routerLink"
-          :to="routerLink"
-          flat
-        >
+      <q-card-actions v-if="Platform.is.electron">
+        <q-btn v-if="routerLink" :to="routerLink" flat>
           {{ linkText }}
         </q-btn>
-        <q-btn
-          v-else
-          type="a"
-          :href="linkLocation"
-          target="_blank"
-          flat
-        >
+        <q-btn v-else :href="linkLocation" target="_blank" flat>
           {{ linkLocation }}
         </q-btn>
       </q-card-actions>
 
-      <q-card-actions
-        v-else
-      >
-        <q-btn
-          v-if="routerLink"
-          :to="routerLink"
-          flat
-        >
+      <q-card-actions v-else>
+        <q-btn v-if="routerLink" :to="routerLink" flat>
           {{ linkText }}
         </q-btn>
-        <q-btn
-          v-else
-          type="a"
-          :href="linkLocation"
-          target="_blank"
-          flat
-        >
+        <q-btn v-else :href="linkLocation" target="_blank" flat>
           {{ linkText }}
         </q-btn>
       </q-card-actions>
