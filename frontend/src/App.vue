@@ -23,21 +23,6 @@ import { api } from "boot/axios";
 
 setCssVar("dark", "#313131");
 
-// Vue.prototype.$stripeElementsStyle = () => ({
-//   style: {
-//     base: {
-//       color: Dark.isActive ? "#fff" : "#000",
-//       iconColor: Dark.isActive ? "#fff" : "#000",
-//       fontWeight: 400,
-//       fontFamily: "Roboto, Open Sans, Segoe UI, sans-serif",
-//       fontSmoothing: "antialiased",
-//       "::placeholder": {
-//         color: Dark.isActive ? "#fff" : "#000",
-//       },
-//     },
-//   },
-// });
-
 export default defineComponent({
   name: "App",
   provide() {
@@ -147,15 +132,7 @@ export default defineComponent({
         this.getSiteConfig()
           .then(() => {
             this.updatePageTitle();
-            // if (this.features.enableStripe) {
-            //   try {
-            //     Vue.prototype.$stripe = loadStripe(
-            //       this.keys.stripePublishableKey
-            //     );
-            //   } catch {
-            //     console.log("Failed to load Stripe...");
-            //   }
-            // }
+
             setCssVar("primary", this.theme?.themePrimary || "#278ab0");
             setCssVar("secondary", this.theme?.themeToolbar || "#0461b1");
             setCssVar("accent", this.theme?.themeAccent || "#189ab4");

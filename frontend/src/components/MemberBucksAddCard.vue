@@ -34,6 +34,8 @@
 <script>
 import icons from "@icons";
 import { mapGetters, mapActions } from "vuex";
+import { Dark } from "quasar";
+import { loadStripe } from "@stripe/stripe-js";
 
 export default {
   name: "MemberBucksAddCard",
@@ -50,7 +52,11 @@ export default {
     },
   },
   async mounted() {
-    if (!this.stripe && this.keys.stripePublishableKey) {
+    if (
+      !this.stripe &&
+      this.features.enableStripe &&
+      this.keys.stripePublishableKey
+    ) {
       await this.setupStripe(this.keys.stripePublishableKey);
     }
   },
@@ -60,7 +66,20 @@ export default {
       this.stripe = await window.Stripe(stripePublishableKey);
 
       const elements = this.stripe.elements();
-      const cardElement = elements.create("card", this.$stripeElementsStyle());
+      const cardElement = elements.create("card", {
+        style: {
+          base: {
+            color: Dark.isActive ? "#fff" : "#000",
+            iconColor: Dark.isActive ? "#fff" : "#000",
+            fontWeight: 400,
+            fontFamily: "Roboto, Open Sans, Segoe UI, sans-serif",
+            fontSmoothing: "antialiased",
+            "::placeholder": {
+              color: Dark.isActive ? "#fff" : "#000",
+            },
+          },
+        },
+      });
       cardElement.mount("#stripe-card-element");
 
       const cardButton = document.getElementById("card-button");
@@ -112,7 +131,7 @@ export default {
   },
   computed: {
     ...mapGetters("profile", ["profile"]),
-    ...mapGetters("config", ["keys"]),
+    ...mapGetters("config", ["keys", "features"]),
     icons() {
       return icons;
     },
