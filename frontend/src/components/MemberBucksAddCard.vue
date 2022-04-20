@@ -63,7 +63,7 @@ export default {
   methods: {
     ...mapActions("profile", ["getProfile"]),
     async setupStripe(stripePublishableKey) {
-      this.stripe = await window.Stripe(stripePublishableKey);
+      this.stripe = await loadStripe(stripePublishableKey);
 
       const elements = this.stripe.elements();
       const cardElement = elements.create("card", {
