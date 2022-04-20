@@ -13,6 +13,7 @@ export default {
     registerSuccess: "Successfully Registered",
     manageTiers: "Membership Plans",
     manageTier: "Manage Plan",
+    managePlan: "Manage Plan",
 
     adminTools: "Admin Tools",
     meetings: "Meetings",

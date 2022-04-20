@@ -267,7 +267,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { createNamespacedHelpers } from "vuex-composition-helpers";
+import { useStore } from "vuex";
 import { AxiosResponse } from "axios";
 import { api } from "boot/axios";
 import icons from "../../icons";
@@ -278,8 +278,8 @@ export default defineComponent({
   name: "ManageTier",
   mixins: [formatMixin, formMixin],
   setup() {
-    const { useActions } = createNamespacedHelpers("adminTools");
-    const { getTiers } = useActions(["getTiers"]);
+    const store = useStore();
+    const getTiers = () => store.dispatch("adminTools/getTiers");
 
     return {
       getTiers,
@@ -332,9 +332,9 @@ export default defineComponent({
   },
   methods: {
     getTier() {
-      this.planForm.memberTier = this.$route.params.tierId.toString();
+      this.planForm.memberTier = this.$route.params.planId.toString();
       api
-        .get(`/api/admin/tiers/${this.$route.params.tierId}/`)
+        .get(`/api/admin/tiers/${this.$route.params.planId}/`)
         .then((response: AxiosResponse) => {
           this.form.name = response.data.name;
           this.form.description = response.data.description;
@@ -362,7 +362,7 @@ export default defineComponent({
         })
         .onOk(() => {
           api
-            .delete(`/api/admin/tiers/${this.$route.params.tierId}/`)
+            .delete(`/api/admin/tiers/${this.$route.params.planId}/`)
             .then(() => {
               this.$router.go(-1);
             })
@@ -379,7 +379,7 @@ export default defineComponent({
       this.form.error = false;
       this.form.success = false;
       api
-        .put(`/api/admin/tiers/${this.$route.params.tierId}/`, this.form)
+        .put(`/api/admin/tiers/${this.$route.params.planId}/`, this.form)
         .then(() => {
           this.getTiers();
           this.form.success = true;
@@ -413,7 +413,7 @@ export default defineComponent({
     },
     getPlans() {
       api
-        .get(`/api/admin/tiers/${this.$route.params.tierId}/plans/`)
+        .get(`/api/admin/tiers/${this.$route.params.planId}/plans/`)
         .then((response: AxiosResponse) => {
           this.plans = response.data;
         })

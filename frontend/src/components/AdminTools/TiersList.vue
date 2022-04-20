@@ -124,8 +124,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { createNamespacedHelpers } from "vuex-composition-helpers";
+import { defineComponent, computed } from "vue";
+import { useStore } from "vuex";
 import icons from "../../icons";
 import formatMixin from "../../mixins/formatMixin";
 import formMixin from "../../mixins/formMixin";
@@ -135,9 +135,10 @@ export default defineComponent({
   name: "TiersList",
   mixins: [formatMixin, formMixin],
   setup() {
-    const { useGetters, useActions } = createNamespacedHelpers("adminTools");
-    const { getTiers } = useActions(["getTiers"]);
-    const { tiers } = useGetters(["tiers"]);
+    const store = useStore();
+    const getTiers = () => store.dispatch("adminTools/getTiers");
+    const tiers = computed(() => store.getters["adminTools/tiers"]);
+
     getTiers();
 
     return {
@@ -167,9 +168,6 @@ export default defineComponent({
       },
     };
   },
-  mounted() {
-    this.getTiers();
-  },
   computed: {
     icons() {
       return icons;
@@ -178,7 +176,7 @@ export default defineComponent({
   methods: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     manageTier(evt: InputEvent, row: any) {
-      this.$router.push({ name: "manageTier", params: { tierId: row.id } });
+      this.$router.push({ name: "manageTier", params: { planId: row.id } });
     },
     submitTier() {
       this.loading = true;
