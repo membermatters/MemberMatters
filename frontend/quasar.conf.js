@@ -141,18 +141,6 @@ module.exports = configure((ctx) => ({
     },
     iconSet: "mdi-v5", // Quasar icon set
 
-    // Possible values for "importStrategy":
-    // * 'auto' - (DEFAULT) Auto-import needed Quasar components & directives
-    // * 'all'  - Manually specify what to import
-    importStrategy: "auto",
-
-    // For special cases outside of where "auto" importStrategy can have an impact
-    // (like functional components as one of the examples),
-    // you can manually specify Quasar components/directives to be available everywhere:
-    //
-    // components: [],
-    // directives: [],
-
     // Quasar plugins
     plugins: ["Dialog", "LoadingBar", "Cookies"],
   },
