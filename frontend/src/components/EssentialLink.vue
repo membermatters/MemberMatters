@@ -28,15 +28,13 @@
           :inset-level="1"
           :to="{ name: child.name, params: child.defaultParams }"
         >
-          <template>
-            <q-item-section v-if="child.icon" avatar>
-              <q-icon :name="child.icon" />
-            </q-item-section>
+          <q-item-section v-if="child.icon" avatar>
+            <q-icon :name="child.icon" />
+          </q-item-section>
 
-            <q-item-section>
-              <q-item-label>{{ $t(`menuLink.${child.name}`) }}</q-item-label>
-            </q-item-section>
-          </template>
+          <q-item-section>
+            <q-item-label>{{ $t(`menuLink.${child.name}`) }}</q-item-label>
+          </q-item-section>
         </q-item>
       </q-expansion-item>
     </template>
