@@ -80,6 +80,7 @@
       </template>
       <template v-slot:top-right>
         <q-select
+          v-if="$q.screen.gt.sm"
           v-model="memberState"
           class="q-mr-sm"
           style="min-width: 100px"
