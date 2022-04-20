@@ -73,7 +73,6 @@
             ? 'margin-top: 110px; height: calc(100% - 190px);'
             : 'margin-top: 150px; height: calc(100% - 220px);'
         "
-        style="border-right: 1px solid #ddd"
       >
         <q-list>
           <template v-for="link in filteredLinks" :key="link.title">
@@ -84,9 +83,9 @@
 
       <q-space />
 
-      <div class="footer q-pt-md">
+      <div class="footer">
         <q-img
-          contain
+          fit="contain"
           :src="images.siteLogo"
           style="max-height: 40px; cursor: pointer"
           @click="aboutMemberMatters = true"
