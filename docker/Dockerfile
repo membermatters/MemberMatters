@@ -6,8 +6,8 @@ LABEL description="Base Dockerfile for the MemberMatters software."
 VOLUME /usr/src/data/
 VOLUME /usr/src/logs/
 
-RUN mkdir -p /usr/src/app/frontend && mkdir /usr/src/logs && mkdir /usr/src/data
-ADD memberportal/requirements.txt /usr/src/app/memberportal/requirements.txt
+RUN mkdir -p /usr/src/app/frontend && mkdir -p /usr/src/logs && mkdir -p /usr/src/data
+COPY memberportal/requirements.txt /usr/src/app/memberportal/requirements.txt
 
 RUN apt-get update && apt-get install -y nginx curl build-essential gcc make
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -29,13 +29,13 @@ RUN nvm use --delete-prefix v${NODE_VERSION} --silent
 
 # Install node deps
 WORKDIR /usr/src/app/frontend/
-ADD frontend/package* /usr/src/app/frontend/
+COPY frontend/package* /usr/src/app/frontend/
 RUN npm ci
 
-ADD frontend /usr/src/app/frontend
-ADD memberportal /usr/src/app/memberportal
-ADD docker /usr/src/app/docker
-ADD package.json /usr/src/app/package.json
+COPY frontend /usr/src/app/frontend
+COPY memberportal /usr/src/app/memberportal
+COPY docker /usr/src/app/docker
+COPY package.json /usr/src/app/package.json
 
 # Build our frontend
 WORKDIR /usr/src/app/frontend/
@@ -49,7 +49,7 @@ WORKDIR /usr/src/app/memberportal/
 RUN python3 manage.py collectstatic --noinput
 
 # Copy over the nginx config and requirement files
-ADD docker/nginx.conf /etc/nginx/nginx.conf
+COPY docker/nginx.conf /etc/nginx/nginx.conf
 
 # Expose the port and run the app
 EXPOSE 8000
