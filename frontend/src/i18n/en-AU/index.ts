@@ -158,6 +158,12 @@ export default {
   },
   tableHeading: {
     id: "ID",
+    name: "Name",
+    rfid: "RFID Tag",
+    email: "Email",
+    memberType: "Member Type",
+    subscriptionStatus: "Subscription Status",
+    status: "Status",
   },
   access: {
     pageDescription:
@@ -451,10 +457,10 @@ export default {
     add: "Add a new Membership Payment Plan",
     success: "Successfully added a new Membership Payment Plan.",
     fail: "Failed to add a new Membership Payment Plan.",
-    select: "Plan",
+    select: "Payment Plan",
     selected: "Selected Membership Payment Plan",
     confirmSelection: "Confirm",
-    selectToContinue: "Select a plan to continue.",
+    selectToContinue: "Select a payment plan to continue.",
     noPlans: "There are no payment plans available for this membership plan.",
     dueToday: "Due Today: {amount}",
     intervalDescription: "{amount} {currency} every {intervalCount} {interval}",
@@ -531,7 +537,7 @@ export default {
   tiers: {
     disabledFeature:
       "Warning! This feature is disabled. You can make changes but your users won't be able to use it.",
-    select: "Plan",
+    select: "Membership Plan",
     selectToContinue: "Select a membership plan to continue.",
     noTiers: "There are no membership plans available right now.",
     selected: "Selected Membership Plan",
