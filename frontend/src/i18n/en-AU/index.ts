@@ -312,10 +312,10 @@ export default {
     quickAdd: "Quick Add",
     totalAmount: "Total Amount",
     donateFundsDescription:
-      'Click the quick add buttons or enter an amount above, then click "donate funds". You can use this to pay for things like consumables or drinks.',
-    donateFundsSuccess: "Successfully donated funds.",
+      "Enter an amount above, then click {'\"'}@:memberbucks.donateFunds{'\"'}. You can use this to pay for things like consumables or purchases.",
+    donateFundsSuccess: "Successfully made payment.",
     donateFundsError:
-      "There was an error donating your funds, check your balance or try again later.",
+      "There was an error confirming the payment, check your balance or try again later.",
     cardExpiry: "Card Expiry",
     last4: "Card Last 4 Digits",
   },

@@ -18,7 +18,7 @@ urlpatterns = [
         name="MemberBucksAddFunds",
     ),
     path(
-        "api/memberbucks/donate/<int:amount>/",
+        "api/memberbucks/pay/<int:amount>/",
         views.MemberBucksDonateFunds.as_view(),
         name="MemberBucksDonateFunds",
     ),
