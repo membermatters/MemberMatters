@@ -58,7 +58,7 @@
             <q-item class="q-mt-sm row justify-center">
               <template v-if="deviceChoice === 'doors'">
                 <q-btn
-                  :ref="`${props.row.id}-unlock`"
+                  :loading="deviceLoading[props.row.id]?.unlock"
                   class="q-mr-sm"
                   size="sm"
                   color="accent"
@@ -72,7 +72,7 @@
               </template>
 
               <q-btn
-                :ref="`${props.row.id}-reboot`"
+                :loading="deviceLoading[props.row.id]?.reboot"
                 class="q-mr-sm"
                 size="sm"
                 color="accent"
@@ -107,7 +107,7 @@
         <q-td auto-width>
           <template v-if="deviceChoice === 'doors'">
             <q-btn
-              :ref="`${props.row.id}-unlock`"
+              :loading="deviceLoading[props.row.id]?.unlock"
               class="q-mr-sm"
               size="sm"
               color="accent"
@@ -120,7 +120,7 @@
             </q-btn>
           </template>
           <q-btn
-            :ref="`${props.row.id}-reboot`"
+            :loading="deviceLoading[props.row.id]?.reboot"
             class="q-mr-sm"
             size="sm"
             color="accent"
@@ -172,15 +172,33 @@ export default {
         descending: true,
         rowsPerPage: this.$q.screen.xs ? 3 : 10,
       },
+      deviceLoading: {},
     };
   },
+  watch: {
+    tableData: {
+      handler(newRows) {
+        newRows.forEach((row) => {
+          this.deviceLoading[row.id] = {
+            reboot: false,
+            unlock: false,
+          };
+        });
+      },
+      deep: true,
+    },
+  },
   computed: {
-    // TODO: Add table labels here for I18n translation and door/interlock differences
     columnI18n() {
       let columns = [];
       if (this.deviceChoice === "doors") {
         columns = [
-          { name: "id", label: "ID", field: "id", sortable: true },
+          {
+            name: "id",
+            label: this.$t("tableHeading.id"),
+            field: "id",
+            sortable: true,
+          },
           { name: "name", label: "Name", field: "name", sortable: true },
           {
             name: "ipAddress",
@@ -190,14 +208,14 @@ export default {
           },
           {
             name: "lastSeen",
-            label: "Last Seen",
+            label: this.$t("access.lastSeen"),
             field: "lastSeen",
             sortable: true,
             format: (val) => this.formatDate(val),
           },
           {
             name: "usage",
-            label: "Swipes",
+            label: this.$t("access.usage"),
             field: "usage",
             sortable: true,
           },
@@ -238,7 +256,10 @@ export default {
       this.$emit("openDevice", deviceId, this.deviceChoice);
     },
     rebootDevice(deviceId) {
-      this.$refs[`${deviceId}-reboot`].loading = true;
+      if (this.deviceLoading[deviceId])
+        this.deviceLoading[deviceId].reboot = true;
+      else this.deviceLoading[deviceId] = { reboot: true, unlock: false };
+
       this.$axios
         .post(`/api/access/${this.deviceChoice}/${deviceId}/reboot/`)
         .catch(() => {
@@ -248,13 +269,20 @@ export default {
           });
         })
         .finally(() => {
-          this.$refs[`${deviceId}-reboot`].loading = false;
+          this.deviceLoading[deviceId].reboot = false;
         });
     },
     unlockDoor(doorId) {
-      this.$refs[`${doorId}-unlock`].loading = true;
+      if (this.deviceLoading[doorId]) this.deviceLoading[doorId].unlock = true;
+      else this.deviceLoading[doorId] = { unlock: true, reboot: false };
+
       this.$axios
         .post(`/api/access/doors/${doorId}/unlock/`)
+        .then(() => {
+          this.$q.notify({
+            message: this.$t("doors.unlocked"),
+          });
+        })
         .catch(() => {
           this.$q.dialog({
             title: this.$t("error.error"),
@@ -262,7 +290,7 @@ export default {
           });
         })
         .finally(() => {
-          this.$refs[`${doorId}-unlock`].loading = false;
+          this.deviceLoading[doorId].unlock = false;
         });
     },
   },

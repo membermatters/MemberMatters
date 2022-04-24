@@ -1,5 +1,5 @@
 import { Platform, Dialog } from "quasar";
-import i18n from "boot/i18n";
+import { i18n } from "boot/i18n";
 
 export default ({ router, store }) => {
   router.beforeEach((to, from, next) => {
@@ -18,8 +18,8 @@ export default ({ router, store }) => {
     ) {
       console.warn("Needs Induction2");
       Dialog.create({
-        title: i18n.t("error.error"),
-        message: i18n.t("error.403MemberOnly"),
+        title: i18n.global.t("error.error"),
+        message: i18n.global.t("error.403MemberOnly"),
       });
       return;
     }

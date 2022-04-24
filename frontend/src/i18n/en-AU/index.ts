@@ -156,6 +156,9 @@ export default {
     futureDate: "Date must be today or in the future.",
     tooMany: "Sorry, the maximum is {number}.",
   },
+  tableHeading: {
+    id: "ID",
+  },
   access: {
     pageDescription:
       "Your access permissions for doors and interlocks are shown below. Please " +
@@ -176,6 +179,11 @@ export default {
     playTheme: "Play theme on swipe",
     exemptSignin: "Exempt from site sign in requirement (if enabled)",
     hiddenToMembers: "Hidden from members on their access permissions screen",
+    user: "User",
+    swipes: "Swipes",
+    lastSwipe: "Last Swipe",
+    lastSeen: "Last Seen",
+    usage: "Usage",
   },
   lastseen: {
     pageDescription:
@@ -423,7 +431,7 @@ export default {
     currentPeriodEnd: "Current Period End",
     startDate: "Start Date",
     noSubscription: "No subscription was found for this member.",
-    noMembers: "No members were found that match your filter(s).",
+    noMembers: "No members were found that match your filter or search query.",
   },
   doors: {
     nodata: "There are no doors in the system.",
@@ -431,6 +439,7 @@ export default {
     description: "Door Description",
     ipAddress: "Door IP Address",
     remove: "Remove this door",
+    unlocked: "Unlock successful",
   },
   paymentPlans: {
     title: "Membership Payment Plans",

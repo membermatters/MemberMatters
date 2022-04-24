@@ -404,19 +404,19 @@ export default {
         columns = [
           {
             name: "user",
-            label: "User",
+            label: this.$t("access.user"),
             field: "screen_name",
             sortable: true,
           },
           {
             name: "record",
-            label: "Swipes",
+            label: this.$t("access.swipes"),
             field: "records",
             sortable: true,
           },
           {
             name: "lastSeen",
-            label: "Last Swipe",
+            label: this.$t("access.lastSwipe"),
             field: "lastSeen",
             sortable: true,
           },

@@ -111,6 +111,9 @@ venv.bak/
 /memberportal/media/
 
 *.sqlite3
+**/*.sqlite3
+*.sqlite3.bak
+**/*.sqlite3.bak
 
 \.DS_Store
 
