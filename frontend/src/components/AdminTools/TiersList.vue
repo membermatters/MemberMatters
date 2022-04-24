@@ -88,7 +88,12 @@
       :rows="tiers"
       :columns="[
         { name: 'name', label: 'Name', field: 'name', sortable: true },
-        { name: 'description', label: 'Description', field: 'description' },
+        {
+          name: 'description',
+          style: 'max-width: 500px; text-overflow: ellipsis; overflow: clip;',
+          label: 'Description',
+          field: 'description',
+        },
       ]"
       row-key="id"
       :filter="filter"
