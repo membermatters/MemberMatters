@@ -65,18 +65,18 @@
               <q-list>
                 <q-item v-close-popup clickable @click="sendWelcomeEmail">
                   <q-item-section>
-                    <q-item-label>{{
-                      $t("adminTools.sendWelcomeEmail")
-                    }}</q-item-label>
+                    <q-item-label
+                      >{{ $t("adminTools.sendWelcomeEmail") }}
+                    </q-item-label>
                   </q-item-section>
                 </q-item>
 
                 <template v-if="selectedMember.xero.accountId">
                   <q-item v-close-popup clickable @click="createInvoice()">
                     <q-item-section>
-                      <q-item-label>{{
-                        $t("adminTools.createInvoice")
-                      }}</q-item-label>
+                      <q-item-label
+                        >{{ $t("adminTools.createInvoice") }}
+                      </q-item-label>
                     </q-item-section>
                   </q-item>
 
@@ -86,22 +86,15 @@
                         :href="`https://go.xero.com/Contacts/View/${this.selectedMember.xero.accountId}`"
                         target="_blank"
                       >
-                        <q-item-label>{{
-                          $t("adminTools.openXero")
-                        }}</q-item-label>
+                        <q-item-label
+                          >{{ $t("adminTools.openXero") }}
+                        </q-item-label>
                       </a>
                     </q-item-section>
                   </q-item>
                 </template>
               </q-list>
             </q-btn-dropdown>
-          </div>
-
-          <div
-            class="text-body1"
-            :class="{ 'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs }"
-          >
-            {{ $t("adminTools.memberState") }}: {{ selectedMember.state }}
           </div>
 
           <div class="row q-pt-md">
@@ -262,6 +255,45 @@
               :class="{ 'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs }"
             >
               <h5 class="q-my-sm">
+                {{ $t("adminTools.otherAttributes") }}
+              </h5>
+
+              <q-list bordered padding class="rounded-borders">
+                <q-item>
+                  <q-item-section>
+                    <q-item-label
+                      :class="{
+                        inactive: selectedMember.state === 'Inactive',
+                        active: selectedMember.state === 'Active',
+                      }"
+                    >
+                      {{ selectedMember.state }}
+                    </q-item-label>
+
+                    <q-item-label caption>
+                      {{ $t("adminTools.memberState") }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item v-for="item in ['id', 'state', 'admin']" :key="item">
+                  <q-item-section>
+                    <q-item-label
+                      >{{
+                        selectedMember[item]
+                          ? selectedMember[item]
+                          : $t("error.noValue")
+                      }}
+                    </q-item-label>
+
+                    <q-item-label caption>
+                      {{ $t(`form.${item}`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+
+              <h5 class="q-mt-md q-mb-sm">
                 {{ $t("menuLink.memberbucks") }}
               </h5>
               <q-list bordered padding class="rounded-borders">
@@ -290,28 +322,6 @@
                     </q-item-label>
                     <q-item-label caption>
                       {{ $t(`memberbucks.lastPurchase`) }}
-                    </q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-
-              <h5 class="q-mt-md q-mb-sm">
-                {{ $t("adminTools.otherAttributes") }}
-              </h5>
-              <q-list bordered padding class="rounded-borders">
-                <q-item v-for="item in ['id', 'state', 'admin']" :key="item">
-                  <q-item-section>
-                    <q-item-label lines="1">
-                      <template>
-                        {{
-                          selectedMember[item]
-                            ? selectedMember[item]
-                            : $t("error.noValue")
-                        }}
-                      </template>
-                    </q-item-label>
-                    <q-item-label caption>
-                      {{ $t(`form.${item}`) }}
                     </q-item-label>
                   </q-item-section>
                 </q-item>
@@ -364,7 +374,7 @@
           <access-list :member-id="selectedMemberFiltered.id" />
         </q-tab-panel>
 
-        <q-tab-panel name="log"> Coming Soon! </q-tab-panel>
+        <q-tab-panel name="log"> Coming Soon!</q-tab-panel>
 
         <q-tab-panel name="billing">
           <div class="text-h6">
@@ -866,5 +876,13 @@ a:hover,
 a:active {
   color: inherit;
   text-decoration: none;
+}
+
+.active {
+  color: green;
+}
+
+.inactive {
+  color: red;
 }
 </style>
