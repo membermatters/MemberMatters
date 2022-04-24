@@ -73,7 +73,7 @@ import { mapGetters, mapActions } from "vuex";
 
 export default defineComponent({
   name: "MemberBucksDonateFunds",
-  emits: ["ok", "cancel"],
+  emits: ["ok", "cancel", "hide"],
   data() {
     return {
       donateFundsError: null,

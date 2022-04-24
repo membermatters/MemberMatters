@@ -212,7 +212,7 @@ import formMixin from "@mixins/formMixin";
 import SavedNotification from "@components/SavedNotification";
 
 export default {
-  emits: ["ok", "cancel"],
+  emits: ["ok", "cancel", "hide"],
   components: {
     SavedNotification,
   },
@@ -279,7 +279,6 @@ export default {
       });
     });
   },
-
   methods: {
     ...mapActions("adminTools", ["getDoors", "getInterlocks"]),
     initForm() {

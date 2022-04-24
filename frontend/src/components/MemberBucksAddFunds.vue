@@ -10,12 +10,12 @@
         </div>
       </q-card-section>
 
-      <template v-if="profile.financial.memberBucks.savedCard.last4">
+      <template v-if="profile?.financial?.memberBucks?.savedCard?.last4">
         <q-card-section>
           <i18n-t keypath="memberbucks.addFundsDescription" tag="p">
             <template v-slot:savedCard>
               <span class="proxy-field">
-                <b>{{ profile.financial.memberBucks.savedCard.last4 }}</b>
+                <b>{{ profile?.financial?.memberBucks?.savedCard?.last4 }}</b>
               </span>
             </template>
           </i18n-t>
@@ -90,7 +90,7 @@ import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "MemberBucksAddFunds",
-  emits: ["ok", "cancel"],
+  emits: ["ok", "cancel", "hide"],
   data() {
     return {
       addFundsError: null,
@@ -147,7 +147,7 @@ export default {
     },
     balance() {
       return this.$n(
-        this?.profile?.financial?.memberBucks?.balance,
+        this?.profile?.financial?.memberBucks?.balance || 0,
         "currency"
       );
     },
