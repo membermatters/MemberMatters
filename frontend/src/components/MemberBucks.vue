@@ -9,7 +9,12 @@
           field: 'description',
           sortable: true,
         },
-        { name: 'amount', label: 'Amount', field: 'amount', sortable: true },
+        {
+          name: 'amount',
+          label: 'Amount',
+          field: 'amount',
+          sortable: true,
+        },
         {
           name: 'date',
           label: 'When',
@@ -19,10 +24,6 @@
         },
       ]"
       row-key="id"
-      :filter="filter"
-      v-model:pagination="pagination"
-      :loading="loading"
-      :grid="$q.screen.xs"
     >
       <template v-slot:top-left>
         <div class="row q-pt-sm">
@@ -66,24 +67,57 @@
         </div>
         <div class="row q-pt-sm">
           {{ $t("memberbucks.currentBalance") }}
-          {{ $n(memberBucksBalance, "currency") }}
+          {{ getBalanceDisplay }}
         </div>
       </template>
-
-      <!--      <template v-if="$q.screen.gt.xs" v-slot:top-right>-->
-      <!--        <div class="row">-->
-      <!--          -->
-      <!--        </div>-->
-      <!--      </template>-->
 
       <template v-slot:body-cell-amount="props">
         <q-td>
           <div :class="{ credit: props.value > 0, debit: props.value < 0 }">
-            ${{ props.value }}
+            {{ $n(props.value, "currency") }}
           </div>
         </q-td>
       </template>
     </q-table>
+    <!--    <q-table-->
+    <!--      :rows="memberBucksTransactionsDisplay"-->
+    <!--      :columns="[-->
+    <!--        {-->
+    <!--          name: 'description',-->
+    <!--          label: 'Description',-->
+    <!--          field: 'description',-->
+    <!--          sortable: true,-->
+    <!--        },-->
+    <!--        { name: 'amount', label: 'Amount', field: 'amount', sortable: true },-->
+    <!--        {-->
+    <!--          name: 'date',-->
+    <!--          label: 'When',-->
+    <!--          field: 'date',-->
+    <!--          sortable: true,-->
+    <!--          format: (val) => this.formatWhen(val),-->
+    <!--        },-->
+    <!--      ]"-->
+    <!--      row-key="id"-->
+    <!--      :filter="filter"-->
+    <!--      v-model:pagination="pagination"-->
+    <!--      :loading="loading"-->
+    <!--      :grid="$q.screen.xs"-->
+    <!--    >-->
+
+    <!--      &lt;!&ndash;      <template v-if="$q.screen.gt.xs" v-slot:top-right>&ndash;&gt;-->
+    <!--      &lt;!&ndash;        <div class="row">&ndash;&gt;-->
+    <!--      &lt;!&ndash;          &ndash;&gt;-->
+    <!--      &lt;!&ndash;        </div>&ndash;&gt;-->
+    <!--      &lt;!&ndash;      </template>&ndash;&gt;-->
+
+    <!--      <template v-slot:body-cell-amount="props">-->
+    <!--        <q-td>-->
+    <!--          <div :class="{ credit: props.value > 0, debit: props.value < 0 }">-->
+    <!--            ${{ props.value }}-->
+    <!--          </div>-->
+    <!--        </q-td>-->
+    <!--      </template>-->
+    <!--    </q-table>-->
   </div>
   <div v-else>
     <q-card flat>
@@ -161,7 +195,7 @@ export default {
     },
     donateFunds() {
       this.$router
-        .push({ name: "memberbucks", params: { dialog: "donate" } })
+        .push({ name: "memberbucks", params: { dialog: "pay" } })
         .catch((error) => {
           if (error.name === "NavigationDuplicated") {
             this.openDonateFundsDialog();
@@ -178,7 +212,7 @@ export default {
     dialog(dialog) {
       if (dialog === "add") {
         this.openAddFundsDialog();
-      } else if (dialog === "donate") {
+      } else if (dialog === "pay") {
         this.openDonateFundsDialog();
       } else {
         this.closeDialogs();
@@ -195,7 +229,7 @@ export default {
     });
     if (this.dialog === "add") {
       this.openAddFundsDialog();
-    } else if (this.dialog === "donate") {
+    } else if (this.dialog === "pay") {
       this.openDonateFundsDialog();
     }
   },
@@ -205,6 +239,11 @@ export default {
     icons() {
       return icons;
     },
+    getBalanceDisplay() {
+      return this.memberBucksBalance
+        ? this.$n(this.memberBucksBalance, "currency")
+        : this.$n(0, "currency");
+    },
   },
 };
 </script>
@@ -213,6 +252,9 @@ export default {
 .credit
   color: green
 
-  .debit
-    color: red
+.debit
+  color: red
+
+.credit, .debit
+  float: right
 </style>
