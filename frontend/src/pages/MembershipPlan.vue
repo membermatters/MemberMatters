@@ -5,7 +5,7 @@
     </template>
 
     <template v-else-if="!currentPlan">
-      <template><select-tier /></template>
+      <select-tier />
     </template>
 
     <template v-else>
