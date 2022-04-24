@@ -73,7 +73,7 @@ export default {
       return new Promise((resolve) => {
         api.get("/api/profile/").then((response) => {
           response.data.firstJoined = dayjs(response.data.firstJoined).format(
-            "Do MMMM YYYY"
+            "D MMMM YYYY"
           );
           commit("setProfile", response.data);
           commit("setLoggedIn", true);
