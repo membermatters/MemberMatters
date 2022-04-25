@@ -1,11 +1,12 @@
 <template>
   <div style="max-width: 100%">
     <q-table
-      :data="displayMemberList"
+      :rows="displayMemberList"
+      :no-data-label="$t('adminTools.noMembers')"
       :columns="columns"
       row-key="email"
       :filter="filter"
-      :pagination.sync="pagination"
+      v-model:pagination="pagination"
       :loading="loading"
       :grid="$q.screen.lt.md"
       class="full-width"
@@ -23,7 +24,7 @@
           <template v-if="$q.screen.lt.md">
             <div class="full-width">
               <q-btn-dropdown
-                class="q-mb-xs-sm"
+                class="q-mb-sm"
                 color="primary"
                 :label="$t('adminTools.exportOptions')"
               >
@@ -49,7 +50,7 @@
             <div class="full-width">
               <q-select
                 v-model="memberState"
-                class="q-mb-xs-sm"
+                class="q-mb-sm"
                 outlined
                 emit-value
                 :options="filterOptions"
@@ -61,14 +62,14 @@
 
           <template v-else>
             <q-btn
-              class="q-mr-sm q-mb-xs-sm"
+              class="q-mr-sm q-mb-sm"
               color="primary"
               :icon="icons.export"
               :label="$t('adminTools.exportCsv')"
               @click="exportCsv"
             />
             <q-btn
-              class="q-mr-sm q-mb-xs-sm"
+              class="q-mr-sm q-mb-sm"
               color="primary"
               :icon="icons.email"
               :label="$t('adminTools.emailAddresses')"
@@ -79,6 +80,7 @@
       </template>
       <template v-slot:top-right>
         <q-select
+          v-if="$q.screen.gt.sm"
           v-model="memberState"
           class="q-mr-sm"
           style="min-width: 100px"
@@ -109,7 +111,7 @@
 import icons from "@icons";
 import formatMixin from "@mixins/formatMixin";
 import { exportFile } from "quasar";
-import stringify from "csv-stringify";
+import { stringify } from "csv-stringify";
 
 export default {
   name: "MembersList",
@@ -153,38 +155,38 @@ export default {
       return [
         {
           name: "name",
-          label: "Name",
+          label: this.$t("tableHeading.name"),
           field: (row) => row.name.full,
           sortable: true,
           format: (val, row) => `${val} (${row.screenName})`,
         },
         {
           name: "rfid",
-          label: "RFID",
+          label: this.$t("tableHeading.rfid"),
           field: "rfid",
           sortable: true,
         },
         {
           name: "email",
-          label: "Email",
+          label: this.$t("tableHeading.email"),
           field: "email",
           sortable: true,
         },
         {
           name: "memberType",
-          label: "Member Type",
+          label: this.$t("tableHeading.memberType"),
           field: (row) => row.memberType.name,
           sortable: true,
         },
         {
           name: "subscriptionStatus",
-          label: "Subscription Status",
+          label: this.$t("tableHeading.subscriptionStatus"),
           field: "subscriptionStatus",
           sortable: true,
         },
         {
           name: "status",
-          label: "Status",
+          label: this.$t("tableHeading.status"),
           field: "state",
           sortable: true,
         },

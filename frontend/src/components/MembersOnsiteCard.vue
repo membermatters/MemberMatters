@@ -49,7 +49,7 @@ export default {
     // Refresh statistics every 10 seconds while the page is open
     this.refreshInterval = setInterval(this.getStatistics, 10000);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearInterval(this.refreshInterval);
   },
   methods: {

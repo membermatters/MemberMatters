@@ -1,4 +1,5 @@
-import Vue from "vue";
+// import Vue from "vue";
+import { api } from "boot/axios";
 
 export default {
   namespaced: true,
@@ -56,7 +57,7 @@ export default {
   actions: {
     getLastSeen({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios
+        api
           .get("/api/tools/lastseen/")
           .then((result) => {
             commit("setLastSeen", result.data);
@@ -70,7 +71,7 @@ export default {
     },
     getRecentSwipes({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios
+        api
           .get("/api/tools/swipes/")
           .then((result) => {
             commit("setRecentSwipes", result.data);
@@ -84,7 +85,7 @@ export default {
     },
     getUpcomingMeetings({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios
+        api
           .get("/api/tools/meetings/")
           .then((result) => {
             commit("setUpcomingMeetings", result.data);
@@ -98,7 +99,7 @@ export default {
     },
     getProxies({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios
+        api
           .get("/api/proxies/")
           .then((result) => {
             commit("setProxies", result.data);
@@ -112,7 +113,7 @@ export default {
     },
     getMembers({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios
+        api
           .get("/api/tools/members/")
           .then((result) => {
             commit("setMembers", result.data);
@@ -126,7 +127,7 @@ export default {
     },
     getMemberBucksTransactions({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios
+        api
           .get("/api/memberbucks/transactions/")
           .then((result) => {
             commit("setMemberBucksTransactions", result.data);
@@ -140,7 +141,7 @@ export default {
     },
     getMemberBucksBalance({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios
+        api
           .get("/api/memberbucks/balance/")
           .then((result) => {
             commit("setMemberBucksBalance", result.data.balance);
@@ -154,7 +155,7 @@ export default {
     },
     getStatistics({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios
+        api
           .get("/api/statistics/")
           .then((result) => {
             commit("setStatistics", result.data);

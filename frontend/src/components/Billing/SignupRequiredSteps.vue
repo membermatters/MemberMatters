@@ -125,7 +125,6 @@
           <div class="row justify-start q-mt-md">
             <q-space />
             <q-btn
-              type="a"
               :href="features.signup.contactPageUrl"
               target="_blank"
               color="primary"
@@ -182,7 +181,6 @@
           <div class="row justify-start q-mt-md">
             <q-space />
             <q-btn
-              type="a"
               :to="{ name: 'dashboard' }"
               color="primary"
               :label="$tc('signup.continueToDashboard')"
@@ -195,9 +193,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from "vue";
 import { mapGetters } from "vuex";
 import icons from "@icons";
+import { api } from "boot/axios";
 
 export default defineComponent({
   name: "SignupRequiredSteps",
@@ -230,7 +229,7 @@ export default defineComponent({
       this.updateInductionStatus();
     }, 10000);
 
-    this.$axios.get("api/billing/can-signup/").then((result) => {
+    api.get("api/billing/can-signup/").then((result) => {
       if (result.data.success) {
         this.step = 3; // skip straight to the end
       } else {
@@ -245,7 +244,7 @@ export default defineComponent({
   },
   methods: {
     async updateInductionStatus() {
-      let result = await this.$axios.post("/api/billing/check-induction/");
+      let result = await api.post("/api/billing/check-induction/");
       this.inductionComplete = result.data.success;
       this.inductionScore = Math.floor(result.data.score);
 
@@ -259,7 +258,7 @@ export default defineComponent({
       clearInterval(this.interval);
     },
     async completeSignup() {
-      this.$axios
+      api
         .post("/api/billing/complete-signup/")
         .then((result) => {
           if (!result.data.success) {
@@ -279,7 +278,7 @@ export default defineComponent({
     },
     async submitAccessCard() {
       this.accessCardLoading = true;
-      await this.$axios
+      await api
         .post("/api/billing/access-card/", {
           accessCard: this.accessCard,
         })

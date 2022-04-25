@@ -1,5 +1,4 @@
 import icons from "../icons";
-import store from "../store";
 
 const PageAndRouteConfig = [
   {
@@ -79,7 +78,7 @@ const PageAndRouteConfig = [
       },
       {
         icon: icons.members,
-        to: "/manage/tiers/:tierId",
+        to: "/manage/tiers/:planId",
         name: "manageTier",
         loggedIn: true,
         admin: true,

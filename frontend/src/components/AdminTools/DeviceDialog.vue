@@ -166,11 +166,11 @@
         <q-tab-panel name="stats">
           <div class="row flex content-start justify-center">
             <q-table
-              :data="device.stats"
+              :rows="device.stats"
               :columns="columnI18n"
               row-key="key"
               :filter="filter"
-              :pagination.sync="devicePagination"
+              v-model:pagination="devicePagination"
               :dense="$q.screen.lt.md"
               :grid="$q.screen.xs"
               class="table"
@@ -212,6 +212,7 @@ import formMixin from "@mixins/formMixin";
 import SavedNotification from "@components/SavedNotification";
 
 export default {
+  emits: ["ok", "cancel", "hide"],
   components: {
     SavedNotification,
   },
@@ -278,7 +279,6 @@ export default {
       });
     });
   },
-
   methods: {
     ...mapActions("adminTools", ["getDoors", "getInterlocks"]),
     initForm() {
@@ -404,19 +404,19 @@ export default {
         columns = [
           {
             name: "user",
-            label: "User",
+            label: this.$t("access.user"),
             field: "screen_name",
             sortable: true,
           },
           {
             name: "record",
-            label: "Swipes",
+            label: this.$t("access.swipes"),
             field: "records",
             sortable: true,
           },
           {
             name: "lastSeen",
-            label: "Last Swipe",
+            label: this.$t("access.lastSwipe"),
             field: "lastSeen",
             sortable: true,
           },

@@ -19,7 +19,7 @@
 import SadFace from "../components/SadFace";
 
 export default {
-  name: "Error404",
+  name: "Error-404",
   components: { SadFace },
 };
 </script>

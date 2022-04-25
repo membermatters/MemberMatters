@@ -1,23 +1,26 @@
 <template>
   <q-table
-    :data="kiosks"
-    :columns="[{
-                 name: 'authorised',
-                 label: 'Authorised',
-                 field: 'authorised',
-                 sortable: true,
-                 format: (val, row) => this.capitaliseFirst(val) },
-               { name: 'name', label: 'Name', field: 'name', sortable: true },
-               { name: 'lastSeen',
-                 label: 'Last Seen',
-                 field: 'lastSeen',
-                 sortable: true,
-                 format: (val, row) => this.formatDate(val)
-               },
+    :rows="kiosks"
+    :columns="[
+      {
+        name: 'authorised',
+        label: 'Authorised',
+        field: 'authorised',
+        sortable: true,
+        format: (val, row) => this.capitaliseFirst(val),
+      },
+      { name: 'name', label: 'Name', field: 'name', sortable: true },
+      {
+        name: 'lastSeen',
+        label: 'Last Seen',
+        field: 'lastSeen',
+        sortable: true,
+        format: (val, row) => this.formatDate(val),
+      },
     ]"
     row-key="id"
     :filter="filter"
-    :pagination.sync="pagination"
+    v-model:pagination="pagination"
     :loading="loading"
     :grid="$q.screen.xs"
     :no-data-label="$t('kiosk.nodata')"
@@ -40,18 +43,14 @@
     <template v-slot:header="props">
       <q-tr :props="props">
         <q-th auto-width />
-        <q-th
-          v-for="col in props.cols"
-          :key="col.name"
-          :props="props"
-        >
+        <q-th v-for="col in props.cols" :key="col.name" :props="props">
           {{ col.label }}
         </q-th>
         <q-th auto-width>
-          {{ $t('edit') }}
+          {{ $t("edit") }}
         </q-th>
         <q-th auto-width>
-          {{ $t('delete') }}
+          {{ $t("delete") }}
         </q-th>
       </q-tr>
     </template>
@@ -63,7 +62,7 @@
         <q-card class="q-py-sm">
           <q-list dense>
             <q-item
-              v-for="col in props.cols.filter(col => col.name !== 'desc')"
+              v-for="col in props.cols.filter((col) => col.name !== 'desc')"
               :key="col.name"
             >
               <q-item-section>
@@ -79,12 +78,7 @@
             <q-separator />
 
             <q-item class="q-mt-sm row justify-center">
-              <q-btn
-                size="sm"
-                color="accent"
-                :icon="icons.edit"
-                disable
-              />
+              <q-btn size="sm" color="accent" :icon="icons.edit" disable />
             </q-item>
           </q-list>
         </q-card>
@@ -102,11 +96,7 @@
             @click="props.expand = !props.expand"
           />
         </q-td>
-        <q-td
-          v-for="col in props.cols"
-          :key="col.name"
-          :props="props"
-        >
+        <q-td v-for="col in props.cols" :key="col.name" :props="props">
           {{ col.value }}
         </q-td>
 
@@ -121,15 +111,11 @@
 
           <q-dialog v-model="editKioskDialog">
             <q-card>
-              <q-card-section class="row items-center q-pb-none dialog-close-button">
+              <q-card-section
+                class="row items-center q-pb-none dialog-close-button"
+              >
                 <q-space />
-                <q-btn
-                  v-close-popup
-                  :icon="icons.close"
-                  flat
-                  round
-                  dense
-                />
+                <q-btn v-close-popup :icon="icons.close" flat round dense />
               </q-card-section>
 
               <q-card-section>
@@ -149,14 +135,9 @@
           />
         </q-td>
       </q-tr>
-      <q-tr
-        v-show="props.expand"
-        :props="props"
-      >
+      <q-tr v-show="props.expand" :props="props">
         <q-td colspan="100%">
-          <kiosk-details
-            :kiosk="props.row"
-          />
+          <kiosk-details :kiosk="props.row" />
         </q-td>
       </q-tr>
     </template>
@@ -190,31 +171,34 @@ export default {
   methods: {
     ...mapActions("adminTools", ["getKiosks"]),
     deleteKiosk(id) {
-      this.$q.dialog({
-        title: "Confirm",
-        message: this.$t("kiosk.delete"),
-        cancel: {
-          color: "primary",
-          flat: true,
-          label: this.$t("button.cancel"),
-        },
-        ok: {
-          color: "primary",
-          label: this.$t("button.ok"),
-        },
-        persistent: true,
-      }).onOk(() => {
-        this.$axios.delete(`/api/kiosks/${id}/`, this.form)
-          .then(() => {
-            this.getKiosks();
-          })
-          .catch(() => {
-            this.$q.dialog({
-              title: this.$t("error.error"),
-              message: this.$t("error.requestFailed"),
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: this.$t("kiosk.delete"),
+          cancel: {
+            color: "primary",
+            flat: true,
+            label: this.$t("button.cancel"),
+          },
+          ok: {
+            color: "primary",
+            label: this.$t("button.ok"),
+          },
+          persistent: true,
+        })
+        .onOk(() => {
+          this.$axios
+            .delete(`/api/kiosks/${id}/`, this.form)
+            .then(() => {
+              this.getKiosks();
+            })
+            .catch(() => {
+              this.$q.dialog({
+                title: this.$t("error.error"),
+                message: this.$t("error.requestFailed"),
+              });
             });
-          });
-      });
+        });
     },
     editKiosk(id) {
       this.editKioskId = id;
@@ -223,10 +207,9 @@ export default {
   },
   mounted() {
     this.loading = true;
-    this.getKiosks()
-      .finally(() => {
-        this.loading = false;
-      });
+    this.getKiosks().finally(() => {
+      this.loading = false;
+    });
   },
   computed: {
     ...mapGetters("adminTools", ["kiosks"]),
@@ -237,8 +220,8 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
-  @media (max-width: $breakpoint-xs-max)
-    .access-list
-      width: 100%;
+<style lang="sass" scoped>
+@media (max-width: $breakpoint-xs-max)
+  .access-list
+    width: 100%
 </style>

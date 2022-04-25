@@ -1,18 +1,15 @@
 <template>
-  <transition name="fade">
-    <div
-      v-show="value"
-      class="text-body1 text-center saved-message"
-    >
-      <template v-if="showText">
-        {{ error ? $t('form.error') : $t('form.saved') }}
-      </template>
-      <q-icon
-        :color="error ? 'fail' : 'success'"
-        :name="error ? icons.fail : icons.success"
-      />
-    </div>
-  </transition>
+  <!--  <transition name="fade">-->
+  <div v-show="value" class="text-body1 text-center saved-message">
+    <template v-if="showText">
+      {{ error ? $t("form.error") : $t("form.saved") }}
+    </template>
+    <q-icon
+      :color="error ? 'fail' : 'success'"
+      :name="error ? icons.fail : icons.success"
+    />
+  </div>
+  <!--  </transition>-->
 </template>
 
 <script>
@@ -59,12 +56,12 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-  .fade-leave-active
-    transition: opacity 0.5s ease-out
+.fade-leave-active
+  transition: opacity 0.5s ease-out
 
-  .fade-enter-active
-    transition: opacity 0.1s ease-in
+.fade-enter-active
+  transition: opacity 0.1s ease-in
 
-  .fade-enter, .fade-leave-to
-    opacity: 0
+.fade-enter, .fade-leave-to
+  opacity: 0
 </style>

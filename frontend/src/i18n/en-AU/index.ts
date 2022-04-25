@@ -12,7 +12,8 @@ export default {
     register: "Register",
     registerSuccess: "Successfully Registered",
     manageTiers: "Membership Plans",
-    manageTier: "Manage Plan",
+    manageTier: "Manage Membership Plan",
+    managePlan: "Manage Payment Plan",
 
     adminTools: "Admin Tools",
     meetings: "Meetings",
@@ -155,6 +156,15 @@ export default {
     futureDate: "Date must be today or in the future.",
     tooMany: "Sorry, the maximum is {number}.",
   },
+  tableHeading: {
+    id: "ID",
+    name: "Name",
+    rfid: "RFID Tag",
+    email: "Email",
+    memberType: "Member Type",
+    subscriptionStatus: "Subscription Status",
+    status: "Status",
+  },
   access: {
     pageDescription:
       "Your access permissions for doors and interlocks are shown below. Please " +
@@ -175,6 +185,11 @@ export default {
     playTheme: "Play theme on swipe",
     exemptSignin: "Exempt from site sign in requirement (if enabled)",
     hiddenToMembers: "Hidden from members on their access permissions screen",
+    user: "User",
+    swipes: "Swipes",
+    lastSwipe: "Last Swipe",
+    lastSeen: "Last Seen",
+    usage: "Usage",
   },
   lastseen: {
     pageDescription:
@@ -311,10 +326,10 @@ export default {
     quickAdd: "Quick Add",
     totalAmount: "Total Amount",
     donateFundsDescription:
-      'Click the quick add buttons or enter an amount above, then click "donate funds". You can use this to pay for things like consumables or drinks.',
-    donateFundsSuccess: "Successfully donated funds.",
+      "Enter an amount above, then click {'\"'}@:memberbucks.donateFunds{'\"'}. You can use this to pay for things like consumables or purchases.",
+    donateFundsSuccess: "Successfully made payment.",
     donateFundsError:
-      "There was an error donating your funds, check your balance or try again later.",
+      "There was an error confirming the payment, check your balance or try again later.",
     cardExpiry: "Card Expiry",
     last4: "Card Last 4 Digits",
   },
@@ -369,7 +384,7 @@ export default {
     "to date.",
   progress: "Progress: {percent}%",
   adminTools: {
-    emailAddresses: "Email Addresses",
+    emailAddresses: "Export Email List",
     exportCsv: "Export CSV",
     exportOptions: "Export Options",
     filterOptions: "Filter",
@@ -422,6 +437,7 @@ export default {
     currentPeriodEnd: "Current Period End",
     startDate: "Start Date",
     noSubscription: "No subscription was found for this member.",
+    noMembers: "No members were found that match your filter or search query.",
   },
   doors: {
     nodata: "There are no doors in the system.",
@@ -429,22 +445,23 @@ export default {
     description: "Door Description",
     ipAddress: "Door IP Address",
     remove: "Remove this door",
+    unlocked: "Unlock successful",
   },
   paymentPlans: {
-    title: "Membership Plans",
-    nodata: "There are no Membership Plans available.",
+    title: "Membership Payment Plans",
+    nodata: "There are no Membership Payment Plans available.",
     name: "Plan Name",
-    description: "Membership Plan Description",
+    description: "Membership Payment Plan Description",
     recurringDescription: "Bill for this plan every:",
-    remove: "Remove this Membership Plan",
-    add: "Add a new Membership Plan",
-    success: "Successfully added a new Membership Plan.",
-    fail: "Failed to add a new Membership Plan.",
-    select: "Plan",
-    selected: "Selected Membership Plan",
+    remove: "Remove this Membership Payment Plan",
+    add: "Add a new Membership Payment Plan",
+    success: "Successfully added a new Membership Payment Plan.",
+    fail: "Failed to add a new Membership Payment Plan.",
+    select: "Payment Plan",
+    selected: "Selected Membership Payment Plan",
     confirmSelection: "Confirm",
-    selectToContinue: "Select a plan to continue.",
-    noPlans: "There are no billing plans available for this membership plan.",
+    selectToContinue: "Select a payment plan to continue.",
+    noPlans: "There are no payment plans available for this membership plan.",
     dueToday: "Due Today: {amount}",
     intervalDescription: "{amount} {currency} every {intervalCount} {interval}",
     interval: {
@@ -520,7 +537,7 @@ export default {
   tiers: {
     disabledFeature:
       "Warning! This feature is disabled. You can make changes but your users won't be able to use it.",
-    select: "Plan",
+    select: "Membership Plan",
     selectToContinue: "Select a membership plan to continue.",
     noTiers: "There are no membership plans available right now.",
     selected: "Selected Membership Plan",

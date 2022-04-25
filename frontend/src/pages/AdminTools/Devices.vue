@@ -55,22 +55,11 @@ export default {
       this.$q
         .dialog({
           component: DeviceDialog,
-
-          // optional if you want to have access to
-          // Router, Vuex store, and so on, in your
-          // custom component:
-          parent: this, // becomes child of this Vue node
-          // ("this" points to your Vue component)
-          // (prop was called "root" in < 1.1.0 and
-          // still works, but recommending to switch
-          // to the more appropriate "parent" name)
-
-          // props forwarded to component
-          // (everything except "component" and "parent" props above):
-          test: "something",
-          deviceType: deviceTypeStr,
-          deviceId: String(deviceId),
-          // ...more.props...
+          componentProps: {
+            test: "something",
+            deviceType: deviceTypeStr,
+            deviceId: String(deviceId),
+          },
         })
         .onOk(() => {
           // console.log("OK");

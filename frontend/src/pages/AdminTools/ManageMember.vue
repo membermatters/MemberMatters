@@ -41,7 +41,9 @@ export default {
       return icons;
     },
     currentMember() {
-      const member = this.members.find((item) => String(item.id) === String(this.memberId));
+      const member = this.members.find(
+        (item) => String(item.id) === String(this.memberId)
+      );
 
       return member || false;
     },
@@ -51,7 +53,8 @@ export default {
   },
   methods: {
     getMembers() {
-      this.$axios.get("/api/admin/members/")
+      this.$axios
+        .get("/api/admin/members/")
         .then((response) => {
           this.members = response.data;
         })

@@ -204,7 +204,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from "vue";
 import TierCard from "@components/Billing/TierCard.vue";
 import PlanCard from "@components/Billing/PlanCard.vue";
 import MemberBucksManageBilling from "@components/MemberBucksManageBilling.vue";

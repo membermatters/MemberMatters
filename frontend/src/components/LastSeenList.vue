@@ -1,14 +1,14 @@
 <template>
   <div>
     <q-table
-      :data="humanLastSeen"
+      :rows="humanLastSeen"
       :columns="[
         { name: 'user', label: 'User', field: 'user', sortable: true },
         { name: 'lastSeen', label: 'Last Seen', field: 'date', sortable: true },
       ]"
       row-key="id"
       :filter="filter"
-      :pagination.sync="pagination"
+      v-model:pagination="pagination"
       :loading="loading"
     >
       <template v-slot:top-right>
@@ -69,7 +69,7 @@ export default {
       this.getLastSeen();
     }, 30000);
   },
-  destroyed() {
+  unmounted() {
     clearInterval(this.updateInterval);
   },
   computed: {
@@ -91,8 +91,8 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
+<style lang="sass" scoped>
 @media (max-width: $breakpoint-xs-max)
   .access-list
-    width: 100%;
+    width: 100%
 </style>

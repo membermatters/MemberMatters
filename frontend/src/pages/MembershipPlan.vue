@@ -5,7 +5,7 @@
     </template>
 
     <template v-else-if="!currentPlan">
-      <template><select-tier /></template>
+      <select-tier />
     </template>
 
     <template v-else>
@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from "vue";
 import { mapGetters, mapActions } from "vuex";
 import SelectTier from "@components/Billing/SelectTier.vue";
 import SelectedTier from "@components/Billing/SelectedTier.vue";

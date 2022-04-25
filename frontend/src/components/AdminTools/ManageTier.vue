@@ -69,7 +69,7 @@
         <q-table
           flat
           @row-click="managePlan"
-          :data="plans"
+          :rows="plans"
           :columns="[
             { name: 'name', label: 'Name', field: 'name', sortable: true },
             {
@@ -104,7 +104,7 @@
           ]"
           row-key="id"
           :filter="filter"
-          :pagination.sync="pagination"
+          v-model:pagination="pagination"
           :grid="$q.screen.xs"
           :no-data-label="$t('paymentPlans.nodata')"
         >
@@ -266,9 +266,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
-import { createNamespacedHelpers } from "vuex-composition-helpers";
+import { defineComponent } from "vue";
+import { useStore } from "vuex";
 import { AxiosResponse } from "axios";
+import { api } from "boot/axios";
 import icons from "../../icons";
 import formatMixin from "../../mixins/formatMixin";
 import formMixin from "../../mixins/formMixin";
@@ -277,8 +278,8 @@ export default defineComponent({
   name: "ManageTier",
   mixins: [formatMixin, formMixin],
   setup() {
-    const { useActions } = createNamespacedHelpers("adminTools");
-    const { getTiers } = useActions(["getTiers"]);
+    const store = useStore();
+    const getTiers = () => store.dispatch("adminTools/getTiers");
 
     return {
       getTiers,
@@ -331,9 +332,9 @@ export default defineComponent({
   },
   methods: {
     getTier() {
-      this.planForm.memberTier = this.$route.params.tierId;
-      this.$axios
-        .get(`/api/admin/tiers/${this.$route.params.tierId}/`)
+      this.planForm.memberTier = this.$route.params.planId.toString();
+      api
+        .get(`/api/admin/tiers/${this.$route.params.planId}/`)
         .then((response: AxiosResponse) => {
           this.form.name = response.data.name;
           this.form.description = response.data.description;
@@ -360,10 +361,10 @@ export default defineComponent({
           persistent: true,
         })
         .onOk(() => {
-          this.$axios
-            .delete(`/api/admin/tiers/${this.$route.params.tierId}/`)
+          api
+            .delete(`/api/admin/tiers/${this.$route.params.planId}/`)
             .then(() => {
-              this.$router.back();
+              this.$router.go(-1);
             })
             .catch(() => {
               this.$q.dialog({
@@ -377,8 +378,8 @@ export default defineComponent({
       this.form.loading = true;
       this.form.error = false;
       this.form.success = false;
-      this.$axios
-        .put(`/api/admin/tiers/${this.$route.params.tierId}/`, this.form)
+      api
+        .put(`/api/admin/tiers/${this.$route.params.planId}/`, this.form)
         .then(() => {
           this.getTiers();
           this.form.success = true;
@@ -395,7 +396,7 @@ export default defineComponent({
       this.planForm.error = false;
       this.planForm.success = false;
       this.planForm.cost = parseFloat(this.planForm.costString) * 100;
-      this.$axios
+      api
         .post("/api/admin/plans/", this.planForm)
         .then(() => {
           this.getPlans();
@@ -411,8 +412,8 @@ export default defineComponent({
         .finally(() => (this.planForm.loading = false));
     },
     getPlans() {
-      this.$axios
-        .get(`/api/admin/tiers/${this.$route.params.tierId}/plans/`)
+      api
+        .get(`/api/admin/tiers/${this.$route.params.planId}/plans/`)
         .then((response: AxiosResponse) => {
           this.plans = response.data;
         })

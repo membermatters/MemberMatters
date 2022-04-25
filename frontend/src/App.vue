@@ -1,45 +1,34 @@
 <template>
-  <div id="q-app">
+  <div>
     <router-view />
 
     <q-dialog v-model="loginModal">
       <login-card no-redirect @login-complete="loginModal = false" />
     </q-dialog>
 
-    <settings v-if="$q.platform.is.electron" />
+    <kiosk-settings v-if="$q.platform.is.electron" />
   </div>
 </template>
 
 <script>
-// We should include Stripe everywhere to enable better fraud protection
-import { loadStripe } from "@stripe/stripe-js";
 import { mapActions, mapGetters, mapMutations } from "vuex";
-import Vue from "vue";
-import { colors, Dark, Platform } from "quasar";
-import Settings from "components/Settings";
+import { defineComponent } from "vue";
+import { setCssVar, Platform } from "quasar";
+import KioskSettings from "components/Settings";
 import store from "./store/index";
 import LoginCard from "./components/LoginCard";
+import { api } from "boot/axios";
 
-colors.setBrand("dark", "#313131");
+setCssVar("dark", "#313131");
 
-Vue.prototype.$stripeElementsStyle = () => ({
-  style: {
-    base: {
-      color: Dark.isActive ? "#fff" : "#000",
-      iconColor: Dark.isActive ? "#fff" : "#000",
-      fontWeight: 400,
-      fontFamily: "Roboto, Open Sans, Segoe UI, sans-serif",
-      fontSmoothing: "antialiased",
-      "::placeholder": {
-        color: Dark.isActive ? "#fff" : "#000",
-      },
-    },
-  },
-});
-
-export default {
+export default defineComponent({
   name: "App",
-  components: { Settings, LoginCard },
+  provide() {
+    return {
+      $axios: api,
+    };
+  },
+  components: { KioskSettings, LoginCard },
   store,
   data() {
     return {
@@ -141,18 +130,10 @@ export default {
         this.getSiteConfig()
           .then(() => {
             this.updatePageTitle();
-            if (this.features.enableStripe) {
-              try {
-                Vue.prototype.$stripe = loadStripe(
-                  this.keys.stripePublishableKey
-                );
-              } catch {
-                console.log("Failed to load Stripe...");
-              }
-            }
-            colors.setBrand("primary", this.theme?.themePrimary || "#278ab0");
-            colors.setBrand("secondary", this.theme?.themeToolbar || "#0461b1");
-            colors.setBrand("accent", this.theme?.themeAccent || "#189ab4");
+
+            setCssVar("primary", this.theme?.themePrimary || "#278ab0");
+            setCssVar("secondary", this.theme?.themeToolbar || "#0461b1");
+            setCssVar("accent", this.theme?.themeAccent || "#189ab4");
             resolve();
           })
           .catch((e) => {
@@ -163,5 +144,5 @@ export default {
       });
     },
   },
-};
+});
 </script>
