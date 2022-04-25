@@ -62,14 +62,14 @@
 
           <template v-else>
             <q-btn
-              class="q-mr-sm q-mb-xs-sm"
+              class="q-mr-sm q-mb-sm"
               color="primary"
               :icon="icons.export"
               :label="$t('adminTools.exportCsv')"
               @click="exportCsv"
             />
             <q-btn
-              class="q-mr-sm q-mb-xs-sm"
+              class="q-mr-sm q-mb-sm"
               color="primary"
               :icon="icons.email"
               :label="$t('adminTools.emailAddresses')"

@@ -21,7 +21,8 @@ export default boot(({ app, store }) => {
     const token = store.state.auth?.accessToken;
 
     if (Platform.is.capacitor && token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      if (config && config.headers)
+        config.headers.Authorization = `Bearer ${token}`;
     }
 
     return config;

@@ -384,7 +384,7 @@ export default {
     "to date.",
   progress: "Progress: {percent}%",
   adminTools: {
-    emailAddresses: "Email Addresses",
+    emailAddresses: "Export Email List",
     exportCsv: "Export CSV",
     exportOptions: "Export Options",
     filterOptions: "Filter",
