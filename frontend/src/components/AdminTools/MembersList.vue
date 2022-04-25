@@ -111,7 +111,7 @@
 import icons from "@icons";
 import formatMixin from "@mixins/formatMixin";
 import { exportFile } from "quasar";
-import stringify from "csv-stringify";
+import { stringify } from "csv-stringify";
 
 export default {
   name: "MembersList",
