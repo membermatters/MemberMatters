@@ -138,7 +138,7 @@ module.exports = configure((ctx) => ({
 
   // animations: 'all', // --- includes all animations
   // https://quasar.dev/options/animations
-  animations: [],
+  animations: ["fadeIn", "fadeOut"],
 
   // https://quasar.dev/quasar-cli/developing-ssr/configuring-ssr
   ssr: {
