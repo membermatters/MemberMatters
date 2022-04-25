@@ -229,8 +229,7 @@
 import { mapMutations, mapGetters, mapActions } from "vuex";
 import { Loading } from "quasar";
 import formMixin from "../mixins/formMixin";
-import { Plugins } from "@capacitor/core";
-const { SplashScreen } = Plugins;
+import { SplashScreen } from "@capacitor/splash-screen";
 
 export default {
   name: "LoginCard",
