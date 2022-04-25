@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v3.0.0] - 2022-04-26
+### Removed
+- All Xero support
+- Legacy http API for door controllers
+- Member Types (for use with Xero)
+- Sentry (temporarily)
+
+### Added
+- Websocket API for access control devices (ping/pong, authorise, sync tags, log access, update device ip)
+- Loading spinner while app / login page is loading
+- Empty state to access permissions page
+- Empty state to admin members list
+- Some missing translation strings that were hardcoded in the app
+
+### Changed
+- Upgraded to Vue 3, Qusar 2, all frontend dependencies updated
+- Messaging around membership plan / payment plans to make it more clear
+- References to "donate" to "make payment" as an exchange of money for goods/services is *not* a donation
+- Tidied up manage member UI and made it cleaner
+- Export mailing list translation to make it clearer
+
+### Fixed
+- Bug where member tier/plan translation string was not showing properly sometimes
+- History router mode broke in some cases
+- Redirect to original URL if user is not logged in (after login)
+- Some UI bugs in the billing workflow
+- Minor UI bug with side menu border / scrolling
+- Double filter dropdown showing on mobile manage members page
+- UI issues with tiers list
+- Loading states for door unlock/reboot buttons
+- Typo in first joined date on digital ID
+
 ## [v2.8.0] - 2021-10-20
 ### Removed
 - Sendgrid integration for email sending
