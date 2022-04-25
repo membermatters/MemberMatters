@@ -1,7 +1,6 @@
 from asgiref.sync import sync_to_async
 
 from profile.models import Profile
-from profile.xerohelpers import create_stripe_membership_invoice
 from access.models import Doors, Interlock
 from api_admin_tools.models import *
 
@@ -640,28 +639,6 @@ class StripeWebhook(StripeAPIView):
                 # already had this sent)
                 if member.state != "noob":
                     send_submitted_application_emails(member)
-
-            if member and config.STRIPE_CREATE_XERO_INVOICES:
-                # check if the subscription is a membership subscription
-                subscription = MemberTier.objects.get(stripe_id=data["subscription"])
-
-                # return if the subscription is not a membership subscription
-                if not subscription:
-                    return Response()
-
-                # get the charge object so we can check how much the Stripe fee was
-                charge = stripe.Charge.retrieve(
-                    data["charge"], expand=["balance_transaction"]
-                )
-
-                # grab the amount and the Stripe fee
-                amount = charge.balance_transaction["amount"]
-                fee = charge.balance_transaction["fee"]
-
-                # generate a new Xero invoice
-                create_stripe_membership_invoice(
-                    user=member, amount=amount, fee_amount=fee
-                )
 
             # in all other instances, we don't care about a paid invoice and can ignore it
 

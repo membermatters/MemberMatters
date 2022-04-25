@@ -1,15 +1,19 @@
 <template>
-  <!--  <transition name="fade">-->
-  <div v-show="value" class="text-body1 text-center saved-message">
-    <template v-if="showText">
-      {{ error ? $t("form.error") : $t("form.saved") }}
-    </template>
-    <q-icon
-      :color="error ? 'fail' : 'success'"
-      :name="error ? icons.fail : icons.success"
-    />
-  </div>
-  <!--  </transition>-->
+  <transition
+    appear
+    enter-active-class="animated fadeIn"
+    leave-active-class="animated fadeOut"
+  >
+    <div v-show="value" class="text-body1 text-center saved-message">
+      <template v-if="showText">
+        {{ error ? $t("form.error") : $t("form.saved") }}
+      </template>
+      <q-icon
+        :color="error ? 'fail' : 'success'"
+        :name="error ? icons.fail : icons.success"
+      />
+    </div>
+  </transition>
 </template>
 
 <script>

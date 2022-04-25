@@ -94,9 +94,13 @@
     </q-drawer>
 
     <q-page-container>
-      <!--      <fade-transition>-->
-      <router-view />
-      <!--      </fade-transition>-->
+      <transition
+        appear
+        enter-active-class="animated fadeIn"
+        leave-active-class="animated fadeOut"
+      >
+        <router-view />
+      </transition>
     </q-page-container>
 
     <q-dialog v-model="aboutMemberMatters">

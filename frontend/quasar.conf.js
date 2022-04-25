@@ -11,6 +11,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
 const { configure } = require("quasar/wrappers");
+const ESLintPlugin = require("eslint-webpack-plugin");
 
 module.exports = configure((ctx) => ({
   // https://quasar.dev/quasar-cli/supporting-ts
@@ -23,11 +24,7 @@ module.exports = configure((ctx) => ({
     },
   },
 
-  // https://quasar.dev/quasar-cli/prefetch-feature
-  // preFetch: true,
-
   // app boot file (/src/boot)
-  // --> boot files are part of "main.js"
   // https://quasar.dev/quasar-cli/boot-files
   boot: ["sentry", "i18n", "axios", "routeGuards", "capacitor"],
 
@@ -42,45 +39,19 @@ module.exports = configure((ctx) => ({
 
   // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
   build: {
-    vueRouterMode: "history", // available values: 'hash', 'history'
+    vueRouterMode: "history",
     env: {
       // When running with capacitor this value is used for the base URL for all API requests
       apiBaseUrl: process.env.API_BASE_URL,
     },
 
     showProgress: true,
-
     sourceMap: true,
     minify: true,
-
     transpile: true,
-
-    // Add dependencies for transpiling with Babel (Array of string/regex)
-    // (from node_modules, which are by default not transpiled).
-    // Applies only if "transpile" is set to true.
-    // transpileDependencies: ["vuex-composition-helpers"],
-
-    // rtl: false, // https://quasar.dev/options/rtl-support
-    // preloadChunks: true,
-    // showProgress: false,
-    // gzip: true,
-    // analyze: true,
-
-    // Options below are automatically set depending on the env, set them if you want to override
-    // extractCSS: false,
 
     // https://quasar.dev/quasar-cli/handling-webpack
     extendWebpack(cfg) {
-      // linting is slow in TS projects, we execute it only for production builds
-      if (ctx.prod) {
-        cfg.module.rules.push({
-          enforce: "pre",
-          test: /\.(js|vue)$/,
-          loader: "eslint-loader",
-          exclude: /node_modules/,
-        });
-      }
-
       cfg.module.rules.push({
         test: /\.(afphoto)$/,
         use: "null-loader",
@@ -105,6 +76,10 @@ module.exports = configure((ctx) => ({
       };
     },
     chainWebpack(chain) {
+      chain
+        .plugin("eslint-webpack-plugin")
+        .use(ESLintPlugin, [{ extensions: ["js", "ts", "vue"] }]);
+
       const nodePolyfillWebpackPlugin = require("node-polyfill-webpack-plugin");
       chain.plugin("node-polyfill").use(nodePolyfillWebpackPlugin);
 
@@ -116,6 +91,7 @@ module.exports = configure((ctx) => ({
         .type("javascript/auto")
         .use("i18n-resource")
         .loader("@intlify/vue-i18n-loader");
+
       chain.module
         .rule("i18n")
         .resourceQuery(/blockType=i18n/)
@@ -131,7 +107,7 @@ module.exports = configure((ctx) => ({
     port: 8080,
     open: true, // opens browser window automatically
     proxy: {
-      // proxy all requests starting with /api to
+      // proxy requests when running dev server
       "/api": {
         target: "http://localhost:8000",
         changeOrigin: false,
@@ -162,7 +138,7 @@ module.exports = configure((ctx) => ({
 
   // animations: 'all', // --- includes all animations
   // https://quasar.dev/options/animations
-  animations: [],
+  animations: ["fadeIn", "fadeOut"],
 
   // https://quasar.dev/quasar-cli/developing-ssr/configuring-ssr
   ssr: {

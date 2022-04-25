@@ -70,29 +70,6 @@
                     </q-item-label>
                   </q-item-section>
                 </q-item>
-
-                <template v-if="selectedMember.xero.accountId">
-                  <q-item v-close-popup clickable @click="createInvoice()">
-                    <q-item-section>
-                      <q-item-label
-                        >{{ $t("adminTools.createInvoice") }}
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-close-popup clickable>
-                    <q-item-section>
-                      <a
-                        :href="`https://go.xero.com/Contacts/View/${this.selectedMember.xero.accountId}`"
-                        target="_blank"
-                      >
-                        <q-item-label
-                          >{{ $t("adminTools.openXero") }}
-                        </q-item-label>
-                      </a>
-                    </q-item-section>
-                  </q-item>
-                </template>
               </q-list>
             </q-btn-dropdown>
           </div>
@@ -225,28 +202,6 @@
                     />
                   </template>
                 </q-input>
-
-                <q-select
-                  v-model="profileForm.memberType"
-                  outlined
-                  :label="$t('form.memberType')"
-                  :options="memberTypes"
-                  option-value="id"
-                  option-label="name"
-                  :rules="[
-                    (val) =>
-                      validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
-                  ]"
-                  @input="saveChange('memberType')"
-                >
-                  <template #append>
-                    <saved-notification
-                      v-model="saved.memberType"
-                      show-text
-                      :error="saved.error"
-                    />
-                  </template>
-                </q-select>
               </q-form>
             </div>
 
@@ -276,7 +231,7 @@
                   </q-item-section>
                 </q-item>
 
-                <q-item v-for="item in ['id', 'state', 'admin']" :key="item">
+                <q-item v-for="item in ['id', 'admin']" :key="item">
                   <q-item-section>
                     <q-item-label
                       >{{
@@ -734,47 +689,6 @@ export default {
         })
         .finally(() => {
           this.welcomeLoading = false;
-        });
-    },
-    createInvoice() {
-      let emailInvoice = false;
-      this.$q
-        .dialog({
-          title: this.$t("confirmAction"),
-          message: this.$t("adminTools.confirmInvoice"),
-          ok: "Ok",
-          cancel: "Cancel",
-        })
-        .onOk(() => {
-          this.$q
-            .dialog({
-              title: this.$t("confirmAction"),
-              message: this.$t("adminTools.confirmInvoiceEmail"),
-              ok: "Email Them",
-              cancel: "Don't Email",
-            })
-            .onOk(() => {
-              emailInvoice = true;
-            })
-            .onDismiss(() => {
-              this.$axios
-                .post(
-                  `/api/admin/members/${this.member.id}/invoice/${emailInvoice}/`
-                )
-                .then(() => {
-                  this.$q.dialog({
-                    title: this.$t("success"),
-                    message: this.$t("adminTools.createInvoiceSuccess"),
-                  });
-                  this.$emit("memberUpdated");
-                })
-                .catch(() => {
-                  this.$q.dialog({
-                    title: this.$t("error.error"),
-                    message: this.$t("error.requestFailed"),
-                  });
-                });
-            });
         });
     },
     getMemberBilling() {

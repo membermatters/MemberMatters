@@ -159,7 +159,6 @@ class IssueDetail(APIView):
                 subject,
                 subject,
                 description,
-                from_user=True,
             ):
                 return Response(
                     {"success": True},

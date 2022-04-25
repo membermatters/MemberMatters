@@ -35,7 +35,7 @@ class GetMembers(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def get(self, request):
-        members = User.objects.select_related("profile", "profile__member_type").all()
+        members = User.objects.select_related("profile").all()
 
         filtered = []
 
@@ -93,49 +93,22 @@ class MakeMember(APIView):
             # send the welcome email
             email = user.email_welcome()
 
-            xero = None
-            invoice = None
-
-            # if we should generate a Xero invoice and mark them as "inactive" until it's been paid
-            if config.MAKEMEMBER_CREATE_XERO_INVOICES:
-                xero = user.profile.add_to_xero()
-                invoice = user.profile.create_membership_invoice()
-
-                user.profile.state = "inactive"  # an admin should activate them when they pay their invoice
-                user.profile.update_last_induction()
-                user.profile.save()
-
-            # if we should not generate a Xero invoice, mark them as "active" if their subscription is active
-            elif user.profile.subscription_status == "active":
-                user.profile.state = "active"
-                user.profile.save()
+            # mark them as "active"
+            user.profile.state = "active"
+            user.profile.save()
 
             subject = f"{user.profile.get_full_name()} just got turned into a member!"
             send_single_email(
                 request.user, config.EMAIL_ADMIN, subject, subject, subject
             )
 
-            # if we don't have to make a Xero invoice, we're done
-            if not config.MAKEMEMBER_CREATE_XERO_INVOICES and email:
+            if email:
                 return Response(
                     {
                         "success": True,
                         "message": "adminTools.makeMemberSuccess",
                     }
                 )
-
-            # if there were no errors when making the Xero invoice, then we're done
-            elif "Error" not in xero and "Error" not in invoice and email:
-                return Response(
-                    {
-                        "success": True,
-                        "message": "adminTools.makeMemberSuccess",
-                    }
-                )
-
-            # if there was an error creating the Xero invoice
-            elif invoice is not None and "Error" in invoice:
-                return Response({"success": False, "message": invoice})
 
             # if there was an error sending the welcome email
             elif email is False:
@@ -363,25 +336,9 @@ class MemberProfile(APIView):
         member.profile.rfid = body.get("rfidCard")
         member.profile.phone = body.get("phone")
         member.profile.screen_name = body.get("screenName")
-        member.profile.member_type_id = body.get("memberType")["id"]
 
         member.save()
         member.profile.save()
-
-        return Response()
-
-
-class MemberCreateNewInvoice(APIView):
-    """
-    get: This method creates a new invoice for the specified member.
-    """
-
-    permission_classes = (permissions.IsAdminUser,)
-
-    def post(self, request, member_id, send_email):
-        User.objects.get(pk=member_id).profile.create_membership_invoice(
-            email_invoice=send_email == "true"
-        )
 
         return Response()
 

@@ -161,7 +161,6 @@ export default {
     name: "Name",
     rfid: "RFID Tag",
     email: "Email",
-    memberType: "Member Type",
     subscriptionStatus: "Subscription Status",
     status: "Status",
   },
@@ -404,13 +403,8 @@ export default {
     makeMemberErrorExists:
       'It looks like this person is already a member. To see their profile, change the filter to "all" members.',
     makeMemberSuccessDescription:
-      'This person was made into a member and emailed their first invoice and welcome information. To see their profile, change the filter to "all" members.',
+      'This person was made into a member and sent welcome information. To see their profile, change the filter to "all" members.',
     sendWelcomeEmailSuccess: "Successfully sent the welcome email.",
-    createInvoiceSuccess: "Successfully created the new invoice.",
-    confirmInvoice:
-      "Are you sure you want to create a new invoice for this member?",
-    confirmInvoiceEmail:
-      "Would you like to email the new invoice to this member after it's created?",
 
     access: "Access",
     accessDescription: "Tap an icon below to change a member's access.",
@@ -423,8 +417,6 @@ export default {
     lastUpdatedProfile: "Last Updated Profile",
     registrationDate: "Registration Date",
     lastSeen: "Last Seen",
-    openXero: "Open In Xero",
-    createInvoice: "Create Invoice",
     billing: "Billing",
     memberState: "Member State",
     memberbucksTransactions: "Memberbucks Transactions",

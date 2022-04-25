@@ -378,35 +378,6 @@ CONSTANCE_CONFIG = {
         "[1000, 2000, 3000]",
         "This is a JSON array of top-up amounts in cents.",
     ),
-    "MAKEMEMBER_CREATE_XERO_INVOICES": (
-        False,
-        "Creates a Xero invoice when 'Make Member' is clicked in the admin tools area.",
-    ),
-    "STRIPE_CREATE_XERO_INVOICES": (
-        False,
-        "Creates an invoice in Xero for every successful Stripe membership payment.",
-    ),
-    "XERO_TAX_TYPE": ("EXEMPTOUTPUT", "Tax type to use on Xero invoices."),
-    "XERO_MEMBERSHIP_ACCOUNT_CODE": (
-        "100",
-        "Account code to use on Xero invoices for membership.",
-    ),
-    "XERO_MEMBERSHIP_ITEM_CODE": (
-        "membership",
-        "Item code to use on Xero invoices for membership.",
-    ),
-    "XERO_STRIPE_FEE_ACCOUNT_CODE": (
-        "100",
-        "Account code to use on Xero invoices for membership.",
-    ),
-    "XERO_STRIPE_FEE_ITEM_CODE": (
-        "stripe",
-        "Item code to use on Xero invoices for membership.",
-    ),
-    "XERO_MEMBERBUCKS_ACCOUNT_CODE": (
-        "100",
-        "Account code to use on Xero invoices for memberbucks.",
-    ),
     "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS": (
         False,
         "Enable integration with stripe for membership payments.",
@@ -538,10 +509,6 @@ CONSTANCE_CONFIG = {
         True,
         "If an access card is required to be added to a members profile before signup.",
     ),
-    "DEFAULT_MEMBER_TYPE": (
-        1,
-        "The ID of the member type to assign new members to by default.",
-    ),
     "CANVAS_API_TOKEN": (
         "PLEASE_CHANGE_ME",
         "Canvas API token.",
@@ -575,7 +542,6 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "ENTITY_TYPE",
                 "GOOGLE_ANALYTICS_PROPERTY_ID",
                 "API_SECRET_KEY",
-                "DEFAULT_MEMBER_TYPE",
                 "SITE_BANNER",
             ),
         ),
@@ -623,19 +589,6 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "STRIPE_SECRET_KEY",
                 "STRIPE_WEBHOOK_SECRET",
                 "STRIPE_MEMBERBUCKS_TOPUP_OPTIONS",
-            ),
-        ),
-        (
-            "Xero Integration",
-            (
-                "MAKEMEMBER_CREATE_XERO_INVOICES",
-                "STRIPE_CREATE_XERO_INVOICES",
-                "XERO_MEMBERBUCKS_ACCOUNT_CODE",
-                "XERO_MEMBERSHIP_ACCOUNT_CODE",
-                "XERO_MEMBERSHIP_ITEM_CODE",
-                "XERO_STRIPE_FEE_ACCOUNT_CODE",
-                "XERO_STRIPE_FEE_ITEM_CODE",
-                "XERO_TAX_TYPE",
             ),
         ),
         (

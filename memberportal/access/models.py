@@ -1,3 +1,5 @@
+import logging
+
 from django.db import models
 from datetime import timedelta
 from django.utils import timezone
@@ -91,9 +93,13 @@ class Doors(AccessControlledDevice):
         import requests
 
         if self.serial_number:
+            logging.info(
+                "Sending door bump to channels for {}".format(self.serial_number)
+            )
+            print("Sending door bump to channels for {}".format(self.serial_number))
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
-                "door_" + self.serial_number, {"type": "door.bump"}
+                "door_" + self.serial_number, {"type": "doorbump"}
             )
 
         elif self.ip_address:
