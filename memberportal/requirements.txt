@@ -18,3 +18,4 @@ zeroconf~=0.38.4
 postmarker~=1.0
 channels_redis~=3.4.0
 ics~=0.7
+python_http_client~=3.3.7

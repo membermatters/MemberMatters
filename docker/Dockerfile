@@ -21,7 +21,7 @@ RUN nvm use --delete-prefix v${NODE_VERSION} --silent
 
 # Install node deps
 WORKDIR /usr/src/app/frontend/
-ADD frontend/package* /usr/src/app/frontend/
+COPY frontend/package* /usr/src/app/frontend/
 RUN npm ci
 
 ADD frontend /usr/src/app/frontend
