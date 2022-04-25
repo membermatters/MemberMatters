@@ -51,7 +51,6 @@ A summary of the settings is available below. Most settings have a more detailed
   * "ENTITY_TYPE" - [Deprecated]
   * "GOOGLE_ANALYTICS_PROPERTY_ID" - Enter your Google Analytics Tracking ID to enable Google Analytics Tracking.
   * "API_SECRET_KEY" - Secret key used to authenticate some requests from third party access control devices.
-  * "DEFAULT_MEMBER_TYPE" - The ID of the default member type to use when signing up.
 
 #### Signup
   * "INDUCTION_ENROL_LINK" - URL to enrol in the Canvas LMS induction course.

@@ -27,6 +27,13 @@ RUN npm ci
 ADD frontend /usr/src/app/frontend
 ADD package.json /usr/src/app/package.json
 
+# Install python deps
+WORKDIR /usr/src/app/memberportal/
+RUN python -m pip install --upgrade pip
+ADD memberportal/requirements.txt /usr/src/app/memberportal/requirements.txt
+RUN pip3 install --no-cache-dir pillow
+RUN pip3 install --no-cache-dir -r requirements.txt
+
 # Build our frontend
 WORKDIR /usr/src/app/frontend/
 RUN npm run build
@@ -34,14 +41,7 @@ RUN npm run build
 # Remove our .npmrc
 RUN rm -rf .npmrc
 
-# Install python deps
-WORKDIR /usr/src/app/memberportal/
-ADD memberportal/requirements.txt /usr/src/app/memberportal/requirements.txt
-RUN python -m pip install --upgrade pip
-RUN pip3 install --no-cache-dir pillow
-RUN pip3 install --no-cache-dir -r requirements.txt
-
-# collect static files from Django
+# collect static files from Django and add the backend source code
 ADD memberportal /usr/src/app/memberportal
 WORKDIR /usr/src/app/memberportal/
 RUN python3 manage.py collectstatic --noinput

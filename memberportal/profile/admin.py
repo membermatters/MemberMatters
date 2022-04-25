@@ -17,11 +17,6 @@ class EventLogAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(MemberTypes)
-class MemberTypesAdmin(admin.ModelAdmin):
-    pass
-
-
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     pass

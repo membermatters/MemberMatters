@@ -10,7 +10,7 @@ import json
 from django.utils.timezone import make_aware
 import datetime
 from pytz import UTC as utc
-from profile.models import User, Profile, MemberTypes
+from profile.models import User, Profile
 
 from rest_framework import status, permissions, generics
 from rest_framework.response import Response
@@ -33,8 +33,6 @@ class GetConfig(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request):
-        membership_types = list(MemberTypes.objects.values())
-
         features = {
             "memberbucks_topup_options": json.loads(
                 config.STRIPE_MEMBERBUCKS_TOPUP_OPTIONS
@@ -83,7 +81,6 @@ class GetConfig(APIView):
             },
             "homepageCards": json.loads(config.HOME_PAGE_CARDS),
             "webcamLinks": json.loads(config.WEBCAM_PAGE_URLS),
-            "memberTypes": membership_types,
             "keys": keys,
             "features": features,
             "analyticsId": config.GOOGLE_ANALYTICS_PROPERTY_ID,
@@ -351,12 +348,7 @@ class ProfileDetail(generics.GenericAPIView):
             "lastSeen": p.last_seen,
             "firstJoined": p.created,
             "profileUpdateRequired": p.must_update_profile,
-            "memberLevel": {
-                "name": str(p.member_type.name),
-                "id": str(p.member_type.id),
-            },
             "financial": {
-                "xeroAccNumber": p.xero_account_number,
                 "memberBucks": {
                     "lastPurchase": p.last_memberbucks_purchase,
                     "balance": p.memberbucks_balance,
@@ -609,7 +601,6 @@ class Register(APIView):
 
         profile = Profile.objects.create(
             user=new_user,
-            member_type_id=config.DEFAULT_MEMBER_TYPE,
             first_name=body.get("firstName"),
             last_name=body.get("lastName"),
             screen_name=body.get("screenName"),

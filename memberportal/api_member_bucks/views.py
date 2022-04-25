@@ -6,7 +6,6 @@ import stripe
 from constance import config
 from django.db.utils import OperationalError
 from sentry_sdk import capture_exception
-from profile.xerohelpers import create_stripe_membership_invoice
 
 
 class StripeAPIView(APIView):
@@ -99,23 +98,6 @@ class MemberBucksAddFunds(StripeAPIView):
                 user=profile.user,
                 amount=payment_amount / 100,
             )
-
-            if config.STRIPE_CREATE_XERO_INVOICES:
-                amount = 0
-                fee = 0
-
-                for charge in payment_intent.charges:
-                    # get the charge object, so we can check how much the Stripe fee was
-                    charge = stripe.Charge.retrieve(
-                        charge["id"], expand=["balance_transaction"]
-                    )
-                    amount += charge.balance_transaction["amount"]
-                    fee += charge.balance_transaction["fee"]
-
-                # generate a new Xero invoice
-                create_stripe_membership_invoice(
-                    user=profile.user, amount=amount, fee_amount=fee
-                )
 
             return Response()
 

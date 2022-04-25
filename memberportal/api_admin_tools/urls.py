@@ -35,11 +35,6 @@ urlpatterns = [
         views.MemberBillingInfo.as_view(),
         name="MemberBillingInfo",
     ),
-    path(
-        "members/<int:member_id>/invoice/<str:send_email>/",
-        views.MemberCreateNewInvoice.as_view(),
-        name="MemberCreateNewInvoice",
-    ),
     path("doors/", views.Doors.as_view(), name="Doors"),
     path("interlocks/", views.Interlocks.as_view(), name="Interlocks"),
     path("doors/<int:door_id>/", views.Doors.as_view(), name="Doors"),
