@@ -17,12 +17,10 @@ from collections import OrderedDict
 from datetime import timedelta
 from multiprocessing import Process
 from . import mdns
+import logging
 
-# try:
-#     p = Process(target=mdns.run)
-#     p.start()
-# except:
-#     pass
+logger = logging.getLogger("app")
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get(
@@ -107,21 +105,25 @@ TEMPLATES = [
 ASGI_APPLICATION = "membermatters.asgi.application"
 
 if ENVIRONMENT == "Production":
-    # CHANNEL_LAYERS = {
-    #     "default": {
-    #         # Via local Redis
-    #         "BACKEND": "channels_redis.core.RedisChannelLayer",
-    #         "CONFIG": {
-    #             "hosts": [("mm_redis", 6379)],
-    #         },
-    #     },
-    # }
-    CHANNEL_LAYERS = {
-        "default": {
-            # Via In-memory channel layer
-            "BACKEND": "channels.layers.InMemoryChannelLayer"
-        },
-    }
+    if os.getenv("MM_REDIS_HOST"):
+        logger.info("Using Redis for channels layer")
+        CHANNEL_LAYERS = {
+            "default": {
+                # Via local Redis
+                "BACKEND": "channels_redis.core.RedisChannelLayer",
+                "CONFIG": {
+                    "hosts": [os.getenv("MM_REDIS_HOST")],
+                },
+            },
+        }
+    else:
+        logger.warning("No Redis host found, falling back to in-memory channels layer")
+        CHANNEL_LAYERS = {
+            "default": {
+                # Via In-memory channel layer
+                "BACKEND": "channels.layers.InMemoryChannelLayer"
+            },
+        }
 
 else:
     CHANNEL_LAYERS = {
