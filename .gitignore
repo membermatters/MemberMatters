@@ -149,3 +149,5 @@ tmp/
 .terragrunt-cache/
 
 errors.log*
+
+setupcomplete

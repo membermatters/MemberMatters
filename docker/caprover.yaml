@@ -6,7 +6,6 @@ services:
     restart: always
     environment:
       PORTAL_ENV: $$cap_env
-      PORTAL_DOMAIN: $$cap_url
     volumes:
       - $$cap_appname-data:/usr/src/data
     caproverExtra:
