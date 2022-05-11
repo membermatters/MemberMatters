@@ -39,7 +39,7 @@ class AccessControlledDevice(models.Model):
 
     def checkin(self):
         self.last_seen = timezone.now()
-        self.save()
+        self.save(update_fields=["last_seen"])
 
     def get_unavailable(self):
         if self.last_seen:
