@@ -15,7 +15,6 @@ export default {
     contact: {},
     homepageCards: {},
     webcamLinks: {},
-    memberTypes: [],
     keys: {},
     features: {},
     kioskId: null,
@@ -29,7 +28,6 @@ export default {
     contact: (state) => state.contact,
     homepageCards: (state) => state.homepageCards,
     webcamLinks: (state) => state.webcamLinks,
-    memberTypes: (state) => state.memberTypes,
     keys: (state) => state.keys,
     features: (state) => state.features,
     kioskId: (state) => state.kioskId,
@@ -52,9 +50,6 @@ export default {
     },
     setWebcamLinks(state, payload) {
       state.webcamLinks = payload;
-    },
-    setMemberTypes(state, payload) {
-      state.memberTypes = payload;
     },
     setKeys(state, payload) {
       state.keys = payload;
@@ -86,7 +81,6 @@ export default {
             commit("setContact", result.data.contact);
             commit("setHomepageCards", result.data.homepageCards);
             commit("setWebcamLinks", result.data.webcamLinks);
-            commit("setMemberTypes", result.data.memberTypes);
             commit("setKeys", result.data.keys);
             commit("setFeatures", result.data.features);
             commit("setImages", result.data.images);
