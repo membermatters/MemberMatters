@@ -123,6 +123,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+    def get_short_name(self):
+        return self.profile.first_name
+
     @property
     def is_staff(self):
         "Is the user a member of staff?"
