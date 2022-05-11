@@ -1,5 +1,7 @@
 import logging
 
+logger = logging.getLogger("app")
+
 from django.db import models
 from datetime import timedelta
 from django.utils import timezone
@@ -10,7 +12,6 @@ from django.contrib import auth
 import uuid
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-
 
 User = auth.get_user_model()
 utc = pytz.UTC
@@ -51,6 +52,26 @@ class AccessControlledDevice(models.Model):
     def __str__(self):
         return self.name
 
+    def sync(self):
+        if self.serial_number:
+            logger.info(
+                "Sending door sync to channels for {}".format(
+                    "door_" + self.serial_number
+                )
+            )
+
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "door_" + self.serial_number, {"type": "door_sync"}
+            )
+
+            return True
+
+        else:
+            logger.error(
+                "Cannot sync door without websocket support (for {})!".format(self.name)
+            )
+
 
 class MemberbucksDevice(AccessControlledDevice):
     all_members = False
@@ -83,26 +104,28 @@ class MemberbucksDevice(AccessControlledDevice):
 
 class Doors(AccessControlledDevice):
     class Meta:
-        verbose_name = "Doors"
+        verbose_name = "Door"
         verbose_name_plural = "Doors"
         permissions = [
             ("manage_doors", "Can manage doors"),
         ]
 
     def unlock(self):
-        import requests
-
         if self.serial_number:
-            logging.info(
-                "Sending door bump to channels for {}".format(self.serial_number)
+            logger.info(
+                "Sending door bump to channels for {}".format(
+                    "door_" + self.serial_number
+                )
             )
-            print("Sending door bump to channels for {}".format(self.serial_number))
+
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
-                "door_" + self.serial_number, {"type": "doorbump"}
+                "door_" + self.serial_number, {"type": "door_bump"}
             )
 
         elif self.ip_address:
+            import requests
+
             r = requests.get("http://{}/bump".format(self.ip_address), timeout=5)
             if r.status_code == 200:
                 log_event(
@@ -121,26 +144,48 @@ class Doors(AccessControlledDevice):
         return True
 
     def reboot(self):
-        import requests
-
-        r = requests.get("http://{}/reboot".format(self.ip_address), timeout=10)
-        if r.status_code == 200:
-            log_event(
-                self.name + " rebooted from admin interface.",
-                "door",
-                "Status: {}. Content: {}".format(r.status_code, r.content),
+        if self.serial_number:
+            logger.info(
+                "Sending door reboot to channels for {}".format(
+                    "door_" + self.serial_number
+                )
             )
-            return True
+
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "door_" + self.serial_number, {"type": "door_reboot"}
+            )
+
         else:
-            log_event(
-                self.name + " rebooted from admin interface failed.",
-                "door",
-                "Status: {}. Content: {}".format(r.status_code, r.content),
-            )
-            return False
+            import requests
 
-    def log_access(self, member_id):
-        return DoorLog.objects.create(user=User.objects.get(pk=member_id), door=self)
+            r = requests.get("http://{}/reboot".format(self.ip_address), timeout=10)
+            if r.status_code == 200:
+                log_event(
+                    self.name + " rebooted from admin interface.",
+                    "door",
+                    "Status: {}. Content: {}".format(r.status_code, r.content),
+                )
+                return True
+            else:
+                log_event(
+                    self.name + " rebooted from admin interface failed.",
+                    "door",
+                    "Status: {}. Content: {}".format(r.status_code, r.content),
+                )
+                return False
+
+    def log_access(self, member_id, success=True):
+        logger.info("Logging access for {}".format(self.name))
+
+        user_object = User.objects.get(pk=member_id)
+        door_log = DoorLog.objects.create(user=user_object, door=self, success=success)
+
+        profile = user_object.profile
+        profile.last_seen = timezone.now()
+        profile.save()
+
+        return door_log
 
 
 class Interlock(AccessControlledDevice):

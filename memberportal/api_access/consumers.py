@@ -5,16 +5,14 @@ from constance import config
 import logging
 import datetime
 
-from django.core.exceptions import ObjectDoesNotExist
-
 from access.models import Doors
 from access.views import post_door_swipe_to_discord
 from profile.models import Profile
 
-logger = logging.getLogger()
+logger = logging.getLogger("app")
 
 
-def get_door_tags(door_id):
+def get_door_tags(door_id, return_hash=False):
     door = Doors.objects.get(pk=door_id)
 
     authorised_tags = list()
@@ -79,7 +77,7 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
         Receive message from WebSocket.
         """
         try:
-            logger.info("Got message from door: %s", content)
+            logger.info("Got message from door (%s): %s", self.door.id, content)
             self.last_seen = datetime.datetime.now()
             self.door.checkin()
 
@@ -89,7 +87,7 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
                     logger.info("Authorisation successful from " + self.door_id)
                     self.authorised = True
                     self.send_json({"authorised": True})
-                    self.doorsync()  # sync the cards down
+                    self.door_sync({})  # sync the cards down
                 else:
                     logger.debug("Authorisation failed from " + self.door_id)
                     self.authorised = False
@@ -102,22 +100,17 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
                 return
 
             if content.get("command") == "ping":
-                logger.debug("Received a ping packet from " + self.door_id)
                 self.ping_count += 1
                 self.send_json({"command": "pong"})
 
-            if content.get("command") == "ip_address":
-                logger.info("Received an IP address packet from " + self.door_id)
+            elif content.get("command") == "ip_address":
                 self.door.ip_address = content.get("ip_address")
-                self.door.save()
+                self.door.save(update_fields=["ip_address"])
 
-            if content.get("command") == "sync":
-                logger.info("Received a sync packet from " + self.door_id)
-                self.doorsync()
+            elif content.get("command") == "sync":
+                self.door_sync({})
 
-            if content.get("command") == "log_access":
-                logger.info("Received a log_access packet from " + self.door_id)
-
+            elif content.get("command") == "log_access":
                 card_id = content.get("card_id")
                 profile = Profile.objects.get(rfid=card_id)
                 self.door.log_access(profile.user.id)
@@ -126,30 +119,42 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
                     profile.get_full_name(), self.door.name, True
                 )
 
-            if content.get("command") == "log_access_denied":
-                logger.info("Received a log_access_denied packet from " + self.door_id)
-
+            elif content.get("command") == "log_access_denied":
                 card_id = content.get("card_id")
-                profile = Profile.objects.get(fid=card_id)
+                profile = Profile.objects.get(rfid=card_id)
+                self.door.log_access(profile.user.id, success=False)
 
                 post_door_swipe_to_discord(
                     profile.get_full_name(), self.door.name, False
                 )
+
+            else:
+                logger.info("Received an unknown packet from " + self.door_id)
 
         except Exception as e:
             logger.error("Error receiving message from door: %s", e)
             logger.error(e)
             self.send_json({"command": "error", "error": str(e)})
 
-    def doorbump(self, **kwargs):
-        # Handles the "door.bump" event when it's sent to us.
-        logger.warning("Bumping door " + self.door_id)
+    def door_bump(self, event=None):
+        # Handles the "door_bump" event when it's sent to us.
+
+        logger.info("Sending door bump for {}".format(self.door_id))
+        print("Sending door bump for {}".format(self.door_id))
         self.send_json({"command": "bump"})
 
-    def doorsync(self, **kwargs):
-        # Handles the "door.sync" event when it's sent to us.
+    def door_sync(self, event=None):
+        # Handles the "door_sync" event when it's sent to us.
+
         tags = get_door_tags(self.door.id)
         tags_hash = hashlib.md5(str(tags).encode("utf-8")).hexdigest()
 
         logger.info("Syncing door " + self.door_id)
         self.send_json({"command": "sync", "tags": tags, "hash": tags_hash})
+
+    def door_reboot(self, event=None):
+        # Handles the "door_reboot" event when it's sent to us.
+        # TODO: firmware does not currently support rebooting, so let's just sync cards instead
+
+        logger.info("Syncing door (from reboot command) for " + self.door_id)
+        self.door_sync()
