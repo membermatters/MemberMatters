@@ -562,7 +562,6 @@
 import AccessList from "components/AccessList";
 import formMixin from "src/mixins/formMixin";
 import SavedNotification from "components/SavedNotification";
-import { mapGetters } from "vuex";
 import icons from "../../icons";
 import formatMixin from "src/mixins/formatMixin";
 
@@ -598,7 +597,6 @@ export default {
         lastName: "",
         phone: "",
         screenName: "",
-        memberType: "",
       },
       saved: {
         // if there was an error saving the form
@@ -610,7 +608,6 @@ export default {
         lastName: false,
         phone: false,
         screenName: false,
-        memberType: false,
       },
       billing: {
         memberbucks: {
@@ -647,7 +644,6 @@ export default {
       this.profileForm.lastName = this.selectedMember.name.last;
       this.profileForm.phone = this.selectedMember.phone;
       this.profileForm.screenName = this.selectedMember.screenName;
-      this.profileForm.memberType = this.selectedMember.memberType;
     },
     saveChange(field) {
       this.$refs.formRef.validate(false).then(() => {
@@ -760,7 +756,6 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("config", ["memberTypes"]),
     selectedMember() {
       if (this.members) {
         return this.members.find((e) => e.id === this.member.id);

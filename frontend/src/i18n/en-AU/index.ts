@@ -234,7 +234,6 @@ export default {
     registrationDate: "Registration Date",
     state: "State",
     last_induction: "Last Induction",
-    memberType: "Membership Type",
     id: "Member ID",
     admin: "Admin User",
     visibleToMembers: "Visible to members?",

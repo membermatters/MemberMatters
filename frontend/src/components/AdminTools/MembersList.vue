@@ -173,12 +173,6 @@ export default {
           sortable: true,
         },
         {
-          name: "memberType",
-          label: this.$t("tableHeading.memberType"),
-          field: (row) => row.memberType.name,
-          sortable: true,
-        },
-        {
           name: "subscriptionStatus",
           label: this.$t("tableHeading.subscriptionStatus"),
           field: "subscriptionStatus",
