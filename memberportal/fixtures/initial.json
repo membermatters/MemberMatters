@@ -1,14 +1,5 @@
 [
   {
-    "model": "profile.membertypes",
-    "pk": 1,
-    "fields": {
-      "name": "Default",
-      "conditions": "Default",
-      "cost": 0
-    }
-  },
-  {
     "model": "profile.user",
     "pk": 1,
     "fields": {

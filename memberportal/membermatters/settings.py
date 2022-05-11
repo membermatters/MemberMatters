@@ -169,6 +169,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
+    {
+        "NAME": "pwned_passwords_django.validators.PwnedPasswordsValidator",
+    },
 ]
 
 LOGGING = {
