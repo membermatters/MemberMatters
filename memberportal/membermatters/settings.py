@@ -180,13 +180,11 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "INFO",
             "class": "logging.StreamHandler",
             "stream": sys.stdout,
             "formatter": "console",
         },
         "file": {
-            "level": "DEBUG",
             "class": "logging.handlers.RotatingFileHandler",
             "filename": os.environ.get(
                 "PORTAL_LOG_LOCATION", "/usr/src/logs/django.log"
@@ -199,9 +197,15 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console", "file"],
-            "level": "DEBUG",
-            "propagate": True,
+            "level": "WARNING",
+            "propagate": False,
         },
+        "app": {
+            "handlers": ["console", "file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "daphne": {"handlers": ["console", "file"], "level": "WARNING"},
     },
 }
 
