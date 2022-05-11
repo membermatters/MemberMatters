@@ -213,10 +213,10 @@ class DoorLog(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     door = models.ForeignKey(Doors, on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
+    success = models.BooleanField(default=True)
 
 
 class InterlockLog(models.Model):
-    id = models.AutoField(primary_key=True)
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     user_off = models.ForeignKey(
