@@ -323,9 +323,10 @@ export default {
 
       this.loginComplete = true;
       this.$emit("login-complete");
-      if (this.$route.query.nextUrl)
+      if (this.$route.query.nextUrl) {
+        this.setLoggedIn(true);
         this.$router.push(this.$route.query.nextUrl);
-      else if (!this.noRedirect && delay) {
+      } else if (!this.noRedirect && delay) {
         setTimeout(() => {
           this.setLoggedIn(true);
           this.$router.push({ name: "dashboard" });
@@ -419,10 +420,10 @@ export default {
             this.redirectLoggedIn();
           })
           .catch((error) => {
-            if (error.response.status === 401) {
+            if (error.response?.status === 401) {
               this.loginFailed = true;
               this.unverifiedEmail = false;
-            } else if (error.response.status === 403) {
+            } else if (error.response?.status === 403) {
               this.unverifiedEmail = true;
               this.loginFailed = false;
               throw error;

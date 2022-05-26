@@ -16,7 +16,6 @@ export default ({ router, store }) => {
       store.getters["config/features"]?.enableMembershipPayments &&
       to.meta.admin !== true
     ) {
-      console.warn("Needs Induction2");
       Dialog.create({
         title: i18n.global.t("error.error"),
         message: i18n.global.t("error.403MemberOnly"),
