@@ -4,7 +4,7 @@
     enter-active-class="animated fadeIn"
     leave-active-class="animated fadeOut"
   >
-    <div v-show="value" class="text-body1 text-center saved-message">
+    <div v-show="success" class="text-body1 text-center saved-message">
       <template v-if="showText">
         {{ error ? $t("form.error") : $t("form.saved") }}
       </template>
@@ -22,17 +22,13 @@ import icons from "../icons";
 export default {
   name: "SavedNotification",
   props: {
-    value: {
+    success: {
       type: Boolean,
       default: false,
     },
     error: {
       type: Boolean,
       default: false,
-    },
-    timeout: {
-      type: Number,
-      default: 1500,
     },
     showText: {
       type: Boolean,
@@ -42,18 +38,6 @@ export default {
   computed: {
     icons() {
       return icons;
-    },
-  },
-  watch: {
-    value(value) {
-      if (value) this.showNotification();
-    },
-  },
-  methods: {
-    showNotification() {
-      setTimeout(() => {
-        this.$emit("input", false);
-      }, this.timeout);
     },
   },
 };

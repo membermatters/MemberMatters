@@ -28,11 +28,11 @@
                   outlined
                   :label="$t(`${deviceType}.name`)"
                   :debounce="debounceLength"
-                  @input="saveChange('name')"
+                  @update:model-value="saveChange('name')"
                 >
                   <template v-slot:append>
                     <saved-notification
-                      v-model="saved.name"
+                      :success="saved.name"
                       show-text
                       :error="saved.error"
                     />
@@ -44,11 +44,11 @@
                   outlined
                   :label="$t(`${deviceType}.description`)"
                   :debounce="debounceLength"
-                  @input="saveChange('description')"
+                  @update:model-value="saveChange('description')"
                 >
                   <template v-slot:append>
                     <saved-notification
-                      v-model="saved.description"
+                      :success="saved.description"
                       show-text
                       :error="saved.error"
                     />
@@ -60,11 +60,11 @@
                   outlined
                   :label="$t('form.ipAddress')"
                   :debounce="debounceLength"
-                  @input="saveChange('ipAddress')"
+                  @update:model-value="saveChange('ipAddress')"
                 >
                   <template v-slot:append>
                     <saved-notification
-                      v-model="saved.ipAddress"
+                      :success="saved.ipAddress"
                       show-text
                       :error="saved.error"
                     />
@@ -77,11 +77,11 @@
                       v-model="device.defaultAccess"
                       :label="$t('access.defaultAccess')"
                       :debounce="debounceLength"
-                      @input="saveChange('defaultAccess')"
+                      @update:model-value="saveChange('defaultAccess')"
                     />
                     <q-space />
                     <saved-notification
-                      v-model="saved.defaultAccess"
+                      :success="saved.defaultAccess"
                       show-text
                       :error="saved.error"
                     />
@@ -92,11 +92,11 @@
                       v-model="device.maintenanceLockout"
                       :label="$t('access.maintenanceLockout')"
                       :debounce="debounceLength"
-                      @input="saveChange('maintenanceLockout')"
+                      @update:model-value="saveChange('maintenanceLockout')"
                     />
                     <q-space />
                     <saved-notification
-                      v-model="saved.maintenanceLockout"
+                      :success="saved.maintenanceLockout"
                       show-text
                       :error="saved.error"
                     />
@@ -106,11 +106,11 @@
                       v-model="device.playThemeOnSwipe"
                       :label="$t('access.playTheme')"
                       :debounce="debounceLength"
-                      @input="saveChange('playTheme')"
+                      @update:model-value="saveChange('playTheme')"
                     />
                     <q-space />
                     <saved-notification
-                      v-model="saved.playTheme"
+                      :success="saved.playTheme"
                       show-text
                       :error="saved.error"
                     />
@@ -120,11 +120,11 @@
                       v-model="device.exemptFromSignin"
                       :label="$t('access.exemptSignin')"
                       :debounce="debounceLength"
-                      @input="saveChange('exemptSignin')"
+                      @update:model-value="saveChange('exemptSignin')"
                     />
                     <q-space />
                     <saved-notification
-                      v-model="saved.exemptSignin"
+                      :success="saved.exemptSignin"
                       show-text
                       :error="saved.error"
                     />
@@ -134,11 +134,11 @@
                       v-model="device.hiddenToMembers"
                       :label="$t('access.hiddenToMembers')"
                       :debounce="debounceLength"
-                      @input="saveChange('hiddenToMembers')"
+                      @update:model-value="saveChange('hiddenToMembers')"
                     />
                     <q-space />
                     <saved-notification
-                      v-model="saved.hiddenToMembers"
+                      :success="saved.hiddenToMembers"
                       show-text
                       :error="saved.error"
                     />
@@ -323,11 +323,18 @@ export default {
               .then(() => {
                 this.saved.error = false;
                 this.saved[field] = true;
+                setTimeout(() => {
+                  this.saved[field] = false;
+                }, 1500);
               })
               .catch(() => {
                 this.initForm();
                 this.saved.error = true;
                 this.saved[field] = true;
+                setTimeout(() => {
+                  this.saved[field] = false;
+                  this.saved.error = false;
+                }, 1500);
               });
           }
         });

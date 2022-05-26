@@ -92,12 +92,11 @@
                     (val) =>
                       validateEmail(val) || $t('validation.invalidEmail'),
                   ]"
-                  @input="saveChange('email')"
+                  @update:model-value="saveChange('email')"
                 >
                   <template #append>
                     <saved-notification
-                      v-model="saved.email"
-                      show-text
+                      :success="saved.email"
                       :error="saved.error"
                     />
                   </template>
@@ -112,12 +111,11 @@
                     (val) =>
                       validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
                   ]"
-                  @input="saveChange('rfidCard')"
+                  @update:model-value="saveChange('rfidCard')"
                 >
-                  <template #append>
+                  <template v-slot:append>
                     <saved-notification
-                      v-model="saved.rfidCard"
-                      show-text
+                      :success="saved.rfidCard"
                       :error="saved.error"
                     />
                   </template>
@@ -132,12 +130,11 @@
                     (val) =>
                       validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
                   ]"
-                  @input="saveChange('firstName')"
+                  @update:model-value="saveChange('firstName')"
                 >
                   <template #append>
                     <saved-notification
-                      v-model="saved.firstName"
-                      show-text
+                      :success="saved.firstName"
                       :error="saved.error"
                     />
                   </template>
@@ -152,12 +149,11 @@
                     (val) =>
                       validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
                   ]"
-                  @input="saveChange('lastName')"
+                  @update:model-value="saveChange('lastName')"
                 >
                   <template #append>
                     <saved-notification
-                      v-model="saved.lastName"
-                      show-text
+                      :success="saved.lastName"
                       :error="saved.error"
                     />
                   </template>
@@ -172,12 +168,11 @@
                     (val) =>
                       validateNotEmpty(val) || $t('validation.invalidPhone'),
                   ]"
-                  @input="saveChange('phone')"
+                  @update:model-value="saveChange('phone')"
                 >
                   <template #append>
                     <saved-notification
-                      v-model="saved.phone"
-                      show-text
+                      :success="saved.phone"
                       :error="saved.error"
                     />
                   </template>
@@ -192,12 +187,11 @@
                     (val) =>
                       validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
                   ]"
-                  @input="saveChange('screenName')"
+                  @update:model-value="saveChange('screenName')"
                 >
                   <template #append>
                     <saved-notification
-                      v-model="saved.screenName"
-                      show-text
+                      :success="saved.screenName"
                       :error="saved.error"
                     />
                   </template>
@@ -658,10 +652,17 @@ export default {
                 this.saved.error = false;
                 this.saved[field] = true;
                 this.$emit("memberUpdated");
+                setTimeout(() => {
+                  this.saved[field] = false;
+                }, 1500);
               })
               .catch(() => {
                 this.saved.error = true;
                 this.saved[field] = true;
+                setTimeout(() => {
+                  this.saved[field] = false;
+                  this.saved.error = false;
+                }, 1500);
               });
           }
         });
@@ -793,5 +794,10 @@ a:active {
 
 .inactive {
   color: red;
+}
+
+.q-field__after,
+.q-field__append {
+  padding-left: 0;
 }
 </style>
