@@ -1,4 +1,5 @@
-from profile.models import User
+from profile.models import User, UserEventLog
+from access.models import DoorLog, InterlockLog
 from access import models
 from .models import MemberTier, PaymentPlan
 from memberbucks.models import MemberBucks
@@ -147,7 +148,6 @@ class Doors(APIView):
         doors = models.Doors.objects.all()
 
         def get_door(door):
-
             cursor = connection.cursor()
             cursor.execute(
                 "SELECT access_doorlog.door_id, access_doorlog.user_id, pp.screen_name, COUNT(access_doorlog.user_id) as records, MAX(access_doorlog.date) as lastSeen FROM access_doorlog INNER JOIN profile_profile pp on access_doorlog.user_id = pp.user_id GROUP BY access_doorlog.door_id, access_doorlog.user_id HAVING access_doorlog.door_id = %s ORDER BY records DESC",
@@ -601,3 +601,55 @@ class MemberBillingInfo(StripeAPIView):
         }
 
         return Response(billing_info)
+
+
+class MemberLogs(APIView):
+    """
+    get: This method gets a member's logs.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request, member_id):
+        user = User.objects.get(id=member_id)
+
+        user_event_logs = []
+        door_logs = []
+        interlock_logs = []
+
+        for user_event_log in UserEventLog.objects.filter(user=user)[:1000]:
+            user_event_logs.append(
+                {
+                    "date": user_event_log.date,
+                    "description": user_event_log.description,
+                    "logtype": user_event_log.get_logtype_display(),
+                }
+            )
+
+        for door_log in DoorLog.objects.filter(user=user)[:1000]:
+            door_logs.append(
+                {
+                    "date": door_log.date,
+                    "door": door_log.door.name,
+                    "success": door_log.success,
+                }
+            )
+
+        for interlock_log in InterlockLog.objects.filter(user=user)[:1000]:
+            interlock_logs.append(
+                {
+                    "dateOn": interlock_log.first_heartbeat,
+                    "dateOff": interlock_log.last_heartbeat,
+                    "interlock": interlock_log.interlock.name,
+                    "sessionComplete": interlock_log.session_complete,
+                    "userOff": interlock_log.user_off.name,
+                }
+            )
+
+        logs = {
+            "userEventLogs": user_event_logs,
+            "doorLogs": door_logs,
+            "interlockLogs": interlock_logs,
+        }
+
+        return Response(logs)

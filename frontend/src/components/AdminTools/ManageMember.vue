@@ -12,12 +12,7 @@
         <q-tab name="profile" :label="$t('menuLink.profile')" />
         <q-tab name="access" :label="$t('adminTools.access')" />
         <q-tab name="billing" :label="$t('adminTools.billing')" />
-        <q-tab name="log" disable :label="$t('adminTools.log')" />
-        <!--        <q-tab-->
-        <!--          name="memberbucks"-->
-        <!--          disable-->
-        <!--          :label="$t('menuLink.memberbucks')"-->
-        <!--        />-->
+        <q-tab name="log" :label="$t('adminTools.log')" />
       </q-tabs>
 
       <q-separator />
@@ -323,7 +318,221 @@
           <access-list :member-id="selectedMemberFiltered.id" />
         </q-tab-panel>
 
-        <q-tab-panel name="log"> Coming Soon!</q-tab-panel>
+        <q-tab-panel name="log">
+          <div class="text-h6">
+            {{ $t("adminTools.userEvents") }}
+          </div>
+
+          <q-table
+            :rows="this.logs.userEventLogs"
+            :columns="[
+              {
+                name: 'logtype',
+                label: 'Log Type',
+                field: 'logtype',
+                sortable: true,
+              },
+              {
+                name: 'description',
+                label: 'Description',
+                field: 'description',
+                sortable: true,
+              },
+              {
+                name: 'date',
+                label: 'When',
+                field: 'date',
+                sortable: true,
+                format: (val) => this.formatWhen(val),
+              },
+            ]"
+            row-key="id"
+            :filter="userEventsFilter"
+            v-model:pagination="pagination"
+            :loading="loading"
+            :grid="$q.screen.xs"
+          >
+            <template v-slot:top-left>
+              <div class="row">
+                <q-input
+                  v-if="$q.screen.xs"
+                  v-model="filter"
+                  outlined
+                  dense
+                  debounce="300"
+                  placeholder="Search"
+                  style="margin-top: -3px"
+                >
+                  <template v-slot:append>
+                    <q-icon :name="icons.search" />
+                  </template>
+                </q-input>
+              </div>
+            </template>
+
+            <template v-if="$q.screen.gt.xs" v-slot:top-right>
+              <q-input
+                v-model="filter"
+                outlined
+                dense
+                debounce="300"
+                placeholder="Search"
+                style="margin-top: -3px"
+              >
+                <template v-slot:append>
+                  <q-icon :name="icons.search" />
+                </template>
+              </q-input>
+            </template>
+          </q-table>
+
+          <div class="text-h6 subheading">
+            {{ $t("adminTools.userDoorLogs") }}
+          </div>
+
+          <q-table
+            :rows="this.logs.doorLogs"
+            :columns="[
+              {
+                name: 'door',
+                label: 'Door',
+                field: 'door',
+                sortable: true,
+              },
+              {
+                name: 'success',
+                label: 'Successful Swipe',
+                field: 'success',
+                sortable: true,
+              },
+              {
+                name: 'date',
+                label: 'When',
+                field: 'date',
+                sortable: true,
+                format: (val) => this.formatWhen(val),
+              },
+            ]"
+            row-key="id"
+            :filter="doorFilter"
+            v-model:pagination="pagination"
+            :loading="loading"
+            :grid="$q.screen.xs"
+          >
+            <template v-slot:top-left>
+              <div class="row">
+                <q-input
+                  v-if="$q.screen.xs"
+                  v-model="filter"
+                  outlined
+                  dense
+                  debounce="300"
+                  placeholder="Search"
+                  style="margin-top: -3px"
+                >
+                  <template v-slot:append>
+                    <q-icon :name="icons.search" />
+                  </template>
+                </q-input>
+              </div>
+            </template>
+
+            <template v-if="$q.screen.gt.xs" v-slot:top-right>
+              <q-input
+                v-model="filter"
+                outlined
+                dense
+                debounce="300"
+                placeholder="Search"
+                style="margin-top: -3px"
+              >
+                <template v-slot:append>
+                  <q-icon :name="icons.search" />
+                </template>
+              </q-input>
+            </template>
+          </q-table>
+
+          <div class="text-h6 subheading">
+            {{ $t("adminTools.userInterlockLogs") }}
+          </div>
+
+          <q-table
+            :rows="this.logs.interlockLogs"
+            :columns="[
+              {
+                name: 'interlock',
+                label: 'Interlock',
+                field: 'interlock',
+                sortable: true,
+              },
+              {
+                name: 'dateOn',
+                label: 'Session Start',
+                field: 'dateOn',
+                sortable: true,
+                format: (val) => this.formatWhen(val),
+              },
+              {
+                name: 'dateOff',
+                label: 'Session End',
+                field: 'dateOff',
+                sortable: true,
+                format: (val) => this.formatWhen(val),
+              },
+              {
+                name: 'sessionComplete',
+                label: 'Session Complete',
+                field: 'sessionComplete',
+                sortable: true,
+              },
+              {
+                name: 'userOff',
+                label: 'User Swiped Off',
+                field: 'userOff',
+                sortable: true,
+              },
+            ]"
+            row-key="id"
+            :filter="doorFilter"
+            v-model:pagination="pagination"
+            :loading="loading"
+            :grid="$q.screen.xs"
+          >
+            <template v-slot:top-left>
+              <div class="row">
+                <q-input
+                  v-if="$q.screen.xs"
+                  v-model="filter"
+                  outlined
+                  dense
+                  debounce="300"
+                  placeholder="Search"
+                  style="margin-top: -3px"
+                >
+                  <template v-slot:append>
+                    <q-icon :name="icons.search" />
+                  </template>
+                </q-input>
+              </div>
+            </template>
+
+            <template v-if="$q.screen.gt.xs" v-slot:top-right>
+              <q-input
+                v-model="filter"
+                outlined
+                dense
+                debounce="300"
+                placeholder="Search"
+                style="margin-top: -3px"
+              >
+                <template v-slot:append>
+                  <q-icon :name="icons.search" />
+                </template>
+              </q-input>
+            </template>
+          </q-table>
+        </q-tab-panel>
 
         <q-tab-panel name="billing">
           <div class="text-h6">
@@ -617,7 +826,15 @@ export default {
           status: "",
         },
       },
+      logs: {
+        userEventLogs: [],
+        doorLogs: [],
+        interlockLogs: [],
+      },
       filter: "",
+      userEventsFilter: "",
+      doorFilter: "",
+      interlockFiler: "",
       loading: false,
       pagination: {
         sortBy: "date",
@@ -629,6 +846,7 @@ export default {
   beforeMount() {
     this.loadInitialForm();
     this.getMemberBilling();
+    this.getMemberLogs();
   },
   methods: {
     loadInitialForm() {
@@ -700,6 +918,26 @@ export default {
         .then((res) => {
           this.billing = res.data;
           if (!this.billing?.subscription) this.billing.subscription = null;
+        })
+        .finally(() => {
+          this.$emit("memberUpdated");
+          setTimeout(() => {
+            this.stateLoading = false;
+          }, 1200);
+        });
+    },
+    getMemberLogs() {
+      this.$axios
+        .get(`/api/admin/members/${this.member.id}/logs/`)
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t("error.error"),
+            message: this.$t("error.requestFailed"),
+          });
+        })
+        .then((res) => {
+          console.log(res);
+          this.logs = res.data;
         })
         .finally(() => {
           this.$emit("memberUpdated");
@@ -799,5 +1037,9 @@ a:active {
 .q-field__after,
 .q-field__append {
   padding-left: 0;
+}
+
+.subheading {
+  padding-top: 20px;
 }
 </style>
