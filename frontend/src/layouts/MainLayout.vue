@@ -16,7 +16,7 @@
             round
             :icon="icons.backButton"
             aria-label="Back"
-            @click="$router.go(-1)"
+            @click="handleBackPressed()"
           />
         </template>
         <template v-else>
@@ -177,6 +177,12 @@ export default defineComponent({
       } else {
         return require("../assets/img/menu-bg/menu-bg.jpg");
       }
+    },
+    handleBackPressed() {
+      const backButton = this.$route.meta.backButton;
+      if (backButton === true) this.$router.go(-1);
+      else if (typeof backButton === "string" || backButton instanceof String)
+        this.$router.push(backButton);
     },
   },
   computed: {

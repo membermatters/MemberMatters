@@ -57,7 +57,7 @@ const PageAndRouteConfig = [
         loggedIn: true,
         admin: true,
         hiddenMenu: true,
-        backButton: true,
+        backButton: "/manage/members",
         component: () => import("pages/AdminTools/ManageMember"),
       },
       {
@@ -83,7 +83,7 @@ const PageAndRouteConfig = [
         loggedIn: true,
         admin: true,
         hiddenMenu: true,
-        backButton: true,
+        backButton: "/manage/tiers",
         component: () => import("pages/AdminTools/ManageTier"),
       },
       {

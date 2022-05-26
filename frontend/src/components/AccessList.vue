@@ -114,10 +114,14 @@ export default {
       return icons;
     },
     doors() {
-      return this.memberId ? this.access.doors : this.doorAccess;
+      if (this.memberId && this.access.doors !== undefined)
+        return this.access.doors;
+      else return this.doorAccess;
     },
     interlocks() {
-      return this.memberId ? this.access.interlocks : this.interlockAccess;
+      if (this.memberId && this.access.interlocks !== undefined)
+        return this.access.interlocks;
+      else return this.interlockAccess;
     },
   },
 
