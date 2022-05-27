@@ -5,30 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v3.0.0] - 2022-04-26
+## [v3.0.0] - 2022-05-27
 ### Removed
 - All Xero support
 - Legacy http API for door controllers
 - Member Types (for use with Xero)
 - Sentry (temporarily)
+- Unnecessary environment variables
 
 ### Added
 - Websocket API for access control devices (ping/pong, authorise, sync tags, log access, update device ip)
+- Django pwned passwords
 - Loading spinner while app / login page is loading
 - Empty state to access permissions page
 - Empty state to admin members list
 - Some missing translation strings that were hardcoded in the app
+- Redis support for Django channels
+- Log failed door swipes to the database too
+- User event, door and interlock logs to manage member screen
 
 ### Changed
 - Upgraded to Vue 3, Qusar 2, all frontend dependencies updated
+- Bumped backend dependencies
 - Messaging around membership plan / payment plans to make it more clear
 - References to "donate" to "make payment" as an exchange of money for goods/services is *not* a donation
 - Tidied up manage member UI and made it cleaner
 - Export mailing list translation to make it clearer
 
 ### Fixed
+- Logging so it's actually useful now that we've moved to daphne
+- Redirect on loging sometimes getting stuck
+- Some forms not saving after modification
 - Bug where member tier/plan translation string was not showing properly sometimes
+- made manage member/tier page always go back one level
 - History router mode broke in some cases
+- Missing short name getter causing warnings logged
 - Redirect to original URL if user is not logged in (after login)
 - Some UI bugs in the billing workflow
 - Minor UI bug with side menu border / scrolling
@@ -36,6 +47,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - UI issues with tiers list
 - Loading states for door unlock/reboot buttons
 - Typo in first joined date on digital ID
+- Door checkin via websocket overriding door object in database
+- 
 
 ## [v2.8.0] - 2021-10-20
 ### Removed
