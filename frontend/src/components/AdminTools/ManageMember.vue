@@ -12,12 +12,7 @@
         <q-tab name="profile" :label="$t('menuLink.profile')" />
         <q-tab name="access" :label="$t('adminTools.access')" />
         <q-tab name="billing" :label="$t('adminTools.billing')" />
-        <q-tab name="log" disable :label="$t('adminTools.log')" />
-        <!--        <q-tab-->
-        <!--          name="memberbucks"-->
-        <!--          disable-->
-        <!--          :label="$t('menuLink.memberbucks')"-->
-        <!--        />-->
+        <q-tab name="log" :label="$t('adminTools.log')" />
       </q-tabs>
 
       <q-separator />
@@ -65,43 +60,13 @@
               <q-list>
                 <q-item v-close-popup clickable @click="sendWelcomeEmail">
                   <q-item-section>
-                    <q-item-label>{{
-                      $t("adminTools.sendWelcomeEmail")
-                    }}</q-item-label>
+                    <q-item-label
+                      >{{ $t("adminTools.sendWelcomeEmail") }}
+                    </q-item-label>
                   </q-item-section>
                 </q-item>
-
-                <template v-if="selectedMember.xero.accountId">
-                  <q-item v-close-popup clickable @click="createInvoice()">
-                    <q-item-section>
-                      <q-item-label>{{
-                        $t("adminTools.createInvoice")
-                      }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-close-popup clickable>
-                    <q-item-section>
-                      <a
-                        :href="`https://go.xero.com/Contacts/View/${this.selectedMember.xero.accountId}`"
-                        target="_blank"
-                      >
-                        <q-item-label>{{
-                          $t("adminTools.openXero")
-                        }}</q-item-label>
-                      </a>
-                    </q-item-section>
-                  </q-item>
-                </template>
               </q-list>
             </q-btn-dropdown>
-          </div>
-
-          <div
-            class="text-body1"
-            :class="{ 'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs }"
-          >
-            {{ $t("adminTools.memberState") }}: {{ selectedMember.state }}
           </div>
 
           <div class="row q-pt-md">
@@ -122,12 +87,11 @@
                     (val) =>
                       validateEmail(val) || $t('validation.invalidEmail'),
                   ]"
-                  @input="saveChange('email')"
+                  @update:model-value="saveChange('email')"
                 >
                   <template #append>
                     <saved-notification
-                      v-model="saved.email"
-                      show-text
+                      :success="saved.email"
                       :error="saved.error"
                     />
                   </template>
@@ -142,12 +106,11 @@
                     (val) =>
                       validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
                   ]"
-                  @input="saveChange('rfidCard')"
+                  @update:model-value="saveChange('rfidCard')"
                 >
-                  <template #append>
+                  <template v-slot:append>
                     <saved-notification
-                      v-model="saved.rfidCard"
-                      show-text
+                      :success="saved.rfidCard"
                       :error="saved.error"
                     />
                   </template>
@@ -162,12 +125,11 @@
                     (val) =>
                       validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
                   ]"
-                  @input="saveChange('firstName')"
+                  @update:model-value="saveChange('firstName')"
                 >
                   <template #append>
                     <saved-notification
-                      v-model="saved.firstName"
-                      show-text
+                      :success="saved.firstName"
                       :error="saved.error"
                     />
                   </template>
@@ -182,12 +144,11 @@
                     (val) =>
                       validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
                   ]"
-                  @input="saveChange('lastName')"
+                  @update:model-value="saveChange('lastName')"
                 >
                   <template #append>
                     <saved-notification
-                      v-model="saved.lastName"
-                      show-text
+                      :success="saved.lastName"
                       :error="saved.error"
                     />
                   </template>
@@ -202,12 +163,11 @@
                     (val) =>
                       validateNotEmpty(val) || $t('validation.invalidPhone'),
                   ]"
-                  @input="saveChange('phone')"
+                  @update:model-value="saveChange('phone')"
                 >
                   <template #append>
                     <saved-notification
-                      v-model="saved.phone"
-                      show-text
+                      :success="saved.phone"
                       :error="saved.error"
                     />
                   </template>
@@ -222,38 +182,15 @@
                     (val) =>
                       validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
                   ]"
-                  @input="saveChange('screenName')"
+                  @update:model-value="saveChange('screenName')"
                 >
                   <template #append>
                     <saved-notification
-                      v-model="saved.screenName"
-                      show-text
+                      :success="saved.screenName"
                       :error="saved.error"
                     />
                   </template>
                 </q-input>
-
-                <q-select
-                  v-model="profileForm.memberType"
-                  outlined
-                  :label="$t('form.memberType')"
-                  :options="memberTypes"
-                  option-value="id"
-                  option-label="name"
-                  :rules="[
-                    (val) =>
-                      validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
-                  ]"
-                  @input="saveChange('memberType')"
-                >
-                  <template #append>
-                    <saved-notification
-                      v-model="saved.memberType"
-                      show-text
-                      :error="saved.error"
-                    />
-                  </template>
-                </q-select>
               </q-form>
             </div>
 
@@ -262,6 +199,45 @@
               :class="{ 'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs }"
             >
               <h5 class="q-my-sm">
+                {{ $t("adminTools.otherAttributes") }}
+              </h5>
+
+              <q-list bordered padding class="rounded-borders">
+                <q-item>
+                  <q-item-section>
+                    <q-item-label
+                      :class="{
+                        inactive: selectedMember.state === 'Inactive',
+                        active: selectedMember.state === 'Active',
+                      }"
+                    >
+                      {{ selectedMember.state }}
+                    </q-item-label>
+
+                    <q-item-label caption>
+                      {{ $t("adminTools.memberState") }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item v-for="item in ['id', 'admin']" :key="item">
+                  <q-item-section>
+                    <q-item-label
+                      >{{
+                        selectedMember[item]
+                          ? selectedMember[item]
+                          : $t("error.noValue")
+                      }}
+                    </q-item-label>
+
+                    <q-item-label caption>
+                      {{ $t(`form.${item}`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+
+              <h5 class="q-mt-md q-mb-sm">
                 {{ $t("menuLink.memberbucks") }}
               </h5>
               <q-list bordered padding class="rounded-borders">
@@ -290,28 +266,6 @@
                     </q-item-label>
                     <q-item-label caption>
                       {{ $t(`memberbucks.lastPurchase`) }}
-                    </q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-
-              <h5 class="q-mt-md q-mb-sm">
-                {{ $t("adminTools.otherAttributes") }}
-              </h5>
-              <q-list bordered padding class="rounded-borders">
-                <q-item v-for="item in ['id', 'state', 'admin']" :key="item">
-                  <q-item-section>
-                    <q-item-label lines="1">
-                      <template>
-                        {{
-                          selectedMember[item]
-                            ? selectedMember[item]
-                            : $t("error.noValue")
-                        }}
-                      </template>
-                    </q-item-label>
-                    <q-item-label caption>
-                      {{ $t(`form.${item}`) }}
                     </q-item-label>
                   </q-item-section>
                 </q-item>
@@ -364,7 +318,221 @@
           <access-list :member-id="selectedMemberFiltered.id" />
         </q-tab-panel>
 
-        <q-tab-panel name="log"> Coming Soon! </q-tab-panel>
+        <q-tab-panel name="log">
+          <div class="text-h6">
+            {{ $t("adminTools.userEvents") }}
+          </div>
+
+          <q-table
+            :rows="this.logs.userEventLogs"
+            :columns="[
+              {
+                name: 'logtype',
+                label: 'Log Type',
+                field: 'logtype',
+                sortable: true,
+              },
+              {
+                name: 'description',
+                label: 'Description',
+                field: 'description',
+                sortable: true,
+              },
+              {
+                name: 'date',
+                label: 'When',
+                field: 'date',
+                sortable: true,
+                format: (val) => this.formatWhen(val),
+              },
+            ]"
+            row-key="id"
+            :filter="userEventsFilter"
+            v-model:pagination="pagination"
+            :loading="loading"
+            :grid="$q.screen.xs"
+          >
+            <template v-slot:top-left>
+              <div class="row">
+                <q-input
+                  v-if="$q.screen.xs"
+                  v-model="filter"
+                  outlined
+                  dense
+                  debounce="300"
+                  placeholder="Search"
+                  style="margin-top: -3px"
+                >
+                  <template v-slot:append>
+                    <q-icon :name="icons.search" />
+                  </template>
+                </q-input>
+              </div>
+            </template>
+
+            <template v-if="$q.screen.gt.xs" v-slot:top-right>
+              <q-input
+                v-model="filter"
+                outlined
+                dense
+                debounce="300"
+                placeholder="Search"
+                style="margin-top: -3px"
+              >
+                <template v-slot:append>
+                  <q-icon :name="icons.search" />
+                </template>
+              </q-input>
+            </template>
+          </q-table>
+
+          <div class="text-h6 subheading">
+            {{ $t("adminTools.userDoorLogs") }}
+          </div>
+
+          <q-table
+            :rows="this.logs.doorLogs"
+            :columns="[
+              {
+                name: 'door',
+                label: 'Door',
+                field: 'door',
+                sortable: true,
+              },
+              {
+                name: 'success',
+                label: 'Successful Swipe',
+                field: 'success',
+                sortable: true,
+              },
+              {
+                name: 'date',
+                label: 'When',
+                field: 'date',
+                sortable: true,
+                format: (val) => this.formatWhen(val),
+              },
+            ]"
+            row-key="id"
+            :filter="doorFilter"
+            v-model:pagination="pagination"
+            :loading="loading"
+            :grid="$q.screen.xs"
+          >
+            <template v-slot:top-left>
+              <div class="row">
+                <q-input
+                  v-if="$q.screen.xs"
+                  v-model="filter"
+                  outlined
+                  dense
+                  debounce="300"
+                  placeholder="Search"
+                  style="margin-top: -3px"
+                >
+                  <template v-slot:append>
+                    <q-icon :name="icons.search" />
+                  </template>
+                </q-input>
+              </div>
+            </template>
+
+            <template v-if="$q.screen.gt.xs" v-slot:top-right>
+              <q-input
+                v-model="filter"
+                outlined
+                dense
+                debounce="300"
+                placeholder="Search"
+                style="margin-top: -3px"
+              >
+                <template v-slot:append>
+                  <q-icon :name="icons.search" />
+                </template>
+              </q-input>
+            </template>
+          </q-table>
+
+          <div class="text-h6 subheading">
+            {{ $t("adminTools.userInterlockLogs") }}
+          </div>
+
+          <q-table
+            :rows="this.logs.interlockLogs"
+            :columns="[
+              {
+                name: 'interlock',
+                label: 'Interlock',
+                field: 'interlock',
+                sortable: true,
+              },
+              {
+                name: 'dateOn',
+                label: 'Session Start',
+                field: 'dateOn',
+                sortable: true,
+                format: (val) => this.formatWhen(val),
+              },
+              {
+                name: 'dateOff',
+                label: 'Session End',
+                field: 'dateOff',
+                sortable: true,
+                format: (val) => this.formatWhen(val),
+              },
+              {
+                name: 'sessionComplete',
+                label: 'Session Complete',
+                field: 'sessionComplete',
+                sortable: true,
+              },
+              {
+                name: 'userOff',
+                label: 'User Swiped Off',
+                field: 'userOff',
+                sortable: true,
+              },
+            ]"
+            row-key="id"
+            :filter="doorFilter"
+            v-model:pagination="pagination"
+            :loading="loading"
+            :grid="$q.screen.xs"
+          >
+            <template v-slot:top-left>
+              <div class="row">
+                <q-input
+                  v-if="$q.screen.xs"
+                  v-model="filter"
+                  outlined
+                  dense
+                  debounce="300"
+                  placeholder="Search"
+                  style="margin-top: -3px"
+                >
+                  <template v-slot:append>
+                    <q-icon :name="icons.search" />
+                  </template>
+                </q-input>
+              </div>
+            </template>
+
+            <template v-if="$q.screen.gt.xs" v-slot:top-right>
+              <q-input
+                v-model="filter"
+                outlined
+                dense
+                debounce="300"
+                placeholder="Search"
+                style="margin-top: -3px"
+              >
+                <template v-slot:append>
+                  <q-icon :name="icons.search" />
+                </template>
+              </q-input>
+            </template>
+          </q-table>
+        </q-tab-panel>
 
         <q-tab-panel name="billing">
           <div class="text-h6">
@@ -512,7 +680,7 @@
           </div>
 
           <q-table
-            :data="this.billing.memberbucks.transactions"
+            :rows="this.billing.memberbucks.transactions"
             :columns="[
               {
                 name: 'description',
@@ -536,7 +704,7 @@
             ]"
             row-key="id"
             :filter="filter"
-            :pagination.sync="pagination"
+            v-model:pagination="pagination"
             :loading="loading"
             :grid="$q.screen.xs"
           >
@@ -597,7 +765,6 @@
 import AccessList from "components/AccessList";
 import formMixin from "src/mixins/formMixin";
 import SavedNotification from "components/SavedNotification";
-import { mapGetters } from "vuex";
 import icons from "../../icons";
 import formatMixin from "src/mixins/formatMixin";
 
@@ -633,7 +800,6 @@ export default {
         lastName: "",
         phone: "",
         screenName: "",
-        memberType: "",
       },
       saved: {
         // if there was an error saving the form
@@ -645,7 +811,6 @@ export default {
         lastName: false,
         phone: false,
         screenName: false,
-        memberType: false,
       },
       billing: {
         memberbucks: {
@@ -661,7 +826,15 @@ export default {
           status: "",
         },
       },
+      logs: {
+        userEventLogs: [],
+        doorLogs: [],
+        interlockLogs: [],
+      },
       filter: "",
+      userEventsFilter: "",
+      doorFilter: "",
+      interlockFiler: "",
       loading: false,
       pagination: {
         sortBy: "date",
@@ -673,6 +846,7 @@ export default {
   beforeMount() {
     this.loadInitialForm();
     this.getMemberBilling();
+    this.getMemberLogs();
   },
   methods: {
     loadInitialForm() {
@@ -682,7 +856,6 @@ export default {
       this.profileForm.lastName = this.selectedMember.name.last;
       this.profileForm.phone = this.selectedMember.phone;
       this.profileForm.screenName = this.selectedMember.screenName;
-      this.profileForm.memberType = this.selectedMember.memberType;
     },
     saveChange(field) {
       this.$refs.formRef.validate(false).then(() => {
@@ -697,10 +870,17 @@ export default {
                 this.saved.error = false;
                 this.saved[field] = true;
                 this.$emit("memberUpdated");
+                setTimeout(() => {
+                  this.saved[field] = false;
+                }, 1500);
               })
               .catch(() => {
                 this.saved.error = true;
                 this.saved[field] = true;
+                setTimeout(() => {
+                  this.saved[field] = false;
+                  this.saved.error = false;
+                }, 1500);
               });
           }
         });
@@ -726,47 +906,6 @@ export default {
           this.welcomeLoading = false;
         });
     },
-    createInvoice() {
-      let emailInvoice = false;
-      this.$q
-        .dialog({
-          title: this.$t("confirmAction"),
-          message: this.$t("adminTools.confirmInvoice"),
-          ok: "Ok",
-          cancel: "Cancel",
-        })
-        .onOk(() => {
-          this.$q
-            .dialog({
-              title: this.$t("confirmAction"),
-              message: this.$t("adminTools.confirmInvoiceEmail"),
-              ok: "Email Them",
-              cancel: "Don't Email",
-            })
-            .onOk(() => {
-              emailInvoice = true;
-            })
-            .onDismiss(() => {
-              this.$axios
-                .post(
-                  `/api/admin/members/${this.member.id}/invoice/${emailInvoice}/`
-                )
-                .then(() => {
-                  this.$q.dialog({
-                    title: this.$t("success"),
-                    message: this.$t("adminTools.createInvoiceSuccess"),
-                  });
-                  this.$emit("memberUpdated");
-                })
-                .catch(() => {
-                  this.$q.dialog({
-                    title: this.$t("error.error"),
-                    message: this.$t("error.requestFailed"),
-                  });
-                });
-            });
-        });
-    },
     getMemberBilling() {
       this.$axios
         .get(`/api/admin/members/${this.member.id}/billing/`)
@@ -779,6 +918,26 @@ export default {
         .then((res) => {
           this.billing = res.data;
           if (!this.billing?.subscription) this.billing.subscription = null;
+        })
+        .finally(() => {
+          this.$emit("memberUpdated");
+          setTimeout(() => {
+            this.stateLoading = false;
+          }, 1200);
+        });
+    },
+    getMemberLogs() {
+      this.$axios
+        .get(`/api/admin/members/${this.member.id}/logs/`)
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t("error.error"),
+            message: this.$t("error.requestFailed"),
+          });
+        })
+        .then((res) => {
+          console.log(res);
+          this.logs = res.data;
         })
         .finally(() => {
           this.$emit("memberUpdated");
@@ -836,7 +995,6 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("config", ["memberTypes"]),
     selectedMember() {
       if (this.members) {
         return this.members.find((e) => e.id === this.member.id);
@@ -866,5 +1024,22 @@ a:hover,
 a:active {
   color: inherit;
   text-decoration: none;
+}
+
+.active {
+  color: green;
+}
+
+.inactive {
+  color: red;
+}
+
+.q-field__after,
+.q-field__append {
+  padding-left: 0;
+}
+
+.subheading {
+  padding-top: 20px;
 }
 </style>

@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  mm_app:
+    image: mm:latest
+    ports:
+    - "8000:8000"
+    volumes:
+      - /Users/jabelone/mm/data:/usr/src/data
+      - /Users/jabelone/mm/logs:/usr/src/logs
+
+    environment:
+      PORTAL_ENV: "Production"
+
+  mm_redis:
+    image: redis:latest

@@ -1,7 +1,6 @@
-import python_http_client.exceptions
+from asgiref.sync import sync_to_async
 
 from profile.models import Profile
-from profile.xerohelpers import create_stripe_membership_invoice
 from access.models import Doors, Interlock
 from api_admin_tools.models import *
 
@@ -19,10 +18,12 @@ from sentry_sdk import capture_exception
 
 
 class StripeAPIView(APIView):
-    try:
-        stripe.api_key = config.STRIPE_SECRET_KEY
-    except OperationalError as error:
-        capture_exception(error)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        try:
+            stripe.api_key = config.STRIPE_SECRET_KEY
+        except OperationalError as error:
+            capture_exception(error)
 
 
 class MemberBucksAddCard(StripeAPIView):
@@ -178,7 +179,7 @@ class MemberBucksAddCard(StripeAPIView):
 
 class MemberTiers(StripeAPIView):
     """
-    get: gets a list of all member tiers.
+    get: gets a list of all membership plans.
     """
 
     def get(self, request):
@@ -198,7 +199,7 @@ class MemberTiers(StripeAPIView):
 
 class PaymentPlanSignup(StripeAPIView):
     """
-    post: attempts to sign the member up to a new membership payment plan.
+    post: attempts to sign the member up to a new membership plan.
     """
 
     def post(self, request, plan_id):
@@ -393,10 +394,13 @@ class CheckInductionStatus(APIView):
             return Response({"success": True, "score": 0, "notRequired": True})
 
         try:
-            score = canvas_api.get_student_score_for_course(
-                config.INDUCTION_COURSE_ID, request.user.email
+            score = (
+                canvas_api.get_student_score_for_course(
+                    config.INDUCTION_COURSE_ID, request.user.email
+                )
+                or 0
             )
-            if score:
+            if score or config.MIN_INDUCTION_SCORE == 0:
                 induction_passed = score >= config.MIN_INDUCTION_SCORE
 
                 if induction_passed:
@@ -432,7 +436,9 @@ class CompleteSignup(StripeAPIView):
         signupCheck = member.can_signup()
 
         if member.subscription_status == "active":
-            return Response({"success": False, "message": "signup.existingMember"})
+            return Response(
+                {"success": False, "message": "signup.existingMemberSubscription"}
+            )
 
         elif signupCheck["success"]:
             member.activate()
@@ -501,7 +507,7 @@ class SubscriptionInfo(StripeAPIView):
 
 class PaymentPlanResumeCancel(StripeAPIView):
     """
-    post: attempts to cancel a member's payment plan.
+    post: attempts to cancel a member's membership plan.
     """
 
     def post(self, request, resume):
@@ -515,7 +521,7 @@ class PaymentPlanResumeCancel(StripeAPIView):
             )
 
         else:
-            # this will modify the subscription to automatically cancel at the end of the current payment plan
+            # this will modify the subscription to automatically cancel at the end of the current payment period
             if resume:
                 modified_subscription = stripe.Subscription.modify(
                     request.user.profile.stripe_subscription_id,
@@ -633,28 +639,6 @@ class StripeWebhook(StripeAPIView):
                 # already had this sent)
                 if member.state != "noob":
                     send_submitted_application_emails(member)
-
-            if member and config.STRIPE_CREATE_XERO_INVOICES:
-                # check if the subscription is a membership subscription
-                subscription = MemberTier.objects.get(stripe_id=data["subscription"])
-
-                # return if the subscription is not a membership subscription
-                if not subscription:
-                    return Response()
-
-                # get the charge object so we can check how much the Stripe fee was
-                charge = stripe.Charge.retrieve(
-                    data["charge"], expand=["balance_transaction"]
-                )
-
-                # grab the amount and the Stripe fee
-                amount = charge.balance_transaction["amount"]
-                fee = charge.balance_transaction["fee"]
-
-                # generate a new Xero invoice
-                create_stripe_membership_invoice(
-                    user=member, amount=amount, fee_amount=fee
-                )
 
             # in all other instances, we don't care about a paid invoice and can ignore it
 

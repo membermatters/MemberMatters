@@ -50,11 +50,11 @@
 /* eslint-disable no-console */
 import icons from "@icons";
 import { mapGetters, mapMutations } from "vuex";
-import Vue from "vue";
+// import Vue from "vue";
 import formMixin from "../mixins/formMixin";
 
 export default {
-  name: "Settings",
+  name: "Kiosk-Settings",
   mixins: [formMixin],
   props: {},
   data() {
@@ -71,7 +71,7 @@ export default {
     ...mapMutations("rfid", ["setConnected", "setReaderUrl", "setCardId"]),
     connectReader() {
       const ws = new WebSocket(this.readerUrl, ["arduino"]);
-      Vue.prototype.$rfid = ws;
+      // Vue.prototype.$rfid = ws;
 
       ws.onopen = () => {
         ws.send("something");

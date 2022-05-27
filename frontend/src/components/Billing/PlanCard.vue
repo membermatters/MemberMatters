@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "PlanCard",
@@ -71,6 +71,7 @@ export default defineComponent({
 
 .q-card {
   height: 100%;
+  max-width: 500px;
 }
 
 .dark-border {

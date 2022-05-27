@@ -5,6 +5,10 @@
         {{ $t("access.doors") }}
       </q-item-label>
 
+      <div class="q-pa-md" v-if="!doors.length">
+        {{ $t("access.noDoors") }}
+      </div>
+
       <div
         v-for="door in doors"
         :key="door.name"
@@ -41,6 +45,10 @@
     <q-list bordered padding class="rounded-borders q-ma-sm access-list">
       <q-item-label header>
         {{ $t("access.interlocks") }}
+      </q-item-label>
+
+      <q-item-label class="q-pa-md" v-if="!interlocks.length">
+        {{ $t("access.noInterlocks") }}
       </q-item-label>
 
       <div
@@ -106,10 +114,14 @@ export default {
       return icons;
     },
     doors() {
-      return this.memberId ? this.access.doors : this.doorAccess;
+      if (this.memberId && this.access.doors !== undefined)
+        return this.access.doors;
+      else return this.doorAccess;
     },
     interlocks() {
-      return this.memberId ? this.access.interlocks : this.interlockAccess;
+      if (this.memberId && this.access.interlocks !== undefined)
+        return this.access.interlocks;
+      else return this.interlockAccess;
     },
   },
 
@@ -180,10 +192,8 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
-@media (max-width: $breakpoint-xs-max) {
-  .access-list {
-    width: 100%;
-  }
-}
+<style lang="sass" scoped>
+@media (max-width: $breakpoint-xs-max)
+  .access-list
+    width: 100%
 </style>

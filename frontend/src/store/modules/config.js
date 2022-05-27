@@ -1,11 +1,11 @@
 import address from "address";
 import sha256 from "crypto-js/sha256";
 import CryptoJS from "crypto-js";
-import router from "../../router";
-import Vue from "vue";
-import * as Sentry from "@sentry/vue";
-import { Integrations } from "@sentry/tracing";
-import { version } from "../../../package.json";
+// import router from "../../router";
+// import * as Sentry from "@sentry/vue";
+// import { Integrations } from "@sentry/tracing";
+// import { version } from "../../../package.json";
+import { api } from "boot/axios";
 
 export default {
   namespaced: true,
@@ -15,7 +15,6 @@ export default {
     contact: {},
     homepageCards: {},
     webcamLinks: {},
-    memberTypes: [],
     keys: {},
     features: {},
     kioskId: null,
@@ -29,7 +28,6 @@ export default {
     contact: (state) => state.contact,
     homepageCards: (state) => state.homepageCards,
     webcamLinks: (state) => state.webcamLinks,
-    memberTypes: (state) => state.memberTypes,
     keys: (state) => state.keys,
     features: (state) => state.features,
     kioskId: (state) => state.kioskId,
@@ -53,9 +51,6 @@ export default {
     setWebcamLinks(state, payload) {
       state.webcamLinks = payload;
     },
-    setMemberTypes(state, payload) {
-      state.memberTypes = payload;
-    },
     setKeys(state, payload) {
       state.keys = payload;
     },
@@ -78,7 +73,7 @@ export default {
   actions: {
     getSiteConfig({ commit }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios
+        api
           .get("/api/config/")
           .then((result) => {
             commit("setSiteName", result.data.general.siteName);
@@ -86,40 +81,39 @@ export default {
             commit("setContact", result.data.contact);
             commit("setHomepageCards", result.data.homepageCards);
             commit("setWebcamLinks", result.data.webcamLinks);
-            commit("setMemberTypes", result.data.memberTypes);
             commit("setKeys", result.data.keys);
             commit("setFeatures", result.data.features);
             commit("setImages", result.data.images);
             commit("setTheme", result.data.theme);
 
-            if (
-              result.data.sentryDSN &&
-              process.env.NODE_ENV !== "development"
-            ) {
-              Sentry.init({
-                Vue,
-                dsn: result.data.sentryDSN,
-                environment: process.env.NODE_ENV,
-                release: version,
-                integrations: [
-                  new Integrations.BrowserTracing({
-                    routingInstrumentation:
-                      Sentry.vueRouterInstrumentation(router),
-                    tracingOrigins: ["localhost", /^\//],
-                  }),
-                ],
-                initialScope: {
-                  tags: {
-                    siteOwner: result.data.general.siteOwner,
-                    siteContact: result.data.contact.sysadmin,
-                  },
-                },
-                // Set tracesSampleRate to 1.0 to capture 100%
-                // of transactions for performance monitoring.
-                // We recommend adjusting this value in production
-                tracesSampleRate: 1.0,
-              });
-            }
+            // if (
+            //   result.data.sentryDSN &&
+            //   process.env.NODE_ENV !== "development"
+            // ) {
+            //   Sentry.init({
+            //     Vue,
+            //     dsn: result.data.sentryDSN,
+            //     environment: process.env.NODE_ENV,
+            //     release: version,
+            //     integrations: [
+            //       new Integrations.BrowserTracing({
+            //         routingInstrumentation:
+            //           Sentry.vueRouterInstrumentation(router),
+            //         tracingOrigins: ["localhost", /^\//],
+            //       }),
+            //     ],
+            //     initialScope: {
+            //       tags: {
+            //         siteOwner: result.data.general.siteOwner,
+            //         siteContact: result.data.contact.sysadmin,
+            //       },
+            //     },
+            //     // Set tracesSampleRate to 1.0 to capture 100%
+            //     // of transactions for performance monitoring.
+            //     // We recommend adjusting this value in production
+            //     tracesSampleRate: 1.0,
+            //   });
+            // }
 
             const { analyticsId } = result.data;
 
@@ -147,7 +141,7 @@ export default {
     },
     pushKioskId({ state }) {
       return new Promise((resolve, reject) => {
-        Vue.prototype.$axios
+        api
           .put("/api/kiosks/", { name: state.kioskId, kioskId: state.kioskId })
           .then((result) => {
             resolve(result);

@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "TierCard",
@@ -69,6 +69,7 @@ export default defineComponent({
   computed: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     minPrice(): any {
+      if (!this.tier.plans.length) return [];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return this.tier.plans.reduce((prev: any, curr: any) => {
         return prev.cost < curr.cost ? prev : curr;
@@ -85,6 +86,7 @@ export default defineComponent({
 
 .q-card {
   height: 100%;
+  max-width: 500px;
 }
 
 .dark-border {

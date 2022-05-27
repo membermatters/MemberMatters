@@ -32,7 +32,7 @@ class MemberTier(models.Model):
 
 # This is a Stripe Price
 class PaymentPlan(models.Model):
-    """A payment plan that specifies how a member is billed for a member tier."""
+    """A Membership Plan that specifies how a member is billed for a member tier."""
 
     BILLING_PERIODS = [("Months", "month"), ("Weeks", "week"), ("Days", "days")]
 
@@ -46,7 +46,7 @@ class PaymentPlan(models.Model):
     currency = models.CharField(
         "Three letter ISO currency code.", max_length=3, default="aud"
     )
-    cost = models.IntegerField("The cost in cents for this payment plan.")
+    cost = models.IntegerField("The cost in cents for this membership plan.")
     interval_count = models.IntegerField(
         "How frequently the price is charged at (per billing interval)."
     )

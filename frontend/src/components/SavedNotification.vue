@@ -1,11 +1,12 @@
 <template>
-  <transition name="fade">
-    <div
-      v-show="value"
-      class="text-body1 text-center saved-message"
-    >
+  <transition
+    appear
+    enter-active-class="animated fadeIn"
+    leave-active-class="animated fadeOut"
+  >
+    <div v-show="success" class="text-body1 text-center saved-message">
       <template v-if="showText">
-        {{ error ? $t('form.error') : $t('form.saved') }}
+        {{ error ? $t("form.error") : $t("form.saved") }}
       </template>
       <q-icon
         :color="error ? 'fail' : 'success'"
@@ -21,17 +22,13 @@ import icons from "../icons";
 export default {
   name: "SavedNotification",
   props: {
-    value: {
+    success: {
       type: Boolean,
       default: false,
     },
     error: {
       type: Boolean,
       default: false,
-    },
-    timeout: {
-      type: Number,
-      default: 1500,
     },
     showText: {
       type: Boolean,
@@ -43,28 +40,16 @@ export default {
       return icons;
     },
   },
-  watch: {
-    value(value) {
-      if (value) this.showNotification();
-    },
-  },
-  methods: {
-    showNotification() {
-      setTimeout(() => {
-        this.$emit("input", false);
-      }, this.timeout);
-    },
-  },
 };
 </script>
 
 <style lang="sass" scoped>
-  .fade-leave-active
-    transition: opacity 0.5s ease-out
+.fade-leave-active
+  transition: opacity 0.5s ease-out
 
-  .fade-enter-active
-    transition: opacity 0.1s ease-in
+.fade-enter-active
+  transition: opacity 0.1s ease-in
 
-  .fade-enter, .fade-leave-to
-    opacity: 0
+.fade-enter, .fade-leave-to
+  opacity: 0
 </style>

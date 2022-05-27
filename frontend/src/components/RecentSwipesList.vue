@@ -18,7 +18,7 @@
       <q-tab-panel name="doors">
         <div class="row flex content-start justify-center">
           <q-table
-            :data="humanRecentDoorSwipes"
+            :rows="humanRecentDoorSwipes"
             :columns="[
               { name: 'user', label: 'User', field: 'user', sortable: true },
               { name: 'door', label: 'Door', field: 'name', sortable: true },
@@ -31,7 +31,7 @@
             ]"
             row-key="key"
             :filter="filter"
-            :pagination.sync="doorPagination"
+            v-model:pagination="doorPagination"
             :dense="$q.screen.lt.md"
             :grid="$q.screen.xs"
             class="table"
@@ -57,7 +57,7 @@
       <q-tab-panel name="interlocks">
         <div class="row flex content-start justify-center">
           <q-table
-            :data="humanRecentInterlockSwipes"
+            :rows="humanRecentInterlockSwipes"
             :columns="[
               {
                 name: 'userOn',
@@ -92,7 +92,7 @@
             ]"
             row-key="key"
             :filter="filter"
-            :pagination.sync="interlockPagination"
+            v-model:pagination="interlockPagination"
             :dense="$q.screen.lt.md"
             :grid="$q.screen.xs"
             :loading="loading"
@@ -167,7 +167,7 @@ export default {
       });
     }, 30000);
   },
-  destroyed() {
+  unmounted() {
     clearInterval(this.updateInterval);
   },
   computed: {
@@ -222,8 +222,8 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
+<style lang="sass" scoped>
 @media (max-width: $breakpoint-xs-max)
   .access-list
-    width: 100%;
+    width: 100%
 </style>

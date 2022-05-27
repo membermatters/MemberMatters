@@ -1,6 +1,4 @@
-import Vuex from "vuex";
-import Vue from "vue";
-// import VuexPersistence from "vuex-persist";
+import { createStore } from "vuex";
 import profile from "./modules/profile";
 import config from "./modules/config";
 import tools from "./modules/tools";
@@ -8,13 +6,7 @@ import adminTools from "./modules/adminTools";
 import rfid from "./modules/rfid";
 import auth from "./modules/auth";
 
-Vue.use(Vuex);
-
-// const vuexLocal = new VuexPersistence({
-//   storage: window.localStorage,
-// });
-
-export default new Vuex.Store({
+export default createStore({
   modules: {
     profile,
     config,
@@ -23,5 +15,4 @@ export default new Vuex.Store({
     rfid,
     auth,
   },
-  // plugins: [vuexLocal.plugin],
 });

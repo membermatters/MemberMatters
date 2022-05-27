@@ -1,12 +1,12 @@
 <template>
   <q-card class="q-pa-md card">
-    <i18n path="proxyForm.proxyTo" tag="p">
+    <i18n-t keypath="proxyForm.proxyTo" tag="p">
       <template v-slot:siteOwner>
         <span>{{ siteOwner }}</span>
       </template>
-    </i18n>
+    </i18n-t>
 
-    <i18n path="proxyForm.proxyBody" tag="p">
+    <i18n-t keypath="proxyForm.proxyBody" tag="p">
       <template v-slot:memberName>
         <span class="proxy-field">{{ profile.fullName }}</span>
       </template>
@@ -25,16 +25,16 @@
       <template v-slot:meetingDate>
         <span class="proxy-field">{{ proxyCardInfo.meeting.date }}</span>
       </template>
-    </i18n>
+    </i18n-t>
 
-    <i18n path="proxyForm.proxySignature" tag="p">
+    <i18n-t keypath="proxyForm.proxySignature" tag="p">
       <template v-slot:memberName>
         <span class="proxy-field">{{ profile.fullName }}</span>
       </template>
       <template v-slot:currentDate>
         <span class="proxy-field">{{ currentDate }}</span>
       </template>
-    </i18n>
+    </i18n-t>
   </q-card>
 </template>
 

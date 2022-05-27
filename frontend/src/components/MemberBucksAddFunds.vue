@@ -10,7 +10,24 @@
         </div>
       </q-card-section>
 
-      <template v-if="profile.financial.memberBucks.savedCard.last4">
+      <template v-if="profile?.financial?.memberBucks?.savedCard?.last4">
+        <q-card-section>
+          <i18n-t keypath="memberbucks.addFundsDescription" tag="p">
+            <template v-slot:savedCard>
+              <span class="proxy-field">
+                <b>{{ profile?.financial?.memberBucks?.savedCard?.last4 }}</b>
+              </span>
+            </template>
+          </i18n-t>
+
+          <q-banner v-if="addFundsError" class="text-white bg-red">
+            {{ addFundsError }}
+          </q-banner>
+          <q-banner v-if="addFundsSuccess" class="text-white bg-success">
+            {{ $t("memberbucks.addFundsSuccess") }}
+          </q-banner>
+        </q-card-section>
+
         <q-card-section>
           <q-btn
             :disable="addingFunds"
@@ -33,23 +50,6 @@
           />
           <br />
           <q-spinner v-if="addingFunds" color="primary" />
-        </q-card-section>
-
-        <q-card-section>
-          <i18n path="memberbucks.addFundsDescription" tag="p">
-            <template v-slot:savedCard>
-              <span class="proxy-field">
-                <b>{{ profile.financial.memberBucks.savedCard.last4 }}</b>
-              </span>
-            </template>
-          </i18n>
-
-          <q-banner v-if="addFundsError" class="text-white bg-red">
-            {{ addFundsError }}
-          </q-banner>
-          <q-banner v-if="addFundsSuccess" class="text-white bg-success">
-            {{ $t("memberbucks.addFundsSuccess") }}
-          </q-banner>
         </q-card-section>
       </template>
 
@@ -90,6 +90,7 @@ import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "MemberBucksAddFunds",
+  emits: ["ok", "cancel", "hide"],
   data() {
     return {
       addFundsError: null,
@@ -145,7 +146,10 @@ export default {
       return icons;
     },
     balance() {
-      return this.$n(this.profile.financial.memberBucks.balance, "currency");
+      return this.$n(
+        this?.profile?.financial?.memberBucks?.balance || 0,
+        "currency"
+      );
     },
   },
 };

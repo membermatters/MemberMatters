@@ -12,8 +12,6 @@ from django.contrib.auth.models import (
 )
 from django.core.validators import RegexValidator
 from django.conf import settings
-from profile.xerohelpers import get_xero_contact, create_membership_invoice
-from profile.xerohelpers import add_to_xero
 from constance import config
 from api_general.models import SiteSession
 from api_admin_tools.models import MemberTier, PaymentPlan
@@ -125,6 +123,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+    def get_short_name(self):
+        return self.profile.first_name
+
     @property
     def is_staff(self):
         "Is the user a member of staff?"
@@ -187,26 +188,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         return False
 
-    def email_invoice(self, name, amount, number, due_date, reference, url):
-        invoice = {
-            "name": name,
-            "amount": amount,
-            "number": number,
-            "due_date": due_date,
-            "reference": reference,
-            "url": url,
-        }
-        email_string = render_to_string(
-            "email_invoice.html", {"invoice": invoice, "config": config}
-        )
-
-        if self.__send_email(
-            f"You have a new invoice from {config.SITE_OWNER} ({number})", email_string
-        ):
-            return True
-
-        return False
-
     def email_welcome(self):
         cards = (
             config.WELCOME_EMAIL_CARDS
@@ -260,30 +241,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         return True
 
 
-class MemberTypes(models.Model):
-    # TODO: remove this when the stripe billing is fully implemented
-    id = models.AutoField(primary_key=True)
-    name = models.CharField("Member Type Name", max_length=20)
-    conditions = models.CharField("Membership Conditions", max_length=100)
-    cost = models.IntegerField("Monthly Cost (cents)")
-
-    class Meta:
-        verbose_name = "Member types"
-        verbose_name_plural = "Member types"
-
-    def get_object(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "description": self.description,
-            "conditions": self.conditions,
-            "cost": self.cost,
-        }
-
-    def __str__(self):
-        return self.name + " - ${} per mth. {}".format(self.cost, self.conditions)
-
-
 from access.models import Doors, Interlock
 
 
@@ -316,7 +273,6 @@ class Profile(models.Model):
             ("see_personal_details", "Can see and update a member's personal details"),
             ("manage_memberbucks_balance", "Can see and modify memberbucks balance"),
             ("member_logs", "Can see a members log"),
-            ("generate_invoice", "Can generate a member invoice"),
         ]
 
     id = models.AutoField(primary_key=True)
@@ -342,9 +298,6 @@ class Profile(models.Model):
     phone = models.CharField(validators=[phone_regex], max_length=12, blank=True)
     state = models.CharField(max_length=11, default="noob", choices=STATES)
 
-    member_type = models.ForeignKey(
-        MemberTypes, on_delete=models.PROTECT, related_name="member_type"
-    )
     membership_plan = models.ForeignKey(
         PaymentPlan,
         on_delete=models.PROTECT,
@@ -382,12 +335,6 @@ class Profile(models.Model):
     )
     subscription_status = models.CharField(
         max_length=10, default="inactive", choices=SUBSCRIPTION_STATES
-    )
-    xero_account_id = models.CharField(
-        max_length=100, blank=True, null=True, default=""
-    )
-    xero_account_number = models.CharField(
-        max_length=6, blank=True, null=True, default=""
     )
 
     def generate_digital_id_token(self):
@@ -499,15 +446,6 @@ class Profile(models.Model):
         self.last_induction = timezone.now()
         return self.save()
 
-    def get_xero_contact(self):
-        return get_xero_contact(self)
-
-    def add_to_xero(self):
-        return add_to_xero(self)
-
-    def create_membership_invoice(self, email_invoice=True):
-        return create_membership_invoice(self.user, email_invoice)
-
     def is_signed_into_site(self):
         sessions = SiteSession.objects.filter(user=self.user, signout_date=None)
 
@@ -533,11 +471,6 @@ class Profile(models.Model):
             },
             "phone": self.phone,
             "state": self.get_state_display(),
-            # "picture": picture,
-            "memberType": {
-                "name": self.member_type.name,
-                "id": self.member_type_id,
-            },
             "rfid": self.rfid,
             "memberBucks": {
                 "balance": self.memberbucks_balance,
@@ -557,10 +490,6 @@ class Profile(models.Model):
             "stripe": {
                 "cardExpiry": self.stripe_card_expiry,
                 "last4": self.stripe_card_last_digits,
-            },
-            "xero": {
-                "accountId": self.xero_account_id,
-                "accountNumber": self.xero_account_number,
             },
             "subscriptionStatus": self.subscription_status,
         }

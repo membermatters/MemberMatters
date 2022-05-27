@@ -60,7 +60,7 @@
           >
             <template v-slot:append>
               <q-icon :name="icons.calendar" class="cursor-pointer">
-                <q-popup-proxy transition-show="scale" transition-hide="scale">
+                <q-popup-proxy>
                   <q-date
                     v-model="form.date"
                     mask="YYYY-MM-DD HH:mm"
@@ -80,7 +80,7 @@
                 </q-popup-proxy>
               </q-icon>
               <q-icon :name="icons.clock" class="cursor-pointer">
-                <q-popup-proxy transition-show="scale" transition-hide="scale">
+                <q-popup-proxy>
                   <q-time
                     v-model="form.date"
                     mask="YYYY-MM-DD HH:mm"
@@ -154,8 +154,6 @@ import { mapGetters, mapActions } from "vuex";
 import * as dayjs from "dayjs";
 import icons from "../icons";
 import formMixin from "../mixins/formMixin";
-
-let d;
 
 export default {
   name: "MeetingForm",

@@ -16,7 +16,6 @@ variables from. You'll need at least the following:
 
 ```
 # /usr/app/env.list
-PORTAL_DOMAIN=https://demo.membermatters.org
 PORTAL_ENV=Production
 ```
 

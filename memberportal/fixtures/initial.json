@@ -1,14 +1,5 @@
 [
   {
-    "model": "profile.membertypes",
-    "pk": 1,
-    "fields": {
-      "name": "Default",
-      "conditions": "Default",
-      "cost": 0
-    }
-  },
-  {
     "model": "profile.user",
     "pk": 1,
     "fields": {
@@ -44,8 +35,6 @@
       "stripe_customer_id": "",
       "stripe_card_expiry": "",
       "stripe_card_last_digits": "",
-      "xero_account_id": "",
-      "xero_account_number": "",
       "doors": [],
       "interlocks": []
     }

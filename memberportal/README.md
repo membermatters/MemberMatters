@@ -142,7 +142,3 @@ unless you have a good reason.
 You will need to re-run the database migration every time the db models change. You may see random database related errors such as column does not exist if you forget to do this. You can do that by running:
 
 `python3 manage.py migrate`
-
-To test all of the features you will need some api keys. Define these as environment variables:
-* PORTAL_XERO_CONSUMER_KEY
-* PORTAL_XERO_RSA_FILE (path to the rsa key)

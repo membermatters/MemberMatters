@@ -1,4 +1,5 @@
-from profile.models import User
+from profile.models import User, UserEventLog
+from access.models import DoorLog, InterlockLog
 from access import models
 from .models import MemberTier, PaymentPlan
 from memberbucks.models import MemberBucks
@@ -6,13 +7,7 @@ from constance import config
 from services.emails import send_single_email
 import json
 import stripe
-from django.db.utils import OperationalError
 from sentry_sdk import capture_message
-
-try:
-    stripe.api_key = config.STRIPE_SECRET_KEY
-except OperationalError as e:
-    pass
 
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -20,6 +15,17 @@ from rest_framework import status
 from rest_framework.views import APIView
 import humanize
 from django.db import connection
+from django.db.utils import OperationalError
+from sentry_sdk import capture_exception
+
+
+class StripeAPIView(APIView):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        try:
+            stripe.api_key = config.STRIPE_SECRET_KEY
+        except OperationalError as error:
+            capture_exception(error)
 
 
 class GetMembers(APIView):
@@ -30,7 +36,7 @@ class GetMembers(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def get(self, request):
-        members = User.objects.select_related("profile", "profile__member_type").all()
+        members = User.objects.select_related("profile").all()
 
         filtered = []
 
@@ -88,49 +94,22 @@ class MakeMember(APIView):
             # send the welcome email
             email = user.email_welcome()
 
-            xero = None
-            invoice = None
-
-            # if we should generate a Xero invoice and mark them as "inactive" until it's been paid
-            if config.MAKEMEMBER_CREATE_XERO_INVOICES:
-                xero = user.profile.add_to_xero()
-                invoice = user.profile.create_membership_invoice()
-
-                user.profile.state = "inactive"  # an admin should activate them when they pay their invoice
-                user.profile.update_last_induction()
-                user.profile.save()
-
-            # if we should not generate a Xero invoice, mark them as "active" if their subscription is active
-            elif user.profile.subscription_status == "active":
-                user.profile.state = "active"
-                user.profile.save()
+            # mark them as "active"
+            user.profile.state = "active"
+            user.profile.save()
 
             subject = f"{user.profile.get_full_name()} just got turned into a member!"
             send_single_email(
                 request.user, config.EMAIL_ADMIN, subject, subject, subject
             )
 
-            # if we don't have to make a Xero invoice, we're done
-            if not config.MAKEMEMBER_CREATE_XERO_INVOICES and email:
+            if email:
                 return Response(
                     {
                         "success": True,
                         "message": "adminTools.makeMemberSuccess",
                     }
                 )
-
-            # if there were no errors when making the Xero invoice, then we're done
-            elif "Error" not in xero and "Error" not in invoice and email:
-                return Response(
-                    {
-                        "success": True,
-                        "message": "adminTools.makeMemberSuccess",
-                    }
-                )
-
-            # if there was an error creating the Xero invoice
-            elif invoice is not None and "Error" in invoice:
-                return Response({"success": False, "message": invoice})
 
             # if there was an error sending the welcome email
             elif email is False:
@@ -169,7 +148,6 @@ class Doors(APIView):
         doors = models.Doors.objects.all()
 
         def get_door(door):
-
             cursor = connection.cursor()
             cursor.execute(
                 "SELECT access_doorlog.door_id, access_doorlog.user_id, pp.screen_name, COUNT(access_doorlog.user_id) as records, MAX(access_doorlog.date) as lastSeen FROM access_doorlog INNER JOIN profile_profile pp on access_doorlog.user_id = pp.user_id GROUP BY access_doorlog.door_id, access_doorlog.user_id HAVING access_doorlog.door_id = %s ORDER BY records DESC",
@@ -358,7 +336,6 @@ class MemberProfile(APIView):
         member.profile.rfid = body.get("rfidCard")
         member.profile.phone = body.get("phone")
         member.profile.screen_name = body.get("screenName")
-        member.profile.member_type_id = body.get("memberType")["id"]
 
         member.save()
         member.profile.save()
@@ -366,27 +343,12 @@ class MemberProfile(APIView):
         return Response()
 
 
-class MemberCreateNewInvoice(APIView):
+class MemberTiers(StripeAPIView):
     """
-    get: This method creates a new invoice for the specified member.
-    """
-
-    permission_classes = (permissions.IsAdminUser,)
-
-    def post(self, request, member_id, send_email):
-        User.objects.get(pk=member_id).profile.create_membership_invoice(
-            email_invoice=send_email == "true"
-        )
-
-        return Response()
-
-
-class MemberTiers(APIView):
-    """
-    get: gets a list of all member tiers.
-    post: creates a new member tier.
-    put: updates a new member tier.
-    delete: a member tier.
+    get: gets a list of all membership plans.
+    post: creates a new membership plan.
+    put: updates a new membership plan.
+    delete: a membership plan.
     """
 
     permission_classes = (permissions.IsAdminUser,)
@@ -435,7 +397,7 @@ class MemberTiers(APIView):
         return Response()
 
 
-class ManageMemberTier(APIView):
+class ManageMemberTier(StripeAPIView):
     """
     get: gets a member tier.
     put: updates a member tier.
@@ -483,7 +445,7 @@ class ManageMemberTier(APIView):
         return Response()
 
 
-class ManageMemberTierPlans(APIView):
+class ManageMemberTierPlans(StripeAPIView):
     """
     post: creates a new member tier plan.
     """
@@ -543,7 +505,7 @@ class ManageMemberTierPlans(APIView):
         return Response()
 
 
-class ManageMemberTierPlan(APIView):
+class ManageMemberTierPlan(StripeAPIView):
     """
     get: gets a member tier plan.
     put: updates a member tier plan.
@@ -588,7 +550,7 @@ class ManageMemberTierPlan(APIView):
         return Response()
 
 
-class MemberBillingInfo(APIView):
+class MemberBillingInfo(StripeAPIView):
     """
     get: This method gets a member's billing info.
     """
@@ -639,3 +601,55 @@ class MemberBillingInfo(APIView):
         }
 
         return Response(billing_info)
+
+
+class MemberLogs(APIView):
+    """
+    get: This method gets a member's logs.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request, member_id):
+        user = User.objects.get(id=member_id)
+
+        user_event_logs = []
+        door_logs = []
+        interlock_logs = []
+
+        for user_event_log in UserEventLog.objects.filter(user=user)[:1000]:
+            user_event_logs.append(
+                {
+                    "date": user_event_log.date,
+                    "description": user_event_log.description,
+                    "logtype": user_event_log.get_logtype_display(),
+                }
+            )
+
+        for door_log in DoorLog.objects.filter(user=user)[:1000]:
+            door_logs.append(
+                {
+                    "date": door_log.date,
+                    "door": door_log.door.name,
+                    "success": door_log.success,
+                }
+            )
+
+        for interlock_log in InterlockLog.objects.filter(user=user)[:1000]:
+            interlock_logs.append(
+                {
+                    "dateOn": interlock_log.first_heartbeat,
+                    "dateOff": interlock_log.last_heartbeat,
+                    "interlock": interlock_log.interlock.name,
+                    "sessionComplete": interlock_log.session_complete,
+                    "userOff": interlock_log.user_off.name,
+                }
+            )
+
+        logs = {
+            "userEventLogs": user_event_logs,
+            "doorLogs": door_logs,
+            "interlockLogs": interlock_logs,
+        }
+
+        return Response(logs)

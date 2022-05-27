@@ -1,212 +1,227 @@
 <template>
-  <div class="q-pa-md login-card">
-    <q-card v-if="!resetToken">
-      <h6 class="q-ma-none q-pa-md">
-        {{ $t("loginCard.loginToContinue") }}
-      </h6>
+  <div class="q-pa-md login-card flex flex-center">
+    <template v-if="!showCard">
+      <q-circular-progress
+        indeterminate
+        size="50px"
+        :thickness="0.22"
+        track-color="grey-3"
+        class="q-ma-md"
+      />
+    </template>
 
-      <q-card-section>
-        <q-form class="q-gutter-md" @submit="onSubmit" @reset="onReset">
-          <q-input
-            id="username-field"
-            v-model="email"
-            ref="focusInput"
-            filled
-            autocomplete="on"
-            type="email"
-            label="Your email"
-            lazy-rules
-            :rules="[
-              (val) => validateEmail(val) || $t('validation.invalidEmail'),
-            ]"
-          />
+    <template v-else>
+      <q-card v-if="!resetToken">
+        <h6 class="q-ma-none q-pa-md">
+          {{ $t("loginCard.loginToContinue") }}
+        </h6>
 
-          <q-input
-            v-model="password"
-            id="password-field"
-            filled
-            autocomplete="on"
-            type="password"
-            label="Your password"
-            lazy-rules
-            :rules="[
-              (val) =>
-                validateNotEmpty(val) || $t('validation.invalidPassword'),
-            ]"
-          />
-
-          <q-banner v-if="loginComplete" class="bg-positive text-white">
-            {{ $t("loginCard.loginSuccess") }}
-          </q-banner>
-
-          <q-banner v-if="loginFailed" class="bg-negative text-white">
-            {{ $t("error.loginFailed") }}
-          </q-banner>
-
-          <q-banner v-if="unverifiedEmail" class="bg-negative text-white">
-            {{ $t("loginCard.unverifiedEmail") }}
-          </q-banner>
-
-          <q-banner v-if="loginError" class="bg-negative text-white">
-            {{ $t("error.requestFailed") }}
-          </q-banner>
-
-          <p class="text-caption">
-            {{ $t("loginCard.notAMember") }}
-            <router-link
-              :to="{ name: 'register' }"
-              :class="$q.dark.isActive ? 'text-white' : 'text-black'"
-            >
-              {{ $t("loginCard.registerHere") }}
-            </router-link>
-          </p>
-
-          <div class="row">
-            <q-space />
-            <q-btn
-              :label="$t('loginCard.resetPassword')"
-              type="reset"
-              color="primary"
-              flat
-              class="q-ml-sm"
-              @click="reset.prompt = true"
-            />
-            <q-btn
-              :label="$t('loginCard.login')"
-              type="submit"
-              color="primary-btn"
-              :loading="buttonLoading"
-            />
-          </div>
-        </q-form>
-      </q-card-section>
-    </q-card>
-
-    <q-card v-else class="login-card">
-      <h6 class="q-ma-none q-pa-md">
-        {{ $t("loginCard.resetPassword") }}
-      </h6>
-      <q-card-section>
-        <q-form class="q-gutter-md" @submit="submitResetPassword">
-          <q-input
-            v-model="reset.password"
-            id="new-password-field"
-            ref="focusInput"
-            filled
-            autocomplete="on"
-            autofocus
-            type="password"
-            label="Your new password"
-            lazy-rules
-            :disable="this.reset.formDisabled"
-            :rules="[
-              (val) =>
-                validateNotEmpty(val) || $t('validation.invalidPassword'),
-            ]"
-          />
-
-          <q-input
-            v-model="reset.password2"
-            filled
-            autocomplete="on"
-            id="new-password-confirm-field"
-            type="password"
-            label="Confirm password"
-            lazy-rules
-            :disable="this.reset.formDisabled"
-            :rules="[
-              (val) =>
-                validateNotEmpty(val) || $t('validation.invalidPassword'),
-              (val) =>
-                val === this.reset.password ||
-                $t('validation.passwordNotMatch'),
-            ]"
-          />
-
-          <q-banner v-if="this.reset.confirmed" class="bg-positive text-white">
-            {{ $t("loginCard.resetConfirm") }}
-          </q-banner>
-
-          <q-banner
-            v-if="this.reset.invalidToken"
-            class="bg-negative text-white"
-          >
-            {{ $t("loginCard.resetInvalid") }}
-          </q-banner>
-
-          <q-banner v-if="this.reset.failed" class="bg-negative text-white">
-            {{ $t("loginCard.resetNotConfirm") }}
-          </q-banner>
-
-          <div class="row">
-            <q-space />
-            <q-btn
-              :label="$t('loginCard.backToLogin')"
-              color="primary-btn"
-              flat
-              class="q-ml-sm"
-              @click="$router.push({ name: 'login' })"
-            />
-            <q-btn
-              :label="$t('button.submit')"
-              type="submit"
-              color="primary-btn"
-              :disable="this.reset.formDisabled"
-              :loading="this.reset.loading"
-            />
-          </div>
-        </q-form>
-      </q-card-section>
-    </q-card>
-
-    <q-dialog v-model="reset.prompt" persistent>
-      <q-card style="max-width: 350px">
         <q-card-section>
-          <div class="text-h6">
-            {{ $t("loginCard.forgottenPassword") }}
-          </div>
-          <div>
-            {{ $t("loginCard.forgottenPasswordDescription") }}
-          </div>
+          <q-form class="q-gutter-md" @submit="onSubmit" @reset="onReset">
+            <q-input
+              id="username-field"
+              v-model="email"
+              ref="focusInput"
+              filled
+              autocomplete="on"
+              type="email"
+              label="Your email"
+              lazy-rules
+              :rules="[
+                (val) => validateEmail(val) || $t('validation.invalidEmail'),
+              ]"
+            />
+
+            <q-input
+              v-model="password"
+              id="password-field"
+              filled
+              autocomplete="on"
+              type="password"
+              label="Your password"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  validateNotEmpty(val) || $t('validation.invalidPassword'),
+              ]"
+            />
+
+            <q-banner v-if="loginComplete" class="bg-positive text-white">
+              {{ $t("loginCard.loginSuccess") }}
+            </q-banner>
+
+            <q-banner v-if="loginFailed" class="bg-negative text-white">
+              {{ $t("error.loginFailed") }}
+            </q-banner>
+
+            <q-banner v-if="unverifiedEmail" class="bg-negative text-white">
+              {{ $t("loginCard.unverifiedEmail") }}
+            </q-banner>
+
+            <q-banner v-if="loginError" class="bg-negative text-white">
+              {{ $t("error.requestFailed") }}
+            </q-banner>
+
+            <p class="text-caption">
+              {{ $t("loginCard.notAMember") }}
+              <router-link
+                :to="{ name: 'register' }"
+                :class="$q.dark.isActive ? 'text-white' : 'text-black'"
+              >
+                {{ $t("loginCard.registerHere") }}
+              </router-link>
+            </p>
+
+            <div class="row">
+              <q-space />
+              <q-btn
+                :label="$t('loginCard.resetPassword')"
+                type="reset"
+                color="primary"
+                flat
+                class="q-ml-sm"
+                @click="reset.prompt = true"
+              />
+              <q-btn
+                :label="$t('loginCard.login')"
+                type="submit"
+                color="primary-btn"
+                :loading="buttonLoading"
+              />
+            </div>
+          </q-form>
         </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <q-input
-            v-model="reset.email"
-            :label="$t('loginCard.emailLabel')"
-            autofocus
-            @keyup.enter="resetPassword()"
-          />
-        </q-card-section>
-
-        <q-banner v-if="reset.success" class="bg-positive text-white q-mx-md">
-          {{ $t("loginCard.resetSuccess") }}
-        </q-banner>
-
-        <q-banner v-if="reset.failed" class="bg-negative text-white q-mx-md">
-          {{ $t("loginCard.resetFailed") }}
-        </q-banner>
-
-        <q-card-actions align="right" class="text-primary">
-          <q-btn
-            v-close-popup
-            flat
-            :label="
-              this.reset.disableResetSubmitButton
-                ? $t('button.close')
-                : $t('button.cancel')
-            "
-          />
-          <q-btn
-            flat
-            :label="$t('button.submit')"
-            :loading="reset.loading"
-            :disable="this.reset.disableResetSubmitButton"
-            @click="resetPassword()"
-          />
-        </q-card-actions>
       </q-card>
-    </q-dialog>
+
+      <q-card v-else class="login-card">
+        <h6 class="q-ma-none q-pa-md">
+          {{ $t("loginCard.resetPassword") }}
+        </h6>
+        <q-card-section>
+          <q-form class="q-gutter-md" @submit="submitResetPassword">
+            <q-input
+              v-model="reset.password"
+              id="new-password-field"
+              ref="focusInput"
+              filled
+              autocomplete="on"
+              autofocus
+              type="password"
+              label="Your new password"
+              lazy-rules
+              :disable="this.reset.formDisabled"
+              :rules="[
+                (val) =>
+                  validateNotEmpty(val) || $t('validation.invalidPassword'),
+              ]"
+            />
+
+            <q-input
+              v-model="reset.password2"
+              filled
+              autocomplete="on"
+              id="new-password-confirm-field"
+              type="password"
+              label="Confirm password"
+              lazy-rules
+              :disable="this.reset.formDisabled"
+              :rules="[
+                (val) =>
+                  validateNotEmpty(val) || $t('validation.invalidPassword'),
+                (val) =>
+                  val === this.reset.password ||
+                  $t('validation.passwordNotMatch'),
+              ]"
+            />
+
+            <q-banner
+              v-if="this.reset.confirmed"
+              class="bg-positive text-white"
+            >
+              {{ $t("loginCard.resetConfirm") }}
+            </q-banner>
+
+            <q-banner
+              v-if="this.reset.invalidToken"
+              class="bg-negative text-white"
+            >
+              {{ $t("loginCard.resetInvalid") }}
+            </q-banner>
+
+            <q-banner v-if="this.reset.failed" class="bg-negative text-white">
+              {{ $t("loginCard.resetNotConfirm") }}
+            </q-banner>
+
+            <div class="row">
+              <q-space />
+              <q-btn
+                :label="$t('loginCard.backToLogin')"
+                color="primary-btn"
+                flat
+                class="q-ml-sm"
+                @click="$router.push({ name: 'login' })"
+              />
+              <q-btn
+                :label="$t('button.submit')"
+                type="submit"
+                color="primary-btn"
+                :disable="this.reset.formDisabled"
+                :loading="this.reset.loading"
+              />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+
+      <q-dialog v-model="reset.prompt" persistent>
+        <q-card style="max-width: 350px">
+          <q-card-section>
+            <div class="text-h6">
+              {{ $t("loginCard.forgottenPassword") }}
+            </div>
+            <div>
+              {{ $t("loginCard.forgottenPasswordDescription") }}
+            </div>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none">
+            <q-input
+              v-model="reset.email"
+              :label="$t('loginCard.emailLabel')"
+              autofocus
+              @keyup.enter="resetPassword()"
+            />
+          </q-card-section>
+
+          <q-banner v-if="reset.success" class="bg-positive text-white q-mx-md">
+            {{ $t("loginCard.resetSuccess") }}
+          </q-banner>
+
+          <q-banner v-if="reset.failed" class="bg-negative text-white q-mx-md">
+            {{ $t("loginCard.resetFailed") }}
+          </q-banner>
+
+          <q-card-actions align="right" class="text-primary">
+            <q-btn
+              v-close-popup
+              flat
+              :label="
+                this.reset.disableResetSubmitButton
+                  ? $t('button.close')
+                  : $t('button.cancel')
+              "
+            />
+            <q-btn
+              flat
+              :label="$t('button.submit')"
+              :loading="reset.loading"
+              :disable="this.reset.disableResetSubmitButton"
+              @click="resetPassword()"
+            />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+    </template>
   </div>
 </template>
 
@@ -214,8 +229,7 @@
 import { mapMutations, mapGetters, mapActions } from "vuex";
 import { Loading } from "quasar";
 import formMixin from "../mixins/formMixin";
-import { Plugins } from "@capacitor/core";
-const { SplashScreen } = Plugins;
+import { SplashScreen } from "@capacitor/splash-screen";
 
 export default {
   name: "LoginCard",
@@ -232,6 +246,7 @@ export default {
   },
   data() {
     return {
+      showCard: false,
       email: "",
       password: "",
       loginFailed: false,
@@ -268,8 +283,11 @@ export default {
       this.redirectLoggedIn(false);
     } else {
       await SplashScreen.hide();
-      // if we're not in electron, auto focus the first field
-      if (!this.$q.platform.is.electron) this.$refs.focusInput.focus();
+      this.showCard = true;
+      setTimeout(() => {
+        // if we're not in electron, auto focus the first field
+        if (!this.$q.platform.is.electron) this.$refs.focusInput.focus();
+      }, 0);
     }
 
     if (this.resetToken) {
@@ -305,9 +323,10 @@ export default {
 
       this.loginComplete = true;
       this.$emit("login-complete");
-      if (this.$route.query.redirect)
-        this.$router.push(this.$route.query.redirect);
-      else if (!this.noRedirect && delay) {
+      if (this.$route.query.nextUrl) {
+        this.setLoggedIn(true);
+        this.$router.push(this.$route.query.nextUrl);
+      } else if (!this.noRedirect && delay) {
         setTimeout(() => {
           this.setLoggedIn(true);
           this.$router.push({ name: "dashboard" });
@@ -401,10 +420,10 @@ export default {
             this.redirectLoggedIn();
           })
           .catch((error) => {
-            if (error.response.status === 401) {
+            if (error.response?.status === 401) {
               this.loginFailed = true;
               this.unverifiedEmail = false;
-            } else if (error.response.status === 403) {
+            } else if (error.response?.status === 403) {
               this.unverifiedEmail = true;
               this.loginFailed = false;
               throw error;

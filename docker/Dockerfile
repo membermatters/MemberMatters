@@ -6,17 +6,9 @@ LABEL description="Base Dockerfile for the MemberMatters software."
 VOLUME /usr/src/data/
 VOLUME /usr/src/logs/
 
-RUN mkdir -p /usr/src/app/frontend && mkdir -p /usr/src/logs && mkdir -p /usr/src/data
-COPY memberportal/requirements.txt /usr/src/app/memberportal/requirements.txt
+RUN mkdir -p /usr/src/app/frontend && mkdir /usr/src/logs && mkdir /usr/src/data
 
-RUN apt-get update && apt-get install -y nginx curl build-essential gcc make
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-
-# Install python deps
-WORKDIR /usr/src/app/memberportal/
-RUN python -m pip install --upgrade pip
-RUN pip3 install --no-cache-dir pillow
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN apt-get update -y && apt-get install -y nginx curl daphne
 
 # Install Node
 ENV NODE_VERSION=14.15.0
@@ -32,10 +24,15 @@ WORKDIR /usr/src/app/frontend/
 COPY frontend/package* /usr/src/app/frontend/
 RUN npm ci
 
-COPY frontend /usr/src/app/frontend
-COPY memberportal /usr/src/app/memberportal
-COPY docker /usr/src/app/docker
-COPY package.json /usr/src/app/package.json
+ADD frontend /usr/src/app/frontend
+ADD package.json /usr/src/app/package.json
+
+# Install python deps
+WORKDIR /usr/src/app/memberportal/
+RUN python -m pip install --upgrade pip
+ADD memberportal/requirements.txt /usr/src/app/memberportal/requirements.txt
+RUN pip3 install --no-cache-dir pillow
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Build our frontend
 WORKDIR /usr/src/app/frontend/
@@ -44,12 +41,14 @@ RUN npm run build
 # Remove our .npmrc
 RUN rm -rf .npmrc
 
-# collect static files from Django
+# collect static files from Django and add the backend source code
+ADD memberportal /usr/src/app/memberportal
 WORKDIR /usr/src/app/memberportal/
 RUN python3 manage.py collectstatic --noinput
 
 # Copy over the nginx config and requirement files
-COPY docker/nginx.conf /etc/nginx/nginx.conf
+ADD docker/nginx.conf /etc/nginx/nginx.conf
+ADD docker /usr/src/app/docker
 
 # Expose the port and run the app
 EXPOSE 8000

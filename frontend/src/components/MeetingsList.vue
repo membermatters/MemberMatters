@@ -1,23 +1,26 @@
 <template>
   <q-table
-    :data="meetings"
-    :columns="[{ name: 'type', label: 'Type', field: 'type', sortable: true },
-               { name: 'date',
-                 label: 'Date',
-                 field: 'date',
-                 sortable: true,
-                 format: (val, row) => this.formatDate(val)
-               },
-               { name: 'chair', label: 'Chair', field: 'chair', sortable: true },
-               { name: 'attendeeCount',
-                 label: 'Attendees',
-                 field: 'attendeeCount',
-                 sortable: true
-               },
+    :rows="meetings"
+    :columns="[
+      { name: 'type', label: 'Type', field: 'type', sortable: true },
+      {
+        name: 'date',
+        label: 'Date',
+        field: 'date',
+        sortable: true,
+        format: (val, row) => this.formatDate(val),
+      },
+      { name: 'chair', label: 'Chair', field: 'chair', sortable: true },
+      {
+        name: 'attendeeCount',
+        label: 'Attendees',
+        field: 'attendeeCount',
+        sortable: true,
+      },
     ]"
     row-key="id"
     :filter="filter"
-    :pagination.sync="pagination"
+    v-model:pagination="pagination"
     :loading="loading"
     :grid="$q.screen.xs"
   >
@@ -30,10 +33,7 @@
         @click="newMeeting = true"
       />
 
-      <q-dialog
-        v-model="newMeeting"
-        persistent
-      >
+      <q-dialog v-model="newMeeting" persistent>
         <meeting-form />
       </q-dialog>
     </template>
@@ -55,21 +55,14 @@
     <template v-slot:header="props">
       <q-tr :props="props">
         <q-th auto-width />
-        <q-th
-          v-for="col in props.cols"
-          :key="col.name"
-          :props="props"
-        >
+        <q-th v-for="col in props.cols" :key="col.name" :props="props">
           {{ col.label }}
         </q-th>
       </q-tr>
     </template>
 
     <template v-slot:body="props">
-      <q-tr
-        :props="props"
-        @click="props.expand = !props.expand"
-      >
+      <q-tr :props="props" @click="props.expand = !props.expand">
         <q-td auto-width>
           <q-btn
             size="sm"
@@ -79,18 +72,11 @@
             @click.stop="props.expand = !props.expand"
           />
         </q-td>
-        <q-td
-          v-for="col in props.cols"
-          :key="col.name"
-          :props="props"
-        >
+        <q-td v-for="col in props.cols" :key="col.name" :props="props">
           {{ col.value }}
         </q-td>
       </q-tr>
-      <q-tr
-        v-show="props.expand"
-        :props="props"
-      >
+      <q-tr v-show="props.expand" :props="props">
         <q-td colspan="100%">
           <meetings-details
             :proxies="props.row.proxyList"
@@ -130,31 +116,34 @@ export default {
   methods: {
     ...mapActions("adminTools", ["getMeetings"]),
     deleteMeeting(id) {
-      this.$q.dialog({
-        title: "Confirm",
-        message: this.$t("meetingForm.deleteMeeting"),
-        cancel: {
-          color: "primary",
-          flat: true,
-          label: this.$t("button.cancel"),
-        },
-        ok: {
-          color: "primary",
-          label: this.$t("button.ok"),
-        },
-        persistent: true,
-      }).onOk(() => {
-        this.$axios.delete(`/api/meetings/${id}/`, this.form)
-          .then(() => {
-            this.getMeetings();
-          })
-          .catch(() => {
-            this.$q.dialog({
-              title: this.$t("error.error"),
-              message: this.$t("error.requestFailed"),
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: this.$t("meetingForm.deleteMeeting"),
+          cancel: {
+            color: "primary",
+            flat: true,
+            label: this.$t("button.cancel"),
+          },
+          ok: {
+            color: "primary",
+            label: this.$t("button.ok"),
+          },
+          persistent: true,
+        })
+        .onOk(() => {
+          this.$axios
+            .delete(`/api/meetings/${id}/`, this.form)
+            .then(() => {
+              this.getMeetings();
+            })
+            .catch(() => {
+              this.$q.dialog({
+                title: this.$t("error.error"),
+                message: this.$t("error.requestFailed"),
+              });
             });
-          });
-      });
+        });
     },
     editMeeting(id) {
       this.editMeetingId = id;
@@ -163,10 +152,9 @@ export default {
   },
   mounted() {
     this.loading = true;
-    this.getMeetings()
-      .finally(() => {
-        this.loading = false;
-      });
+    this.getMeetings().finally(() => {
+      this.loading = false;
+    });
   },
   computed: {
     ...mapGetters("adminTools", ["meetings"]),
@@ -177,8 +165,8 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped>
-  @media (max-width: $breakpoint-xs-max)
-    .access-list
-      width: 100%;
+<style lang="sass" scoped>
+@media (max-width: $breakpoint-xs-max)
+  .access-list
+    width: 100%
 </style>

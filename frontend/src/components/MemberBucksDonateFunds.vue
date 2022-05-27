@@ -11,42 +11,13 @@
       </q-card-section>
 
       <q-card-section>
-        <div class="text-subtitle2 q-pb-sm">
-          {{ $t("memberbucks.quickAdd") }}
-        </div>
-        <q-btn
-          :disable="donatingFunds"
-          class="q-mr-sm"
-          :label="$n(0.5, 'currency')"
-          color="accent"
-          @click="addFunds(0.5)"
-        />
-        <q-btn
-          :disable="donatingFunds"
-          class="q-mr-sm"
-          :label="$n(1, 'currency')"
-          color="accent"
-          @click="addFunds(1)"
-        />
-        <q-btn
-          :disable="donatingFunds"
-          class="q-mr-sm"
-          :label="$n(2, 'currency')"
-          color="accent"
-          @click="addFunds(2)"
-        /><q-btn
-          :disable="donatingFunds"
-          :label="$n(3, 'currency')"
-          color="accent"
-          @click="addFunds(3)"
-        />
-
         <q-input
           class="q-py-sm"
           prefix="$"
           outlined
           :disable="donatingFunds"
           v-model="amount"
+          type="number"
           :label="$tc('memberbucks.totalAmount')"
           color="accent"
         />
@@ -72,7 +43,7 @@
       </q-card-section>
 
       <q-card-section>
-        <i18n path="memberbucks.donateFundsDescription" tag="p"></i18n>
+        <i18n-t keypath="memberbucks.donateFundsDescription" tag="p"></i18n-t>
 
         <q-banner v-if="donateFundsError" class="text-white bg-red">
           {{ donateFundsError }}
@@ -96,11 +67,13 @@
 </template>
 
 <script>
+import { defineComponent } from "vue";
 import icons from "@icons";
 import { mapGetters, mapActions } from "vuex";
 
-export default {
+export default defineComponent({
   name: "MemberBucksDonateFunds",
+  emits: ["ok", "cancel", "hide"],
   data() {
     return {
       donateFundsError: null,
@@ -125,7 +98,7 @@ export default {
       this.donateFundsError = false;
       let convertedAmount = Math.floor(this.amount * 100);
       this.$axios
-        .post(`/api/memberbucks/donate/${convertedAmount}/`, {
+        .post(`/api/memberbucks/pay/${convertedAmount}/`, {
           description: this.description,
         })
         .then(() => {
@@ -135,7 +108,6 @@ export default {
           this.donateFundsSuccess = true;
         })
         .catch(() => {
-          console.log("help");
           this.donateFundsSuccess = false;
           this.donateFundsError = this.$t("memberbucks.donateFundsError");
         })
@@ -168,8 +140,11 @@ export default {
       return icons;
     },
     balance() {
-      return this.$n(this.profile.financial.memberBucks.balance, "currency");
+      return this.$n(
+        this?.profile?.financial?.memberBucks?.balance || 0,
+        "currency"
+      );
     },
   },
-};
+});
 </script>

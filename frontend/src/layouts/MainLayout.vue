@@ -16,7 +16,7 @@
             round
             :icon="icons.backButton"
             aria-label="Back"
-            @click="$router.go(-1)"
+            @click="handleBackPressed()"
           />
         </template>
         <template v-else>
@@ -73,20 +73,19 @@
             ? 'margin-top: 110px; height: calc(100% - 190px);'
             : 'margin-top: 150px; height: calc(100% - 220px);'
         "
-        style="border-right: 1px solid #ddd"
       >
         <q-list>
-          <template v-for="link in filteredLinks">
-            <EssentialLink :key="link.title" v-bind="link" />
+          <template v-for="link in filteredLinks" :key="link.title">
+            <EssentialLink v-bind="link" />
           </template>
         </q-list>
       </q-scroll-area>
 
       <q-space />
 
-      <div class="footer q-pt-md">
+      <div class="footer">
         <q-img
-          contain
+          fit="contain"
           :src="images.siteLogo"
           style="max-height: 40px; cursor: pointer"
           @click="aboutMemberMatters = true"
@@ -95,9 +94,15 @@
     </q-drawer>
 
     <q-page-container>
-      <fade-transition>
-        <router-view />
-      </fade-transition>
+      <router-view v-slot="{ Component }">
+        <transition
+          appear
+          enter-active-class="animated fadeIn"
+          leave-active-class="animated fadeOut"
+        >
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </q-page-container>
 
     <q-dialog v-model="aboutMemberMatters">
@@ -137,20 +142,22 @@
 <script>
 import EssentialLink from "components/EssentialLink";
 import { mapActions, mapGetters } from "vuex";
-import Transitions, { FadeTransition } from "vue2-transitions";
-import Vue from "vue";
+// import Transitions, { FadeTransition } from "vue2-transitions";
+// import { FadeTransition } from "vue2-transitions";
+// import Vue from "vue";
+import { defineComponent } from "vue";
 import { Platform } from "quasar";
 import icons from "../icons";
 import MainMenu from "../pages/pageAndRouteConfig";
 import mainMixin from "../mixins/mainMixin";
 
-Vue.use(Transitions);
+// Vue.use(Transitions);
 
-export default {
+export default defineComponent({
   name: "MainLayout",
   components: {
     EssentialLink,
-    FadeTransition,
+    // FadeTransition,
   },
   mixins: [mainMixin],
   data() {
@@ -170,6 +177,12 @@ export default {
       } else {
         return require("../assets/img/menu-bg/menu-bg.jpg");
       }
+    },
+    handleBackPressed() {
+      const backButton = this.$route.meta.backButton;
+      if (backButton === true) this.$router.go(-1);
+      else if (typeof backButton === "string" || backButton instanceof String)
+        this.$router.push(backButton);
     },
   },
   computed: {
@@ -217,14 +230,14 @@ export default {
       await this.getProfile();
       if (
         this.profile.memberStatus === "Needs Induction" &&
-        this.$route.name !== "membershipTier" &&
+        this.$route.name !== "membershipPlan" &&
         this.features.enableMembershipPayments
       ) {
-        next({ name: "membershipTier" });
+        next({ name: "membershipPlan" });
       }
     }
   },
-};
+});
 </script>
 
 <style lang="sass" scoped>

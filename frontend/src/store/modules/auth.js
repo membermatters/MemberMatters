@@ -1,6 +1,5 @@
 import "axios";
-import { Plugins } from "@capacitor/core";
-const { Storage } = Plugins;
+import { Storage } from "@capacitor/storage";
 
 export default {
   namespaced: true,

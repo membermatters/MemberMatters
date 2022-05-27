@@ -4,14 +4,9 @@
       <sad-face />
     </p>
     <p class="text-body1 text-faded">
-      {{ $t('error.403') }}
+      {{ $t("error.403") }}
     </p>
-    <q-btn
-      color="primary-btn"
-      style="width:200px;"
-      to="/"
-      label="Go Home"
-    />
+    <q-btn color="primary-btn" style="width: 200px" to="/" label="Go Home" />
   </div>
 </template>
 
@@ -19,7 +14,7 @@
 import SadFace from "../components/SadFace";
 
 export default {
-  name: "Error403",
+  name: "Error-403",
   components: { SadFace },
 };
 </script>

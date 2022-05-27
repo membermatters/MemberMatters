@@ -72,10 +72,10 @@ export default {
     await this.getProfile();
     if (
       this.profile.memberStatus === "Needs Induction" &&
-      this.$route.name !== "membershipTier" &&
+      this.$route.name !== "membershipPlan" &&
       this.features.enableMembershipPayments
     ) {
-      this.$router.push({ name: "membershipTier" });
+      this.$router.push({ name: "membershipPlan" });
     }
   },
 };

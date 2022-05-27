@@ -51,7 +51,6 @@ A summary of the settings is available below. Most settings have a more detailed
   * "ENTITY_TYPE" - [Deprecated]
   * "GOOGLE_ANALYTICS_PROPERTY_ID" - Enter your Google Analytics Tracking ID to enable Google Analytics Tracking.
   * "API_SECRET_KEY" - Secret key used to authenticate some requests from third party access control devices.
-  * "DEFAULT_MEMBER_TYPE" - The ID of the default member type to use when signing up.
 
 #### Signup
   * "INDUCTION_ENROL_LINK" - URL to enrol in the Canvas LMS induction course.
@@ -102,7 +101,7 @@ A summary of the settings is available below. Most settings have a more detailed
   * "STRIPE_PUBLISHABLE_KEY" - the publishable Stripe key.
   * "STRIPE_SECRET_KEY" - the secret Stripe key.
   * "STRIPE_WEBHOOK_SECRET" - the webhook secret to authenticate webhook requests are really from Stripe.
-  * "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS" - enable the "Membership Tiers" menu page on the front end so members can sign up with the Stripe billing integration. NOTE: make sure you configure these first from the "Admin Tools" > "Membership Tiers" page.
+  * "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS" - enable the "Membership Plan" menu page on the front end so members can sign up with the Stripe billing integration. NOTE: make sure you configure these first from the "Admin Tools" > "Membership Plans" page.
   * "STRIPE_MEMBERBUCKS_TOPUP_OPTIONS" - the options a member can see when on the MemberBucks top up page (in cents).
 
 #### Trello Integration

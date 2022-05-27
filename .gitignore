@@ -1,3 +1,4 @@
+TEST/
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
 # Byte-compiled / optimized / DLL files
@@ -110,6 +111,9 @@ venv.bak/
 /memberportal/media/
 
 *.sqlite3
+**/*.sqlite3
+*.sqlite3.bak
+**/*.sqlite3.bak
 
 \.DS_Store
 
@@ -123,7 +127,6 @@ webpack-stats.json
 
 frontend/src-capacitor/ios/App/App/Assets.xcassets/Splash.imageset/
 
-frontend/.npmrc
 memberportal/static/
 
 .vscode
@@ -144,3 +147,7 @@ frontend/src-electron/icons/
 tmp/
 .ackrc
 .terragrunt-cache/
+
+errors.log*
+
+setupcomplete

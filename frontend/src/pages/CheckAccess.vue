@@ -1,7 +1,7 @@
 <template>
   <q-page class="column flex content-center justify-start">
     <p class="text-body1 page-description q-pa-md">
-      {{ $t('access.pageDescription') }}
+      {{ $t("access.pageDescription") }}
     </p>
     <div class="column flex content-start justify-center">
       <q-banner
@@ -11,11 +11,9 @@
         class="bg-orange text-white q-ma-md"
       >
         <template v-slot:avatar>
-          <q-icon
-            :name="icons.warning"
-          />
+          <q-icon :name="icons.warning" />
         </template>
-        {{ $t('access.inactive') }}
+        {{ $t("access.inactive") }}
       </q-banner>
 
       <access-list />
@@ -41,7 +39,7 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-  .page-description
-    max-width: $maxWidthMedium
-    margin: 0 auto
+.page-description
+  max-width: $maxWidthMedium
+  margin: 0 auto
 </style>

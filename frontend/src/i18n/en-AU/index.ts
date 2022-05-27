@@ -11,8 +11,9 @@ export default {
     logout: "Logout",
     register: "Register",
     registerSuccess: "Successfully Registered",
-    manageTiers: "Membership Tiers",
-    manageTier: "Manage Tier",
+    manageTiers: "Membership Plans",
+    manageTier: "Manage Membership Plan",
+    managePlan: "Manage Payment Plan",
 
     adminTools: "Admin Tools",
     meetings: "Meetings",
@@ -32,11 +33,11 @@ export default {
     recentSwipes: "Recent Swipes",
     lastSeen: "Last Seen",
     membership: "Membership",
-    billing: "Billing",
+    billing: "Billing Method",
     profile: "Profile",
     checkAccess: "Access Permissions",
-    memberbucks: "Spacebucks",
-    membershipTier: "Membership Tier",
+    memberbucks: "Memberbucks",
+    membershipPlan: "Membership Plan",
 
     Error404: "Page Not Found",
     Error403: "Error 403",
@@ -50,9 +51,9 @@ export default {
     signinSuccess:
       "Successfully signed you in. Please remember to sign out when you leave.",
     signoutError:
-      "There was a problem signing you out. Please contact the executive committee if this problem persists.",
+      "There was a problem signing you out. Please report an issue if this problem persists.",
     signinError:
-      "There was a problem signing you in. Please contact the executive committee if this problem persists.",
+      "There was a problem signing you in. Please report an issue if this problem persists.",
     signIn: "On-site Check In",
     signOut: "On-site Check Out",
   },
@@ -155,10 +156,18 @@ export default {
     futureDate: "Date must be today or in the future.",
     tooMany: "Sorry, the maximum is {number}.",
   },
+  tableHeading: {
+    id: "ID",
+    name: "Name",
+    rfid: "RFID Tag",
+    email: "Email",
+    subscriptionStatus: "Subscription Status",
+    status: "Status",
+  },
   access: {
     pageDescription:
       "Your access permissions for doors and interlocks are shown below. Please " +
-      "contact the executive committee if you believe you should have access to something that " +
+      "report an issue if you believe you should have access to something that " +
       "you don't.",
     inactive:
       "Your membership is currently inactive. This may affect your access.",
@@ -166,13 +175,20 @@ export default {
     unauthorised: "Unauthorised",
     door: "Door",
     doors: "Doors",
+    noDoors: "There are no doors in the system.",
     interlock: "Interlock",
     interlocks: "Interlocks",
+    noInterlocks: "There are no interlocks in the system.",
     defaultAccess: "Members have access by default",
     maintenanceLockout: "Maintenance lockout is enabled",
     playTheme: "Play theme on swipe",
     exemptSignin: "Exempt from site sign in requirement (if enabled)",
     hiddenToMembers: "Hidden from members on their access permissions screen",
+    user: "User",
+    swipes: "Swipes",
+    lastSwipe: "Last Swipe",
+    lastSeen: "Last Seen",
+    usage: "Usage",
   },
   lastseen: {
     pageDescription:
@@ -218,7 +234,6 @@ export default {
     registrationDate: "Registration Date",
     state: "State",
     last_induction: "Last Induction",
-    memberType: "Membership Type",
     id: "Member ID",
     admin: "Admin User",
     visibleToMembers: "Visible to members?",
@@ -284,14 +299,14 @@ export default {
   memberbucks: {
     currentBalance: "Current Balance",
     lastPurchase: "Last Purchase",
-    addFunds: "Add Funds",
+    addFunds: "Load Funds",
     addFundsDescription:
-      "Click one of the buttons above to top up your account. This will " +
+      "Tap one of the buttons to load funds to your account. This will " +
       "immediately charge your saved card ending in {savedCard}.",
     noSavedBilling:
       "Sorry, but you don't have any valid billing methods. Please add a new " +
       "billing method by clicking the button below.",
-    manageBilling: "Manage Billing",
+    manageBilling: "Billing Method",
     selectToContinue: "Select your billing method to continue.",
     addCard: "Add Card",
     addCardDescription:
@@ -309,10 +324,10 @@ export default {
     quickAdd: "Quick Add",
     totalAmount: "Total Amount",
     donateFundsDescription:
-      'Click the quick add buttons or enter an amount above, then click "donate funds". You can use this to pay for things that don\'t have a payment terminal.',
-    donateFundsSuccess: "Successfully donated funds.",
+      "Enter an amount above, then click {'\"'}@:memberbucks.donateFunds{'\"'}. You can use this to pay for things like consumables or purchases.",
+    donateFundsSuccess: "Successfully made payment.",
     donateFundsError:
-      "There was an error donating your funds, check your balance or try again later.",
+      "There was an error confirming the payment, check your balance or try again later.",
     cardExpiry: "Card Expiry",
     last4: "Card Last 4 Digits",
   },
@@ -367,7 +382,7 @@ export default {
     "to date.",
   progress: "Progress: {percent}%",
   adminTools: {
-    emailAddresses: "Email Addresses",
+    emailAddresses: "Export Email List",
     exportCsv: "Export CSV",
     exportOptions: "Export Options",
     filterOptions: "Filter",
@@ -387,17 +402,15 @@ export default {
     makeMemberErrorExists:
       'It looks like this person is already a member. To see their profile, change the filter to "all" members.',
     makeMemberSuccessDescription:
-      'This person was made into a member and emailed their first invoice and welcome information. To see their profile, change the filter to "all" members.',
+      'This person was made into a member and sent welcome information. To see their profile, change the filter to "all" members.',
     sendWelcomeEmailSuccess: "Successfully sent the welcome email.",
-    createInvoiceSuccess: "Successfully created the new invoice.",
-    confirmInvoice:
-      "Are you sure you want to create a new invoice for this member?",
-    confirmInvoiceEmail:
-      "Would you like to email the new invoice to this member after it's created?",
 
     access: "Access",
     accessDescription: "Tap an icon below to change a member's access.",
     log: "Log",
+    userEvents: "User Event Logs",
+    userDoorLogs: "User Door Logs",
+    userInterlockLogs: "User Interlock Logs",
     stats: "Stats",
     mainProfile: "Main Profile",
     otherAttributes: "Other Attributes",
@@ -406,8 +419,6 @@ export default {
     lastUpdatedProfile: "Last Updated Profile",
     registrationDate: "Registration Date",
     lastSeen: "Last Seen",
-    openXero: "Open In Xero",
-    createInvoice: "Create Invoice",
     billing: "Billing",
     memberState: "Member State",
     memberbucksTransactions: "Memberbucks Transactions",
@@ -420,6 +431,7 @@ export default {
     currentPeriodEnd: "Current Period End",
     startDate: "Start Date",
     noSubscription: "No subscription was found for this member.",
+    noMembers: "No members were found that match your filter or search query.",
   },
   doors: {
     nodata: "There are no doors in the system.",
@@ -427,21 +439,23 @@ export default {
     description: "Door Description",
     ipAddress: "Door IP Address",
     remove: "Remove this door",
+    unlocked: "Unlock successful",
   },
   paymentPlans: {
-    title: "Payment Plans",
-    nodata: "There are no payment plans available.",
+    title: "Membership Payment Plans",
+    nodata: "There are no Membership Payment Plans available.",
     name: "Plan Name",
-    description: "Payment Plan Description",
+    description: "Membership Payment Plan Description",
     recurringDescription: "Bill for this plan every:",
-    remove: "Remove this payment plan",
-    add: "Add a new payment plan",
-    success: "Successfully added a new payment plan.",
-    fail: "Failed to add a new payment plan.",
-    select: "Plan",
-    selected: "Selected Payment Plan",
+    remove: "Remove this Membership Payment Plan",
+    add: "Add a new Membership Payment Plan",
+    success: "Successfully added a new Membership Payment Plan.",
+    fail: "Failed to add a new Membership Payment Plan.",
+    select: "Payment Plan",
+    selected: "Selected Membership Payment Plan",
     confirmSelection: "Confirm",
-    selectToContinue: "Select a plan to continue.",
+    selectToContinue: "Select a payment plan to continue.",
+    noPlans: "There are no payment plans available for this membership plan.",
     dueToday: "Due Today: {amount}",
     intervalDescription: "{amount} {currency} every {intervalCount} {interval}",
     interval: {
@@ -470,14 +484,14 @@ export default {
     resumeButton: "Resume membership",
     cancelling: "Your membership is about to be cancelled",
     cancellingDescription:
-      "Your payment plan and membership are scheduled to be cancelled on {date}. If you'd like to resume your plan (listed above), please click below.",
+      "Your membership is scheduled to be cancelled on {date}. If you'd like to resume your plan (listed above), please click below.",
     renewalDate: "Renewal Date",
     signupDate: "Signup Date",
     subscriptionInfo: "Subscription Info",
     accountOnlyWarning:
       "Your profile is currently set to 'account only'. This is because you skipped this process last time. You're welcome to continue using this account for our online services, or you can signup to become a member below. ",
     profileAccountOnlyWarning:
-      "Your profile is currently set to 'account only'. This is because you skipped the signup process and did not become a member. You're welcome to continue using this account for our online services, or you can signup to become a member from the menu ('Membership' > 'Membership Tier').",
+      "Your profile is currently set to 'account only'. This is because you skipped the signup process and did not become a member. You're welcome to continue using this account for our online services, or you can signup to become a member from the menu ('Membership' > 'Membership Plan').",
   },
   signup: {
     induction: "Induction",
@@ -511,21 +525,24 @@ export default {
     requirementsNotMet: "Requirements not met:",
     subscriptionFailed:
       "Sorry, but there was a problem creating your subscription. Please check the card you used had enough funds, try again, or contact us for help.",
+    existingMemberSubscription:
+      "Sorry, you already have an active Stripe subscription.",
   },
   tiers: {
     disabledFeature:
       "Warning! This feature is disabled. You can make changes but your users won't be able to use it.",
-    select: "Tier",
-    selectToContinue: "Select a membership tier to continue.",
-    selected: "Selected Membership Tier",
-    nodata: "There are no membership tiers in the system.",
-    name: "Tier Name",
-    description: "Tier Description",
-    remove: "Remove this tier",
-    add: "Add a new tier",
+    select: "Membership Plan",
+    selectToContinue: "Select a membership plan to continue.",
+    noTiers: "There are no membership plans available right now.",
+    selected: "Selected Membership Plan",
+    nodata: "There are no membership plans in the system.",
+    name: "Plan Name",
+    description: "Plan Description",
+    remove: "Remove this plan",
+    add: "Add a new plan",
     becomeMember: "Become a member",
     confirm:
-      "Please confirm your selected membership tier and plan. By continuing you agree to pay for your selected plan using the provided credit card. Your first payment will be collected today, and future payments of {intervalDescription}.",
+      "Please confirm your selected membership plan and billing plan. By continuing you agree to pay for your selected plan using the provided credit card. Your first payment will be collected today, and future payments of {intervalDescription}.",
     confirmDelay:
       "Your membership application will be submitted after you complete the next steps.",
     finish: "Pay & Continue",
@@ -533,8 +550,8 @@ export default {
     skipSignup: "Skip Signup (if you just want an account)",
   },
   tierForm: {
-    fail: "Failed to add a new tier.",
-    success: "Successfully added new tier.",
+    fail: "Failed to add a new membership plan.",
+    success: "Successfully added new membership plan.",
   },
   interlocks: {
     nodata: "There are no interlocks in the system.",

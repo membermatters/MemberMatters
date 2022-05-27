@@ -1,5 +1,4 @@
 import icons from "../icons";
-import store from "../store";
 
 const PageAndRouteConfig = [
   {
@@ -58,7 +57,7 @@ const PageAndRouteConfig = [
         loggedIn: true,
         admin: true,
         hiddenMenu: true,
-        backButton: true,
+        backButton: "/manage/members",
         component: () => import("pages/AdminTools/ManageMember"),
       },
       {
@@ -79,12 +78,12 @@ const PageAndRouteConfig = [
       },
       {
         icon: icons.members,
-        to: "/manage/tiers/:tierId",
+        to: "/manage/tiers/:planId",
         name: "manageTier",
         loggedIn: true,
         admin: true,
         hiddenMenu: true,
-        backButton: true,
+        backButton: "/manage/tiers",
         component: () => import("pages/AdminTools/ManageTier"),
       },
       {
@@ -201,10 +200,10 @@ const PageAndRouteConfig = [
       {
         icon: icons.plans,
         featureEnabledFlag: "enableMembershipPayments",
-        to: "/account/membership-tier",
-        name: "membershipTier",
+        to: "/account/membership-plan",
+        name: "membershipPlan",
         loggedIn: true,
-        component: () => import("pages/MembershipTier"),
+        component: () => import("pages/MembershipPlan"),
       },
     ],
   },
