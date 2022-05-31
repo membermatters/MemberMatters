@@ -68,6 +68,8 @@ INSTALLED_APPS = [
     "api_billing",
     "corsheaders",
     "rest_framework",
+    "django_celery_results",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -261,6 +263,11 @@ MEDIA_ROOT = os.environ.get("PORTAL_MEDIA_LOCATION", "/usr/src/data/media/")
 AUTH_USER_MODEL = "profile.User"
 
 REQUEST_TIMEOUT = 0.05
+
+# Celery configuration
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+CELERY_BROKER_URL = os.getenv("MM_REDIS_HOST")
 
 # Django constance configuration
 CONSTANCE_BACKEND = "membermatters.constance_backend.DatabaseBackend"
