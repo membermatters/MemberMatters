@@ -26,7 +26,6 @@
       "last_name": "Admin",
       "phone": "0712345678",
       "state": "noob",
-      "member_type": 1,
       "rfid": null,
       "memberbucks_balance": 0.0,
       "last_memberbucks_purchase": "2018-10-14T16:05:59.692Z",

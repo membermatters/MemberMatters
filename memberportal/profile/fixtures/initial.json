@@ -25,7 +25,6 @@
       "first_name": "Default",
       "last_name": "Admin",
       "state": "active",
-      "member_type": 1,
       "rfid": null,
       "memberbucks_balance": 0.0,
       "last_memberbucks_purchase": "2000-01-01T00:00:00.000Z",
