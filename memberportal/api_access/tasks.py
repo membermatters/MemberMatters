@@ -1,5 +1,4 @@
 from membermatters.celeryapp import app
-from celery.schedules import crontab
 
 
 @app.on_after_finalize.connect
