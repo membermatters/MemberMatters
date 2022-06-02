@@ -1,16 +1,49 @@
-version: '3'
-
+version: "3"
 services:
-  mm_app:
-    image: mm:latest
-    ports:
-    - "8000:8000"
-    volumes:
-      - /Users/jabelone/mm/data:/usr/src/data
-      - /Users/jabelone/mm/logs:/usr/src/logs
-
+  # MemberMatters
+  membermatters:
+    image: membermatters/membermatters:celery
+    restart: always
     environment:
       PORTAL_ENV: "Production"
+      MM_REDIS_HOST: 'redis://membermatters-redis:6379/0'
+    volumes:
+      - ./:/usr/src/data
+    ports:
+      - "8000:8000"
 
-  mm_redis:
-    image: redis:latest
+  # MemberMatters Redis
+  membermatters-redis:
+    image: redis
+    restart: always
+    depends_on:
+      - membermatters
+
+  # MemberMatters Celery Worker
+  membermatters-celery-worker:
+    image: membermatters/membermatters:celery
+    restart: always
+    environment:
+      PORTAL_ENV: "Production"
+      MM_RUN_MODE: "celery_worker"
+      MM_REDIS_HOST: 'redis://membermatters-redis:6379/0'
+    volumes:
+      - ./:/usr/src/data
+    depends_on:
+      - membermatters
+      - membermatters-redis
+
+  # MemberMatters Celery Worker
+  membermatters-celery-beat:
+    image: membermatters/membermatters:celery
+    restart: always
+    environment:
+      PORTAL_ENV: "Production"
+      MM_RUN_MODE: "celery_beat"
+      MM_REDIS_HOST: 'redis://membermatters-redis:6379/0'
+    volumes:
+      - ./:/usr/src/data
+    depends_on:
+      - membermatters
+      - membermatters-celery-worker
+      - membermatters-redis
