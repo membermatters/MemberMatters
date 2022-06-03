@@ -159,6 +159,7 @@ class IssueDetail(APIView):
                 subject,
                 subject,
                 description,
+                reply_to=request.user.email,
             ):
                 return Response(
                     {"success": True},

@@ -11,6 +11,7 @@ def send_single_email(
     subject: object,
     title: object,
     message: object,
+    reply_to=None,
 ) -> object:
     message = escape(message)
     message = message.replace("~br~", "<br>")
@@ -21,7 +22,11 @@ def send_single_email(
 
     postmark = PostmarkClient(server_token=config.POSTMARK_API_KEY)
     postmark.emails.send(
-        From=config.EMAIL_DEFAULT_FROM, To=email, Subject=subject, HtmlBody=email_string
+        From=config.EMAIL_DEFAULT_FROM,
+        To=email,
+        Subject=subject,
+        HtmlBody=email_string,
+        ReplyTo=reply_to or config.EMAIL_DEFAULT_FROM,
     )
 
     log_user_event(
@@ -33,11 +38,7 @@ def send_single_email(
     return True
 
 
-def send_email_to_admin(
-    subject: object,
-    title: object,
-    message: object,
-):
+def send_email_to_admin(subject: object, title: object, message: object, reply_to=None):
     message = escape(message)
     message = message.replace("~br~", "<br>")
     email_vars = {"preheader": "", "title": title, "message": message}
@@ -51,4 +52,5 @@ def send_email_to_admin(
         To=config.EMAIL_ADMIN,
         Subject=subject,
         HtmlBody=email_string,
+        ReplyTo=reply_to or config.EMAIL_DEFAULT_FROM,
     )
