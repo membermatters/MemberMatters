@@ -24,3 +24,4 @@ celery~=5.2.7
 django-celery-results~=2.3.1
 django-celery-beat~=2.2.1
 redis~=4.3.1
+twilio~=7.9.2

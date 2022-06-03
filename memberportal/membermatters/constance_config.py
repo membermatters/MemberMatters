@@ -274,6 +274,34 @@ CONSTANCE_CONFIG = {
     "MAILCHIMP_SERVER": ("", "Required if enabling the Mailchimp integration."),
     "MAILCHIMP_LIST_ID": ("", "Required if enabling the Mailchimp integration."),
     "MAILCHIMP_TAG": ("Member", "Add this tag to all members synced to mailchimp."),
+    "TWILIO_ACCOUNT_SID": (
+        "",
+        "The account SID (not api key SID) to use for the twilio integration.",
+    ),
+    "TWILIO_AUTH_TOKEN": (
+        "",
+        "The auth token (not an api token) to use for the twilio integration.",
+    ),
+    "SMS_ENABLE": (
+        False,
+        "If SMS functionality should be enabled (please configure below).",
+    ),
+    "SMS_DEFAULT_COUNTRY_CODE": (
+        "+61",
+        "The country code to prepend to phone numbers that don't have one.",
+    ),
+    "SMS_SENDER_ID": (
+        "",
+        "The sender ID (either a phone number or alpha numeric sender ID you can send from).",
+    ),
+    "SMS_FOOTER": (
+        "From Brisbane Makerspace.",
+        "An optional footer to append to all SMS messages (such as 'from xyz org.'",
+    ),
+    "SMS_MESSAGES": (
+        '{"inactive_swipe": "Hi! Your swipe was just declined due to inactive membership. Please contact us if you need assistance.",             "deactivated_access": "Hi! Your site access was just turned off. Please check your email and contact us if you need assistance.",             "activated_access": "Hi! Your site access was just turned on. Please make sure you stay up to date with our policies and rules by visiting our website."}',
+        "The SMS messages to send when a user attempts to swipe with an inactive card.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -322,12 +350,24 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ),
         ),
         (
-            "Canvas Integration",
+            "Canvas (LMS) Integration",
             ("CANVAS_API_TOKEN",),
         ),
-        ("Postmark Integration", ("POSTMARK_API_KEY",)),
+        ("Postmark (EMAIL) Integration", ("POSTMARK_API_KEY",)),
         (
-            "Stripe Integration",
+            "Twilio (SMS) Integration",
+            (
+                "SMS_ENABLE",
+                "TWILIO_ACCOUNT_SID",
+                "TWILIO_AUTH_TOKEN",
+                "SMS_DEFAULT_COUNTRY_CODE",
+                "SMS_SENDER_ID",
+                "SMS_MESSAGES",
+                "SMS_FOOTER",
+            ),
+        ),
+        (
+            "Stripe (PAYMENT GATEWAY) Integration",
             (
                 "STRIPE_PUBLISHABLE_KEY",
                 "STRIPE_SECRET_KEY",
@@ -345,7 +385,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ),
         ),
         (
-            "Mailchimp",
+            "Mailchimp (EMAIL MARKETING)",
             (
                 "MAILCHIMP_API_KEY",
                 "MAILCHIMP_SERVER",

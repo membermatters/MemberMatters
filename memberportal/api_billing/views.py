@@ -9,12 +9,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import stripe
-from services import canvas
+import logging
+from services import canvas, sms
 from services.emails import send_email_to_admin
 from constance import config
 from membermatters.helpers import log_user_event
 from django.db.utils import OperationalError
 from sentry_sdk import capture_exception
+
+logger = logging.getLogger("app")
 
 
 class StripeAPIView(APIView):
