@@ -40,7 +40,7 @@
     "html-to-image": "^0.1.3",
     "http-proxy": "^1.18.1",
     "idle-timeout": "^2.0.1",
-    "jsrsasign": "^10.0.4",
+    "jsrsasign": "^10.5.25",
     "prettier": "^2.6.2",
     "qrcode": "^1.4.4",
     "quasar": "^2.6.6",
