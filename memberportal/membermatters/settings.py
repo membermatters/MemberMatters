@@ -341,6 +341,7 @@ CONSTANCE_CONFIG = {
         "Memberbucks",
         "You can customise the name of the built in currency.",
     ),
+    "LOCAL_FIAT_CURRENCY": ("$", "The local native currency (Not Memberbucks!)"),
     "GROUP_NAME": ("Group", "You can customise what we call a group."),
     "ADMIN_NAME": (
         "Administrators",
@@ -643,6 +644,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             "Group Localisation",
             (
                 "MEMBERBUCKS_NAME",
+                "LOCAL_FIAT_CURRENCY",
                 "GROUP_NAME",
                 "ADMIN_NAME",
                 "WEBCAM_PAGE_URLS",
