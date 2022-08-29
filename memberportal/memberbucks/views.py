@@ -37,7 +37,7 @@ class MemberbucksDebit(APIView):
         if amount is not None:
             if abs(amount / 100) > 10:
                 return Response(
-                    "A maximum of $10 may be debited with this API.",
+                    f"A maximum of {config.LOCAL_FIAT_CURRENCY}10 may be debited with this API.",
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
@@ -58,10 +58,10 @@ class MemberbucksDebit(APIView):
                 profile.save()
 
                 subject = (
-                    f"You just made a ${amount} {config.MEMBERBUCKS_NAME} purchase."
+                    f"You just made a {config.LOCAL_FIAT_CURRENCY}{amount} {config.MEMBERBUCKS_NAME} purchase."
                 )
                 message = (
-                    "Description: {}. Balance Remaining: ${}. If this wasn't you, or you believe there has been an "
+                    "Description: {}. Balance Remaining: {config.LOCAL_FIAT_CURRENCY}{}. If this wasn't you, or you believe there has been an "
                     "error, please let us know.".format(
                         transaction.description, profile.memberbucks_balance
                     )
@@ -72,7 +72,7 @@ class MemberbucksDebit(APIView):
 
                 log_user_event(
                     profile.user,
-                    f"Successfully debited ${amount} from {config.MEMBERBUCKS_NAME} account.",
+                    f"Successfully debited {config.LOCAL_FIAT_CURRENCY}{amount} from {config.MEMBERBUCKS_NAME} account.",
                     "memberbucks",
                 )
 
@@ -83,18 +83,18 @@ class MemberbucksDebit(APIView):
             else:
                 log_user_event(
                     profile.user,
-                    f"Not enough funds to debit ${amount} from {config.MEMBERBUCKS_NAME} account.",
+                    f"Not enough funds to debit {config.LOCAL_FIAT_CURRENCY}{amount} from {config.MEMBERBUCKS_NAME} account.",
                     "memberbucks",
                 )
                 subject = (
-                    f"Failed to make a ${amount} {config.MEMBERBUCKS_NAME} purchase."
+                    f"Failed to make a {config.LOCAL_FIAT_CURRENCY}{amount} {config.MEMBERBUCKS_NAME} purchase."
                 )
                 User.objects.get(profile=profile).email_notification(
                     subject,
                     subject,
                     subject,
-                    f"We just tried to debit ${amount} from your {config.MEMBERBUCKS_NAME} balance but were not successful. "
-                    f"You currently have ${profile.memberbucks_balance}. If this wasn't you, please let us know "
+                    f"We just tried to debit {config.LOCAL_FIAT_CURRENCY}{amount} from your {config.MEMBERBUCKS_NAME} balance but were not successful. "
+                    f"You currently have {config.LOCAL_FIAT_CURRENCY}{profile.memberbucks_balance}. If this wasn't you, please let us know "
                     "immediately.",
                 )
 
