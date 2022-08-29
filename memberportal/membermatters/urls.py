@@ -50,6 +50,7 @@ urlpatterns = [
     path("api/admin/", include("api_admin_tools.urls")),
     path("admin/", admin.site.urls),
     path("api-auth/", include("rest_framework.urls")),
+    path('', include('django_prometheus.urls')),
 ]
 
 if settings.DEBUG:
