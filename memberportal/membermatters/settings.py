@@ -213,6 +213,11 @@ LOGGING = {
             "level": "DEBUG",
             "propagate": False,
         },
+        "celery": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False,
+        },
         "daphne": {"handlers": ["console", "file"], "level": "WARNING"},
     },
 }

@@ -1,5 +1,3 @@
-from asgiref.sync import sync_to_async
-
 from profile.models import Profile
 from access.models import Doors, Interlock
 from api_admin_tools.models import *

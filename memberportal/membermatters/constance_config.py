@@ -302,6 +302,10 @@ CONSTANCE_CONFIG = {
         '{"inactive_swipe": "Hi! Your swipe was just declined due to inactive membership. Please contact us if you need assistance.",             "deactivated_access": "Hi! Your site access was just turned off. Please check your email and contact us if you need assistance.",             "activated_access": "Hi! Your site access was just turned on. Please make sure you stay up to date with our policies and rules by visiting our website."}',
         "The SMS messages to send when a user attempts to swipe with an inactive card.",
     ),
+    "ICAL_FEEDS": (
+        "[]",
+        "A JSON array of iCal feeds to sync to the internal events database.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -413,6 +417,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             "Images",
             ("SITE_LOGO", "SITE_FAVICON", "STATS_CARD_IMAGE", "MENU_BACKGROUND"),
         ),
+        ("Events", ("ICAL_FEEDS",)),
         ("Theme", ("THEME_PRIMARY", "THEME_TOOLBAR", "THEME_ACCENT")),
         (
             "Group Localisation",

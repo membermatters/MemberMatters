@@ -205,6 +205,9 @@ export default {
     success: "Your issue was reported successfully.",
     fail: "There was a problem reporting your issue.",
   },
+  upcomingEvents: {
+    pageDescription: "See upcoming events",
+  },
   form: {
     saved: "Saved",
     error: "Error Saving",

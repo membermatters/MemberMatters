@@ -47,6 +47,7 @@ urlpatterns = [
     path("", include("api_meeting.urls")),
     path("", include("api_member_bucks.urls")),
     path("", include("api_billing.urls")),
+    path("", include("api_events.urls")),
     path("api/admin/", include("api_admin_tools.urls")),
     path("admin/", admin.site.urls),
     path("api-auth/", include("rest_framework.urls")),

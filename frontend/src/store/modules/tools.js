@@ -8,6 +8,7 @@ export default {
     recentSwipes: [],
     memberList: [],
     upcomingMeetings: [],
+    upcomingEvents: [],
     proxies: [],
     members: [],
     memberBucksTransactions: [],
@@ -19,6 +20,7 @@ export default {
     recentSwipes: (state) => state.recentSwipes,
     memberList: (state) => state.memberList,
     upcomingMeetings: (state) => state.upcomingMeetings,
+    upcomingEvents: (state) => state.upcomingEvents,
     proxies: (state) => state.proxies,
     members: (state) => state.members,
     memberBucksTransactions: (state) => state.memberBucksTransactions,
@@ -37,6 +39,9 @@ export default {
     },
     setUpcomingMeetings(state, payload) {
       state.upcomingMeetings = payload;
+    },
+    setUpcomingEvents(state, payload) {
+      state.upcomingEvents = payload;
     },
     setProxies(state, payload) {
       state.proxies = payload;
@@ -89,6 +94,21 @@ export default {
           .get("/api/tools/meetings/")
           .then((result) => {
             commit("setUpcomingMeetings", result.data);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getUpcomingEvents({ commit }) {
+      console.log("getUPCOMING");
+      return new Promise((resolve, reject) => {
+        api
+          .get("/api/events/")
+          .then((result) => {
+            commit("setUpcomingEvents", result.data);
             resolve();
           })
           .catch((error) => {

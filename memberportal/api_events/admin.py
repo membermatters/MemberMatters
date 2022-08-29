@@ -4,4 +4,4 @@ from .models import *
 
 @admin.register(Event)
 class AdminLogAdmin(admin.ModelAdmin):
-    pass
+    ordering = ("-start_time",)

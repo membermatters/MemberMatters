@@ -42,18 +42,23 @@
     <div class="q-pa-md col-12 col-sm-4">
       <report-issue-card />
     </div>
+
+    <div class="q-pa-md col-12 col-sm-4">
+      <upcoming-events-card />
+    </div>
   </div>
 </template>
 
 <script>
 import MembersOnsiteCard from "components/MembersOnsiteCard";
 import ReportIssueCard from "@components/ReportIssueCard.vue";
+import UpcomingEventsCard from "components/UpcomingEventsCard";
 import { mapGetters, mapMutations, mapActions } from "vuex";
 import icons from "@icons";
 
 export default {
   name: "QuickActions",
-  components: { ReportIssueCard, MembersOnsiteCard },
+  components: { ReportIssueCard, MembersOnsiteCard, UpcomingEventsCard },
   mounted() {
     this.getSiteSignedIn();
   },
