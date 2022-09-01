@@ -19,6 +19,7 @@ from sentry_sdk import capture_exception
 
 logger = logging.getLogger("app")
 
+
 class StripeAPIView(APIView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

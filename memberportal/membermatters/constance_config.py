@@ -233,10 +233,10 @@ CONSTANCE_CONFIG = {
         "PLEASE_CHANGE_ME",
         "The API key used to send email with Postmark.",
     ),
-    # Induction 
+    # Induction
     "CANVAS_INDUCTION_ENABLED": (
-            True,
-            "Whether induction is performed via the Canvas platform or not",
+        True,
+        "Whether induction is performed via the Canvas platform or not",
     ),
     "INDUCTION_ENROL_LINK": (
         "",
