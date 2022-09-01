@@ -9,12 +9,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 import stripe
-from services import canvas
+import logging
+from services import canvas, sms
 from services.emails import send_email_to_admin
 from constance import config
 from membermatters.helpers import log_user_event
 from django.db.utils import OperationalError
 from sentry_sdk import capture_exception
+
+logger = logging.getLogger("app")
 
 
 class StripeAPIView(APIView):
@@ -423,7 +426,7 @@ def send_submitted_application_emails(member):
     subject = f"A new person just became a member applicant: {member.get_full_name()}"
     title = subject
     message = f"{member.get_full_name()} just completed all steps required to sign up and is now a member applicant. Their site access has been enabled and membership will automatically be accepted within 7 days without objection from the executive."
-    send_email_to_admin(subject, title, message)
+    send_email_to_admin(subject, title, message, reply_to=member.user.email)
 
 
 class CompleteSignup(StripeAPIView):
@@ -678,6 +681,6 @@ class StripeWebhook(StripeAPIView):
                 f"The Stripe subscription for {member.get_full_name()} ended, so their membership has "
                 f"been cancelled. Their site access has been turned off."
             )
-            send_email_to_admin(subject, title, message)
+            send_email_to_admin(subject, title, message, reply_to=member.user.email)
 
         return Response()

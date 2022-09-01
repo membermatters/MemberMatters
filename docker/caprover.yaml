@@ -6,10 +6,48 @@ services:
     restart: always
     environment:
       PORTAL_ENV: $$cap_env
+      MM_REDIS_HOST: 'redis://srv-captain--$$cap_appname-redis:6379/0'
     volumes:
       - $$cap_appname-data:/usr/src/data
+    depends_on:
+      - $$cap_appname-redis
     caproverExtra:
       containerHttpPort: '8000'
+
+  # MemberMatters Redis
+  $$cap_appname-redis:
+    image: redis:alpine
+    restart: always
+
+  # MemberMatters Celery Worker
+  $$cap_appname-celery-worker:
+    image: membermatters/membermatters:$$cap_version
+    command: [ 'celery', '-A', 'membermatters.celeryapp', 'worker', '-l', 'INFO' ]
+    restart: always
+    environment:
+      PORTAL_ENV: $$cap_env
+      MM_RUN_MODE: "celery_worker"
+      MM_REDIS_HOST: 'redis://srv-captain--$$cap_appname-redis:6379/0'
+    volumes:
+      - $$cap_appname-data:/usr/src/data
+    depends_on:
+      - $$cap_appname-redis
+      - $$cap_appname
+
+  # MemberMatters Celery Beat
+  $$cap_appname-celery-beat:
+    image: membermatters/membermatters:$$cap_version
+    command: [ 'celery', '-A', 'membermatters.celeryapp', 'beat', '-l', 'INFO' ]
+    restart: always
+    environment:
+      PORTAL_ENV: $$cap_env
+      MM_RUN_MODE: "celery_beat"
+      MM_REDIS_HOST: 'redis://srv-captain--$$cap_appname-redis:6379/0'
+    volumes:
+      - $$cap_appname-data:/usr/src/data
+    depends_on:
+      - $$cap_appname-redis
+      - $$cap_appname
 caproverOneClickApp:
   variables:
     - id: $$cap_version
@@ -17,11 +55,6 @@ caproverOneClickApp:
       defaultValue: 'latest'
       description: Check out the docker page for the valid tags https://hub.docker.com/r/membermatters/membermatters/tags
       validRegex: /^([^\s^\/])+$/
-    - id: $$cap_url
-      label: URL
-      defaultValue: 'https://portal.example.com'
-      description: The publicly accessible URL of your installation.
-      validRegex: /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
     - id: $$cap_env
       label: Environment
       defaultValue: 'Production'

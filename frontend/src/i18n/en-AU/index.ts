@@ -457,7 +457,7 @@ export default {
     selectToContinue: "Select a payment plan to continue.",
     noPlans: "There are no payment plans available for this membership plan.",
     dueToday: "Due Today: {amount}",
-    intervalDescription: "{amount} {currency} every {intervalCount} {interval}",
+    intervalDescription: "{amount} every {intervalCount} {interval}",
     interval: {
       day: "day",
       week: "week",

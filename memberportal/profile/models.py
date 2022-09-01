@@ -18,6 +18,10 @@ from api_admin_tools.models import MemberTier, PaymentPlan
 import json
 import uuid
 from postmarker.core import PostmarkClient
+import logging
+from services import sms
+
+logger = logging.getLogger("app")
 
 utc = pytz.UTC
 
@@ -370,6 +374,8 @@ class Profile(models.Model):
             )
 
         self.user.email_disable_member()
+        sms_message = sms.SMS()
+        sms_message.send_deactivated_access(self.phone)
         self.state = "inactive"
         self.save()
         return True
@@ -389,6 +395,8 @@ class Profile(models.Model):
             )
 
         if self.state != "noob":
+            sms_message = sms.SMS()
+            sms_message.send_activated_access(self.phone)
             self.user.email_enable_member()
 
         self.state = "active"

@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v3.1.0] - 2022-06-29
+### Added
+- Twilio integration for sending SMS alerts to members
+- Version to config endpoint for easier debugging
+- Basic celery setup (and container start script)
+- Prometheus endpoint
+- Locale detection and support for GBP currency
+
+### Changed
+- Split constance config into separate module
+- Specified member's email as reply-to in issue card
+- Bumped deps by github security bot
+
+### Fixed
+- Bug with database fixtures preventing fixtures from loading
+
 ## [v3.0.0] - 2022-05-27
 ### Removed
 - All Xero support

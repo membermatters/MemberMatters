@@ -56,7 +56,12 @@ class GetConfig(APIView):
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}
 
+        with open("../package.json") as f:
+            package = json.load(f)
+            version = package.get("version")
+
         response = {
+            "version": version,
             "loggedIn": request.user.is_authenticated,
             "general": {
                 "siteName": config.SITE_NAME,

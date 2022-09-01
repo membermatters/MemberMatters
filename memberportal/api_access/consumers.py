@@ -8,6 +8,7 @@ import datetime
 from access.models import Doors
 from access.views import post_door_swipe_to_discord
 from profile.models import Profile
+from services import sms
 
 logger = logging.getLogger("app")
 
@@ -127,6 +128,8 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
                 post_door_swipe_to_discord(
                     profile.get_full_name(), self.door.name, False
                 )
+                sms_message = sms.SMS()
+                sms_message.send_inactive_swipe_alert(profile.phone)
 
             else:
                 logger.info("Received an unknown packet from " + self.door_id)
