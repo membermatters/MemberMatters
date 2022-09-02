@@ -233,6 +233,11 @@ CONSTANCE_CONFIG = {
         "PLEASE_CHANGE_ME",
         "The API key used to send email with Postmark.",
     ),
+    # Induction
+    "CANVAS_INDUCTION_ENABLED": (
+        True,
+        "Whether induction is performed via the Canvas platform or not",
+    ),
     "INDUCTION_ENROL_LINK": (
         "",
         "The link that a member can use to enrol into an induction.",
@@ -351,7 +356,10 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
         ),
         (
             "Canvas (LMS) Integration",
-            ("CANVAS_API_TOKEN",),
+            (
+                "CANVAS_API_TOKEN",
+                "CANVAS_INDUCTION_ENABLED",
+            ),
         ),
         ("Postmark (EMAIL) Integration", ("POSTMARK_API_KEY",)),
         (
