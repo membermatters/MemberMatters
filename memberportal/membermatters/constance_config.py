@@ -112,7 +112,7 @@ CONSTANCE_CONFIG = {
         "Same syntax as HOME_PAGE_CARDS but icons are not used. If nothing is specified we will use HOME_PAGE_CARDS.",
     ),
     # Stripe config
-    "ENABLE_STRIPE": (False, "Enable use of Stripe for payments."),
+    "ENABLE_STRIPE": (True, "Enable use of Stripe for payments."),
     "STRIPE_PUBLISHABLE_KEY": ("", "Set this to your Stripe PUBLIC API key."),
     "STRIPE_SECRET_KEY": ("", "Set this to your Stripe PRIVATE API key."),
     "STRIPE_WEBHOOK_SECRET": (
