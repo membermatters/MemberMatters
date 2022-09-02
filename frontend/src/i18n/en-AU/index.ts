@@ -496,7 +496,7 @@ export default {
   signup: {
     induction: "Induction",
     requiredSteps:
-      "You must complete the following steps before your membership application can be submitted.",
+      "You must complete the following steps to complete your membership.",
     completeInduction: "Complete an induction",
     completedInduction: "Induction completed",
     registerAccessCard: "Register your access card",
@@ -512,8 +512,8 @@ export default {
     assignAccessCardWarning:
       "Double check before continuing as you will need to contact us to change it.",
     collectAccessCardDescription:
-      "Thanks for completing all of the required steps. The final thing you need to do is pop in during our open " +
-      "hours to collect your access card. Please bring photo ID with you.",
+      "Thanks for completing all of the required steps. The final thing you need to do is contact us to organise a " +
+      "time to finalise your membership.",
     submitted: "Membership application submitted",
     submittedDescription:
       "Your membership application has been submitted and you are now a 'member applicant'. Your membership will be officially accepted after 7 days, but we have granted site access immediately. You will receive an email confirming that your access card has been enabled. If for some reason your membership is rejected within this period, you will receive an email with further information.",

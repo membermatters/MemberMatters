@@ -44,7 +44,7 @@ CONSTANCE_CONFIG = {
     "CONTACT_PAGE_URL": (
         "https://membermatters.org",
         "The URL of your contact page (displayed during signup if "
-        "requireAccessCard == False).",
+        "REQUIRE_ACCESS_CARD == False).",
     ),
     "INDUCTION_URL": (
         "https://eventbrite.com.au",

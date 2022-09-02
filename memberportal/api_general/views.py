@@ -661,8 +661,6 @@ class Register(APIView):
                     "LNAME": new_user.profile.last_name,
                     "PHONE": new_user.profile.phone,
                 }
-                print("merge fields")
-                print(merge_fields)
 
                 payload = {
                     "email_address": new_user.email,
@@ -674,12 +672,12 @@ class Register(APIView):
                         config.MAILCHIMP_TAG,
                     ],
                 }
-                response = client.lists.add_list_member(list_id, payload)
-                print(response)
+                client.lists.add_list_member(list_id, payload)
 
         except Exception as e:
             # gracefully catch and move on
             sentry_sdk.capture_exception(e)
+            print("GOT ERROR FROM MAILCHIMP")
             print(e)
             return Response()
 

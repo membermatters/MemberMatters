@@ -438,12 +438,7 @@ class CompleteSignup(StripeAPIView):
         member = request.user.profile
         signupCheck = member.can_signup()
 
-        if member.subscription_status == "active":
-            return Response(
-                {"success": False, "message": "signup.existingMemberSubscription"}
-            )
-
-        elif signupCheck["success"]:
+        if signupCheck["success"]:
             member.activate()
             send_submitted_application_emails(member)
 
