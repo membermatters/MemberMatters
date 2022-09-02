@@ -1,5 +1,5 @@
 <template>
-  <div v-if="this.features.enableStripe">
+  <div>
     <q-table
       :rows="memberBucksTransactions"
       :columns="[
@@ -28,6 +28,7 @@
       <template v-slot:top-left>
         <div class="row q-pt-sm">
           <q-btn
+            v-if="stripeEnabled"
             color="accent"
             :icon="icons.add"
             :label="$t('memberbucks.addFunds')"
@@ -44,12 +45,14 @@
           />
 
           <q-btn
+            v-if="stripeEnabled"
             color="accent"
             :icon="icons.billing"
             :label="$t('memberbucks.manageBilling')"
             class="q-mb-sm q-mr-md"
             @click="manageBilling()"
           />
+
           <q-space />
 
           <q-input
@@ -79,57 +82,10 @@
         </q-td>
       </template>
     </q-table>
-    <!--    <q-table-->
-    <!--      :rows="memberBucksTransactionsDisplay"-->
-    <!--      :columns="[-->
-    <!--        {-->
-    <!--          name: 'description',-->
-    <!--          label: 'Description',-->
-    <!--          field: 'description',-->
-    <!--          sortable: true,-->
-    <!--        },-->
-    <!--        { name: 'amount', label: 'Amount', field: 'amount', sortable: true },-->
-    <!--        {-->
-    <!--          name: 'date',-->
-    <!--          label: 'When',-->
-    <!--          field: 'date',-->
-    <!--          sortable: true,-->
-    <!--          format: (val) => this.formatWhen(val),-->
-    <!--        },-->
-    <!--      ]"-->
-    <!--      row-key="id"-->
-    <!--      :filter="filter"-->
-    <!--      v-model:pagination="pagination"-->
-    <!--      :loading="loading"-->
-    <!--      :grid="$q.screen.xs"-->
-    <!--    >-->
 
-    <!--      &lt;!&ndash;      <template v-if="$q.screen.gt.xs" v-slot:top-right>&ndash;&gt;-->
-    <!--      &lt;!&ndash;        <div class="row">&ndash;&gt;-->
-    <!--      &lt;!&ndash;          &ndash;&gt;-->
-    <!--      &lt;!&ndash;        </div>&ndash;&gt;-->
-    <!--      &lt;!&ndash;      </template>&ndash;&gt;-->
-
-    <!--      <template v-slot:body-cell-amount="props">-->
-    <!--        <q-td>-->
-    <!--          <div :class="{ credit: props.value > 0, debit: props.value < 0 }">-->
-    <!--            ${{ props.value }}-->
-    <!--          </div>-->
-    <!--        </q-td>-->
-    <!--      </template>-->
-    <!--    </q-table>-->
-  </div>
-  <div v-else>
-    <q-card flat>
-      <q-card-section>
-        <div class="text-h6">
-          {{ $t("menuLink.memberbucks") }}
-        </div>
-        <div class="text-subtitle2">
-          {{ $t("error.stripeNotConfiguredFeature") }}
-        </div>
-      </q-card-section>
-    </q-card>
+    <div v-if="!stripeEnabled" class="q-mt-md">
+      {{ $t("memberbucks.stripeDisabled") }}
+    </div>
   </div>
 </template>
 
@@ -236,6 +192,9 @@ export default {
   computed: {
     ...mapGetters("tools", ["memberBucksTransactions", "memberBucksBalance"]),
     ...mapGetters("config", ["features"]),
+    stripeEnabled() {
+      return this.features.enableStripe;
+    },
     icons() {
       return icons;
     },

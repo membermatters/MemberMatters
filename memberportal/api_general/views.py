@@ -39,9 +39,11 @@ class GetConfig(APIView):
             ),
             "trelloIntegration": config.ENABLE_TRELLO_INTEGRATION,
             "enableProxyVoting": config.ENABLE_PROXY_VOTING,
-            "enableStripe": len(config.STRIPE_PUBLISHABLE_KEY) > 0
+            "enableStripe": config.ENABLE_STRIPE
+            and len(config.STRIPE_PUBLISHABLE_KEY) > 0
             and len(config.STRIPE_SECRET_KEY) > 0,
-            "enableMembershipPayments": config.ENABLE_STRIPE_MEMBERSHIP_PAYMENTS,
+            "enableMembershipPayments": config.ENABLE_STRIPE
+            and config.ENABLE_STRIPE_MEMBERSHIP_PAYMENTS,
             "enableMemberBucks": config.ENABLE_MEMBERBUCKS,
             "signup": {
                 "inductionLink": config.INDUCTION_ENROL_LINK,

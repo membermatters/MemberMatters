@@ -297,6 +297,8 @@ export default {
     delete: "Are you sure you want to delete this proxy?",
   },
   memberbucks: {
+    stripeDisabled:
+      "Only manual top-ups are supported. Please contact us for details on how to add funds to your account.",
     currentBalance: "Current Balance",
     lastPurchase: "Last Purchase",
     addFunds: "Load Funds",
@@ -324,7 +326,7 @@ export default {
     quickAdd: "Quick Add",
     totalAmount: "Total Amount",
     donateFundsDescription:
-      "Enter an amount above, then click {'\"'}@:memberbucks.donateFunds{'\"'}. You can use this to pay for things like consumables or purchases.",
+      "Enter an amount, then click {'\"'}@:memberbucks.donateFunds{'\"'}.",
     donateFundsSuccess: "Successfully made payment.",
     donateFundsError:
       "There was an error confirming the payment, check your balance or try again later.",
