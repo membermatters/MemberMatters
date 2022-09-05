@@ -5,7 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v3.1.0] - 2022-06-29
+## [v3.2.0] - 2022-09-05
+### Added
+- Enable/disable Canvas induction via constance option
+- Support memberbucks without Stripe enabled
+- Support for a site wide currency format via the SITE_LOCALE_CURRENCY option
+- NZD, USD, and EUR currency locale formats
+
+### Fixed
+- Allow signup to succeed if access card requirement is true (commit #cb32009ef08ce21704231f577d61e50250f46463)
+
+## [v3.1.0] - 2022-08-29
 ### Added
 - Twilio integration for sending SMS alerts to members
 - Version to config endpoint for easier debugging
