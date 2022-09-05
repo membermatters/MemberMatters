@@ -68,7 +68,7 @@ class GetConfig(APIView):
             "general": {
                 "siteName": config.SITE_NAME,
                 "siteOwner": config.SITE_OWNER,
-                "entityType": config.ENTITY_TYPE,
+                "siteLocaleCurrency": config.SITE_LOCALE_CURRENCY,
             },
             "contact": {
                 "admin": config.EMAIL_ADMIN,

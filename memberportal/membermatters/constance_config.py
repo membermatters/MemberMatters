@@ -10,9 +10,11 @@ CONSTANCE_CONFIG = {
         "MemberMatters",
         "The name of the legal entity/association/club that is running this site.",
     ),
-    "ENTITY_TYPE": (
-        "Association",
-        "This is the type of group you are such as an association, club, etc.",
+    "SITE_LOCALE_CURRENCY": (
+        "en-AU",
+        "The locale to use on the frontend JUST FOR CURRENCY. Please check "
+        "https://membermatters.org/en/latest/POST_INSTALL_STEPS.html#locale for IMPORTANT considerations "
+        "and supported locales before configuring.",
     ),
     "SITE_BANNER": (
         "",
@@ -317,7 +319,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             (
                 "SITE_NAME",
                 "SITE_OWNER",
-                "ENTITY_TYPE",
+                "SITE_LOCALE_CURRENCY",
                 "GOOGLE_ANALYTICS_PROPERTY_ID",
                 "API_SECRET_KEY",
                 "SITE_BANNER",
@@ -383,6 +385,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "STRIPE_SECRET_KEY",
                 "STRIPE_WEBHOOK_SECRET",
                 "STRIPE_MEMBERBUCKS_TOPUP_OPTIONS",
+                "MEMBERBUCKS_CURRENCY",
             ),
         ),
         (
@@ -418,7 +421,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ("DISCOURSE_SSO_PROTOCOL_SECRET_KEY",),
         ),
         ("URLs", ("SITE_URL", "MAIN_SITE_URL", "CONTACT_PAGE_URL", "INDUCTION_URL")),
-        ("Memberbucks", ("MEMBERBUCKS_MAX_TOPUP", "MEMBERBUCKS_CURRENCY")),
+        ("Memberbucks", ("MEMBERBUCKS_MAX_TOPUP",)),
         (
             "Images",
             ("SITE_LOGO", "SITE_FAVICON", "STATS_CARD_IMAGE", "MENU_BACKGROUND"),

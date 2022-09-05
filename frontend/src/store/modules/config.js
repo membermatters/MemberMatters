@@ -12,6 +12,7 @@ export default {
   state: {
     siteName: "MemberMatters Portal",
     siteOwner: "MemberMatters",
+    siteLocaleCurrency: "en-AU",
     contact: {},
     homepageCards: {},
     webcamLinks: {},
@@ -25,6 +26,7 @@ export default {
   getters: {
     siteName: (state) => state.siteName,
     siteOwner: (state) => state.siteOwner,
+    siteLocaleCurrency: (state) => state.siteLocaleCurrency,
     contact: (state) => state.contact,
     homepageCards: (state) => state.homepageCards,
     webcamLinks: (state) => state.webcamLinks,
@@ -41,6 +43,9 @@ export default {
     },
     setSiteOwner(state, payload) {
       state.siteOwner = payload;
+    },
+    setSiteLocaleCurrency(state, payload) {
+      state.siteLocaleCurrency = payload;
     },
     setContact(state, payload) {
       state.contact = payload;
@@ -78,6 +83,10 @@ export default {
           .then((result) => {
             commit("setSiteName", result.data.general.siteName);
             commit("setSiteOwner", result.data.general.siteOwner);
+            commit(
+              "setSiteLocaleCurrency",
+              result.data.general.siteLocaleCurrency
+            );
             commit("setContact", result.data.contact);
             commit("setHomepageCards", result.data.homepageCards);
             commit("setWebcamLinks", result.data.webcamLinks);
