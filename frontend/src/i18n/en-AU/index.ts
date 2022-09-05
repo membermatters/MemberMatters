@@ -368,7 +368,6 @@ export default {
     onSite: " on site right now.",
     memberList: "Members On Site",
   },
-  entityType: "Association",
   members: "Members",
   member: "Member",
   failed: "Action failed",
