@@ -246,7 +246,11 @@
                     <q-item-label lines="1">
                       {{
                         selectedMember.memberBucks.balance
-                          ? $n(selectedMember.memberBucks.balance, "currency")
+                          ? $n(
+                              selectedMember.memberBucks.balance,
+                              "currency",
+                              siteLocaleCurrency
+                            )
                           : $t("error.noValue")
                       }}
                     </q-item-label>
@@ -726,7 +730,13 @@
               </div>
               <div class="row">
                 {{ $t("memberbucks.currentBalance") }}
-                {{ $n(billing.memberbucks.balance || 0, "currency") }}
+                {{
+                  $n(
+                    billing.memberbucks.balance || 0,
+                    "currency",
+                    siteLocaleCurrency
+                  )
+                }}
               </div>
             </template>
 
@@ -767,6 +777,7 @@ import formMixin from "src/mixins/formMixin";
 import SavedNotification from "components/SavedNotification";
 import icons from "../../icons";
 import formatMixin from "src/mixins/formatMixin";
+import { mapGetters } from "vuex";
 
 export default {
   name: "ManageMember",
@@ -995,6 +1006,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters("config", ["siteLocaleCurrency"]),
     selectedMember() {
       if (this.members) {
         return this.members.find((e) => e.id === this.member.id);

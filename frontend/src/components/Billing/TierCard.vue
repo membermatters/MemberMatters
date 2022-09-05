@@ -9,7 +9,11 @@
               $t("tiers.plansFrom", {
                 plan: $t("paymentPlans.intervalDescription", {
                   currency: minPrice.currency.toUpperCase(),
-                  amount: $n(minPrice.cost / 100, "currency"),
+                  amount: $n(
+                    minPrice.cost / 100,
+                    "currency",
+                    siteLocaleCurrency
+                  ),
                   intervalCount: minPrice.intervalAmount,
                   interval: $tc(
                     `paymentPlans.${
@@ -47,6 +51,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { mapGetters } from "vuex";
 
 export default defineComponent({
   name: "TierCard",
@@ -67,6 +72,7 @@ export default defineComponent({
     },
   },
   computed: {
+    ...mapGetters("config", ["siteLocaleCurrency"]),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     minPrice(): any {
       if (!this.tier.plans.length) return [];

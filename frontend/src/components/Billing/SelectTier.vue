@@ -138,7 +138,11 @@
         <div class="text-h6">
           {{
             $t("paymentPlans.dueToday", {
-              amount: $n(selectedPlan.cost / 100, "currency"),
+              amount: $n(
+                selectedPlan.cost / 100,
+                "currency",
+                siteLocaleCurrency
+              ),
             })
           }}
         </div>
@@ -148,7 +152,11 @@
             $t("tiers.confirm", {
               intervalDescription: $t("paymentPlans.intervalDescription", {
                 currency: selectedPlan.currency.toUpperCase(),
-                amount: $n(selectedPlan.cost / 100, "currency"),
+                amount: $n(
+                  selectedPlan.cost / 100,
+                  "currency",
+                  siteLocaleCurrency
+                ),
                 intervalCount: selectedPlan.intervalCount,
                 interval: $tc(
                   `paymentPlans.${
@@ -226,6 +234,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters("profile", ["loggedIn", "profile"]),
+    ...mapGetters("config", ["siteLocaleCurrency"]),
     icons() {
       return icons;
     },

@@ -8,7 +8,7 @@
             {{
               $t("paymentPlans.intervalDescription", {
                 currency: plan.currency.toUpperCase(),
-                amount: $n(plan.cost / 100, "currency"),
+                amount: $n(plan.cost / 100, "currency", siteLocaleCurrency),
                 intervalCount: plan.intervalAmount,
                 interval: $tc(
                   `paymentPlans.${
@@ -42,6 +42,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { mapGetters } from "vuex";
 
 export default defineComponent({
   name: "PlanCard",
@@ -60,6 +61,9 @@ export default defineComponent({
     selectPlan() {
       this.$emit("selected", this.plan);
     },
+  },
+  computed: {
+    ...mapGetters("config", ["siteLocaleCurrency"]),
   },
 });
 </script>

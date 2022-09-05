@@ -77,7 +77,7 @@
       <template v-slot:body-cell-amount="props">
         <q-td>
           <div :class="{ credit: props.value > 0, debit: props.value < 0 }">
-            {{ $n(props.value, "currency") }}
+            {{ $n(props.value, "currency", siteLocaleCurrency) }}
           </div>
         </q-td>
       </template>
@@ -191,7 +191,7 @@ export default {
   },
   computed: {
     ...mapGetters("tools", ["memberBucksTransactions", "memberBucksBalance"]),
-    ...mapGetters("config", ["features"]),
+    ...mapGetters("config", ["features", "siteLocaleCurrency"]),
     stripeEnabled() {
       return this.features.enableStripe;
     },
@@ -200,8 +200,8 @@ export default {
     },
     getBalanceDisplay() {
       return this.memberBucksBalance
-        ? this.$n(this.memberBucksBalance, "currency")
-        : this.$n(0, "currency");
+        ? this.$n(this.memberBucksBalance, "currency", this.siteLocaleCurrency)
+        : this.$n(0, "currency", this.siteLocaleCurrency);
     },
   },
 };

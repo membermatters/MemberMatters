@@ -31,20 +31,20 @@
         <q-card-section>
           <q-btn
             :disable="addingFunds"
-            :label="$n(10, 'currency')"
+            :label="$n(10, 'currency', siteLocaleCurrency)"
             color="accent"
             @click="addFunds(10)"
           />
           <q-btn
             :disable="addingFunds"
             class="q-mx-sm"
-            :label="$n(20, 'currency')"
+            :label="$n(20, 'currency', siteLocaleCurrency)"
             color="accent"
             @click="addFunds(20)"
           />
           <q-btn
             :disable="addingFunds"
-            :label="$n(30, 'currency')"
+            :label="$n(30, 'currency', siteLocaleCurrency)"
             color="accent"
             @click="addFunds(30)"
           />
@@ -142,13 +142,15 @@ export default {
   },
   computed: {
     ...mapGetters("profile", ["profile"]),
+    ...mapGetters("config", ["siteLocaleCurrency"]),
     icons() {
       return icons;
     },
     balance() {
       return this.$n(
         this?.profile?.financial?.memberBucks?.balance || 0,
-        "currency"
+        "currency",
+        this.siteLocaleCurrency
       );
     },
   },
