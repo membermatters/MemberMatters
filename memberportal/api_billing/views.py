@@ -23,6 +23,9 @@ logger = logging.getLogger("app")
 class StripeAPIView(APIView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        if not config.ENABLE_STRIPE:
+            return
+
         try:
             stripe.api_key = config.STRIPE_SECRET_KEY
         except OperationalError as error:
@@ -438,12 +441,7 @@ class CompleteSignup(StripeAPIView):
         member = request.user.profile
         signupCheck = member.can_signup()
 
-        if member.subscription_status == "active":
-            return Response(
-                {"success": False, "message": "signup.existingMemberSubscription"}
-            )
-
-        elif signupCheck["success"]:
+        if signupCheck["success"]:
             member.activate()
             send_submitted_application_emails(member)
 

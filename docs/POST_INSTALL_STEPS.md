@@ -47,51 +47,88 @@ A summary of the settings is available below. Most settings have a more detailed
 
 > NOTE: You *must* configure the POSTMARK_API_KEY setting or else you will have problems processing new signups.
 
-#### General
+### Locale / Language Configuration
+MemberMatters has out of the box support for different locales (a combination of language and number/currency/date 
+formatting). Currently, only the following locales are supported. If you want to add or improve support for a new locale
+then please file an issue, we'd love to help make it available in your language.
+
+MemberMatters will auto-detect the locale setting the user's browser is set to, and use that translation if available.
+However, as noted below, currencies will use a hardcoded value set by a configuration option.
+
+> NOTE: the `SITE_LOCALE_CURRENCY` option is what determines how the currency is displayed. This is "hardcoded" as a 
+> config option to prevent a currency/billing amount being displayed incorrectly. If your locale isn't directly 
+> supported, please open an issue or check below as your currency may already be supported under a different locale.
+ 
+#### Locale Options
+* `en-AU` - full translation available, currency format `$12.50`.
+* `en-NZ` - no translation available (fall back to `en-AU`), currency format `$12.50`.
+* `en-US` - no translation available (fall back to `en-AU`), currency format `$12.50`.
+* `en-GB` - no translation available (fall back to `en-AU`), currency format `£12.50`.
+* `en-IE` - no translation available (fall back to `en-AU`), currency format `€12.50`.
+
+### General
   * "SITE_NAME" - Name of the website.
   * "SITE_OWNER" - Name of the organisation running this website.
-  * "ENTITY_TYPE" - [Deprecated]
   * "GOOGLE_ANALYTICS_PROPERTY_ID" - Enter your Google Analytics Tracking ID to enable Google Analytics Tracking.
-  * "API_SECRET_KEY" - Secret key used to authenticate some requests from third party access control devices.
+  * "API_SECRET_KEY" - Secret key used to authenticate some requests from access control devices.
 
-#### Signup
+### Signup
   * "INDUCTION_ENROL_LINK" - URL to enrol in the Canvas LMS induction course.
   * "INDUCTION_COURSE_ID" - ID of the Canvas LMS induction course (usually found in the course URL on the settings page).
-  * "MAX_INDUCTION_DAYS" -  Maximum number of days since they were inducted before they require another induction.
+  * "MAX_INDUCTION_DAYS" -  Maximum number of days since they were inducted before they require another induction. Set 
+    to `0` to disable induction requirement.
   * "MIN_INDUCTION_SCORE" - The minimum score considered a "pass" for the induction course.
   * "REQUIRE_ACCESS_CARD" - Require the member to submit their RFID access card number during signup.
 
-#### Canvas Integration
+### Canvas Integration
   * "CANVAS_API_TOKEN" - the API token for the Canvas LMS integration.
 
-#### Postmark Integration
-* "POSTMARK_API_KEY" - the API token for the Postmark integration. NOTE: required to process signups and emails.
+### Postmark (Email) Integration
+* "POSTMARK_API_KEY" - the API token for the Postmark integration. NOTE: required for basic MemberMatters functionality.
 
-#### Contact Information
+### Twilio (SMS) Integration
+* `SMS_ENABLE` - Enables sending of SMS messages on some events. See below for a current list of events.
+* `TWILIO_ACCOUNT_SID` - The **account SID** (_not api key SID_) to use for the twilio integration.
+* `TWILIO_AUTH_TOKEN` - The **auth token** (_not an api token_) to use for the twilio integration.
+* `SMS_DEFAULT_COUNTRY_CODE` - If the user's number does not start with a `+`, this default country code will be 
+  prepended to it. This allows support for international numbers, while allowing local users to skip specifying one. 
+* `SMS_SENDER_ID` - The sender ID (either a phone number or alpha numeric sender ID). Some countries
+  support an "alpha numeric" send ID such as a business name. See [this page](https://support.twilio.com/hc/en-us/articles/223133967-Change-the-From-number-or-Sender-ID-for-Sending-SMS-Messages) for more info.
+* `SMS_MESSAGES` - The SMS templates / messages to use.
+* `SMS_FOOTER` - An optional footer to append to all SMS messages (such as 'from xyz org.'). Please make sure your
+  organisation is identifiable and check the laws around this in your jurisdiction!
+
+#### List of SMS events currently supported
+You cannot currently enable specific events, you either get "all or nothing".
+* Swipe Access Enabled
+* Swipe Access Disabled
+* Swipe Attempt (e.g. swiped at a door) Denied
+
+### Contact Information
   * "EMAIL_SYSADMIN" - email address used for sysadmin related notifications.
   * "EMAIL_ADMIN" - email address used for general notifcations.
   * "EMAIL_DEFAULT_FROM" - default "from" address that emails from MM will be sent as. NOTE: must be authenticated / approved in Postmark to use.
   * "SITE_MAIL_ADDRESS" - the physical address of the organisation for inclusion in the email footer to comply with anti spam requirements.
 
-#### Discourse SSO Protocol
+### Discourse SSO Protocol
   * "ENABLE_DISCOURSE_SSO_PROTOCOL" - enable the SSO Discoure protocol.
   * "DISCOURSE_SSO_PROTOCOL_SECRET_KEY" - secret key for the SSO Discourse protocol.
 
-#### URLs
+### URLs
   * "SITE_URL" - publicly accessible URL this instance of MM is available on.
   * "MAIN_SITE_URL" - the main website of the organisation.
   * "INDUCTION_URL" - used in the email sent to new members so they can signup for inductions.
 
-#### Memberbucks
+### Memberbucks
   * "MEMBERBUCKS_MAX_TOPUP" - a hard limit on the maxmimum amount a member can add in one go to their MemberBucks account.
   * "MEMBERBUCKS_CURRENCY" - the currency to use when processing MemberBucks top ups.
 
-#### Images
+### Images
   * "SITE_LOGO" - a link to a logo for use around the site.
   * "SITE_FAVICON" - a link to a square favicon style logo for use around the site.
   * "STATS_CARD_IMAGE" - a link to an image used as the background on the dashboard's statistics card.
 
-#### Group Localisation
+### Group Localisation
   * "MEMBERBUCKS_NAME" - [Deprecated]
   * "GROUP_NAME" - [Deprecated]
   * "ADMIN_NAME" - [Deprecated]
@@ -99,32 +136,32 @@ A summary of the settings is available below. Most settings have a more detailed
   * "HOME_PAGE_CARDS" - a JSON array of cards to be used on the hompeage (see below for more info).
   * "WELCOME_EMAIL_CARDS" - a JSON array of cards to be used in the welcome email (see below for more info).
 
-#### "Stripe Integration"
+### "Stripe Integration"
   * "STRIPE_PUBLISHABLE_KEY" - the publishable Stripe key.
   * "STRIPE_SECRET_KEY" - the secret Stripe key.
   * "STRIPE_WEBHOOK_SECRET" - the webhook secret to authenticate webhook requests are really from Stripe.
   * "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS" - enable the "Membership Plan" menu page on the front end so members can sign up with the Stripe billing integration. NOTE: make sure you configure these first from the "Admin Tools" > "Membership Plans" page.
   * "STRIPE_MEMBERBUCKS_TOPUP_OPTIONS" - the options a member can see when on the MemberBucks top up page (in cents).
 
-#### Trello Integration
+### Trello Integration
   * "ENABLE_TRELLO_INTEGRATION" - [Deprecated]
   * "TRELLO_API_KEY" - [Deprecated]
   * "TRELLO_API_TOKEN" - [Deprecated]
   * "TRELLO_ID_LIST" - [Deprecated]
 
-#### Space Directory
+### Space Directory
   * "ENABLE_SPACE_DIRECTORY" - enable a space directory compliant API. The various configuration options in this section should be self explannatory.
 
-#### Theme Swipe Integration
+### Theme Swipe Integration
   * "THEME_SWIPE_URL" - a URL to hit on each door/interlock swipe that can trigger a theme song played over your intercom system, or something else.
   * "ENABLE_THEME_SWIPE" - enable the theme song swipe webhook.
 
-#### Discord Integration
+### Discord Integration
   * "ENABLE_DISCORD_INTEGRATION" - enable the post to Discord channel feature when an interlock or door swipe is recorded.
   * "DISCORD_DOOR_WEBHOOK" - URL for the door webhook.
   * "DISCORD_INTERLOCK_WEBHOOK" - URL for the interlock webhook.
 
-#### Home Page and Welcome Email Cards
+### Home Page and Welcome Email Cards
 
 The settings called "HOME_PAGE_CARDS" and "WELCOME_EMAIL_CARDS" control the content that is displayed on the
 MemberMatters home page, and the content in the welcome email each user receives when they are converted to a member.

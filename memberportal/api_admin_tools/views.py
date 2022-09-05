@@ -22,6 +22,9 @@ from sentry_sdk import capture_exception
 class StripeAPIView(APIView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        if not config.ENABLE_STRIPE:
+            return
+
         try:
             stripe.api_key = config.STRIPE_SECRET_KEY
         except OperationalError as error:

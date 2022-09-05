@@ -547,7 +547,8 @@ class Profile(models.Model):
         if config.MAX_INDUCTION_DAYS > 0 and (
             last_inducted is None or last_inducted < furthest_previous_date
         ):
-            required_steps.append("induction")
+            if config.CANVAS_INDUCTION_ENABLED is True:
+                required_steps.append("induction")
 
         # check if they have an RFID card assigned
         if not self.rfid:

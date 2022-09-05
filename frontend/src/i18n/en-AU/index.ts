@@ -297,6 +297,8 @@ export default {
     delete: "Are you sure you want to delete this proxy?",
   },
   memberbucks: {
+    stripeDisabled:
+      "Only manual top-ups are supported. Please contact us for details on how to add funds to your account.",
     currentBalance: "Current Balance",
     lastPurchase: "Last Purchase",
     addFunds: "Load Funds",
@@ -324,7 +326,7 @@ export default {
     quickAdd: "Quick Add",
     totalAmount: "Total Amount",
     donateFundsDescription:
-      "Enter an amount above, then click {'\"'}@:memberbucks.donateFunds{'\"'}. You can use this to pay for things like consumables or purchases.",
+      "Enter an amount, then click {'\"'}@:memberbucks.donateFunds{'\"'}.",
     donateFundsSuccess: "Successfully made payment.",
     donateFundsError:
       "There was an error confirming the payment, check your balance or try again later.",
@@ -366,7 +368,6 @@ export default {
     onSite: " on site right now.",
     memberList: "Members On Site",
   },
-  entityType: "Association",
   members: "Members",
   member: "Member",
   failed: "Action failed",
@@ -496,7 +497,7 @@ export default {
   signup: {
     induction: "Induction",
     requiredSteps:
-      "You must complete the following steps before your membership application can be submitted.",
+      "You must complete the following steps to complete your membership.",
     completeInduction: "Complete an induction",
     completedInduction: "Induction completed",
     registerAccessCard: "Register your access card",
@@ -512,8 +513,8 @@ export default {
     assignAccessCardWarning:
       "Double check before continuing as you will need to contact us to change it.",
     collectAccessCardDescription:
-      "Thanks for completing all of the required steps. The final thing you need to do is pop in during our open " +
-      "hours to collect your access card. Please bring photo ID with you.",
+      "Thanks for completing all of the required steps. The final thing you need to do is contact us to organise a " +
+      "time to finalise your membership.",
     submitted: "Membership application submitted",
     submittedDescription:
       "Your membership application has been submitted and you are now a 'member applicant'. Your membership will be officially accepted after 7 days, but we have granted site access immediately. You will receive an email confirming that your access card has been enabled. If for some reason your membership is rejected within this period, you will receive an email with further information.",

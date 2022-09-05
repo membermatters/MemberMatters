@@ -39,9 +39,11 @@ class GetConfig(APIView):
             ),
             "trelloIntegration": config.ENABLE_TRELLO_INTEGRATION,
             "enableProxyVoting": config.ENABLE_PROXY_VOTING,
-            "enableStripe": len(config.STRIPE_PUBLISHABLE_KEY) > 0
+            "enableStripe": config.ENABLE_STRIPE
+            and len(config.STRIPE_PUBLISHABLE_KEY) > 0
             and len(config.STRIPE_SECRET_KEY) > 0,
-            "enableMembershipPayments": config.ENABLE_STRIPE_MEMBERSHIP_PAYMENTS,
+            "enableMembershipPayments": config.ENABLE_STRIPE
+            and config.ENABLE_STRIPE_MEMBERSHIP_PAYMENTS,
             "enableMemberBucks": config.ENABLE_MEMBERBUCKS,
             "signup": {
                 "inductionLink": config.INDUCTION_ENROL_LINK,
@@ -66,7 +68,7 @@ class GetConfig(APIView):
             "general": {
                 "siteName": config.SITE_NAME,
                 "siteOwner": config.SITE_OWNER,
-                "entityType": config.ENTITY_TYPE,
+                "siteLocaleCurrency": config.SITE_LOCALE_CURRENCY,
             },
             "contact": {
                 "admin": config.EMAIL_ADMIN,
@@ -661,8 +663,6 @@ class Register(APIView):
                     "LNAME": new_user.profile.last_name,
                     "PHONE": new_user.profile.phone,
                 }
-                print("merge fields")
-                print(merge_fields)
 
                 payload = {
                     "email_address": new_user.email,
@@ -674,12 +674,12 @@ class Register(APIView):
                         config.MAILCHIMP_TAG,
                     ],
                 }
-                response = client.lists.add_list_member(list_id, payload)
-                print(response)
+                client.lists.add_list_member(list_id, payload)
 
         except Exception as e:
             # gracefully catch and move on
             sentry_sdk.capture_exception(e)
+            print("GOT ERROR FROM MAILCHIMP")
             print(e)
             return Response()
 

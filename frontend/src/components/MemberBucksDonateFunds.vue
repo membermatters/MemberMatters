@@ -136,13 +136,15 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters("profile", ["profile"]),
+    ...mapGetters("config", ["siteLocaleCurrency"]),
     icons() {
       return icons;
     },
     balance() {
       return this.$n(
         this?.profile?.financial?.memberBucks?.balance || 0,
-        "currency"
+        "currency",
+        this.siteLocaleCurrency
       );
     },
   },

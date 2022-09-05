@@ -9,10 +9,14 @@ class MemberBucks(models.Model):
         verbose_name_plural = "Memberbucks"
 
     TRANSACTION_TYPES = (
-        ("stripe", "Stripe Payment"),
-        ("bank", "Bank Transfer"),
-        ("card", "Membership Card"),
-        ("web", "Internal Web Payment"),
+        ("stripe", "Stripe Top-up"),  # used to track credits via Stripe
+        ("bank", "Bank Transfer"),  # could be for a debit or credit
+        ("cash", "Cash"),  # could be for a debit or credit
+        (
+            "card",
+            "Membership Card",
+        ),  # used to track debits from vending machines / debit endpoints
+        ("other", "Other"),
     )
 
     id = models.AutoField(primary_key=True)
