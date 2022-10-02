@@ -14,7 +14,10 @@ class SMS:
         self.default_country_code = config.SMS_DEFAULT_COUNTRY_CODE
         self.sender_id = config.SMS_SENDER_ID
         self.sms_footer = config.SMS_FOOTER
-        self.client = Client(self.account_sid, self.auth_token)
+        if self.sms_enable:
+            self.client = Client(self.account_sid, self.auth_token)
+        else:
+            self.client = None
 
         try:
             self.sms_messages = json.loads(config.SMS_MESSAGES)
