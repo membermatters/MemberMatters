@@ -49,6 +49,7 @@ class GetConfig(APIView):
                 "inductionLink": config.INDUCTION_ENROL_LINK,
                 "requireAccessCard": config.REQUIRE_ACCESS_CARD,
                 "contactPageUrl": config.CONTACT_PAGE_URL,
+                "collectVehicleRegistrationPlate": config.COLLECT_VEHICLE_REGISTRATION_PLATE,
             },
             "enableWebcams": config.ENABLE_WEBCAMS,
             "siteBanner": config.SITE_BANNER,
@@ -351,6 +352,7 @@ class ProfileDetail(generics.GenericAPIView):
             "screenName": p.screen_name,
             "phone": p.phone,
             "memberStatus": p.get_state_display(),
+            "vehicleRegistrationPlate": p.vehicle_registration_plate,
             "lastInduction": p.last_induction,
             "lastSeen": p.last_seen,
             "firstJoined": p.created,
@@ -382,12 +384,36 @@ class ProfileDetail(generics.GenericAPIView):
     def put(self, request):
         p = request.user.profile
         body = json.loads(request.body)
+        email = body.get("email").lower()
+        screen_name = body.get("screenName").lower()
+
+        # check if email is specified
+        if not email:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        # check if email is already in use
+        if User.objects.filter(email=email).exists() and email != request.user.email:
+            return Response(
+                {"message": "error.accountAlreadyExists"},
+                status=status.HTTP_409_CONFLICT,
+            )
+
+        # check if screen name is already in use
+        if (
+            Profile.objects.filter(screen_name=screen_name).exists()
+            and screen_name != request.user.profile.screen_name
+        ):
+            return Response(
+                {"message": "error.screenNameAlreadyExists"},
+                status=status.HTTP_409_CONFLICT,
+            )
 
         request.user.email = body.get("email")
         p.first_name = body.get("firstName")
         p.last_name = body.get("lastName")
         p.phone = body.get("phone")
         p.screen_name = body.get("screenName")
+        p.vehicle_registration_plate = body.get("vehicleRegistrationPlate")
 
         request.user.save()
         p.save()
@@ -612,6 +638,7 @@ class Register(APIView):
             last_name=body.get("lastName"),
             screen_name=body.get("screenName"),
             phone=body.get("mobile"),
+            vehicle_registration_plate=body.get("vehicleRegistrationPlate"),
         )
 
         profile.save()
@@ -679,7 +706,6 @@ class Register(APIView):
         except Exception as e:
             # gracefully catch and move on
             sentry_sdk.capture_exception(e)
-            print("GOT ERROR FROM MAILCHIMP")
             print(e)
             return Response()
 

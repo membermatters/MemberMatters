@@ -112,6 +112,7 @@ import icons from "@icons";
 import formatMixin from "@mixins/formatMixin";
 import { exportFile } from "quasar";
 import { stringify } from "csv-stringify";
+import { mapGetters } from "vuex";
 
 export default {
   name: "MembersList",
@@ -132,6 +133,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters("config", ["features"]),
     displayMemberList() {
       if (this.memberState === "All") return this.members;
       return this.members.filter((member) => member.state === this.memberState);
@@ -172,6 +174,17 @@ export default {
           field: "email",
           sortable: true,
         },
+        // this is weird syntax, but cleanest way to do it
+        ...(this.features?.signup?.collectVehicleRegistrationPlate
+          ? [
+              {
+                name: "vehicleRegistration",
+                label: this.$t("form.vehicleRegistrationPlate"),
+                field: "vehicleRegistrationPlate",
+                sortable: true,
+              },
+            ]
+          : []),
         {
           name: "subscriptionStatus",
           label: this.$t("tableHeading.subscriptionStatus"),

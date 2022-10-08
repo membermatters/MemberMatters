@@ -301,6 +301,7 @@ class Profile(models.Model):
     )
     phone = models.CharField(validators=[phone_regex], max_length=12, blank=True)
     state = models.CharField(max_length=11, default="noob", choices=STATES)
+    vehicle_registration_plate = models.CharField(max_length=30, blank=True, null=True)
 
     membership_plan = models.ForeignKey(
         PaymentPlan,
@@ -479,6 +480,7 @@ class Profile(models.Model):
             },
             "phone": self.phone,
             "state": self.get_state_display(),
+            "vehicleRegistrationPlate": self.vehicle_registration_plate,
             "rfid": self.rfid,
             "memberBucks": {
                 "balance": self.memberbucks_balance,

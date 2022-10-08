@@ -339,6 +339,7 @@ class MemberProfile(APIView):
         member.profile.rfid = body.get("rfidCard")
         member.profile.phone = body.get("phone")
         member.profile.screen_name = body.get("screenName")
+        member.profile.vehicle_registration_plate = body.get("vehicleRegistrationPlate")
 
         member.save()
         member.profile.save()

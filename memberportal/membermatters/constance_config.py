@@ -261,6 +261,10 @@ CONSTANCE_CONFIG = {
         True,
         "If an access card is required to be added to a members profile before signup.",
     ),
+    "COLLECT_VEHICLE_REGISTRATION_PLATE": (
+        False,
+        "Display a field that collects the member's vehicle registration plate on signup & in the profile page.",
+    ),
     "CANVAS_API_TOKEN": (
         "PLEASE_CHANGE_ME",
         "Canvas API token.",
@@ -356,6 +360,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "MAX_INDUCTION_DAYS",
                 "MIN_INDUCTION_SCORE",
                 "REQUIRE_ACCESS_CARD",
+                "COLLECT_VEHICLE_REGISTRATION_PLATE",
             ),
         ),
         (

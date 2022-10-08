@@ -79,6 +79,7 @@ However, as noted below, currencies will use a hardcoded value set by a configur
     to `0` to disable induction requirement.
   * "MIN_INDUCTION_SCORE" - The minimum score considered a "pass" for the induction course.
   * "REQUIRE_ACCESS_CARD" - Require the member to submit their RFID access card number during signup.
+  * "COLLECT_VEHICLE_REGISTRATION_PLATE" - Allow the portal to collect vehicle registration plate number(s).
 
 ### Canvas Integration
   * "CANVAS_API_TOKEN" - the API token for the Canvas LMS integration.

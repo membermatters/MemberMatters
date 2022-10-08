@@ -73,6 +73,18 @@
             />
 
             <q-input
+              v-if="features?.signup?.collectVehicleRegistrationPlate"
+              class="col-12 q-mb-lg"
+              v-model="form.vehicleRegistrationPlate"
+              :label="$t('form.vehicleRegistrationPlate')"
+              :hint="$t('form.vehicleRegistrationNote')"
+              filled
+              type="text"
+              lazy-rules
+              :rules="[(val) => validateMax30(val) || $t('validation.max30')]"
+            ></q-input>
+
+            <q-input
               class="col-12"
               v-model="form.password"
               :label="$t('form.password')"
@@ -151,6 +163,7 @@ export default {
         screenName: null,
         mobile: null,
         password: null,
+        vehicleRegistrationPlate: null,
       },
     };
   },
@@ -159,6 +172,7 @@ export default {
   },
   computed: {
     ...mapGetters("profile", ["loggedIn"]),
+    ...mapGetters("config", ["features"]),
     icons() {
       return icons;
     },
@@ -187,6 +201,7 @@ export default {
           screenName: this.form.screenName,
           mobile: this.form.mobile,
           password: this.form.password,
+          vehicleRegistrationPlate: this.form.vehicleRegistrationPlate,
         })
         .then(() => {
           this.failed = false;
