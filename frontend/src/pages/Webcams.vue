@@ -10,7 +10,7 @@
         :key="link[1]"
         class="col-xs-12 col-sm-6 q-pa-sm"
       >
-        <q-img :src="`${link[1]}?interval=${interval}`">
+        <q-img :src="`${link[1]}?timestamp=${timestamp}`">
           <div class="absolute-bottom-right text-subtitle2">
             {{ link[0] }}
           </div>
@@ -27,13 +27,13 @@ export default {
   name: "WebcamsPage",
   data() {
     return {
-      interval: 0,
+      timestamp: new Date().getTime(),
     };
   },
   mounted() {
-    // This interval increments the query param every 60 seconds causing an image refresh
+    // This changes the query param every 60 seconds causing an image refresh
     setInterval(() => {
-      this.interval++;
+      this.timestamp = new Date().getTime();
     }, 60000);
   },
   computed: {

@@ -13,7 +13,7 @@ CONSTANCE_CONFIG = {
     "SITE_LOCALE_CURRENCY": (
         "en-AU",
         "The locale to use on the frontend JUST FOR CURRENCY. Please check "
-        "https://membermatters.org/en/latest/POST_INSTALL_STEPS.html#locale for IMPORTANT considerations "
+        "https://membermatters.org/en/latest/POST_INSTALL_STEPS.html#locale-language-configuration for IMPORTANT considerations "
         "and supported locales before configuring.",
     ),
     "SITE_BANNER": (

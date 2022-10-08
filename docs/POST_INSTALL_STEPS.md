@@ -133,6 +133,13 @@ You cannot currently enable specific events, you either get "all or nothing".
   * "GROUP_NAME" - [Deprecated]
   * "ADMIN_NAME" - [Deprecated]
   * "WEBCAM_PAGE_URLS" - a JSON array of URLs to be used as the source for each webcam on the webcams page.
+    * You should use an array of arrays like to specify the webcam snapshot title & locations like so: 
+  ```
+    [
+    ["Main Room", "https://example.com/mainroom.jpg"],
+    ["Digital Fabrication", "https://example.com/digifab.jpg"],
+    ]
+```
   * "HOME_PAGE_CARDS" - a JSON array of cards to be used on the hompeage (see below for more info).
   * "WELCOME_EMAIL_CARDS" - a JSON array of cards to be used in the welcome email (see below for more info).
 

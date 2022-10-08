@@ -90,7 +90,7 @@ export default {
   },
   webcams: {
     pageDescription:
-      "This page shows our public webcams, updated every minute for your convenience.",
+      "Our public webcam snapshots are updated every minute for your convenience.",
   },
   about: {
     title: "About MemberMatters",
