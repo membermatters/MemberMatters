@@ -196,6 +196,14 @@ CONSTANCE_CONFIG = {
         "http://10.0.1.50/playmp3.php?nickname={}",
         "The URL to send a GET request to on a swipe if enabled.",
     ),
+    "ENABLE_DOOR_BUMP_API": (
+        False,
+        "Enable an API endpoint that 'bumps' (temporarily unlocks) a door for third party integration.",
+    ),
+    "DOOR_BUMP_API_KEY": (
+        "",
+        "The API key used to authenticate requests to the door bump API endpoint. MUST be set or the endpoint is automatically disabled. Check docs for usage.",
+    ),
     "ENABLE_DISCORD_INTEGRATION": (
         False,
         "Enable playing a member's theme song on a swipe.",
@@ -412,6 +420,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ),
         ),
         ("Theme Swipe Integration", ("THEME_SWIPE_URL",)),
+        ("Door Bump API", ("ENABLE_DOOR_BUMP_API", "DOOR_BUMP_API_KEY")),
         (
             "Contact Information",
             (

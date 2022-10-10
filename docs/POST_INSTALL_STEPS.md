@@ -164,6 +164,27 @@ You cannot currently enable specific events, you either get "all or nothing".
   * "THEME_SWIPE_URL" - a URL to hit on each door/interlock swipe that can trigger a theme song played over your intercom system, or something else.
   * "ENABLE_THEME_SWIPE" - enable the theme song swipe webhook.
 
+### Door Bump API
+  * "ENABLE_DOOR_BUMP_API" - Enable an API endpoint that 'bumps' (temporarily unlocks) a door for third party integration.
+  * "DOOR_BUMP_API_KEY" - The API key used to authenticate requests to the door bump API endpoint. MUST be set or the endpoint is automatically disabled.
+
+To use the door bump API, you can send a `POST` request in the format below:
+With Authorization header:
+```
+Authorization: Bearer <DOOR_BUMP_API_KEY>
+...
+POST /api/access/doors/DOOR_ID/bump/
+```
+
+With Query parameter:
+```
+POST /api/access/doors/DOOR_ID/bump/?secret=DOOR_BUMP_API_KEY
+```
+
+Where `DOOR_ID` is the ID of the door you wish to bump (can be found in the URL of the door's admin page). The request 
+must be authenticated with an `Authorization` header set to the value of `DOOR_BUMP_API_KEY` or as a query parameter 
+as above (NOT recommended for security).
+
 ### Discord Integration
   * "ENABLE_DISCORD_INTEGRATION" - enable the post to Discord channel feature when an interlock or door swipe is recorded.
   * "DISCORD_DOOR_WEBHOOK" - URL for the door webhook.

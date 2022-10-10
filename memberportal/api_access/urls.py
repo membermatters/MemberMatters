@@ -42,4 +42,9 @@ urlpatterns = [
         views.UnlockDoor.as_view(),
         name="UnlockDoor",
     ),
+    path(
+        "api/access/doors/<int:door_id>/bump/",
+        views.BumpDoor.as_view(),
+        name="BumpDoor",
+    ),
 ]
