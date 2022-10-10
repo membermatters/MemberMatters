@@ -90,7 +90,7 @@ export default {
   },
   webcams: {
     pageDescription:
-      "This page shows our public webcams, updated every minute for your convenience.",
+      "Our public webcam snapshots are updated every minute for your convenience.",
   },
   about: {
     title: "About MemberMatters",
@@ -148,6 +148,7 @@ export default {
     fail: "There was an error saving your new password.",
   },
   validation: {
+    max30: "Must be less than 30 characters.",
     invalidEmail: "Please enter a valid email.",
     invalidPassword: "Please enter a valid password.",
     invalidPhone: "Please enter a valid phone number.",
@@ -211,15 +212,14 @@ export default {
     pageDescription:
       "Edit any of the fields below and they will be automatically saved.",
     noResults: "No Results",
-    allFieldsRequired: "All fields are required.",
+    allFieldsRequired: "All fields marked * are required.",
     featured: "Featured?",
-    email: "Email",
+    email: "Email *",
     rfidCard: "RFID Card",
-    firstName: "First Name",
-    lastName: "Last Name",
-    phone: "Phone",
-    mobile: "Mobile Number",
-    screenName: "Screen / Nickname",
+    firstName: "First Name *",
+    lastName: "Last Name *",
+    mobile: "Mobile Number *",
+    screenName: "Screen / Nickname *",
     date: "Date",
     dateTime: "Date & Time",
     chair: "Chair",
@@ -230,7 +230,7 @@ export default {
     playTheme: "Play Theme Song",
     ipAddress: "IP Address",
     lastSeen: "Last Seen",
-    password: "Password",
+    password: "Password *",
     registrationDate: "Registration Date",
     state: "State",
     last_induction: "Last Induction",
@@ -242,6 +242,9 @@ export default {
     cost: "Cost",
     intervalCount: "Interval Count",
     interval: "Interval Period",
+    vehicleRegistrationPlate: "Vehicle Registration Plate Number",
+    vehicleRegistrationNote:
+      "Please enter your vehicle registration plate(s) here if you have any. We use this to make sure only members park in our carpark.",
   },
   digitalId: {
     title: "Digital ID",

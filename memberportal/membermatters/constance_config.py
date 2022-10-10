@@ -13,7 +13,7 @@ CONSTANCE_CONFIG = {
     "SITE_LOCALE_CURRENCY": (
         "en-AU",
         "The locale to use on the frontend JUST FOR CURRENCY. Please check "
-        "https://membermatters.org/en/latest/POST_INSTALL_STEPS.html#locale for IMPORTANT considerations "
+        "https://membermatters.org/en/latest/POST_INSTALL_STEPS.html#locale-language-configuration for IMPORTANT considerations "
         "and supported locales before configuring.",
     ),
     "SITE_BANNER": (
@@ -196,6 +196,14 @@ CONSTANCE_CONFIG = {
         "http://10.0.1.50/playmp3.php?nickname={}",
         "The URL to send a GET request to on a swipe if enabled.",
     ),
+    "ENABLE_DOOR_BUMP_API": (
+        False,
+        "Enable an API endpoint that 'bumps' (temporarily unlocks) a door for third party integration.",
+    ),
+    "DOOR_BUMP_API_KEY": (
+        "",
+        "The API key used to authenticate requests to the door bump API endpoint. MUST be set or the endpoint is automatically disabled. Check docs for usage.",
+    ),
     "ENABLE_DISCORD_INTEGRATION": (
         False,
         "Enable playing a member's theme song on a swipe.",
@@ -260,6 +268,10 @@ CONSTANCE_CONFIG = {
     "REQUIRE_ACCESS_CARD": (
         True,
         "If an access card is required to be added to a members profile before signup.",
+    ),
+    "COLLECT_VEHICLE_REGISTRATION_PLATE": (
+        False,
+        "Display a field that collects the member's vehicle registration plate on signup & in the profile page.",
     ),
     "CANVAS_API_TOKEN": (
         "PLEASE_CHANGE_ME",
@@ -356,6 +368,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "MAX_INDUCTION_DAYS",
                 "MIN_INDUCTION_SCORE",
                 "REQUIRE_ACCESS_CARD",
+                "COLLECT_VEHICLE_REGISTRATION_PLATE",
             ),
         ),
         (
@@ -407,6 +420,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ),
         ),
         ("Theme Swipe Integration", ("THEME_SWIPE_URL",)),
+        ("Door Bump API", ("ENABLE_DOOR_BUMP_API", "DOOR_BUMP_API_KEY")),
         (
             "Contact Information",
             (

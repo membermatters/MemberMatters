@@ -79,6 +79,7 @@ However, as noted below, currencies will use a hardcoded value set by a configur
     to `0` to disable induction requirement.
   * "MIN_INDUCTION_SCORE" - The minimum score considered a "pass" for the induction course.
   * "REQUIRE_ACCESS_CARD" - Require the member to submit their RFID access card number during signup.
+  * "COLLECT_VEHICLE_REGISTRATION_PLATE" - Allow the portal to collect vehicle registration plate number(s).
 
 ### Canvas Integration
   * "CANVAS_API_TOKEN" - the API token for the Canvas LMS integration.
@@ -133,6 +134,13 @@ You cannot currently enable specific events, you either get "all or nothing".
   * "GROUP_NAME" - [Deprecated]
   * "ADMIN_NAME" - [Deprecated]
   * "WEBCAM_PAGE_URLS" - a JSON array of URLs to be used as the source for each webcam on the webcams page.
+    * You should use an array of arrays like to specify the webcam snapshot title & locations like so: 
+  ```
+    [
+    ["Main Room", "https://example.com/mainroom.jpg"],
+    ["Digital Fabrication", "https://example.com/digifab.jpg"],
+    ]
+```
   * "HOME_PAGE_CARDS" - a JSON array of cards to be used on the hompeage (see below for more info).
   * "WELCOME_EMAIL_CARDS" - a JSON array of cards to be used in the welcome email (see below for more info).
 
@@ -155,6 +163,27 @@ You cannot currently enable specific events, you either get "all or nothing".
 ### Theme Swipe Integration
   * "THEME_SWIPE_URL" - a URL to hit on each door/interlock swipe that can trigger a theme song played over your intercom system, or something else.
   * "ENABLE_THEME_SWIPE" - enable the theme song swipe webhook.
+
+### Door Bump API
+  * "ENABLE_DOOR_BUMP_API" - Enable an API endpoint that 'bumps' (temporarily unlocks) a door for third party integration.
+  * "DOOR_BUMP_API_KEY" - The API key used to authenticate requests to the door bump API endpoint. MUST be set or the endpoint is automatically disabled.
+
+To use the door bump API, you can send a `POST` request in the format below:
+With Authorization header:
+```
+Authorization: Bearer <DOOR_BUMP_API_KEY>
+...
+POST /api/access/doors/DOOR_ID/bump/
+```
+
+With Query parameter:
+```
+POST /api/access/doors/DOOR_ID/bump/?secret=DOOR_BUMP_API_KEY
+```
+
+Where `DOOR_ID` is the ID of the door you wish to bump (can be found in the URL of the door's admin page). The request 
+must be authenticated with an `Authorization` header set to the value of `DOOR_BUMP_API_KEY` or as a query parameter 
+as above (NOT recommended for security).
 
 ### Discord Integration
   * "ENABLE_DISCORD_INTEGRATION" - enable the post to Discord channel feature when an interlock or door swipe is recorded.

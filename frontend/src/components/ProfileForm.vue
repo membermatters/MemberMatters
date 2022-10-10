@@ -60,7 +60,7 @@
         v-model="form.phone"
         outlined
         :debounce="debounceLength"
-        :label="$t('form.phone')"
+        :label="$t('form.mobile')"
         :rules="[
           (val) => validateNotEmpty(val) || $t('validation.invalidPhone'),
         ]"
@@ -93,6 +93,24 @@
           />
         </template>
       </q-input>
+
+      <q-input
+        v-if="features?.signup?.collectVehicleRegistrationPlate"
+        v-model="form.vehicleRegistrationPlate"
+        outlined
+        :debounce="debounceLength"
+        :label="$t('form.vehicleRegistrationPlate')"
+        :rules="[(val) => validateMax30(val) || $t('validation.max30')]"
+        @update:model-value="saveChange('vehicleRegistrationPlate')"
+      >
+        <template v-slot:append>
+          <saved-notification
+            :success="saved.vehicleRegistrationPlate"
+            show-text
+            :error="saved.error"
+          />
+        </template>
+      </q-input>
     </q-form>
   </div>
 </template>
@@ -117,6 +135,7 @@ export default {
         lastName: "",
         phone: "",
         screenName: "",
+        vehicleRegistrationPlate: "",
       },
       saved: {
         // if there was an error saving the form
@@ -127,6 +146,7 @@ export default {
         lastName: false,
         phone: false,
         screenName: false,
+        vehicleRegistrationPlate: false,
       },
     };
   },
@@ -138,6 +158,8 @@ export default {
       this.form.lastName = this.profile.lastName;
       this.form.phone = this.profile.phone;
       this.form.screenName = this.profile.screenName;
+      this.form.vehicleRegistrationPlate =
+        this.profile.vehicleRegistrationPlate;
     },
     saveChange(field) {
       this.$refs.formRef.validate(false).then(() => {
@@ -176,6 +198,7 @@ export default {
   },
   computed: {
     ...mapGetters("profile", ["profile"]),
+    ...mapGetters("config", ["features"]),
     icons() {
       return icons;
     },

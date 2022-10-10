@@ -1,9 +1,10 @@
 from access.models import Doors, Interlock
 from profile.models import User
 
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from constance import config
 
 
 class UserAccessPermissions(APIView):
@@ -120,3 +121,50 @@ class UnlockDoor(APIView):
         door = Doors.objects.get(pk=door_id)
 
         return Response({"success": door.unlock()})
+
+
+class BumpDoor(APIView):
+    """
+    post: This method will 'bump' the specified door.
+    """
+
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request, door_id):
+        bump_api_key = config.DOOR_BUMP_API_KEY  # grab the key from the config
+        bump_api_enabled = (
+            config.ENABLE_DOOR_BUMP_API
+        )  # grab the enabled status from the config
+
+        # grab the key from the request
+        provided_key = request.query_params.get("secret") or request.headers.get(
+            "Authorization", ""
+        )
+
+        if not bump_api_enabled:
+            return Response(
+                {"success": False, "error": "This API is disabled in the config."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if not len(bump_api_key):
+            return Response(
+                {
+                    "success": False,
+                    "message": "DOOR_BUMP_API_KEY not set on server.",
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if provided_key != bump_api_key:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid API key.",
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        else:
+            door = Doors.objects.get(pk=door_id)
+            return Response({"success": door.unlock()})

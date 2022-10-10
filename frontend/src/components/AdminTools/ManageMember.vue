@@ -158,7 +158,7 @@
                   v-model="profileForm.phone"
                   outlined
                   :debounce="debounceLength"
-                  :label="$t('form.phone')"
+                  :label="$t('form.mobile')"
                   :rules="[
                     (val) =>
                       validateNotEmpty(val) || $t('validation.invalidPhone'),
@@ -187,6 +187,25 @@
                   <template #append>
                     <saved-notification
                       :success="saved.screenName"
+                      :error="saved.error"
+                    />
+                  </template>
+                </q-input>
+
+                <q-input
+                  v-if="features?.signup?.collectVehicleRegistrationPlate"
+                  v-model="profileForm.vehicleRegistrationPlate"
+                  outlined
+                  :debounce="debounceLength"
+                  :label="$t('form.vehicleRegistrationPlate')"
+                  :rules="[
+                    (val) => validateMax30(val) || $t('validation.max30'),
+                  ]"
+                  @update:model-value="saveChange('vehicleRegistrationPlate')"
+                >
+                  <template #append>
+                    <saved-notification
+                      :success="saved.vehicleRegistrationPlate"
                       :error="saved.error"
                     />
                   </template>
@@ -811,6 +830,7 @@ export default {
         lastName: "",
         phone: "",
         screenName: "",
+        vehicleRegistrationPlate: "",
       },
       saved: {
         // if there was an error saving the form
@@ -822,6 +842,7 @@ export default {
         lastName: false,
         phone: false,
         screenName: false,
+        vehicleRegistrationPlate: false,
       },
       billing: {
         memberbucks: {
@@ -867,6 +888,8 @@ export default {
       this.profileForm.lastName = this.selectedMember.name.last;
       this.profileForm.phone = this.selectedMember.phone;
       this.profileForm.screenName = this.selectedMember.screenName;
+      this.profileForm.vehicleRegistrationPlate =
+        this.selectedMember.vehicleRegistrationPlate;
     },
     saveChange(field) {
       this.$refs.formRef.validate(false).then(() => {
@@ -1006,7 +1029,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("config", ["siteLocaleCurrency"]),
+    ...mapGetters("config", ["siteLocaleCurrency", "features"]),
     selectedMember() {
       if (this.members) {
         return this.members.find((e) => e.id === this.member.id);
