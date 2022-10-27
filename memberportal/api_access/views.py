@@ -29,6 +29,7 @@ class AuthoriseDoor(APIView):
 
         member.profile.doors.add(door)
         member.profile.save()
+        door.sync()
 
         return Response()
 
@@ -42,10 +43,11 @@ class AuthoriseInterlock(APIView):
 
     def put(self, request, interlock_id, user_id):
         member = User.objects.get(pk=user_id)
-        door = Interlock.objects.get(pk=interlock_id)
+        interlock = Interlock.objects.get(pk=interlock_id)
 
-        member.profile.interlocks.add(door)
+        member.profile.interlocks.add(interlock)
         member.profile.save()
+        interlock.sync()
 
         return Response()
 
@@ -63,6 +65,7 @@ class RevokeDoor(APIView):
 
         member.profile.doors.remove(door)
         member.profile.save()
+        door.sync()
 
         return Response()
 
@@ -80,6 +83,7 @@ class RevokeInterlock(APIView):
 
         member.profile.interlocks.remove(interlock)
         member.profile.save()
+        interlock.sync()
 
         return Response()
 

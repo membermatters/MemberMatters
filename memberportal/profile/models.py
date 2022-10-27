@@ -360,6 +360,13 @@ class Profile(models.Model):
         else:
             return False
 
+    def sync_access(self):
+        for door in self.doors.all():
+            door.sync()
+
+        for interlock in self.interlocks.all():
+            interlock.sync()
+
     def deactivate(self, request=None):
         if request:
             log_user_event(
@@ -379,6 +386,7 @@ class Profile(models.Model):
         sms_message.send_deactivated_access(self.phone)
         self.state = "inactive"
         self.save()
+        self.sync_access()
         return True
 
     def activate(self, request=None):
@@ -402,6 +410,7 @@ class Profile(models.Model):
 
         self.state = "active"
         self.save()
+        self.sync_access()
         return True
 
     def set_account_only(self):
