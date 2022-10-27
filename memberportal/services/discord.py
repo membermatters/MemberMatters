@@ -33,7 +33,7 @@ def post_door_swipe_to_discord(name, door, status):
                 {
                     "description": f"{name} just swiped at {door} door but was **rejected**. You "
                     f"can check your"
-                    f" access [here]({config.SITE_URL}/profile/access/view/).",
+                    f" access [here]({config.SITE_URL}/account/access/).",
                     "color": 16007990,
                 }
             )
@@ -67,7 +67,7 @@ def post_interlock_swipe_to_discord(name, interlock, type, time=None):
                 {
                     "description": f"{name} tried to activate the {interlock} but was "
                     f"**rejected**. You can check your"
-                    f" access [here]({config.SITE_URL}/profile/access/view/).",
+                    f" access [here]({config.SITE_URL}/account/access/).",
                     "color": 16007990,
                 }
             )
