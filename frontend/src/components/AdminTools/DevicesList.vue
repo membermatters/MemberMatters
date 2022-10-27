@@ -262,11 +262,11 @@ export default {
 
       this.$axios
         .post(`/api/access/${this.deviceChoice}/${deviceId}/reboot/`)
+        .then(() => {
+          this.$q.notify(this.$t("success"));
+        })
         .catch(() => {
-          this.$q.dialog({
-            title: this.$t("error.error"),
-            message: this.$t("error.requestFailed"),
-          });
+          this.$q.notify(this.$t("error.requestFailed"));
         })
         .finally(() => {
           this.deviceLoading[deviceId].reboot = false;
@@ -279,15 +279,10 @@ export default {
       this.$axios
         .post(`/api/access/doors/${doorId}/unlock/`)
         .then(() => {
-          this.$q.notify({
-            message: this.$t("doors.unlocked"),
-          });
+          this.$q.notify(this.$t("success"));
         })
         .catch(() => {
-          this.$q.dialog({
-            title: this.$t("error.error"),
-            message: this.$t("error.requestFailed"),
-          });
+          this.$q.notify(this.$t("error.requestFailed"));
         })
         .finally(() => {
           this.deviceLoading[doorId].unlock = false;

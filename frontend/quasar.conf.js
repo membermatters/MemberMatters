@@ -133,7 +133,7 @@ module.exports = configure((ctx) => ({
     iconSet: "mdi-v5", // Quasar icon set
 
     // Quasar plugins
-    plugins: ["Dialog", "LoadingBar", "Cookies"],
+    plugins: ["Dialog", "LoadingBar", "Cookies", "Notify"],
   },
 
   // animations: 'all', // --- includes all animations
