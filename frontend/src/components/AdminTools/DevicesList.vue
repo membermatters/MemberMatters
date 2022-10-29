@@ -127,6 +127,20 @@
               </q-tooltip>
             </q-btn>
           </template>
+
+          <q-btn
+            :loading="deviceLoading[props.row.id]?.sync"
+            class="q-mr-sm"
+            size="sm"
+            color="accent"
+            @click.stop="syncDevice(props.row.id)"
+          >
+            <q-icon :name="icons.sync" />
+            <q-tooltip>
+              {{ $t("button.syncDevice") }}
+            </q-tooltip>
+          </q-btn>
+
           <q-btn
             :loading="deviceLoading[props.row.id]?.reboot"
             class="q-mr-sm"
@@ -266,12 +280,18 @@ export default {
     rebootDevice(deviceId) {
       if (this.deviceLoading[deviceId])
         this.deviceLoading[deviceId].reboot = true;
-      else this.deviceLoading[deviceId] = { reboot: true, unlock: false };
+      else
+        this.deviceLoading[deviceId] = {
+          reboot: true,
+          unlock: false,
+          sync: false,
+        };
 
       this.$axios
         .post(`/api/access/${this.deviceChoice}/${deviceId}/reboot/`)
-        .then(() => {
-          this.$q.notify(this.$t("success"));
+        .then((res) => {
+          if (res?.success) this.$q.notify(this.$t("success"));
+          else this.$q.notify(this.$t("error.requestFailed"));
         })
         .catch(() => {
           this.$q.notify(this.$t("error.requestFailed"));
@@ -280,14 +300,43 @@ export default {
           this.deviceLoading[deviceId].reboot = false;
         });
     },
+    syncDevice(deviceId) {
+      if (this.deviceLoading[deviceId])
+        this.deviceLoading[deviceId].sync = true;
+      else
+        this.deviceLoading[deviceId] = {
+          sync: true,
+          reboot: false,
+          unlock: false,
+        };
+
+      this.$axios
+        .post(`/api/access/${this.deviceChoice}/${deviceId}/sync/`)
+        .then((res) => {
+          if (res?.success) this.$q.notify(this.$t("success"));
+          else this.$q.notify(this.$t("error.requestFailed"));
+        })
+        .catch(() => {
+          this.$q.notify(this.$t("error.requestFailed"));
+        })
+        .finally(() => {
+          this.deviceLoading[deviceId].sync = false;
+        });
+    },
     unlockDoor(doorId) {
       if (this.deviceLoading[doorId]) this.deviceLoading[doorId].unlock = true;
-      else this.deviceLoading[doorId] = { unlock: true, reboot: false };
+      else
+        this.deviceLoading[doorId] = {
+          unlock: true,
+          reboot: false,
+          sync: false,
+        };
 
       this.$axios
         .post(`/api/access/doors/${doorId}/unlock/`)
-        .then(() => {
-          this.$q.notify(this.$t("success"));
+        .then((res) => {
+          if (res?.success) this.$q.notify(this.$t("success"));
+          else this.$q.notify(this.$t("error.requestFailed"));
         })
         .catch(() => {
           this.$q.notify(this.$t("error.requestFailed"));

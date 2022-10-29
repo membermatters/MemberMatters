@@ -43,6 +43,16 @@ urlpatterns = [
         name="RebootDoor",
     ),
     path(
+        "api/access/interlocks/<int:interlock_id>/sync/",
+        views.SyncInterlock.as_view(),
+        name="SyncInterlock",
+    ),
+    path(
+        "api/access/doors/<int:door_id>/sync/",
+        views.SyncDoor.as_view(),
+        name="SyncDoor",
+    ),
+    path(
         "api/access/doors/<int:door_id>/unlock/",
         views.UnlockDoor.as_view(),
         name="UnlockDoor",
