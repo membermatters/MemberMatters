@@ -573,9 +573,9 @@ class MemberBillingInfo(StripeAPIView):
             s = None
 
             # if we have a subscription id, fetch the details
-            if request.user.profile.stripe_subscription_id:
+            if member.user.profile.stripe_subscription_id:
                 s = stripe.Subscription.retrieve(
-                    request.user.profile.stripe_subscription_id,
+                    member.user.profile.stripe_subscription_id,
                 )
 
             # if we got subscription details
@@ -592,9 +592,9 @@ class MemberBillingInfo(StripeAPIView):
                 billing_info["subscription"] = None
 
         # get the most recent memberbucks transactions and order them by date
-        recent_transactions = MemberBucks.objects.filter(user=request.user).order_by(
-            "date"
-        )[::-1][:100]
+        recent_transactions = MemberBucks.objects.filter(user=member).order_by("date")[
+            ::-1
+        ][:100]
 
         def get_transaction(transaction):
             return transaction.get_transaction_display()
