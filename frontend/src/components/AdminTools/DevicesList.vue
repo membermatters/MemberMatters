@@ -101,9 +101,17 @@
 
     <template v-slot:body="props">
       <q-tr :props="props">
-        <q-td v-for="col in props.cols" :key="col.name" :props="props">
+        <q-td
+          v-for="col in props.cols"
+          :key="col.name"
+          :props="props"
+          :class="{
+            offline: props.row.offline && col.name === 'lastSeen',
+          }"
+        >
           {{ col.value }}
         </q-td>
+
         <q-td auto-width>
           <template v-if="deviceChoice === 'doors'">
             <q-btn
@@ -293,6 +301,22 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+@keyframes pulsate
+    0%
+      background-color: orange
+
+    50%
+      background-color: red
+
+    100%
+      background-color: orange
+
+.offline
+  background-color: red
+  color: white
+  animation: pulsate 2s ease-out
+  animation-iteration-count: infinite
+
 @media (max-width: $breakpoint-xs-max)
   .access-list
     width: 100%

@@ -3,6 +3,11 @@ from . import views
 
 urlpatterns = [
     path(
+        "api/access/status/",
+        views.AccessSystemStatus.as_view(),
+        name="AccessSystemStatus",
+    ),
+    path(
         "api/access/permissions/",
         views.UserAccessPermissions.as_view(),
         name="UserAccessPermissions",

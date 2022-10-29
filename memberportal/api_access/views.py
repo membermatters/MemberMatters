@@ -1,10 +1,61 @@
+from django.utils import timezone
 from access.models import Doors, Interlock
 from profile.models import User
 
-from rest_framework import permissions, status
+from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from constance import config
+
+
+class AccessSystemStatus(APIView):
+    """
+    get: This method returns the current status of the access system.
+    """
+
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        statusObject = {
+            "doors": [],
+            "interlocks": [],
+        }
+
+        error_if_offline = request.GET.get("errorIfOffline", False)
+        a_device_is_offline = False
+
+        for door in Doors.objects.all():
+            offline = door.get_unavailable()
+            statusObject["doors"].append(
+                {
+                    "id": door.id,
+                    "name": door.name,
+                    "lastSeen": door.last_seen,
+                    "lockedOut": door.locked_out,
+                    "offline": offline,
+                }
+            )
+            if offline:
+                a_device_is_offline = True
+
+        for interlock in Interlock.objects.all():
+            offline = interlock.get_unavailable()
+            statusObject["interlocks"].append(
+                {
+                    "id": interlock.id,
+                    "name": interlock.name,
+                    "lastSeen": interlock.last_seen,
+                    "lockedOut": interlock.locked_out,
+                    "offline": offline,
+                }
+            )
+            if offline:
+                a_device_is_offline = True
+
+        if error_if_offline and a_device_is_offline:
+            return Response(statusObject, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        return Response(statusObject)
 
 
 class UserAccessPermissions(APIView):
