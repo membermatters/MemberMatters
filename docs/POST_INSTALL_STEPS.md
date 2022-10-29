@@ -196,7 +196,7 @@ The settings called "HOME_PAGE_CARDS" and "WELCOME_EMAIL_CARDS" control the cont
 MemberMatters home page, and the content in the welcome email each user receives when they are converted to a member.
 These options are configured with a JSON object specifying the content. You can add as many cards as you want, but we
 recommend 6 as a maximum for the homepage, and 4 for the email. You can find the icon names on
-[this page](https://fontawesome.com/icons?d=gallery&p=1). Absolute and relative URLs are supported.
+[this page](https://fontawesome.com/icons?d=gallery&p=1). Absolute and relative URLs, and vue routes are supported.
 
 An example with 3 cards is below:
 
@@ -210,11 +210,29 @@ An example with 3 cards is below:
     "btn_text": "Read Wiki"
   },
   {
-    "title": "Report Issue",
-    "description": "Found something broken? You can submit an issue report.",
-    "icon": "bug_report",
-    "url": "/issue/report/",
-    "btn_text": "Report Issue"
+    "title": "Member Bucks",
+    "description": "If you need to make a payment for tool usage or something else, tap here.",
+    "icon": "mdi-alert",
+    "routerLink": {
+      "name": "memberbucks"
+    },
+    "btn_text": "Member Bucks"
+  },
+  {
+    "title": "Discord Server",
+	"description": "Discord is an instant messaging platform that allows you to connect with other BMS members to share you skills, knowledge and projects. You can also get realtime support from staff/other members.",
+	"icon": "mdi-chat",
+	"links": [
+		{
+			"url": "https://s.bms.wiki/discord",
+			"btn_text": "Join Discord",
+                        "newLine": true
+		},
+		{
+			"url": "https://s.bms.wiki/discord",
+			"btn_text": "Join Discord 2"
+		}
+	]
   }
 ]
 ```
