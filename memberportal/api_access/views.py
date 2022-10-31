@@ -35,7 +35,7 @@ class AccessSystemStatus(APIView):
                     "offline": offline,
                 }
             )
-            if offline:
+            if offline and door.report_online_status:
                 a_device_is_offline = True
 
         for interlock in Interlock.objects.all():
@@ -49,7 +49,7 @@ class AccessSystemStatus(APIView):
                     "offline": offline,
                 }
             )
-            if offline:
+            if offline and interlock.report_online_status:
                 a_device_is_offline = True
 
         if error_if_offline and a_device_is_offline:

@@ -34,6 +34,9 @@ class AccessControlledDevice(models.Model):
     exempt_signin = models.BooleanField(
         "Exempt this device from requiring a sign in", default=False
     )
+    report_online_status = models.BooleanField(
+        "Report the online status of this device.", default=True
+    )
     hidden = models.BooleanField(
         "Hidden from members in their access permissions screen", default=False
     )
