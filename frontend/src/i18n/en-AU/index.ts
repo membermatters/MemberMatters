@@ -181,7 +181,7 @@ export default {
     interlock: "Interlock",
     interlocks: "Interlocks",
     noInterlocks: "There are no interlocks in the system.",
-    defaultAccess: "Members have access by default",
+    defaultAccess: "All members have access",
     maintenanceLockout: "Maintenance lockout is enabled",
     playTheme: "Play theme on swipe",
     exemptSignin: "Exempt from site sign in requirement (if enabled)",
