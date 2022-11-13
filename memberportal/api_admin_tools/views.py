@@ -338,6 +338,10 @@ class MemberProfile(APIView):
 
         body = json.loads(request.body)
         member = User.objects.get(id=member_id)
+        rfid_changed = False
+
+        if member.profile.rfid != body.get("rfidCard"):
+            rfid_changed = True
 
         member.email = body.get("email")
         member.profile.first_name = body.get("firstName")
@@ -349,6 +353,10 @@ class MemberProfile(APIView):
 
         member.save()
         member.profile.save()
+
+        if rfid_changed:
+            for door in member.profile.doors.all():
+                door.sync()
 
         return Response()
 
