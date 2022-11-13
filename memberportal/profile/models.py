@@ -523,16 +523,20 @@ class Profile(models.Model):
 
         user_active = self.state == "active"
 
-        # if the method got doors, use them, otherwise query them
         for door in Doors.objects.all():
+            if door.hidden:
+                continue
+
             if door in self.doors.all() and user_active:
                 doors.append({"name": door.name, "access": True, "id": door.id})
 
             else:
                 doors.append({"name": door.name, "access": False, "id": door.id})
 
-        # if the method got interlocks, use them, otherwise query them
         for interlock in Interlock.objects.all():
+            if interlock.hidden:
+                continue
+
             if interlock in self.interlocks.all() and user_active:
                 interlocks.append(
                     {"name": interlock.name, "access": True, "id": interlock.id}
