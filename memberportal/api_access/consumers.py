@@ -90,6 +90,7 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
                     self.authorised = True
                     self.send_json({"authorised": True})
                     self.sync_users({})  # sync the cards down
+                    self.update_door_locked_out()
                 else:
                     logger.debug("Authorisation failed from " + self.door_id)
                     self.authorised = False
