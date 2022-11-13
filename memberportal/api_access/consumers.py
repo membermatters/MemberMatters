@@ -161,3 +161,6 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
         # Handles the "device_reboot" event when it's sent to us.
         logger.info("Rebooting door for " + self.door_id)
         self.send_json({"command": "reboot"})
+
+    def update_door_device(self, event=None):
+        self.door = Doors.objects.get(serial_number=self.door_id)

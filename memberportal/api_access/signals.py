@@ -6,6 +6,8 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.contrib import auth
 from access.models import Doors
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 User = auth.get_user_model()
 
@@ -14,18 +16,16 @@ User = auth.get_user_model()
 def save_or_create_door(sender, instance, **kwargs):
     created = instance.pk is None
     door_all_members_changed = False
+    door = Doors.objects.get(pk=instance.id)
 
     # if we didn't just create the door check if it's all_members property has changed
     if not created:
-        door_all_members_changed = (
-            instance.all_members != Doors.objects.get(id=instance.id).all_members
-        )
+        door_all_members_changed = instance.all_members != door.all_members
 
     # if the door has all_members set, and it is new or all_members has changed, reset permissions for it
     if instance.all_members and (created or door_all_members_changed):
         # update access
         members = User.objects.all()
-        door = Doors.objects.get(pk=instance.id)
 
         for member in members:
             member.profile.doors.add(door)
@@ -46,3 +46,10 @@ def save_or_create_door(sender, instance, **kwargs):
 
         # once we're done, sync changes to the door
         door.sync()
+
+    if door.serial_number:
+        # if the door may have a websocket instance then update the door object
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "door_" + door.serial_number, {"type": "update_door_device"}
+        )

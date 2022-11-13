@@ -1,10 +1,15 @@
 import requests
 from django.conf import settings
 from constance import config
+import logging
+
+logger = logging.getLogger("app")
 
 
 def post_door_swipe_to_discord(name, door, status):
     if config.ENABLE_DISCORD_INTEGRATION:
+        logger.debug("Posting door swipe to Discord!")
+
         url = config.DISCORD_DOOR_WEBHOOK
 
         json_message = {"description": "", "embeds": []}
@@ -48,6 +53,7 @@ def post_door_swipe_to_discord(name, door, status):
 
 def post_interlock_swipe_to_discord(name, interlock, type, time=None):
     if config.ENABLE_DISCORD_INTEGRATION:
+        logger.debug("Posting interlock swipe to Discord!")
         url = config.DISCORD_INTERLOCK_WEBHOOK
 
         json_message = {"description": "", "embeds": []}
@@ -120,6 +126,7 @@ def post_interlock_swipe_to_discord(name, interlock, type, time=None):
 
 def post_kiosk_swipe_to_discord(name, sign_in):
     if config.ENABLE_DISCORD_INTEGRATION:
+        logger.debug("Posting kiosk swipe to Discord!")
         url = config.DISCORD_DOOR_WEBHOOK
 
         json_message = {"description": "", "embeds": []}
