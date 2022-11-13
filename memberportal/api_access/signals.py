@@ -12,7 +12,6 @@ User = auth.get_user_model()
 
 @receiver(pre_save, sender=Doors)
 def save_or_create_door(sender, instance, **kwargs):
-    print("door signal")
     created = instance.pk is None
     door_all_members_changed = False
 
@@ -21,10 +20,6 @@ def save_or_create_door(sender, instance, **kwargs):
         door_all_members_changed = (
             instance.all_members != Doors.objects.get(id=instance.id).all_members
         )
-
-    print("instance all members", instance.all_members)
-    print("created ", created)
-    print("has changed", door_all_members_changed)
 
     # if the door has all_members set, and it is new or all_members has changed, reset permissions for it
     if instance.all_members and (created or door_all_members_changed):

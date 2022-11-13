@@ -15,7 +15,7 @@
         class="bg-accent text-white"
       >
         <q-tab name="profile" :label="$t('menuLink.profile')" />
-        <q-tab name="stats" :label="$t('adminTools.stats')" />
+        <q-tab name="stats" :label="$t('adminTools.swipeStats')" />
       </q-tabs>
       <q-separator />
       <q-tab-panels v-model="tab" animated>
@@ -71,6 +71,22 @@
                   </template>
                 </q-input>
 
+                <q-input
+                  v-model="device.serialNumber"
+                  outlined
+                  :label="$t('form.serialNumber')"
+                  :debounce="debounceLength"
+                  @update:model-value="saveChange('serialNumber')"
+                >
+                  <template v-slot:append>
+                    <saved-notification
+                      :success="saved.serialNumber"
+                      show-text
+                      :error="saved.error"
+                    />
+                  </template>
+                </q-input>
+
                 <div class="column">
                   <div class="row items-center">
                     <q-checkbox
@@ -97,6 +113,20 @@
                     <q-space />
                     <saved-notification
                       :success="saved.maintenanceLockout"
+                      show-text
+                      :error="saved.error"
+                    />
+                  </div>
+                  <div class="row items-center">
+                    <q-checkbox
+                      v-model="device.postDiscordOnSwipe"
+                      :label="$t('access.postDiscordOnSwipe')"
+                      :debounce="debounceLength"
+                      @update:model-value="saveChange('postDiscordOnSwipe')"
+                    />
+                    <q-space />
+                    <saved-notification
+                      :success="saved.postDiscordOnSwipe"
                       show-text
                       :error="saved.error"
                     />
@@ -145,19 +175,19 @@
                   </div>
                 </div>
 
-                <div class="row">
-                  <q-space />
-                  <q-btn
-                    :label="$t(`${deviceType}.remove`)"
-                    type="reset"
-                    color="primary"
-                    flat
-                    class="q-ml-sm"
-                    :loading="removeLoading"
-                    :disabled="removeLoading"
-                    @click="removeDevice"
-                  />
-                </div>
+                <!--                <div class="row">-->
+                <!--                  <q-space />-->
+                <!--                  <q-btn-->
+                <!--                    :label="$t(`${deviceType}.remove`)"-->
+                <!--                    type="reset"-->
+                <!--                    color="primary"-->
+                <!--                    flat-->
+                <!--                    class="q-ml-sm"-->
+                <!--                    :loading="removeLoading"-->
+                <!--                    :disabled="removeLoading"-->
+                <!--                    @click="removeDevice"-->
+                <!--                  />-->
+                <!--                </div>-->
               </div>
             </q-form>
           </q-card-section>
@@ -248,21 +278,27 @@ export default {
         name: false,
         description: false,
         ipAddress: false,
+        serialNumber: false,
         defaultAccess: false,
         maintenanceLockout: false,
         playThemeOnSwipe: false,
+        postDiscordOnSwipe: false,
         exemptFromSignin: false,
         hiddenToMembers: false,
+        reportOnlineStatus: false,
       },
       device: {
         name: "",
         description: "",
         ipAddress: "",
+        serialNumber: "",
         defaultAccess: null,
         maintenanceLockout: null,
         playThemeOnSwipe: null,
+        postDiscordOnSwipe: null,
         exemptFromSignin: null,
         hiddenToMembers: null,
+        reportOnlineStatus: null,
         usage: null,
         stats: [],
       },
@@ -284,33 +320,33 @@ export default {
     initForm() {
       this.device = this.currentDevice;
     },
-    removeDevice() {
-      this.$q
-        .dialog({
-          title: this.$t("confirmRemove"),
-          ok: "Ok",
-          cancel: "Cancel",
-        })
-        .onOk(() => {
-          this.removeLoading = true;
-          this.$axios
-            .delete(`/api/admin/${this.deviceType}/${this.deviceId}/`)
-            .then(() => {
-              this.$router.push({ name: "devices" });
-            })
-            .catch((error) => {
-              this.removeLoading = true;
-              this.$q.dialog({
-                title: this.$t("error.error"),
-                message: this.$t("error.requestFailed"),
-              });
-              throw error;
-            })
-            .finally(() => {
-              this.removeLoading = false;
-            });
-        });
-    },
+    // removeDevice() {
+    //   this.$q
+    //     .dialog({
+    //       title: this.$t("confirmRemove"),
+    //       ok: "Ok",
+    //       cancel: "Cancel",
+    //     })
+    //     .onOk(() => {
+    //       this.removeLoading = true;
+    //       this.$axios
+    //         .delete(`/api/admin/${this.deviceType}/${this.deviceId}/`)
+    //         .then(() => {
+    //           this.$router.push({ name: "devices" });
+    //         })
+    //         .catch((error) => {
+    //           this.removeLoading = true;
+    //           this.$q.dialog({
+    //             title: this.$t("error.error"),
+    //             message: this.$t("error.requestFailed"),
+    //           });
+    //           throw error;
+    //         })
+    //         .finally(() => {
+    //           this.removeLoading = false;
+    //         });
+    //     });
+    // },
     saveChange(field) {
       this.$refs.formRef.validate(false).then(() => {
         this.$refs.formRef.validate(false).then((result) => {

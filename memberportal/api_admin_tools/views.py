@@ -167,11 +167,13 @@ class Doors(APIView):
                 "name": door.name,
                 "description": door.description,
                 "ipAddress": door.ip_address,
+                "serialNumber": door.serial_number,
                 "lastSeen": door.last_seen,
                 "offline": door.get_unavailable(),
                 "defaultAccess": door.all_members,
                 "maintenanceLockout": door.locked_out,
                 "playThemeOnSwipe": door.play_theme,
+                "postDiscordOnSwipe": door.post_to_discord,
                 "exemptFromSignin": door.exempt_signin,
                 "hiddenToMembers": door.hidden,
                 "usage": models.DoorLog.objects.filter(door_id=door.id).count(),
@@ -188,10 +190,12 @@ class Doors(APIView):
         door.name = data.get("name")
         door.description = data.get("description")
         door.ip_address = data.get("ipAddress")
+        door.serial_number = data.get("serialNumber")
 
         door.all_members = data.get("defaultAccess")
         door.locked_out = data.get("maintenanceLockout")
         door.play_theme = data.get("playThemeOnSwipe")
+        door.post_to_discord = data.get("postDiscordOnSwipe")
         door.exempt_signin = data.get("exemptFromSignin")
         door.hidden = data.get("hiddenToMembers")
 

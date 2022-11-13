@@ -31,6 +31,7 @@ class AccessControlledDevice(models.Model):
     all_members = models.BooleanField("Members have access by default", default=False)
     locked_out = models.BooleanField("Maintenance lockout enabled", default=False)
     play_theme = models.BooleanField("Play theme on door swipe", default=False)
+    post_to_discord = models.BooleanField("Post to discord on door swipe", default=True)
     exempt_signin = models.BooleanField(
         "Exempt this device from requiring a sign in", default=False
     )

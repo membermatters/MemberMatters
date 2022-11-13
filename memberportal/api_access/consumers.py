@@ -6,7 +6,7 @@ import logging
 import datetime
 
 from access.models import Doors
-from access.views import post_door_swipe_to_discord
+from services.discord import post_door_swipe_to_discord
 from profile.models import Profile
 from services import sms
 
@@ -116,18 +116,20 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
                 profile = Profile.objects.get(rfid=card_id)
                 self.door.log_access(profile.user.id)
 
-                post_door_swipe_to_discord(
-                    profile.get_full_name(), self.door.name, True
-                )
+                if self.door.post_to_discord:
+                    post_door_swipe_to_discord(
+                        profile.get_full_name(), self.door.name, True
+                    )
 
             elif content.get("command") == "log_access_denied":
                 card_id = content.get("card_id")
                 profile = Profile.objects.get(rfid=card_id)
                 self.door.log_access(profile.user.id, success=False)
 
-                post_door_swipe_to_discord(
-                    profile.get_full_name(), self.door.name, False
-                )
+                if self.door.post_to_discord:
+                    post_door_swipe_to_discord(
+                        profile.get_full_name(), self.door.name, False
+                    )
                 sms_message = sms.SMS()
                 sms_message.send_inactive_swipe_alert(profile.phone)
 
