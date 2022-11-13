@@ -319,7 +319,7 @@ CONSTANCE_CONFIG = {
         "An optional footer to append to all SMS messages (such as 'from xyz org.'",
     ),
     "SMS_MESSAGES": (
-        '{"inactive_swipe": "Hi! Your swipe was just declined due to inactive membership. Please contact us if you need assistance.",             "deactivated_access": "Hi! Your site access was just turned off. Please check your email and contact us if you need assistance.",             "activated_access": "Hi! Your site access was just turned on. Please make sure you stay up to date with our policies and rules by visiting our website."}',
+        '{"inactive_swipe": "Hi! Your swipe was just declined due to inactive membership. Please contact us if you need assistance.",             "deactivated_access": "Hi! Your site access was just turned off. Please check your email and contact us if you need assistance.",             "activated_access": "Hi! Your site access was just turned on. Please make sure you stay up to date with our policies and rules by visiting our website.",             "locked_out_swipe": "Hi! Your swipe was just declined due to a temporary maintenance lockout. Please contact us if you need assistance."}',
         "The SMS messages to send when a user attempts to swipe with an inactive card.",
     ),
 }

@@ -63,7 +63,16 @@ class SMS:
         logger.info("Sending inactive swipe SMS.")
         message = self.sms_messages.get(
             "inactive_swipe",
-            "Hi! Your swipe was just declined due to inactive membership."
+            "Hi! Your swipe was just declined."
+            " Please contact us if you need assistance.",
+        )
+        self._send(to_number, message)
+
+    def send_locked_out_swipe_alert(self, to_number):
+        logger.info("Sending locked out swipe SMS.")
+        message = self.sms_messages.get(
+            "locked_out_swipe",
+            "Hi! Your swipe was just declined due to a temporary maintenance lockout."
             " Please contact us if you need assistance.",
         )
         self._send(to_number, message)

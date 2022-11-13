@@ -17,7 +17,7 @@ def post_door_swipe_to_discord(name, door, status):
         if status is True:
             json_message["embeds"].append(
                 {
-                    "description": ":unlock: {} just **successfully** swiped at {} door.".format(
+                    "description": ":unlock: {} just **successfully** swiped at {}.".format(
                         name, door
                     ),
                     "color": 5025616,
@@ -27,16 +27,25 @@ def post_door_swipe_to_discord(name, door, status):
         elif status == "not_signed_in":
             json_message["embeds"].append(
                 {
-                    "description": ":lock: {} swiped at {} door but was rejected because they "
+                    "description": ":x: {} swiped at {} but was rejected because they "
                     "aren't signed into site.".format(name, door),
                     "color": 5025616,
+                }
+            )
+
+        elif status == "maintenance_lock_out":
+            json_message["embeds"].append(
+                {
+                    "description": ":x: {} tried to access the {} but it is currently under a "
+                    "maintenance lockout".format(name, door),
+                    "color": 16007990,
                 }
             )
 
         else:
             json_message["embeds"].append(
                 {
-                    "description": f"{name} just swiped at {door} door but was **rejected**. You "
+                    "description": f":x: {name} just swiped at {door} but was **rejected**. You "
                     f"can check your"
                     f" access [here]({config.SITE_URL}/account/access/).",
                     "color": 16007990,

@@ -15,10 +15,11 @@ logger = logging.getLogger("app")
 
 def get_door_tags(door_id, return_hash=False):
     door = Doors.objects.get(pk=door_id)
+    profiles = Profile.objects.all()
 
     authorised_tags = list()
 
-    for profile in Profile.objects.all():
+    for profile in profiles:
         if door in profile.doors.all() and profile.state == "active":
             if profile.rfid and (
                 profile.is_signed_into_site() or door.exempt_signin is True
@@ -133,6 +134,18 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
                 sms_message = sms.SMS()
                 sms_message.send_inactive_swipe_alert(profile.phone)
 
+            elif content.get("command") == "log_access_locked_out":
+                card_id = content.get("card_id")
+                profile = Profile.objects.get(rfid=card_id)
+                self.door.log_access(profile.user.id, success=False)
+
+                if self.door.post_to_discord:
+                    post_door_swipe_to_discord(
+                        profile.get_full_name(), self.door.name, "maintenance_lock_out"
+                    )
+                sms_message = sms.SMS()
+                sms_message.send_locked_out_swipe_alert(profile.phone)
+
             else:
                 logger.info("Received an unknown packet from " + self.door_id)
 
@@ -161,6 +174,14 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
         # Handles the "device_reboot" event when it's sent to us.
         logger.info("Rebooting door for " + self.door_id)
         self.send_json({"command": "reboot"})
+
+    def update_door_locked_out(self, event=None):
+        # Handles the "update_door_locked_out" event when it's sent to us.
+        logger.info("Updating update_door_locked_out for door " + self.door_id)
+        self.update_door_device()
+        self.send_json(
+            {"command": "update_door_locked_out", "locked_out": self.door.locked_out}
+        )
 
     def update_door_device(self, event=None):
         self.door = Doors.objects.get(serial_number=self.door_id)
