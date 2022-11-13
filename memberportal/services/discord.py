@@ -37,7 +37,7 @@ def post_door_swipe_to_discord(name, door, status):
             json_message["embeds"].append(
                 {
                     "description": ":x: {} tried to access the {} but it is currently under a "
-                    "maintenance lockout".format(name, door),
+                    "maintenance lockout.".format(name, door),
                     "color": 16007990,
                 }
             )

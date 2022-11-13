@@ -57,6 +57,7 @@
 
                 <q-input
                   v-model="device.ipAddress"
+                  disable
                   outlined
                   :label="$t('form.ipAddress')"
                   :debounce="debounceLength"

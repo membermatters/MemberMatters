@@ -181,7 +181,8 @@ export default {
     interlock: "Interlock",
     interlocks: "Interlocks",
     noInterlocks: "There are no interlocks in the system.",
-    defaultAccess: "All members have access",
+    defaultAccess:
+      "All members have access (overrides all permissions on toggle)",
     maintenanceLockout: "Maintenance lockout is enabled",
     playTheme: "Play theme on swipe",
     postDiscordOnSwipe: "Post to Discord on swipe",
