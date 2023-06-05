@@ -4,8 +4,8 @@
   </q-page>
 </template>
 
-<script>
-import MembersList from "@components/AdminTools/MembersList";
+<script lang="ts">
+import MembersList from "@components/AdminTools/MembersList.vue";
 
 export default {
   name: "MembersPage",

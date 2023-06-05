@@ -63,6 +63,7 @@ export default {
     loginFailed: "Your username or password was incorrect.",
     accountAlreadyExists: "Sorry, that email address has already been used.",
     screenNameAlreadyExists: "Sorry, that screen name has already been used.",
+    downloadFailed: "Failed to download the file.",
     requestFailed:
       "Sorry, we're having trouble performing that action. Please try again later.",
     pageNotFound: "Page not found",
@@ -392,7 +393,7 @@ export default {
     emailAddresses: "Copy Email List",
     copyEmailListSuccess: "Copied {count} Email Addresses!",
     copyEmailListSuccessDescription:
-      "Simply paste them into your email client to use them. We recommend using the BCC field to protect your members privacy.",
+      "Simply paste them into your email client to use them. We recommend using the BCC field to protect your members privacy. Excluded {excludedCount} members who you have opted out of email exports.",
     exportCsv: "Export CSV",
     exportOptions: "Export Options",
     filterOptions: "Filter",

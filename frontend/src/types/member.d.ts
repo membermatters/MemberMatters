@@ -16,6 +16,7 @@ interface MemberProfile {
   admin: boolean;
   superuser: boolean;
   email: string;
+  excludeFromEmailExport: boolean;
   registrationDate: string;
   lastUpdatedProfile: string;
   screenName: string;

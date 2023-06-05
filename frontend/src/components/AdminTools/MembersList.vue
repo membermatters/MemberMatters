@@ -145,6 +145,7 @@ export default {
     },
     memberEmails() {
       return this.displayMemberList
+        .filter((member: MemberProfile) => !member.excludeFromEmailExport)
         .map((member: MemberProfile) => member.email)
         .join(",");
     },
@@ -240,7 +241,7 @@ export default {
 
           if (status !== true) {
             this.$q.notify({
-              message: "Browser denied file download...",
+              message: this.$t("error.downloadFailed"),
               color: "negative",
               icon: "warning",
             });
@@ -256,7 +257,13 @@ export default {
             title: this.$t("adminTools.copyEmailListSuccess", {
               count: this.displayMemberList.length,
             }),
-            message: this.$t("adminTools.copyEmailListSuccessDescription"),
+            message: this.$t("adminTools.copyEmailListSuccessDescription", {
+              excludedCount:
+                this.displayMemberList.length -
+                this.displayMemberList.filter(
+                  (member: MemberProfile) => !member.excludeFromEmailExport
+                ).length,
+            }),
           });
         })
         .catch(() => {

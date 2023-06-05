@@ -471,6 +471,7 @@ class Profile(models.Model):
             "admin": self.user.is_staff,
             "superuser": self.user.is_admin,
             "email": self.user.email,
+            "excludeFromEmailExport": self.exclude_from_email_export,
             "registrationDate": self.created.strftime("%m/%d/%Y, %H:%M:%S"),
             "lastUpdatedProfile": self.modified.strftime("%m/%d/%Y, %H:%M:%S"),
             "screenName": self.screen_name,
