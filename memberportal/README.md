@@ -25,10 +25,10 @@ deactivate
 
  
 ## macOS
-You should install and use virtualenv on macOS.
+You should install and use python3 with virtualenv on macOS. You may also need to install `mysql` via brew if you don't have it already.
  
 ```bash
-brew install python3
+brew install python3 mysql
 pip3 install virtualenv
 virtualenv venv 
 source venv/bin/activate
@@ -48,14 +48,9 @@ If you're running macOS Big Sur (and/or an Apple Silicon Mac), you may need to r
 CFLAGS='-I/usr/local/opt/zlib/include -L/usr/local/opt/zlib/lib' pip3 install -r requirements.txt
 ```
 
-You may need to install `mysql` if you don't have it already. It's required when installing the `mysqlclient` Python dependency:
-```
- brew install mysql
- ```
-
 ## Windows
 Please follow the instructions below to setup dev environment in Windows (tested in Windows 7 & 10).
-* Download & install Python 3.6+ from [here](https://www.python.org/downloads/)
+* Download & install Python 3.7+ from [here](https://www.python.org/downloads/)
 * CD into the cloned repository.
 * Assuming `pip` and `virtualenv` is already installed as part of the package, execute: `py -3 -m venv venv` 
 * Activate the venv by running: `venv\Scripts\activate`
@@ -69,7 +64,7 @@ development server. First we need to make sure we have a local sqlite database w
 You probably won't be able to create a log file and database in the default location. You should set a couple of 
 environment variables like below to create them locally when developing:
 
-To run the Django dev server:
+To run the Django database migrations:
 
 ```bash
 PORTAL_LOG_LOCATION=errors.log PORTAL_DB_LOCATION=db.sqlite3 python3 manage.py migrate
@@ -141,4 +136,4 @@ unless you have a good reason.
 # Notes
 You will need to re-run the database migration every time the db models change. You may see random database related errors such as column does not exist if you forget to do this. You can do that by running:
 
-`python3 manage.py migrate`
+`PORTAL_LOG_LOCATION=errors.log PORTAL_DB_LOCATION=db.sqlite3 python3 manage.py migrate`

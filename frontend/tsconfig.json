@@ -6,12 +6,8 @@
     "moduleResolution": "node",
     "baseUrl": "./src",
     "paths": {
-      "@components/*": [
-        "components/*"
-      ],
-      "@icons": [
-        "icons/"
-      ]
+      "@components/*": ["components/*"],
+      "@icons": ["icons/"]
     },
     "allowSyntheticDefaultImports": true
   }

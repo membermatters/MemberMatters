@@ -1,13 +1,5 @@
 <template>
   <q-page class="column flex items-center justify-center q-pt-xl">
-    <template>
-      <q-img
-        contain
-        :src="images.siteLogo"
-        class="header-image-mobile q-my-lg"
-      />
-    </template>
-
     <login-card :reset-token="resetToken" />
 
     <h4 v-if="$q.platform.is.electron" class="q-my-sm">OR</h4>

@@ -20,6 +20,7 @@ const menuRoutes = mainMenu.map((menuItem) => {
           kiosk: child.kiosk,
           backButton: child.backButton,
           memberOnly: child.memberOnly,
+          bgGradient: child.bgGradient,
         },
       });
     });
@@ -38,6 +39,7 @@ const menuRoutes = mainMenu.map((menuItem) => {
         kiosk: menuItem.kiosk,
         backButton: menuItem.backButton,
         memberOnly: menuItem.memberOnly,
+        bgGradient: menuItem.bgGradient,
       },
     };
   }
@@ -56,6 +58,7 @@ const menuRoutes = mainMenu.map((menuItem) => {
       kiosk: menuItem.kiosk,
       backButton: menuItem.backButton,
       memberOnly: menuItem.memberOnly,
+      bgGradient: menuItem.bgGradient,
     },
   };
 });

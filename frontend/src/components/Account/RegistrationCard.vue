@@ -111,7 +111,7 @@
           </q-banner>
 
           <q-banner v-if="errorExists" class="bg-negative text-white">
-            {{ $t(errorExists) }}
+            {{ $t(errorExists as string) }}
           </q-banner>
 
           <p class="text-caption">
@@ -140,7 +140,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { mapGetters } from "vuex";
 import formMixin from "../../mixins/formMixin";
 import icons from "../../icons";
@@ -152,7 +152,7 @@ export default {
     return {
       failed: false,
       error: false,
-      errorExists: false,
+      errorExists: false as boolean | string,
       complete: false,
       buttonLoading: false,
       isPwd: true,
@@ -179,8 +179,8 @@ export default {
   },
   methods: {
     onReset() {
-      this.email = null;
-      this.password = null;
+      this.form.email = null;
+      this.form.password = null;
     },
     onSubmit() {
       this.register();

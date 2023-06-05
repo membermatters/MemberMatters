@@ -1,7 +1,8 @@
 import { Platform, Dialog } from "quasar";
 import { i18n } from "boot/i18n";
+import { boot } from "quasar/wrappers";
 
-export default ({ router, store }) => {
+export default boot(({ router, store }) => {
   router.beforeEach((to, from, next) => {
     // if we're in kiosk mode disallow certain pages
     if (Platform.is.electron) {
@@ -59,7 +60,11 @@ export default ({ router, store }) => {
   });
 
   router.afterEach(() => {
+    // eslint-disable-next-line
+    // @ts-ignore
     if (typeof ga !== "undefined") {
+      // eslint-disable-next-line
+      // @ts-ignore
       ga("send", "pageview");
     }
   });
@@ -69,4 +74,4 @@ export default ({ router, store }) => {
       window.location.reload();
     }
   });
-};
+});

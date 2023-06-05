@@ -1,28 +1,33 @@
 <template>
-  <div class="fixed-center text-center">
-    <q-icon
-      :name="icons.success"
-      size="xl"
-      color="success"
+  <q-card class="fixed-center text-center q-pa-lg" style="max-width: 500px">
+    <q-img
+      v-if="images.siteLogo"
+      fit="contain"
+      :src="images.siteLogo"
+      style="max-height: 40px; cursor: pointer"
+      class="q-mt-md"
     />
 
-    <br>
-    <br>
+    <q-icon v-else :name="icons.success" size="xl" color="success" />
+
+    <br />
+    <br />
 
     <p class="text-body1 text-faded">
-      {{ $t('registrationCard.registrationComplete') }}
+      {{ $t("registrationCard.registrationComplete") }}
     </p>
     <q-btn
       color="primary-btn"
-      style="width:200px;"
+      style="width: 200px"
       to="/"
-      label="Go Home"
+      :label="$t('button.continue')"
     />
-  </div>
+  </q-card>
 </template>
 
-<script>
+<script lang="ts">
 import icons from "@icons";
+import { mapGetters } from "vuex";
 
 export default {
   name: "RegistrationSuccess",
@@ -30,6 +35,7 @@ export default {
     icons() {
       return icons;
     },
+    ...mapGetters("config", ["images"]),
   },
 };
 </script>

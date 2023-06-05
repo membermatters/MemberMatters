@@ -9,6 +9,7 @@ const PageAndRouteConfig = [
     kiosk: true, // whether this page should show up in kiosk mode
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
     component: () => import("pages/Login"), // which component to load as the page
+    bgGradient: true,
   },
   {
     icon: icons.signin, // specify the icon to use
@@ -18,6 +19,7 @@ const PageAndRouteConfig = [
     kiosk: false, // whether this page should show up in kiosk mode
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
     component: () => import("pages/RegisterSuccess"), // which component to load as the page
+    bgGradient: true,
   },
   {
     icon: icons.dashboard,
@@ -214,6 +216,7 @@ const PageAndRouteConfig = [
     loggedIn: true,
     kiosk: true,
     component: () => import("pages/Logout"),
+    bgGradient: true,
   },
   {
     icon: icons.signin,
@@ -222,6 +225,7 @@ const PageAndRouteConfig = [
     loggedIn: false,
     kiosk: true,
     component: () => import("pages/Login"),
+    bgGradient: true,
   },
   {
     icon: icons.register,
@@ -230,6 +234,7 @@ const PageAndRouteConfig = [
     loggedIn: false,
     kiosk: true,
     component: () => import("pages/Registration"),
+    bgGradient: true,
   },
 
   // These are endpoints that handle specific tasks and are not directly accessed.

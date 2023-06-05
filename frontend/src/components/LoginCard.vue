@@ -12,6 +12,14 @@
 
     <template v-else>
       <q-card v-if="!resetToken">
+        <q-img
+          v-if="images.siteLogo"
+          fit="contain"
+          :src="images.siteLogo"
+          style="max-height: 40px; cursor: pointer"
+          class="q-mt-md"
+        />
+
         <h6 class="q-ma-none q-pa-md">
           {{ $t("loginCard.loginToContinue") }}
         </h6>
@@ -21,7 +29,7 @@
             <q-input
               id="username-field"
               v-model="email"
-              ref="focusInput"
+              autofocus
               filled
               autocomplete="on"
               type="email"
@@ -102,14 +110,13 @@
             <q-input
               v-model="reset.password"
               id="new-password-field"
-              ref="focusInput"
               filled
               autocomplete="on"
               autofocus
               type="password"
               label="Your new password"
               lazy-rules
-              :disable="this.reset.formDisabled"
+              :disable="reset.formDisabled"
               :rules="[
                 (val) =>
                   validateNotEmpty(val) || $t('validation.invalidPassword'),
@@ -124,31 +131,24 @@
               type="password"
               label="Confirm password"
               lazy-rules
-              :disable="this.reset.formDisabled"
+              :disable="reset.formDisabled"
               :rules="[
                 (val) =>
                   validateNotEmpty(val) || $t('validation.invalidPassword'),
                 (val) =>
-                  val === this.reset.password ||
-                  $t('validation.passwordNotMatch'),
+                  val === reset.password || $t('validation.passwordNotMatch'),
               ]"
             />
 
-            <q-banner
-              v-if="this.reset.confirmed"
-              class="bg-positive text-white"
-            >
+            <q-banner v-if="reset.confirmed" class="bg-positive text-white">
               {{ $t("loginCard.resetConfirm") }}
             </q-banner>
 
-            <q-banner
-              v-if="this.reset.invalidToken"
-              class="bg-negative text-white"
-            >
+            <q-banner v-if="reset.invalidToken" class="bg-negative text-white">
               {{ $t("loginCard.resetInvalid") }}
             </q-banner>
 
-            <q-banner v-if="this.reset.failed" class="bg-negative text-white">
+            <q-banner v-if="reset.failed" class="bg-negative text-white">
               {{ $t("loginCard.resetNotConfirm") }}
             </q-banner>
 
@@ -165,8 +165,8 @@
                 :label="$t('button.submit')"
                 type="submit"
                 color="primary-btn"
-                :disable="this.reset.formDisabled"
-                :loading="this.reset.loading"
+                :disable="reset.formDisabled"
+                :loading="reset.loading"
               />
             </div>
           </q-form>
@@ -206,7 +206,7 @@
               v-close-popup
               flat
               :label="
-                this.reset.disableResetSubmitButton
+                reset.disableResetSubmitButton
                   ? $t('button.close')
                   : $t('button.cancel')
               "
@@ -215,7 +215,7 @@
               flat
               :label="$t('button.submit')"
               :loading="reset.loading"
-              :disable="this.reset.disableResetSubmitButton"
+              :disable="reset.disableResetSubmitButton"
               @click="resetPassword()"
             />
           </q-card-actions>
@@ -225,11 +225,12 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { mapMutations, mapGetters, mapActions } from "vuex";
 import { Loading } from "quasar";
 import formMixin from "../mixins/formMixin";
 import { SplashScreen } from "@capacitor/splash-screen";
+import { LocationQuery } from "vue-router";
 
 export default {
   name: "LoginCard",
@@ -247,16 +248,16 @@ export default {
   data() {
     return {
       showCard: false,
-      email: "",
-      password: "",
+      email: "" as string | null,
+      password: "" as string | null,
       loginFailed: false,
       loginError: false,
       loginComplete: false,
       unverifiedEmail: false,
       buttonLoading: false,
-      disableResetSubmitButton: false,
-      discourseSsoData: null,
+      discourseSsoData: null as LocationQuery | null,
       reset: {
+        email: "" as string | null,
         formDisabled: true,
         success: false,
         failed: false,
@@ -266,6 +267,7 @@ export default {
         password2: "",
         confirmed: false,
         invalidToken: false,
+        disableResetSubmitButton: false,
       },
     };
   },
@@ -284,10 +286,6 @@ export default {
     } else {
       await SplashScreen.hide();
       this.showCard = true;
-      setTimeout(() => {
-        // if we're not in electron, auto focus the first field
-        if (!this.$q.platform.is.electron) this.$refs.focusInput.focus();
-      }, 0);
     }
 
     if (this.resetToken) {
@@ -325,7 +323,7 @@ export default {
       this.$emit("login-complete");
       if (this.$route.query.nextUrl) {
         this.setLoggedIn(true);
-        this.$router.push(this.$route.query.nextUrl);
+        this.$router.push(this.$route.query.nextUrl as string);
       } else if (!this.noRedirect && delay) {
         setTimeout(() => {
           this.setLoggedIn(true);
@@ -472,7 +470,7 @@ export default {
      * @returns {Promise<unknown>}
      */
     validatePasswordReset() {
-      return new Promise((resolve, reject) => {
+      return new Promise<void>((resolve, reject) => {
         this.$axios
           .post("/api/password/reset/", {
             token: this.resetToken,
@@ -528,6 +526,7 @@ export default {
   },
   computed: {
     ...mapGetters("profile", ["loggedIn"]),
+    ...mapGetters("config", ["siteName", "images", "features"]),
   },
 };
 </script>

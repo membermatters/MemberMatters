@@ -95,8 +95,8 @@ export default {
   about: {
     title: "About MemberMatters",
     description:
-      "This is an open source, full featured membership portal. It is designed for " +
-      "managing makerspaces. It's primary author is Jaimyn Mayer.",
+      "This is an open source membership portal for managing makerspaces and community " +
+      "groups. It was originally created by Jaimyn Mayer but is now used by several spaces.",
     linkText: "on GitHub",
   },
   button: {

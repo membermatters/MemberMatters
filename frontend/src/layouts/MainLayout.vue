@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="lHh Lpr lFf" :class="bgGradient ? 'bg-page-gradient' : ''">
     <q-header v-if="loggedIn || ($q.platform.is.mobile && loggedIn)" elevated>
       <q-banner
         v-if="features.siteBanner"
@@ -192,6 +192,9 @@ export default defineComponent({
     ...mapGetters("profile", ["loggedIn", "profile"]),
     ...mapGetters("config", ["siteName", "images", "features"]),
     ...mapGetters("rfid", ["connected"]),
+    bgGradient() {
+      return this.$route.meta.bgGradient;
+    },
     icons() {
       return icons;
     },

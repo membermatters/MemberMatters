@@ -12,8 +12,8 @@
   </q-page>
 </template>
 
-<script>
-import RegistrationCard from "components/Account/RegistrationCard";
+<script lang="ts">
+import RegistrationCard from "components/Account/RegistrationCard.vue";
 import { mapGetters } from "vuex";
 
 export default {
