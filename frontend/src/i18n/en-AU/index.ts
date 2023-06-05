@@ -74,6 +74,9 @@ export default {
       "There was an error completing that action as Postmark is not configured correctly.",
     stripeNotConfiguredFeature:
       "Sorry, but this organisation has not configured Stripe so you are unable to use this feature.",
+    copyToClipboard: "There was a problem copying to your clipboard.",
+    copyToClipboardDescription:
+      "There was a problem copying to your clipboard. Please try again or export a csv.",
     400: " Sorry, there was an error with your request. (Error 400)",
     401: " Sorry, you need to be logged in to access this page. (Error 401)",
     403: " Sorry, you don't have permission to access this page. (Error 403)",
@@ -386,7 +389,10 @@ export default {
     "to date.",
   progress: "Progress: {percent}%",
   adminTools: {
-    emailAddresses: "Export Email List",
+    emailAddresses: "Copy Email List",
+    copyEmailListSuccess: "Copied {count} Email Addresses!",
+    copyEmailListSuccessDescription:
+      "Simply paste them into your email client to use them. We recommend using the BCC field to protect your members privacy.",
     exportCsv: "Export CSV",
     exportOptions: "Export Options",
     filterOptions: "Filter",

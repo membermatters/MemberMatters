@@ -37,7 +37,11 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item v-close-popup clickable @click="exportEmails">
+                  <q-item
+                    v-close-popup
+                    clickable
+                    @click="copyEmailsToClipboard"
+                  >
                     <q-item-section>
                       <q-item-label>{{
                         $t("adminTools.emailAddresses")
@@ -73,7 +77,7 @@
               color="primary"
               :icon="icons.email"
               :label="$t('adminTools.emailAddresses')"
-              @click="exportEmails"
+              @click="copyEmailsToClipboard"
             />
           </template>
         </div>
@@ -107,7 +111,8 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { copyToClipboard } from "quasar";
 import icons from "@icons";
 import formatMixin from "@mixins/formatMixin";
 import { exportFile } from "quasar";
@@ -119,8 +124,6 @@ export default {
   mixins: [formatMixin],
   data() {
     return {
-      manageMemberModal: false,
-      manageMemberModalMember: null,
       members: [],
       filter: "",
       memberState: "Active",
@@ -136,10 +139,14 @@ export default {
     ...mapGetters("config", ["features"]),
     displayMemberList() {
       if (this.memberState === "All") return this.members;
-      return this.members.filter((member) => member.state === this.memberState);
+      return this.members.filter(
+        (member: MemberProfile) => member.state === this.memberState
+      );
     },
     memberEmails() {
-      return this.displayMemberList.map((member) => member.email).join(",");
+      return this.displayMemberList
+        .map((member: MemberProfile) => member.email)
+        .join(",");
     },
     icons() {
       return icons;
@@ -158,9 +165,10 @@ export default {
         {
           name: "name",
           label: this.$t("tableHeading.name"),
-          field: (row) => row.name.full,
+          field: (row: MemberProfile) => row.name.full,
           sortable: true,
-          format: (val, row) => `${val} (${row.screenName})`,
+          format: (val: string, row: MemberProfile) =>
+            `${val} (${row.screenName})`,
         },
         {
           name: "rfid",
@@ -204,14 +212,6 @@ export default {
     this.getMembers();
   },
   methods: {
-    resetManageMemberModal() {
-      this.manageMemberModal = false;
-      this.manageMemberModalMember = null;
-    },
-    openManageMemberModal(member) {
-      this.manageMemberModal = true;
-      this.manageMemberModalMember = member;
-    },
     getMembers() {
       this.loading = true;
       this.$axios
@@ -248,12 +248,24 @@ export default {
         }
       );
     },
-    exportEmails() {
-      this.$q.dialog({
-        dark: true,
-        title: `${this.displayMemberList.length} Email Addresses`,
-        message: this.memberEmails,
-      });
+    copyEmailsToClipboard() {
+      copyToClipboard(this.memberEmails)
+        .then(() => {
+          this.$q.dialog({
+            dark: true,
+            title: this.$t("adminTools.copyEmailListSuccess", {
+              count: this.displayMemberList.length,
+            }),
+            message: this.$t("adminTools.copyEmailListSuccessDescription"),
+          });
+        })
+        .catch(() => {
+          this.$q.dialog({
+            dark: true,
+            title: this.$t("error.copyToClipboard"),
+            message: this.$t("error.copyToClipboardDescription"),
+          });
+        });
     },
   },
 };
