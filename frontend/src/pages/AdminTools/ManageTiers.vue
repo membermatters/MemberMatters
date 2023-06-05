@@ -2,7 +2,7 @@
   <q-page class="column flex content-center justify-start">
     <q-banner
       v-if="!features.enableMembershipPayments"
-      class="bg-warning text-dark"
+      class="bg-warning text-dark q-mb-md"
     >
       {{ $t("tiers.disabledFeature") }}
     </q-banner>

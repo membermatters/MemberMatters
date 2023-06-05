@@ -1,23 +1,17 @@
 {
-  "name": "membermatters",
-  "version": "3.3.0",
-  "devDependencies": {
-    "eslint-webpack-plugin": "^3.1.1",
-    "husky": "^6.0.0",
-    "lint-staged": "^11.0.0"
-  },
-  "scripts": {
-    "prepare": "husky install",
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.{js,ts,vue}": [
-      "echo Linting Frontend",
-      "npm run lint:precommit --prefix frontend -- "
-    ],
-    "*.py": [
-      "echo Linting Backend",
-      "black -- "
-    ]
-  }
+    "name": "membermatters",
+    "version": "3.3.0",
+    "devDependencies": {
+        "eslint-webpack-plugin": "^3.1.1",
+        "husky": "^6.0.0",
+        "lint-staged": "^11.0.0"
+    },
+    "scripts": {"prepare": "husky install", "pre-commit": "lint-staged"},
+    "lint-staged": {
+        "*.{js,ts,vue}": [
+            "echo Linting Frontend",
+            "npm run lint:precommit --prefix frontend -- "
+        ],
+        "*.py": ["echo Linting Backend", "black -- "]
+    }
 }

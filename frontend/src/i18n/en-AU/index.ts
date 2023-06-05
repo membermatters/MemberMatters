@@ -534,7 +534,7 @@ export default {
   },
   tiers: {
     disabledFeature:
-      "Warning! This feature is disabled. You can make changes but your users won't be able to use it.",
+      "WARNING: This feature is turned off. You should enable it before making any changes.",
     select: "Membership Plan",
     selectToContinue: "Select a membership plan to continue.",
     noTiers: "There are no membership plans available right now.",
