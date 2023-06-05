@@ -319,6 +319,7 @@ class Profile(models.Model):
     memberbucks_balance = models.FloatField(default=0.0)
     last_memberbucks_purchase = models.DateTimeField(default=timezone.now)
     must_update_profile = models.BooleanField(default=False)
+    exclude_from_email_export = models.BooleanField(default=False)
 
     last_seen = models.DateTimeField(default=None, blank=True, null=True)
     last_induction = models.DateTimeField(default=None, blank=True, null=True)
