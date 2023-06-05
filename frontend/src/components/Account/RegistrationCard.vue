@@ -1,7 +1,15 @@
 <template>
   <div class="q-pa-md">
     <q-card class="register-card">
-      <h6 class="q-ma-none q-pa-md">
+      <q-img
+        v-if="images.siteLogo"
+        fit="contain"
+        :src="images.siteLogo"
+        style="max-height: 40px; cursor: pointer"
+        class="q-mt-md"
+      />
+
+      <h6 class="q-ma-none q-pt-md q-px-md">
         {{ $t("registrationCard.register") }}
       </h6>
 
@@ -172,7 +180,7 @@ export default {
   },
   computed: {
     ...mapGetters("profile", ["loggedIn"]),
-    ...mapGetters("config", ["features"]),
+    ...mapGetters("config", ["features", "images"]),
     icons() {
       return icons;
     },
