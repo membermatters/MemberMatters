@@ -84,22 +84,22 @@ CONSTANCE_CONFIG = {
         "You can specify a different name for your admin group like executive or management committee.",
     ),
     "WEBCAM_PAGE_URLS": (
-        "[]",
+        """[["Example", "https://brisbanemaker.space/wp-content/uploads/2021/10/BMS-Logo-ONLY.png"]]""",
         "A JSON serialised array of URLs to pull webcam images from.",
     ),
     "HOME_PAGE_CARDS": (
         """[
             {
-                "title": "Example",
-                "description": "This is an example card with a narwhal icon!",
-                "icon": "fad fa-narwhal",
-                "url": "https://membermatters.org/",
-                "btn_text": "Click Here"
+                "title": "Example Card",
+                "description": "Tap below to see a calendar with all of our upcoming events and workshops.",
+                "icon": "mdi-calendar-multiselect",
+                "url": "https://brisbanemaker.space",
+                "btn_text": "View Calendar"
             },
             {
                 "title": "Example 2",
-                "description": "This is an example card with a unicorn icon! And it links to another page using a Vue route!",
-                "icon": "fad fa-unicorn",
+                "description": "This is an example card with an icon! And it links to another page using a Vue route!",
+                "icon": "mdi-link-variant",
                 "routerLink": {
                 "name": "reportIssue"
                 },
