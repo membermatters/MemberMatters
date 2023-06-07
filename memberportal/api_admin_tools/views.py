@@ -602,6 +602,7 @@ class MemberBillingInfo(StripeAPIView):
             "stripe_card_last_digits": member.profile.stripe_card_last_digits,
             "stripe_card_expiry": member.profile.stripe_card_expiry,
             "transactions": map(get_transaction, recent_transactions),
+            "lastPurchase": member.profile.last_memberbucks_purchase,
         }
 
         return Response(billing_info)

@@ -4,7 +4,7 @@
 
     <div class="column flex content-start justify-center">
       <q-banner
-        v-if="profile.memberStatus === 'Account only'"
+        v-if="profile.memberStatus === 'Account Only'"
         inline-actions
         rounded
         class="bg-blue text-white q-ma-md"

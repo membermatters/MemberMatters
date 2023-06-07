@@ -1,11 +1,18 @@
-enum MemberState {
+export enum MemberState {
   noob = "Needs Induction",
   active = "Active",
   inactive = "Inactive",
   accountonly = "Account Only",
 }
 
-enum MemberSubscriptionState {
+export type MemberStateStrings = "noob" | "active" | "inactive" | "accountonly";
+export type MemberStateDisplayStrings =
+  | "Needs Induction"
+  | "Active"
+  | "Inactive"
+  | "Account Only";
+
+export enum MemberSubscriptionState {
   inactive = "Inactive",
   active = "Active",
   cancelling = "Cancelling",
@@ -41,4 +48,30 @@ interface MemberProfile {
     last4: string;
   };
   subscriptionStatus: MemberSubscriptionState;
+}
+
+export enum MemberTransactionType {
+  stripe = "Stripe Top-up",
+  bank = "Bank Transfer",
+  cash = "Cash",
+  card = "Membership Card",
+  other = "Other",
+}
+
+interface MemberbucksTransaction {
+  amount: number;
+  type: MemberTransactionType;
+  description: string;
+  date: Date;
+}
+
+interface MemberBillingInfo {
+  subscription: MemberSubscription | null;
+  memberbucks: {
+    balance: number;
+    stripe_card_last_digits: string;
+    stripe_card_expiry: string;
+    transactions: MemberbucksTransaction[];
+    lastPurchase: Date;
+  };
 }

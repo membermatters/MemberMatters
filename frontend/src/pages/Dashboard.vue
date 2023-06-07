@@ -5,7 +5,7 @@
         <q-banner
           v-if="
             profile.memberStatus !== 'Active' &&
-            profile.memberStatus !== 'Account only'
+            profile.memberStatus !== 'Account Only'
           "
           inline-actions
           rounded

@@ -1,33 +1,31 @@
 <template>
   <q-page class="column flex justify-start items-center">
-
     <div class="column flex content-start justify-center">
       <q-banner
-        v-if="profile.memberStatus !== 'Active' && profile.memberStatus !== 'Account only'"
+        v-if="
+          profile.memberStatus !== 'Active' &&
+          profile.memberStatus !== 'Account Only'
+        "
         inline-actions
         rounded
         class="bg-orange text-white q-ma-md"
       >
         <template v-slot:avatar>
-          <q-icon
-            :name="icons.warning"
-          />
+          <q-icon :name="icons.warning" />
         </template>
-        {{ $t('access.inactive') }}
+        {{ $t("access.inactive") }}
       </q-banner>
 
       <q-banner
-        v-if="profile.memberStatus === 'Account only'"
+        v-if="profile.memberStatus === 'Account Only'"
         inline-actions
         rounded
         class="bg-blue text-white q-ma-md"
       >
         <template v-slot:avatar>
-          <q-icon
-            :name="icons.info"
-          />
+          <q-icon :name="icons.info" />
         </template>
-        {{ $t('paymentPlans.profileAccountOnlyWarning') }}
+        {{ $t("paymentPlans.profileAccountOnlyWarning") }}
       </q-banner>
     </div>
 
@@ -63,7 +61,7 @@ import ProfileForm from "../components/ProfileForm";
 import icons from "../icons";
 import DigitalIdCard from "../components/DigitalIdCard";
 import ChangePasswordCard from "../components/ChangePasswordCard";
-import {mapGetters} from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   name: "ProfilePage",

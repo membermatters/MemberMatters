@@ -401,7 +401,7 @@ export default {
     active: "Active",
     inactive: "Inactive",
     new: "New",
-    accountOnly: "Account only",
+    accountOnly: "Account Only",
     enableAccess: "Enable Access",
     disableAccess: "Disable Access",
     sendWelcomeEmail: "Send Welcome Email",

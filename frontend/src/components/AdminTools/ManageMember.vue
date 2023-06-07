@@ -23,6 +23,7 @@
             class="row justify-start q-pt-sm"
             :class="{ 'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs }"
           >
+            {{ selectedMember.state }}
             <q-btn
               v-if="selectedMember.state === 'Inactive'"
               class="q-mr-sm q-mb-sm"
@@ -34,7 +35,7 @@
             <q-btn
               v-else-if="
                 selectedMember.state === 'Needs Induction' ||
-                selectedMember.state === 'Account only'
+                selectedMember.state === 'Account Only'
               "
               class="q-mr-sm q-mb-sm"
               color="primary"
@@ -193,8 +194,12 @@
                 </q-input>
 
                 <q-input
-                  v-if="features?.signup?.collectVehicleRegistrationPlate"
+                  v-if="
+                    features?.signup?.collectVehicleRegistrationPlate ||
+                    profileForm.vehicleRegistrationPlate
+                  "
                   v-model="profileForm.vehicleRegistrationPlate"
+                  :disable="!features?.signup?.collectVehicleRegistrationPlate"
                   outlined
                   :debounce="debounceLength"
                   :label="$t('form.vehicleRegistrationPlate')"
@@ -243,8 +248,8 @@
                   <q-item-section>
                     <q-item-label
                       >{{
-                        selectedMember[item]
-                          ? selectedMember[item]
+                        selectedMember[item as keyof MemberProfile]
+                          ? selectedMember[item as keyof MemberProfile]
                           : $t("error.noValue")
                       }}
                     </q-item-label>
@@ -318,8 +323,8 @@
                       </template>
                       <template v-else>
                         {{
-                          selectedMember[item]
-                            ? selectedMember[item]
+                          selectedMember[item as keyof MemberProfile]
+                            ? selectedMember[item as keyof MemberProfile]
                             : $t("error.noValue")
                         }}
                       </template>
@@ -347,7 +352,7 @@
           </div>
 
           <q-table
-            :rows="this.logs.userEventLogs"
+            :rows="logs.userEventLogs"
             :columns="[
               {
                 name: 'logtype',
@@ -366,7 +371,7 @@
                 label: 'When',
                 field: 'date',
                 sortable: true,
-                format: (val) => this.formatWhen(val),
+                format: (val) => formatWhen(val),
               },
             ]"
             row-key="id"
@@ -414,7 +419,7 @@
           </div>
 
           <q-table
-            :rows="this.logs.doorLogs"
+            :rows="logs.doorLogs"
             :columns="[
               {
                 name: 'door',
@@ -433,7 +438,7 @@
                 label: 'When',
                 field: 'date',
                 sortable: true,
-                format: (val) => this.formatWhen(val),
+                format: (val) => formatWhen(val),
               },
             ]"
             row-key="id"
@@ -481,7 +486,7 @@
           </div>
 
           <q-table
-            :rows="this.logs.interlockLogs"
+            :rows="logs.interlockLogs"
             :columns="[
               {
                 name: 'interlock',
@@ -494,14 +499,14 @@
                 label: 'Session Start',
                 field: 'dateOn',
                 sortable: true,
-                format: (val) => this.formatWhen(val),
+                format: (val) => formatWhen(val),
               },
               {
                 name: 'dateOff',
                 label: 'Session End',
                 field: 'dateOff',
                 sortable: true,
-                format: (val) => this.formatWhen(val),
+                format: (val) => formatWhen(val),
               },
               {
                 name: 'sessionComplete',
@@ -563,7 +568,7 @@
           </div>
 
           <q-list
-            v-if="billing.subscription"
+            v-if="billing?.subscription"
             bordered
             padding
             class="rounded-borders"
@@ -583,9 +588,7 @@
               <q-item-section>
                 <q-item-label lines="1">
                   {{
-                    this.formatDateSimple(
-                      billing.subscription.billingCycleAnchor
-                    )
+                    formatDateSimple(billing.subscription.billingCycleAnchor)
                   }}
                 </q-item-label>
                 <q-item-label caption>
@@ -597,7 +600,7 @@
             <q-item>
               <q-item-section>
                 <q-item-label lines="1">
-                  {{ this.formatDateSimple(billing.subscription.startDate) }}
+                  {{ formatDateSimple(billing.subscription.startDate) }}
                 </q-item-label>
                 <q-item-label caption>
                   {{ $t(`adminTools.startDate`) }}
@@ -608,9 +611,7 @@
             <q-item>
               <q-item-section>
                 <q-item-label lines="1">
-                  {{
-                    this.formatDateSimple(billing.subscription.currentPeriodEnd)
-                  }}
+                  {{ formatDateSimple(billing.subscription.currentPeriodEnd) }}
                 </q-item-label>
                 <q-item-label caption>
                   {{ $t(`adminTools.currentPeriodEnd`) }}
@@ -621,7 +622,7 @@
             <q-item>
               <q-item-section>
                 <q-item-label lines="1">
-                  {{ this.formatDateSimple(billing.subscription.cancelAt) }}
+                  {{ formatDateSimple(billing.subscription.cancelAt) }}
                 </q-item-label>
                 <q-item-label caption>
                   {{ $t(`adminTools.cancelAt`) }}
@@ -655,8 +656,8 @@
               <q-item-section>
                 <q-item-label lines="1">
                   {{
-                    billing.memberbucks.lastPurchase
-                      ? this.formatWhen(billing.memberbucks.lastPurchase)
+                    billing?.memberbucks.lastPurchase
+                      ? formatWhen(billing.memberbucks.lastPurchase)
                       : $t("error.noValue")
                   }}
                 </q-item-label>
@@ -670,8 +671,8 @@
               <q-item-section>
                 <q-item-label lines="1">
                   {{
-                    billing.memberbucks.stripe_card_expiry
-                      ? this.formatWhen(billing.memberbucks.lastPurchase)
+                    billing?.memberbucks.stripe_card_expiry
+                      ? billing.memberbucks.stripe_card_expiry
                       : $t("error.noValue")
                   }}
                 </q-item-label>
@@ -685,8 +686,8 @@
               <q-item-section>
                 <q-item-label lines="1">
                   {{
-                    billing.memberbucks.stripe_card_last_digits
-                      ? this.formatWhen(billing.memberbucks.lastPurchase)
+                    billing?.memberbucks.stripe_card_last_digits
+                      ? formatWhen(billing.memberbucks.lastPurchase)
                       : $t("error.noValue")
                   }}
                 </q-item-label>
@@ -703,7 +704,7 @@
           </div>
 
           <q-table
-            :rows="this.billing.memberbucks.transactions"
+            :rows="billing?.memberbucks.transactions"
             :columns="[
               {
                 name: 'description',
@@ -722,7 +723,7 @@
                 label: 'When',
                 field: 'date',
                 sortable: true,
-                format: (val) => this.formatWhen(val),
+                format: (val) => formatWhen(val),
               },
             ]"
             row-key="id"
@@ -751,7 +752,7 @@
                 {{ $t("memberbucks.currentBalance") }}
                 {{
                   $n(
-                    billing.memberbucks.balance || 0,
+                    billing?.memberbucks.balance || 0,
                     "currency",
                     siteLocaleCurrency
                   )
@@ -790,13 +791,19 @@
   </div>
 </template>
 
-<script>
-import AccessList from "components/AccessList";
-import formMixin from "src/mixins/formMixin";
-import SavedNotification from "components/SavedNotification";
+<script lang="ts">
+import AccessList from "@components/AccessList.vue";
+import formMixin from "@mixins/formMixin";
+import SavedNotification from "@components/SavedNotification.vue";
 import icons from "../../icons";
-import formatMixin from "src/mixins/formatMixin";
+import formatMixin from "@mixins/formatMixin";
 import { mapGetters } from "vuex";
+import { QForm } from "quasar";
+import {
+  MemberBillingInfo,
+  MemberProfile,
+  MemberStateStrings,
+} from "types/member";
 
 export default {
   name: "ManageMember",
@@ -844,20 +851,7 @@ export default {
         screenName: false,
         vehicleRegistrationPlate: false,
       },
-      billing: {
-        memberbucks: {
-          transactions: [],
-          balance: 0,
-        },
-        subscription: {
-          billingCycleAnchor: "",
-          cancelAt: "",
-          cancelAtPeriodEnd: "",
-          currentPeriodEnd: "",
-          startDate: "",
-          status: "",
-        },
-      },
+      billing: null as MemberBillingInfo | null,
       logs: {
         userEventLogs: [],
         doorLogs: [],
@@ -891,9 +885,10 @@ export default {
       this.profileForm.vehicleRegistrationPlate =
         this.selectedMember.vehicleRegistrationPlate;
     },
-    saveChange(field) {
-      this.$refs.formRef.validate(false).then(() => {
-        this.$refs.formRef.validate(false).then((result) => {
+    saveChange(field: keyof typeof this.saved) {
+      const formRef = this.$refs.formRef as typeof QForm;
+      formRef.validate(false).then(() => {
+        formRef.validate(false).then((result: boolean) => {
           if (result) {
             this.$axios
               .put(
@@ -950,8 +945,10 @@ export default {
           });
         })
         .then((res) => {
+          if (!res) return;
           this.billing = res.data;
-          if (!this.billing?.subscription) this.billing.subscription = null;
+          if (this.billing && !this.billing?.subscription)
+            this.billing.subscription = null;
         })
         .finally(() => {
           this.$emit("memberUpdated");
@@ -970,7 +967,7 @@ export default {
           });
         })
         .then((res) => {
-          console.log(res);
+          if (!res) return;
           this.logs = res.data;
         })
         .finally(() => {
@@ -980,7 +977,7 @@ export default {
           }, 1200);
         });
     },
-    setMemberState(state) {
+    setMemberState(state: MemberStateStrings) {
       this.stateLoading = true;
       this.$axios
         .post(`/api/admin/members/${this.member.id}/state/${state}/`)
@@ -1032,12 +1029,16 @@ export default {
     ...mapGetters("config", ["siteLocaleCurrency", "features"]),
     selectedMember() {
       if (this.members) {
-        return this.members.find((e) => e.id === this.member.id);
+        return (this.members as MemberProfile[]).find(
+          (member) => member.id === this.member.id
+        ) as MemberProfile;
       }
-      return this.member;
+      return this.member as MemberProfile;
     },
     selectedMemberFiltered() {
       const newMember = { ...this.selectedMember };
+      // eslint-disable-next-line
+      // @ts-ignore
       delete newMember.access;
       return newMember;
     },

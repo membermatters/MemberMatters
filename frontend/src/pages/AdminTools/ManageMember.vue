@@ -10,10 +10,10 @@
   </q-page>
 </template>
 
-<script>
+<script lang="ts">
 import icons from "@icons";
-import ManageMember from "components/AdminTools/ManageMember";
-import Error404 from "pages/Error404";
+import ManageMember from "@components/AdminTools/ManageMember.vue";
+import Error404 from "pages/Error404.vue";
 
 export default {
   name: "ManageMemberPage",
@@ -42,7 +42,7 @@ export default {
     },
     currentMember() {
       const member = this.members.find(
-        (item) => String(item.id) === String(this.memberId)
+        (member: MemberProfile) => String(member.id) === String(this.memberId)
       );
 
       return member || false;

@@ -118,6 +118,7 @@ import formatMixin from "@mixins/formatMixin";
 import { exportFile } from "quasar";
 import { stringify } from "csv-stringify";
 import { mapGetters } from "vuex";
+import { MemberProfile } from "types/member";
 
 export default {
   name: "MembersList",
@@ -158,7 +159,7 @@ export default {
         { label: this.$t("adminTools.active"), value: "Active" },
         { label: this.$t("adminTools.inactive"), value: "Inactive" },
         { label: this.$t("adminTools.new"), value: "Needs Induction" },
-        { label: this.$t("adminTools.accountOnly"), value: "Account only" },
+        { label: this.$t("adminTools.accountOnly"), value: "Account Only" },
       ];
     },
     columns() {
