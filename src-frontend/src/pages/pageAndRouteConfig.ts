@@ -1,6 +1,24 @@
 import icons from '../icons';
+import type { Component } from 'vue';
 
-const PageAndRouteConfig = [
+export type PageAndRouteConfigType = {
+  icon: string;
+  to?: string;
+  name: string;
+  loggedIn: boolean;
+  kiosk?: boolean;
+  component?: () => Promise<Component>;
+  admin?: boolean;
+  backButton?: boolean | string;
+  hiddenMenu?: boolean;
+  featureEnabledFlag?: string;
+  bgGradient?: boolean;
+  memberOnly?: boolean;
+  children?: PageAndRouteConfigType[];
+  defaultParams?: { [key: string]: string };
+};
+
+const PageAndRouteConfig: PageAndRouteConfigType[] = [
   {
     icon: icons.signin, // specify the icon to use
     to: '/', // specify the URL route for this page
@@ -242,6 +260,7 @@ const PageAndRouteConfig = [
     icon: icons.signin, // specify the icon to use
     to: '/profile/password/reset/:resetToken', // specify the URL route for this page
     name: 'resetPassword', // specify the name of this URL route
+    loggedIn: false,
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
     component: () => import('pages/Login.vue'), // which component to load as the page
   },
@@ -249,6 +268,7 @@ const PageAndRouteConfig = [
     icon: icons.register, // specify the icon to use
     to: '/profile/email/:verifyToken/verify', // specify the URL route for this page
     name: 'verifyEmail', // specify the name of this URL route
+    loggedIn: false,
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
     component: () => import('pages/VerifyEmail.vue'), // which component to load as the page
   },
@@ -256,6 +276,7 @@ const PageAndRouteConfig = [
     icon: icons.signin, // specify the icon to use
     to: '/error/403', // specify the URL route for this page
     name: 'Error403', // specify the name of this URL route
+    loggedIn: false,
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
     component: () => import('pages/Error403.vue'), // which component to load as the page
   },
@@ -263,6 +284,7 @@ const PageAndRouteConfig = [
     icon: icons.signin, // specify the icon to use
     to: '/error/403MemberOnly', // specify the URL route for this page
     name: 'Error403MemberOnly', // specify the name of this URL route
+    loggedIn: false,
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
     component: () => import('pages/Error403MemberOnly.vue'), // which component to load as the page
   },
@@ -270,6 +292,7 @@ const PageAndRouteConfig = [
     icon: icons.signin, // specify the icon to use
     to: '/error/404', // specify the URL route for this page
     name: 'Error404', // specify the name of this URL route
+    loggedIn: false,
     hiddenMenu: true, // adds the route and page config, but don't show in the menu
     component: () => import('pages/Error404.vue'), // which component to load as the page
   },
