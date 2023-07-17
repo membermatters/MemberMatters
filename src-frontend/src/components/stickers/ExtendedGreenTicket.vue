@@ -26,7 +26,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import QRCode from 'qrcode';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import icons from '../../icons';
 
 export default {

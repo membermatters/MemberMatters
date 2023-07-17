@@ -41,7 +41,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import icons from '../icons';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 
 export default {
   name: 'ProxyCard',
