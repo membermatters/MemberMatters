@@ -151,7 +151,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import icons from '../icons';
 import formMixin from '../mixins/formMixin';
 
