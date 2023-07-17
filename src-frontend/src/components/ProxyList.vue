@@ -114,7 +114,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import icons from '../icons';
 import formatMixin from '../mixins/formatMixin';
-import ProxyForm from './ProxyForm';
+import ProxyForm from './ProxyForm.vue';
 
 export default {
   name: 'ProxyList',

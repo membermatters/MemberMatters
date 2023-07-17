@@ -21,10 +21,10 @@ RUN nvm use --delete-prefix v${NODE_VERSION} --silent
 
 # Install node deps
 WORKDIR /usr/src/app/frontend/
-COPY frontend/package* /usr/src/app/frontend/
+COPY src-frontend/package* /usr/src/app/frontend/
 RUN npm ci
 
-ADD frontend /usr/src/app/frontend
+ADD src-frontend /usr/src/app/frontend
 ADD package.json /usr/src/app/package.json
 
 # Install python deps

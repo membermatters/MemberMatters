@@ -48,11 +48,12 @@ module.exports = configure(async function (ctx) {
         node: 'node18',
       },
 
-      htmlFilename: 'index2.html',
+      htmlFilename: 'index.html',
 
       env: {
         // When running with capacitor this value is used for the base URL for all API requests
         apiBaseUrl: process.env.API_BASE_URL,
+        vueRouterMode: 'history',
       },
 
       vueRouterMode: 'history', // available values: 'hash', 'history'
@@ -66,7 +67,7 @@ module.exports = configure(async function (ctx) {
       showProgress: true,
       minify: true,
 
-      extendViteConf(viteConf, { isServer, isClient }) {
+      extendViteConf(viteConf, {}) {
         viteConf.plugins.push(tsconfigPaths.default());
 
         viteConf.plugins.push({
@@ -155,10 +156,9 @@ module.exports = configure(async function (ctx) {
         //
         // components: [],
         // directives: [],
-
-        // Quasar plugins
-        plugins: ['Dialog', 'LoadingBar', 'Cookies'],
       },
+      // Quasar plugins
+      plugins: ['Dialog', 'LoadingBar', 'Cookies'],
 
       // animations: 'all', // --- includes all animations
       // https://v2.quasar.dev/options/animations
