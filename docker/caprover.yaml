@@ -5,14 +5,14 @@ services:
     image: membermatters/membermatters:$$cap_version
     restart: always
     environment:
-      PORTAL_ENV: $$cap_env
-      MM_REDIS_HOST: 'redis://srv-captain--$$cap_appname-redis:6379/0'
+      MM_ENV: $$cap_env
+      MM_REDIS_HOST: "redis://srv-captain--$$cap_appname-redis:6379/0"
     volumes:
       - $$cap_appname-data:/usr/src/data
     depends_on:
       - $$cap_appname-redis
     caproverExtra:
-      containerHttpPort: '8000'
+      containerHttpPort: "8000"
 
   # MemberMatters Redis
   $$cap_appname-redis:
@@ -22,12 +22,12 @@ services:
   # MemberMatters Celery Worker
   $$cap_appname-celery-worker:
     image: membermatters/membermatters:$$cap_version
-    command: [ 'celery', '-A', 'membermatters.celeryapp', 'worker', '-l', 'INFO' ]
+    command: ["celery", "-A", "membermatters.celeryapp", "worker", "-l", "INFO"]
     restart: always
     environment:
-      PORTAL_ENV: $$cap_env
+      MM_ENV: $$cap_env
       MM_RUN_MODE: "celery_worker"
-      MM_REDIS_HOST: 'redis://srv-captain--$$cap_appname-redis:6379/0'
+      MM_REDIS_HOST: "redis://srv-captain--$$cap_appname-redis:6379/0"
     volumes:
       - $$cap_appname-data:/usr/src/data
     depends_on:
@@ -37,12 +37,12 @@ services:
   # MemberMatters Celery Beat
   $$cap_appname-celery-beat:
     image: membermatters/membermatters:$$cap_version
-    command: [ 'celery', '-A', 'membermatters.celeryapp', 'beat', '-l', 'INFO' ]
+    command: ["celery", "-A", "membermatters.celeryapp", "beat", "-l", "INFO"]
     restart: always
     environment:
-      PORTAL_ENV: $$cap_env
+      MM_ENV: $$cap_env
       MM_RUN_MODE: "celery_beat"
-      MM_REDIS_HOST: 'redis://srv-captain--$$cap_appname-redis:6379/0'
+      MM_REDIS_HOST: "redis://srv-captain--$$cap_appname-redis:6379/0"
     volumes:
       - $$cap_appname-data:/usr/src/data
     depends_on:
@@ -52,12 +52,12 @@ caproverOneClickApp:
   variables:
     - id: $$cap_version
       label: Version
-      defaultValue: 'latest'
+      defaultValue: "latest"
       description: Check out the docker page for the valid tags https://hub.docker.com/r/membermatters/membermatters/tags
       validRegex: /^([^\s^\/])+$/
     - id: $$cap_env
       label: Environment
-      defaultValue: 'Production'
+      defaultValue: "Production"
       description: The environment your installation is running in. You can set this to "Development" for additional debug logging.
       validRegex: /^([^\s^\/])+$/
   instructions:
@@ -66,7 +66,7 @@ caproverOneClickApp:
     end: >-
       Done! 😄
       Your service is available at http://$$cap_appname.$$cap_root_domain
-  displayName: 'MemberMatters'
+  displayName: "MemberMatters"
   isOfficial: true
   description: Open source membership management platform for makerspaces and community groups.
   documentation: https://membermatters.org

@@ -22,8 +22,8 @@ def safe_constance_get(fld: str):
 #     SENTRY_DSN_BACKEND = safe_constance_get("SENTRY_DSN_BACKEND")
 #     if (
 #             SENTRY_DSN_BACKEND
-#             and os.environ.get("PORTAL_ENV")
-#             and os.environ.get("PORTAL_ENV") != "Development"
+#             and os.environ.get("MM_ENV")
+#             and os.environ.get("MM_ENV") != "Development"
 #     ):
 #         version = None
 #         with open("../package.json") as f:

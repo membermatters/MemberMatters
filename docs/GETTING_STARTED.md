@@ -1,6 +1,7 @@
 # Getting Started
 
 ## Quickstart
+
 > Note: MemberMatters only supports running in Docker on Linux. Installing Docker is outside the scope of this guide,
 > please consult your favourite search engine for tips.
 
@@ -16,11 +17,11 @@ variables from. You'll need at least the following:
 
 ```
 # /usr/app/env.list
-PORTAL_ENV=Production
+MM_ENV=Production
 ```
 
-Once you've downloaded the docker image and configured your environment variables, you'll need to create a container 
-and mount a volume. Replace `/usr/app/` with the location you'd like to store your database and other data. 
+Once you've downloaded the docker image and configured your environment variables, you'll need to create a container
+and mount a volume. Replace `/usr/app/` with the location you'd like to store your database and other data.
 
 ```bash
 docker create -p 8000:8000 --name membermatters --restart always --env-file /usr/app/env.list -v /usr/app/:/usr/src/data membermatters/membermatters
@@ -46,6 +47,7 @@ The first thing you should do is change the email address and password of the de
 Once you've done this, your MemberMatters instance is ready for configuration. You should now head to [post installation steps](/docs/POST_INSTALL_STEPS) for important instructions on setting up and customising your instance.
 
 ## Deployment Tips
+
 - MemberMatters runs on port 8000 by default. You should run a reverse proxy in front of it
   so you can protect all traffic with HTTPS. Please consult your favourite search engine on how to setup a reverse proxy.
   We recommend that you use nginx with let's encrypt.
@@ -54,6 +56,7 @@ Once you've done this, your MemberMatters instance is ready for configuration. Y
   testing before relying on it.
 
 ## Updating your instance
+
 Docker containers are meant to be disposable, so you'll need to delete it and make a fresh one from the latest image.
 We suggest writing a bash script like the one below:
 

@@ -24,7 +24,7 @@ logger = logging.getLogger("app")
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get(
-    "PORTAL_SECRET_KEY", "l)#t68rzepzp)0l#x=9mntciapun$whl+$j&=_@nl^zl1xm3j*"
+    "MM_SECRET_KEY", "l)#t68rzepzp)0l#x=9mntciapun$whl+$j&=_@nl^zl1xm3j*"
 )
 
 # Default config is for dev environments and is overwritten in prod
@@ -39,7 +39,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 # this allows the frontend dev server to talk to the dev server
 CORS_ALLOW_ALL_ORIGINS = True
 
-if os.environ.get("PORTAL_ENV") == "Production":
+if os.environ.get("MM_ENV") == "Production":
     ENVIRONMENT = "Production"
     CORS_ALLOW_ALL_ORIGINS = False
     DEBUG = False
@@ -156,7 +156,7 @@ else:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.environ.get("PORTAL_DB_LOCATION", "/usr/src/data/db.sqlite3"),
+            "NAME": os.environ.get("MM_DB_LOCATION", "/usr/src/data/db.sqlite3"),
         }
     }
 
@@ -196,9 +196,7 @@ LOGGING = {
         },
         "file": {
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.environ.get(
-                "PORTAL_LOG_LOCATION", "/usr/src/logs/django.log"
-            ),
+            "filename": os.environ.get("MM_LOG_LOCATION", "/usr/src/logs/django.log"),
             "maxBytes": 10000000,
             "backupCount": 10,
             "formatter": "file",
@@ -256,12 +254,12 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.environ.get(
-    "PORTAL_STATIC_LOCATION", "/usr/src/app/memberportal/membermatters/static"
+    "MM_STATIC_LOCATION", "/usr/src/app/memberportal/membermatters/static"
 )
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/signin"
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.environ.get("PORTAL_MEDIA_LOCATION", "/usr/src/data/media/")
+MEDIA_ROOT = os.environ.get("MM_MEDIA_LOCATION", "/usr/src/data/media/")
 
 AUTH_USER_MODEL = "profile.User"
 
