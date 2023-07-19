@@ -340,6 +340,7 @@ class MemberProfile(APIView):
         member.profile.phone = body.get("phone")
         member.profile.screen_name = body.get("screenName")
         member.profile.vehicle_registration_plate = body.get("vehicleRegistrationPlate")
+        member.profile.exclude_from_email_export = body.get("excludeFromEmailExport")
 
         member.save()
         member.profile.save()

@@ -23,7 +23,6 @@
             class="row justify-start q-pt-sm"
             :class="{ 'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs }"
           >
-            {{ selectedMember.state }}
             <q-btn
               v-if="selectedMember.state === 'Inactive'"
               class="q-mr-sm q-mb-sm"
@@ -63,6 +62,34 @@
                   <q-item-section>
                     <q-item-label
                       >{{ $t('adminTools.sendWelcomeEmail') }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <!-- Opt out of email exports -->
+                <q-item
+                  v-if="!selectedMember.excludeFromEmailExport"
+                  v-close-popup
+                  clickable
+                  @click="optOutEmailExport"
+                >
+                  <q-item-section>
+                    <q-item-label
+                      >{{ $t('adminTools.optOutEmailExport') }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <!-- Opt in to email exports -->
+                <q-item
+                  v-if="selectedMember.excludeFromEmailExport"
+                  v-close-popup
+                  clickable
+                  @click="optOutEmailExport"
+                >
+                  <q-item-section>
+                    <q-item-label
+                      >{{ $t('adminTools.optInEmailExport') }}
                     </q-item-label>
                   </q-item-section>
                 </q-item>
@@ -244,11 +271,40 @@
                   </q-item-section>
                 </q-item>
 
-                <q-item v-for="item in ['id', 'admin']" :key="item">
+                <q-item key="excludeFromEmailExport">
                   <q-item-section>
                     <q-item-label
                       >{{
-                        selectedMember[item as keyof MemberProfile]
+                        formatBooleanYesNo(
+                          selectedMember.excludeFromEmailExport
+                        )
+                      }}
+                    </q-item-label>
+
+                    <q-item-label caption>
+                      {{ $t(`form.excludeFromEmailExport`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item key="admin">
+                  <q-item-section>
+                    <q-item-label
+                      >{{ formatBooleanYesNo(selectedMember.admin) }}
+                    </q-item-label>
+
+                    <q-item-label caption>
+                      {{ $t(`form.admin`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item v-for="item in ['id']" :key="item">
+                  <q-item-section>
+                    <q-item-label
+                      >{{
+                        selectedMember[item as keyof MemberProfile] != null ||
+                        selectedMember[item as keyof MemberProfile] != undefined
                           ? selectedMember[item as keyof MemberProfile]
                           : $t('error.noValue')
                       }}
@@ -892,10 +948,11 @@ export default defineComponent({
         formRef.validate(false).then((result: boolean) => {
           if (result) {
             this.$axios
-              .put(
-                `/api/admin/members/${this.member.id}/profile/`,
-                this.profileForm
-              )
+              .put(`/api/admin/members/${this.member.id}/profile/`, {
+                ...this.profileForm,
+                excludeFromEmailExport:
+                  this.selectedMember.excludeFromEmailExport,
+              })
               .then(() => {
                 this.saved.error = false;
                 this.saved[field as keyof typeof this.saved] = true;
@@ -1023,6 +1080,22 @@ export default defineComponent({
           setTimeout(() => {
             this.stateLoading = false;
           }, 1200);
+        });
+    },
+    optOutEmailExport() {
+      this.$axios
+        .put(`/api/admin/members/${this.member.id}/profile/`, {
+          excludeFromEmailExport: !this.selectedMember.excludeFromEmailExport,
+          ...this.profileForm,
+        })
+        .then(() => {
+          this.$emit('memberUpdated');
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('error.requestFailed'),
+          });
         });
     },
   },

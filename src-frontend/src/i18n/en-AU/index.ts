@@ -249,6 +249,7 @@ export default {
     vehicleRegistrationPlate: 'Vehicle Registration Plate Number',
     vehicleRegistrationNote:
       'Please enter your vehicle registration plate(s) here if you have any. We use this to make sure only members park in our carpark.',
+    excludeFromEmailExport: 'Excluded from email exports',
   },
   digitalId: {
     title: 'Digital ID',
@@ -390,6 +391,8 @@ export default {
     'to date.',
   progress: 'Progress: {percent}%',
   adminTools: {
+    optOutEmailExport: 'Opt out of email export',
+    optInEmailExport: 'Opt in to email export',
     emailAddresses: 'Copy Email List',
     copyEmailListSuccess: 'Copied {count} Email Addresses!',
     copyEmailListSuccessDescription:
@@ -404,7 +407,7 @@ export default {
     accountOnly: 'Account Only',
     enableAccess: 'Enable Access',
     disableAccess: 'Disable Access',
-    sendWelcomeEmail: 'Send Welcome Email',
+    sendWelcomeEmail: 'Send welcome email',
     manageMember: 'Manage Member',
     makeMember: 'Make Member',
     makeMemberSuccess: 'Successfully made into member and sent welcome email.',

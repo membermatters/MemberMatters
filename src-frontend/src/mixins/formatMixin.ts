@@ -29,6 +29,11 @@ export function formatWhen(date: Date) {
   return dayjs(date).local().fromNow();
 }
 
+export function formatBooleanYesNo(value: boolean) {
+  // TODO: update to use vue-i18n translations
+  return value ? 'Yes' : 'No';
+}
+
 export function capitaliseFirst(value: string) {
   return (
     String(value) && String(value)[0].toUpperCase() + String(value).slice(1)
@@ -41,6 +46,7 @@ export default {
     formatDate,
     formatDateSimple,
     formatWhen,
+    formatBooleanYesNo,
     capitaliseFirst,
   },
 };
