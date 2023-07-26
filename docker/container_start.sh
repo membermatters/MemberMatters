@@ -1,7 +1,5 @@
 #!/bin/sh
 
-echo GOT THIS ONE2 "$MM_RUN_MODE"
-
 if [ "$MM_RUN_MODE" = "celery_worker" ]
 then
   echo celery worker mode
