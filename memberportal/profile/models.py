@@ -141,19 +141,30 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.admin
 
     def __send_email(self, subject, body):
-        postmark = PostmarkClient(server_token=config.POSTMARK_API_KEY)
-        postmark.emails.send(
-            From=config.EMAIL_DEFAULT_FROM,
-            To=self.email,
-            Subject=subject,
-            HtmlBody=body,
-        )
-        log_user_event(
-            self,
-            "Sent email with subject: " + subject,
-            "email",
-            "Email content: " + body,
-        )
+        # TODO: move this to celery
+
+        if config.POSTMARK_API_KEY:
+            postmark = PostmarkClient(server_token=config.POSTMARK_API_KEY)
+            postmark.emails.send(
+                From=config.EMAIL_DEFAULT_FROM,
+                To=self.email,
+                Subject=subject,
+                HtmlBody=body,
+            )
+            log_user_event(
+                self,
+                "Sent email with subject: " + subject,
+                "email",
+                "Email content: " + body,
+            )
+        else:
+            log_user_event(
+                self,
+                "Email NOT sent due to configuration issue: " + subject,
+                "email",
+                "Email content: " + body,
+            )
+
         return True
 
     def email_notification(self, subject, title, preheader, message):
