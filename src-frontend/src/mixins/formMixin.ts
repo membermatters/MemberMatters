@@ -26,8 +26,8 @@ export default {
       if (disable) return true;
       return date >= dayjs().format('YYYY-MM-DD HH:MM');
     },
-    validateMax30(value: string | number) {
-      return value.toString().length <= 30;
+    validateMax30(value: string | number | null) {
+      return value == null || value.toString().length <= 30;
     },
   },
   computed: {
