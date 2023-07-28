@@ -350,6 +350,7 @@ class MemberProfile(APIView):
         member.profile.phone = body.get("phone")
         member.profile.screen_name = body.get("screenName")
         member.profile.vehicle_registration_plate = body.get("vehicleRegistrationPlate")
+        member.profile.exclude_from_email_export = body.get("excludeFromEmailExport")
 
         member.save()
         member.profile.save()
@@ -616,6 +617,7 @@ class MemberBillingInfo(StripeAPIView):
             "stripe_card_last_digits": member.profile.stripe_card_last_digits,
             "stripe_card_expiry": member.profile.stripe_card_expiry,
             "transactions": map(get_transaction, recent_transactions),
+            "lastPurchase": member.profile.last_memberbucks_purchase,
         }
 
         return Response(billing_info)

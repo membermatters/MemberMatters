@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= productName %></title>
+
+    <meta charset="utf-8" />
+    <meta name="description" content="<%= productDescription %>" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta
+      name="viewport"
+      content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width<% if (ctx.mode.cordova || ctx.mode.capacitor) { %>, viewport-fit=cover<% } %>"
+    />
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script async src="https://www.google-analytics.com/analytics.js"></script>
+    <script>
+      window.ga =
+        window.ga ||
+        function () {
+          (ga.q = ga.q || []).push(arguments);
+        };
+      ga.l = +new Date();
+    </script>
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="128x128"
+      href="icons/favicon-128x128.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="icons/favicon-96x96.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="icons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="icons/favicon-16x16.png"
+    />
+    <link rel="icon" type="image/ico" href="favicon.ico" />
+    <!-- iPhone 12 Pro Max -->
+    <link
+      rel="apple-touch-startup-image"
+      media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)"
+      href="icons/apple-launch-1284x2778.png"
+    />
+    <!-- iPhone 12, 12 Pro -->
+    <link
+      rel="apple-touch-startup-image"
+      media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)"
+      href="icons/apple-launch-1170x2532.png"
+    />
+    <!-- iPhone XR, 11 -->
+    <link
+      rel="apple-touch-startup-image"
+      media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)"
+      href="icons/apple-launch-828x1792.png"
+    />
+    <!-- iPhone X, XS, 12 mini, 11 Pro -->
+    <link
+      rel="apple-touch-startup-image"
+      media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)"
+      href="icons/apple-launch-1125x2436.png"
+    />
+    <!-- iPhone XS Max, 11 Pro Max -->
+    <link
+      rel="apple-touch-startup-image"
+      media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)"
+      href="icons/apple-launch-1242x2688.png"
+    />
+    <!-- iPhone 8, 7, 6s, 6 -->
+    <link
+      rel="apple-touch-startup-image"
+      media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)"
+      href="icons/apple-launch-750x1334.png"
+    />
+    <!-- iPhone 8 Plus, 7 Plus, 6s Plus, 6 Plus -->
+    <link
+      rel="apple-touch-startup-image"
+      media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)"
+      href="icons/apple-launch-1242x2208.png"
+    />
+    <!-- iPad 10.2" -->
+    <link
+      rel="apple-touch-startup-image"
+      media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2)"
+      href="icons/apple-launch-1620x2160.png"
+    />
+    <!-- iPad Mini, Air, 9.7" -->
+    <link
+      rel="apple-touch-startup-image"
+      media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)"
+      href="icons/apple-launch-1536x2048.png"
+    />
+    <!-- iPad Pro 10.5" -->
+    <link
+      rel="apple-touch-startup-image"
+      media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)"
+      href="icons/apple-launch-1668x2224.png"
+    />
+    <!-- iPad Pro 11" -->
+    <link
+      rel="apple-touch-startup-image"
+      media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)"
+      href="icons/apple-launch-1668x2388.png"
+    />
+    <!-- iPad Pro 12.9" -->
+    <link
+      rel="apple-touch-startup-image"
+      media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)"
+      href="icons/apple-launch-2048x2732.png"
+    />
+  </head>
+
+  <body>
+    <!-- Do not touch the following - it's used to render the root Vue instance -->
+    <!-- quasar:entry-point -->
+  </body>
+</html>

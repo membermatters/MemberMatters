@@ -63,6 +63,26 @@ class GetConfig(APIView):
             package = json.load(f)
             version = package.get("version")
 
+        try:
+            homepage_cards = json.loads(config.HOME_PAGE_CARDS)
+        except:
+            homepage_cards = [
+                {
+                    "title": "Error loading configuration",
+                    "description": "There was an error loading the home page cards configuration. Please try re-saving the configuration in the admin panel.",
+                    "icon": "mdi-alert",
+                    "url": "#",
+                    "btn_text": "",
+                },
+            ]
+
+        try:
+            webcam_links = json.loads(config.WEBCAM_PAGE_URLS)
+        except:
+            webcam_links = [
+                ["Error Loading Webcam Configuration", ""],
+            ]
+
         response = {
             "version": version,
             "loggedIn": request.user.is_authenticated,
@@ -87,8 +107,8 @@ class GetConfig(APIView):
                 "themeToolbar": config.THEME_TOOLBAR,
                 "themeAccent": config.THEME_ACCENT,
             },
-            "homepageCards": json.loads(config.HOME_PAGE_CARDS),
-            "webcamLinks": json.loads(config.WEBCAM_PAGE_URLS),
+            "homepageCards": homepage_cards,
+            "webcamLinks": webcam_links,
             "keys": keys,
             "features": features,
             "analyticsId": config.GOOGLE_ANALYTICS_PROPERTY_ID,

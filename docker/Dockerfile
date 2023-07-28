@@ -11,7 +11,7 @@ RUN mkdir -p /usr/src/app/frontend && mkdir /usr/src/logs && mkdir /usr/src/data
 RUN apt-get update -y && apt-get install -y nginx curl daphne
 
 # Install Node
-ENV NODE_VERSION=14.15.0
+ENV NODE_VERSION=18.16.0
 SHELL ["/bin/bash", "--login", "-c"]
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
@@ -21,10 +21,10 @@ RUN nvm use --delete-prefix v${NODE_VERSION} --silent
 
 # Install node deps
 WORKDIR /usr/src/app/frontend/
-COPY frontend/package* /usr/src/app/frontend/
+COPY src-frontend/package* /usr/src/app/frontend/
 RUN npm ci
 
-ADD frontend /usr/src/app/frontend
+ADD src-frontend /usr/src/app/frontend
 ADD package.json /usr/src/app/package.json
 
 # Install python deps

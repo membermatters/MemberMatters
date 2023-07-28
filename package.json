@@ -7,17 +7,17 @@
     "lint-staged": "^11.0.0"
   },
   "scripts": {
-    "prepare": "husky install",
+    "prepare": "husky install && pip3 install black",
     "pre-commit": "lint-staged"
   },
   "lint-staged": {
     "*.{js,ts,vue}": [
       "echo Linting Frontend",
-      "npm run lint:precommit --prefix frontend -- "
+      "npm run lint:precommit --prefix src-frontend -- "
     ],
     "*.py": [
       "echo Linting Backend",
-      "black -- "
+      "black"
     ]
   }
 }

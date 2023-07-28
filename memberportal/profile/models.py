@@ -141,19 +141,30 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.admin
 
     def __send_email(self, subject, body):
-        postmark = PostmarkClient(server_token=config.POSTMARK_API_KEY)
-        postmark.emails.send(
-            From=config.EMAIL_DEFAULT_FROM,
-            To=self.email,
-            Subject=subject,
-            HtmlBody=body,
-        )
-        log_user_event(
-            self,
-            "Sent email with subject: " + subject,
-            "email",
-            "Email content: " + body,
-        )
+        # TODO: move this to celery
+
+        if config.POSTMARK_API_KEY:
+            postmark = PostmarkClient(server_token=config.POSTMARK_API_KEY)
+            postmark.emails.send(
+                From=config.EMAIL_DEFAULT_FROM,
+                To=self.email,
+                Subject=subject,
+                HtmlBody=body,
+            )
+            log_user_event(
+                self,
+                "Sent email with subject: " + subject,
+                "email",
+                "Email content: " + body,
+            )
+        else:
+            log_user_event(
+                self,
+                "Email NOT sent due to configuration issue: " + subject,
+                "email",
+                "Email content: " + body,
+            )
+
         return True
 
     def email_notification(self, subject, title, preheader, message):
@@ -319,6 +330,7 @@ class Profile(models.Model):
     memberbucks_balance = models.FloatField(default=0.0)
     last_memberbucks_purchase = models.DateTimeField(default=timezone.now)
     must_update_profile = models.BooleanField(default=False)
+    exclude_from_email_export = models.BooleanField(default=False)
 
     last_seen = models.DateTimeField(default=None, blank=True, null=True)
     last_induction = models.DateTimeField(default=None, blank=True, null=True)
@@ -479,6 +491,7 @@ class Profile(models.Model):
             "admin": self.user.is_staff,
             "superuser": self.user.is_admin,
             "email": self.user.email,
+            "excludeFromEmailExport": self.exclude_from_email_export,
             "registrationDate": self.created.strftime("%m/%d/%Y, %H:%M:%S"),
             "lastUpdatedProfile": self.modified.strftime("%m/%d/%Y, %H:%M:%S"),
             "screenName": self.screen_name,

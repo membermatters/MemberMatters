@@ -52,7 +52,8 @@ you'll need to make sure the django dev server is running there.
 This software was initially developed by Jaimyn Mayer for HSBNE, and later adopted for use at Brisbane Makerspace and others. As part of our access control system (including doors and machine interlocks) we have developed a set of standard hardware components and firmware that is compatible with MemberMatters. Below is a list of useful resources for building your own hardware using off the shelf components. Once the hardware is built and firmware is flashed, you can add them to MemberMatters for a complete access system and/or billing system for physical purchases.
 
 * [HSBNE Inc Access Control Wiki Page](https://wiki.hsbne.org/infrastructure/services/accesscontrol) - Information about our current and past access control hardware.
-* [HSBNE Access Control Firmware](https://github.com/HSBNE/AccessControl) - Arduino based software that runs on ESPxx devices that run each of our interlock/door controllers.
+* [Member Matters Access Control Firmware](https://github.com/membermatters/mainboard-firmware) - Micropython based software that runs on ESP32 devices that powers our interlock/door controllers.
+* [DEPRECATED] ~[HSBNE Access Control Firmware](https://github.com/HSBNE/AccessControl) - Arduino based software that runs on ESPxx devices that run each of our interlock/door controllers.~
 * [HSBNE Access Control Hardware BOM](https://docs.google.com/spreadsheets/d/1sQvaxc8gp7CUdddq65luUwCwQNSQK4HCsXnodN-CSEk/edit#gid=0) - A list of materials that go into our access control system hardware.
 * [Vending Machine RFID Panel Firmware](https://github.com/HSBNE/VendingMachine) - Arduino based software that powers our Spacebucks (memberbucks) enabled vending machines.
  
