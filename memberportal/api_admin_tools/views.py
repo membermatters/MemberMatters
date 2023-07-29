@@ -13,6 +13,8 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from django.db.models import F, Count, Sum, ExpressionWrapper, FloatField, Count, Max
+from datetime import timedelta
 import humanize
 from django.db import connection
 from django.db.utils import OperationalError
@@ -151,16 +153,16 @@ class Doors(APIView):
         doors = models.Doors.objects.all()
 
         def get_door(door):
-            cursor = connection.cursor()
-            cursor.execute(
-                "SELECT access_doorlog.door_id, access_doorlog.user_id, pp.screen_name, COUNT(access_doorlog.user_id) as records, MAX(access_doorlog.date) as lastSeen FROM access_doorlog INNER JOIN profile_profile pp on access_doorlog.user_id = pp.user_id GROUP BY access_doorlog.door_id, access_doorlog.user_id HAVING access_doorlog.door_id = %s ORDER BY records DESC",
-                [door.id],
+            # Query to get the statistics
+            stats = (
+                models.DoorLog.objects.filter(door_id=door.id)
+                .annotate(screen_name=F("user__profile__screen_name"))
+                .values("door_id", "user_id", "screen_name")
+                .annotate(records=Count("user_id"), lastSeen=Max("date"))
+                .order_by("-records")
             )
-            result = cursor.fetchall()
 
-            stats = [
-                dict(zip([key[0] for key in cursor.description], row)) for row in result
-            ]
+            print(stats)
 
             return {
                 "id": door.id,
@@ -223,17 +225,23 @@ class Interlocks(APIView):
         interlocks = models.Interlock.objects.all()
 
         def get_interlock(interlock):
-            cursor = connection.cursor()
-            cursor.execute(
-                "SELECT SUM((julianday(last_heartbeat)-julianday(first_heartbeat))*86400) AS onTime from access_interlocklog WHERE interlock_id = %s",
-                [interlock.id],
+            # Calculate onTime using Django's ORM
+            on_time_seconds = (
+                InterlockLog.objects.filter(interlock_id=interlock.id)
+                .annotate(
+                    on_time_seconds=Sum(
+                        (F("last_heartbeat") - F("first_heartbeat")) * 86400,
+                        output_field=FloatField(),
+                    ),
+                )
+                .values("on_time_seconds")
+                .first()
             )
-            result = cursor.fetchone()
-            onTime = 0
 
-            if result[0] is not None:
-                onTime = humanize.precisedelta(
-                    round(result[0]),
+            on_time = 0
+            if on_time_seconds and on_time_seconds["on_time_seconds"] is not None:
+                on_time = humanize.precisedelta(
+                    round(on_time_seconds["on_time_seconds"]),
                     suppress=[
                         "months",
                         "days",
@@ -243,16 +251,23 @@ class Interlocks(APIView):
                     ],
                 )
 
-            cursor = connection.cursor()
-            cursor.execute(
-                "SELECT access_interlocklog.interlock_id, access_interlocklog.user_id, pp.screen_name, COUNT(access_interlocklog.first_heartbeat) as records, round(SUM(julianday(access_interlocklog.last_heartbeat)-julianday(access_interlocklog.first_heartbeat))*1440) AS onTime FROM access_interlocklog INNER JOIN profile_profile pp on access_interlocklog.user_id = pp.user_id GROUP BY access_interlocklog.interlock_id, access_interlocklog.user_id HAVING access_interlocklog.interlock_id = %s ORDER BY onTime DESC",
-                [interlock.id],
+            # Retrieve stats using Django's ORM
+            stats = (
+                InterlockLog.objects.filter(interlock_id=interlock.id)
+                .values(
+                    "interlock_id",
+                    "user_id",
+                    "user__profile__screen_name",  # Assuming the related_name of the user's profile is 'profile'
+                )
+                .annotate(
+                    records=Count("first_heartbeat"),
+                    on_time_minutes=ExpressionWrapper(
+                        Sum((F("last_heartbeat") - F("first_heartbeat")) * 1440),
+                        output_field=FloatField(),
+                    ),
+                )
+                .order_by("-on_time_minutes")
             )
-            result = cursor.fetchall()
-
-            stats = [
-                dict(zip([key[0] for key in cursor.description], row)) for row in result
-            ]
 
             return {
                 "id": interlock.id,
@@ -266,8 +281,8 @@ class Interlocks(APIView):
                 "playThemeOnSwipe": interlock.play_theme,
                 "exemptFromSignin": interlock.exempt_signin,
                 "hiddenToMembers": interlock.hidden,
-                "usage": onTime,
-                "stats": stats,
+                "usage": on_time,
+                "stats": list(stats),
             }
 
         return Response(map(get_interlock, interlocks))
