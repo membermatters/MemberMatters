@@ -6,8 +6,8 @@ class MemberTier(models.Model):
     """A membership tier that a member can be billed for."""
 
     id = models.AutoField(primary_key=True)
-    name = models.CharField("Name", max_length=30, unique=True)
-    description = models.CharField("Description", max_length=50, unique=True)
+    name = models.CharField("Name", max_length=150, unique=True)
+    description = models.CharField("Description", max_length=250, unique=True)
     stripe_id = models.CharField("Stripe Id", max_length=100, unique=True)
     visible = models.BooleanField("Is this plan visible to members?", default=True)
     featured = models.BooleanField("Is this plan featured?", default=False)
@@ -37,7 +37,7 @@ class PaymentPlan(models.Model):
     BILLING_PERIODS = [("Months", "month"), ("Weeks", "week"), ("Days", "days")]
 
     id = models.AutoField(primary_key=True)
-    name = models.CharField("Name", max_length=30)
+    name = models.CharField("Name", max_length=50)
     stripe_id = models.CharField("Stripe Id", max_length=100, unique=True)
     member_tier = models.ForeignKey(
         MemberTier, on_delete=models.CASCADE, related_name="plans"
