@@ -14,6 +14,10 @@ User = auth.get_user_model()
 
 @receiver(pre_save, sender=Doors)
 def save_or_create_door(sender, instance, **kwargs):
+    # disable the handler during fixture loading
+    if kwargs["raw"]:
+        return
+
     created = instance.pk is None
     door_all_members_changed = False
     door_maintenance_lockout_changed = False
