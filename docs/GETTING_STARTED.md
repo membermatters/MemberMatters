@@ -35,7 +35,19 @@ docker stop membermatters
 docker restart membermatters
 ```
 
-Once your container is running, you will be able to login with the default admin account details:
+Once your container is running, you will probably want to load the initial database fixtures so there's an account you can use to login with. To do so, connect to your running docker container:
+
+```bash
+docker exec -it membermatters bash
+```
+
+and run the following:
+
+```bash
+python3 manage.py loaddata initial
+```
+
+Once you've loaded the initial fixtures, you will be able to login with the default admin account details:
 
 ```
 Email: default@example.com

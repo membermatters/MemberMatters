@@ -1,49 +1,76 @@
 version: "3"
 services:
-  # MemberMatters
-  membermatters:
-    image: membermatters/membermatters:celery
+  mm-postgres:
+    image: postgres:15.3-alpine
     restart: always
     environment:
-      PORTAL_ENV: "Production"
-      MM_REDIS_HOST: 'redis://membermatters-redis:6379/0'
-    volumes:
-      - ./:/usr/src/data
+      - POSTGRES_USER=membermatters
+      - POSTGRES_PASSWORD=membermatters
+      - POSTGRES_DB=membermatters
     ports:
-      - "8000:8000"
+      - "5432:5432"
+    volumes:
+      - mm-postgres-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U membermatters"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   # MemberMatters Redis
-  membermatters-redis:
+  mm-redis:
     image: redis
     restart: always
     depends_on:
-      - membermatters
+      - mm-postgres
 
-  # MemberMatters Celery Worker
-  membermatters-celery-worker:
-    image: membermatters/membermatters:celery
+  # MemberMatters
+  mm-webapp:
+    image: membermatters/membermatters
     restart: always
     environment:
-      PORTAL_ENV: "Production"
+      MM_ENV: "Production"
+      MM_SECRET_KEY: "CHANGE_ME"
+      MM_USE_POSTGRES: True
+      MM_REDIS_HOST: "redis://mm-redis:6379/0"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mm-postgres
+      - mm-redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+  # MemberMatters Celery Worker
+  mm-celery-worker:
+    image: membermatters/membermatters
+    restart: always
+    environment:
+      MM_ENV: "Production"
+      MM_USE_POSTGRES: True
       MM_RUN_MODE: "celery_worker"
-      MM_REDIS_HOST: 'redis://membermatters-redis:6379/0'
-    volumes:
-      - ./:/usr/src/data
+      MM_REDIS_HOST: "redis://mm-redis:6379/0"
     depends_on:
-      - membermatters
-      - membermatters-redis
+      - mm-webapp
+      - mm-redis
 
-  # MemberMatters Celery Worker
-  membermatters-celery-beat:
-    image: membermatters/membermatters:celery
+  # MemberMatters Celery Beat
+  mm-celery-beat:
+    image: membermatters/membermatters
     restart: always
     environment:
-      PORTAL_ENV: "Production"
+      MM_ENV: "Production"
+      MM_USE_POSTGRES: True
       MM_RUN_MODE: "celery_beat"
-      MM_REDIS_HOST: 'redis://membermatters-redis:6379/0'
-    volumes:
-      - ./:/usr/src/data
+      MM_REDIS_HOST: "redis://mm-redis:6379/0"
     depends_on:
-      - membermatters
-      - membermatters-celery-worker
-      - membermatters-redis
+      - mm-webapp
+      - mm-celery-worker
+      - mm-redis
+
+volumes:
+  mm-postgres-volume:
+    driver: local
