@@ -1,9 +1,10 @@
-name: Build Docker Image
+name: Build Docker Image (Prod Release)
 
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "!v[0-9]+.[0-9]+.[0-9]+-*"
 
 jobs:
   docker:
@@ -23,6 +24,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           file: docker/Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: membermatters/membermatters:latest,membermatters/membermatters:${{github.ref_name}}
