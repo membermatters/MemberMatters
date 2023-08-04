@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("api_admin_tools", "0007_auto_20210107_1133"),
         ("profile", "0002_remove_membertypes_description"),
