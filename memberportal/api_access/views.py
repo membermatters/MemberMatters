@@ -1,10 +1,61 @@
+from django.utils import timezone
 from access.models import Doors, Interlock
 from profile.models import User
 
-from rest_framework import permissions, status
+from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from constance import config
+
+
+class AccessSystemStatus(APIView):
+    """
+    get: This method returns the current status of the access system.
+    """
+
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        statusObject = {
+            "doors": [],
+            "interlocks": [],
+        }
+
+        error_if_offline = request.GET.get("errorIfOffline", False)
+        a_device_is_offline = False
+
+        for door in Doors.objects.all():
+            offline = door.get_unavailable()
+            statusObject["doors"].append(
+                {
+                    "id": door.id,
+                    "name": door.name,
+                    "lastSeen": door.last_seen,
+                    "lockedOut": door.locked_out,
+                    "offline": offline,
+                }
+            )
+            if offline and door.report_online_status:
+                a_device_is_offline = True
+
+        for interlock in Interlock.objects.all():
+            offline = interlock.get_unavailable()
+            statusObject["interlocks"].append(
+                {
+                    "id": interlock.id,
+                    "name": interlock.name,
+                    "lastSeen": interlock.last_seen,
+                    "lockedOut": interlock.locked_out,
+                    "offline": offline,
+                }
+            )
+            if offline and interlock.report_online_status:
+                a_device_is_offline = True
+
+        if error_if_offline and a_device_is_offline:
+            return Response(statusObject, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        return Response(statusObject)
 
 
 class UserAccessPermissions(APIView):
@@ -29,6 +80,7 @@ class AuthoriseDoor(APIView):
 
         member.profile.doors.add(door)
         member.profile.save()
+        door.sync()
 
         return Response()
 
@@ -42,10 +94,11 @@ class AuthoriseInterlock(APIView):
 
     def put(self, request, interlock_id, user_id):
         member = User.objects.get(pk=user_id)
-        door = Interlock.objects.get(pk=interlock_id)
+        interlock = Interlock.objects.get(pk=interlock_id)
 
-        member.profile.interlocks.add(door)
+        member.profile.interlocks.add(interlock)
         member.profile.save()
+        interlock.sync()
 
         return Response()
 
@@ -63,6 +116,7 @@ class RevokeDoor(APIView):
 
         member.profile.doors.remove(door)
         member.profile.save()
+        door.sync()
 
         return Response()
 
@@ -80,8 +134,22 @@ class RevokeInterlock(APIView):
 
         member.profile.interlocks.remove(interlock)
         member.profile.save()
+        interlock.sync()
 
         return Response()
+
+
+class SyncInterlock(APIView):
+    """
+    post: This method will force sync the specified interlock.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def post(self, request, interlock_id):
+        interlock = Interlock.objects.get(pk=interlock_id)
+
+        return Response({"success": interlock.sync()})
 
 
 class RebootInterlock(APIView):
@@ -95,6 +163,19 @@ class RebootInterlock(APIView):
         interlock = Interlock.objects.get(pk=interlock_id)
 
         return Response({"success": interlock.reboot()})
+
+
+class SyncDoor(APIView):
+    """
+    post: This method will force sync the specified door.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def post(self, request, door_id):
+        door = Doors.objects.get(pk=door_id)
+
+        return Response({"success": door.sync()})
 
 
 class RebootDoor(APIView):

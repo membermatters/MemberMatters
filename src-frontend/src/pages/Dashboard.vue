@@ -39,6 +39,7 @@
           :link-text="card.btn_text"
           :link-location="card.url"
           :router-link="card.routerLink ? card.routerLink : false"
+          :links="card.links"
         />
       </div>
     </div>

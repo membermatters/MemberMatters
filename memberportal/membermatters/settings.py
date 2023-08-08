@@ -146,7 +146,7 @@ if "MM_USE_POSTGRES" in os.environ:
             "USER": os.environ.get("POSTGRES_USER", "membermatters"),
             "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "membermatters"),
             "HOST": os.environ.get(
-                "POSTGRES_HOST", "membermatters-postgres"
+                "POSTGRES_HOST", "mm-postgres"
             ),  # default for docker-compose - change if needed
             "PORT": os.environ.get("POSTGRES_PORT", "5432"),
         }

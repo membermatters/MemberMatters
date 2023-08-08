@@ -1,10 +1,15 @@
 import requests
 from django.conf import settings
 from constance import config
+import logging
+
+logger = logging.getLogger("app")
 
 
 def post_door_swipe_to_discord(name, door, status):
     if config.ENABLE_DISCORD_INTEGRATION:
+        logger.debug("Posting door swipe to Discord!")
+
         url = config.DISCORD_DOOR_WEBHOOK
 
         json_message = {"description": "", "embeds": []}
@@ -12,7 +17,7 @@ def post_door_swipe_to_discord(name, door, status):
         if status is True:
             json_message["embeds"].append(
                 {
-                    "description": ":unlock: {} just **successfully** swiped at {} door.".format(
+                    "description": ":unlock: {} just **successfully** swiped at {}.".format(
                         name, door
                     ),
                     "color": 5025616,
@@ -22,18 +27,27 @@ def post_door_swipe_to_discord(name, door, status):
         elif status == "not_signed_in":
             json_message["embeds"].append(
                 {
-                    "description": ":lock: {} swiped at {} door but was rejected because they "
+                    "description": ":x: {} swiped at {} but was rejected because they "
                     "aren't signed into site.".format(name, door),
                     "color": 5025616,
+                }
+            )
+
+        elif status == "maintenance_lock_out":
+            json_message["embeds"].append(
+                {
+                    "description": ":x: {} tried to access the {} but it is currently under a "
+                    "maintenance lockout.".format(name, door),
+                    "color": 16007990,
                 }
             )
 
         else:
             json_message["embeds"].append(
                 {
-                    "description": f"{name} just swiped at {door} door but was **rejected**. You "
+                    "description": f":x: {name} just swiped at {door} but was **rejected**. You "
                     f"can check your"
-                    f" access [here]({config.SITE_URL}/profile/access/view/).",
+                    f" access [here]({config.SITE_URL}/account/access/).",
                     "color": 16007990,
                 }
             )
@@ -48,6 +62,7 @@ def post_door_swipe_to_discord(name, door, status):
 
 def post_interlock_swipe_to_discord(name, interlock, type, time=None):
     if config.ENABLE_DISCORD_INTEGRATION:
+        logger.debug("Posting interlock swipe to Discord!")
         url = config.DISCORD_INTERLOCK_WEBHOOK
 
         json_message = {"description": "", "embeds": []}
@@ -67,7 +82,7 @@ def post_interlock_swipe_to_discord(name, interlock, type, time=None):
                 {
                     "description": f"{name} tried to activate the {interlock} but was "
                     f"**rejected**. You can check your"
-                    f" access [here]({config.SITE_URL}/profile/access/view/).",
+                    f" access [here]({config.SITE_URL}/account/access/).",
                     "color": 16007990,
                 }
             )
@@ -120,6 +135,7 @@ def post_interlock_swipe_to_discord(name, interlock, type, time=None):
 
 def post_kiosk_swipe_to_discord(name, sign_in):
     if config.ENABLE_DISCORD_INTEGRATION:
+        logger.debug("Posting kiosk swipe to Discord!")
         url = config.DISCORD_DOOR_WEBHOOK
 
         json_message = {"description": "", "embeds": []}

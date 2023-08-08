@@ -13,6 +13,8 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from django.db.models import F, Count, Sum, ExpressionWrapper, FloatField, Count, Max
+from datetime import timedelta
 import humanize
 from django.db import connection
 from django.db.utils import OperationalError
@@ -151,26 +153,29 @@ class Doors(APIView):
         doors = models.Doors.objects.all()
 
         def get_door(door):
-            cursor = connection.cursor()
-            cursor.execute(
-                "SELECT access_doorlog.door_id, access_doorlog.user_id, pp.screen_name, COUNT(access_doorlog.user_id) as records, MAX(access_doorlog.date) as lastSeen FROM access_doorlog INNER JOIN profile_profile pp on access_doorlog.user_id = pp.user_id GROUP BY access_doorlog.door_id, access_doorlog.user_id HAVING access_doorlog.door_id = %s ORDER BY records DESC",
-                [door.id],
+            # Query to get the statistics
+            stats = (
+                models.DoorLog.objects.filter(door_id=door.id)
+                .annotate(screen_name=F("user__profile__screen_name"))
+                .values("door_id", "user_id", "screen_name")
+                .annotate(records=Count("user_id"), lastSeen=Max("date"))
+                .order_by("-records")
             )
-            result = cursor.fetchall()
 
-            stats = [
-                dict(zip([key[0] for key in cursor.description], row)) for row in result
-            ]
+            print(stats)
 
             return {
                 "id": door.id,
                 "name": door.name,
                 "description": door.description,
                 "ipAddress": door.ip_address,
+                "serialNumber": door.serial_number,
                 "lastSeen": door.last_seen,
+                "offline": door.get_unavailable(),
                 "defaultAccess": door.all_members,
                 "maintenanceLockout": door.locked_out,
                 "playThemeOnSwipe": door.play_theme,
+                "postDiscordOnSwipe": door.post_to_discord,
                 "exemptFromSignin": door.exempt_signin,
                 "hiddenToMembers": door.hidden,
                 "usage": models.DoorLog.objects.filter(door_id=door.id).count(),
@@ -187,10 +192,12 @@ class Doors(APIView):
         door.name = data.get("name")
         door.description = data.get("description")
         door.ip_address = data.get("ipAddress")
+        door.serial_number = data.get("serialNumber")
 
         door.all_members = data.get("defaultAccess")
         door.locked_out = data.get("maintenanceLockout")
         door.play_theme = data.get("playThemeOnSwipe")
+        door.post_to_discord = data.get("postDiscordOnSwipe")
         door.exempt_signin = data.get("exemptFromSignin")
         door.hidden = data.get("hiddenToMembers")
 
@@ -218,17 +225,23 @@ class Interlocks(APIView):
         interlocks = models.Interlock.objects.all()
 
         def get_interlock(interlock):
-            cursor = connection.cursor()
-            cursor.execute(
-                "SELECT SUM((julianday(last_heartbeat)-julianday(first_heartbeat))*86400) AS onTime from access_interlocklog WHERE interlock_id = %s",
-                [interlock.id],
+            # Calculate onTime using Django's ORM
+            on_time_seconds = (
+                InterlockLog.objects.filter(interlock_id=interlock.id)
+                .annotate(
+                    on_time_seconds=Sum(
+                        (F("last_heartbeat") - F("first_heartbeat")) * 86400,
+                        output_field=FloatField(),
+                    ),
+                )
+                .values("on_time_seconds")
+                .first()
             )
-            result = cursor.fetchone()
-            onTime = 0
 
-            if result[0] is not None:
-                onTime = humanize.precisedelta(
-                    round(result[0]),
+            on_time = 0
+            if on_time_seconds and on_time_seconds["on_time_seconds"] is not None:
+                on_time = humanize.precisedelta(
+                    round(on_time_seconds["on_time_seconds"]),
                     suppress=[
                         "months",
                         "days",
@@ -238,16 +251,23 @@ class Interlocks(APIView):
                     ],
                 )
 
-            cursor = connection.cursor()
-            cursor.execute(
-                "SELECT access_interlocklog.interlock_id, access_interlocklog.user_id, pp.screen_name, COUNT(access_interlocklog.first_heartbeat) as records, round(SUM(julianday(access_interlocklog.last_heartbeat)-julianday(access_interlocklog.first_heartbeat))*1440) AS onTime FROM access_interlocklog INNER JOIN profile_profile pp on access_interlocklog.user_id = pp.user_id GROUP BY access_interlocklog.interlock_id, access_interlocklog.user_id HAVING access_interlocklog.interlock_id = %s ORDER BY onTime DESC",
-                [interlock.id],
+            # Retrieve stats using Django's ORM
+            stats = (
+                InterlockLog.objects.filter(interlock_id=interlock.id)
+                .values(
+                    "interlock_id",
+                    "user_id",
+                    "user__profile__screen_name",  # Assuming the related_name of the user's profile is 'profile'
+                )
+                .annotate(
+                    records=Count("first_heartbeat"),
+                    on_time_minutes=ExpressionWrapper(
+                        Sum((F("last_heartbeat") - F("first_heartbeat")) * 1440),
+                        output_field=FloatField(),
+                    ),
+                )
+                .order_by("-on_time_minutes")
             )
-            result = cursor.fetchall()
-
-            stats = [
-                dict(zip([key[0] for key in cursor.description], row)) for row in result
-            ]
 
             return {
                 "id": interlock.id,
@@ -255,13 +275,14 @@ class Interlocks(APIView):
                 "description": interlock.description,
                 "ipAddress": interlock.ip_address,
                 "lastSeen": interlock.last_seen,
+                "offline": interlock.get_unavailable(),
                 "defaultAccess": interlock.all_members,
                 "maintenanceLockout": interlock.locked_out,
                 "playThemeOnSwipe": interlock.play_theme,
                 "exemptFromSignin": interlock.exempt_signin,
                 "hiddenToMembers": interlock.hidden,
-                "usage": onTime,
-                "stats": stats,
+                "usage": on_time,
+                "stats": list(stats),
             }
 
         return Response(map(get_interlock, interlocks))
@@ -332,6 +353,10 @@ class MemberProfile(APIView):
 
         body = json.loads(request.body)
         member = User.objects.get(id=member_id)
+        rfid_changed = False
+
+        if member.profile.rfid != body.get("rfidCard"):
+            rfid_changed = True
 
         member.email = body.get("email")
         member.profile.first_name = body.get("firstName")
@@ -344,6 +369,10 @@ class MemberProfile(APIView):
 
         member.save()
         member.profile.save()
+
+        if rfid_changed:
+            for door in member.profile.doors.all():
+                door.sync()
 
         return Response()
 
@@ -572,9 +601,9 @@ class MemberBillingInfo(StripeAPIView):
             s = None
 
             # if we have a subscription id, fetch the details
-            if request.user.profile.stripe_subscription_id:
+            if member.user.profile.stripe_subscription_id:
                 s = stripe.Subscription.retrieve(
-                    request.user.profile.stripe_subscription_id,
+                    member.user.profile.stripe_subscription_id,
                 )
 
             # if we got subscription details
@@ -591,9 +620,9 @@ class MemberBillingInfo(StripeAPIView):
                 billing_info["subscription"] = None
 
         # get the most recent memberbucks transactions and order them by date
-        recent_transactions = MemberBucks.objects.filter(user=request.user).order_by(
-            "date"
-        )[::-1][:100]
+        recent_transactions = MemberBucks.objects.filter(user=member).order_by("date")[
+            ::-1
+        ][:100]
 
         def get_transaction(transaction):
             return transaction.get_transaction_display()

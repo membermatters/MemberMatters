@@ -34,9 +34,22 @@
         <q-btn v-if="routerLink" :to="routerLink" flat>
           {{ linkText }}
         </q-btn>
-        <q-btn v-else :href="linkLocation" target="_blank" flat>
+        <q-btn
+          v-else-if="linkLocation"
+          :href="linkLocation"
+          target="_blank"
+          flat
+        >
           {{ linkText }}
         </q-btn>
+        <div v-else>
+          <template :key="link.url" v-for="link in links">
+            <q-btn :href="link.url" target="_blank" flat>
+              {{ link.btn_text }}
+            </q-btn>
+            <q-separator v-if="link.newLine" vertical />
+          </template>
+        </div>
       </q-card-actions>
     </q-card>
   </div>
@@ -62,12 +75,18 @@ export default {
     },
     linkText: {
       type: String,
-      required: true,
+      required: false,
+      default: null,
     },
     linkLocation: {
       type: [String, Object],
       required: false,
       default: null,
+    },
+    links: {
+      type: Array,
+      required: false,
+      default: () => [],
     },
     routerLink: {
       type: [Object, Boolean],

@@ -3,6 +3,11 @@ from . import views
 
 urlpatterns = [
     path(
+        "api/access/status/",
+        views.AccessSystemStatus.as_view(),
+        name="AccessSystemStatus",
+    ),
+    path(
         "api/access/permissions/",
         views.UserAccessPermissions.as_view(),
         name="UserAccessPermissions",
@@ -36,6 +41,16 @@ urlpatterns = [
         "api/access/doors/<int:door_id>/reboot/",
         views.RebootDoor.as_view(),
         name="RebootDoor",
+    ),
+    path(
+        "api/access/interlocks/<int:interlock_id>/sync/",
+        views.SyncInterlock.as_view(),
+        name="SyncInterlock",
+    ),
+    path(
+        "api/access/doors/<int:door_id>/sync/",
+        views.SyncDoor.as_view(),
+        name="SyncDoor",
     ),
     path(
         "api/access/doors/<int:door_id>/unlock/",

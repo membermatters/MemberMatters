@@ -372,6 +372,13 @@ class Profile(models.Model):
         else:
             return False
 
+    def sync_access(self):
+        for door in self.doors.all():
+            door.sync()
+
+        for interlock in self.interlocks.all():
+            interlock.sync()
+
     def deactivate(self, request=None):
         if request:
             log_user_event(
@@ -391,6 +398,7 @@ class Profile(models.Model):
         sms_message.send_deactivated_access(self.phone)
         self.state = "inactive"
         self.save()
+        self.sync_access()
         return True
 
     def activate(self, request=None):
@@ -414,6 +422,7 @@ class Profile(models.Model):
 
         self.state = "active"
         self.save()
+        self.sync_access()
         return True
 
     def set_account_only(self):
@@ -527,16 +536,20 @@ class Profile(models.Model):
 
         user_active = self.state == "active"
 
-        # if the method got doors, use them, otherwise query them
         for door in Doors.objects.all():
+            if door.hidden:
+                continue
+
             if door in self.doors.all() and user_active:
                 doors.append({"name": door.name, "access": True, "id": door.id})
 
             else:
                 doors.append({"name": door.name, "access": False, "id": door.id})
 
-        # if the method got interlocks, use them, otherwise query them
         for interlock in Interlock.objects.all():
+            if interlock.hidden:
+                continue
+
             if interlock in self.interlocks.all() and user_active:
                 interlocks.append(
                     {"name": interlock.name, "access": True, "id": interlock.id}

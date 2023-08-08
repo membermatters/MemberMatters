@@ -14,7 +14,7 @@ import humanize
 import hashlib
 import urllib
 
-from services.discord import post_interlock_swipe_to_discord, post_door_swipe_to_discord
+from services.discord import post_interlock_swipe_to_discord
 
 utc = pytz.UTC
 request_timeout = settings.REQUEST_TIMEOUT
@@ -268,9 +268,10 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
 
     if user.profile.state == "active":
         if interlock.locked_out:
-            post_interlock_swipe_to_discord(
-                user.profile.get_full_name(), interlock.name, "maintenance_lock_out"
-            )
+            if interlock.post_to_discord:
+                post_interlock_swipe_to_discord(
+                    user.profile.get_full_name(), interlock.name, "maintenance_lock_out"
+                )
             return JsonResponse(
                 {
                     "access": False,
@@ -291,18 +292,22 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
                     and interlock.exempt_signin is False
                 ):
                     user.profile.update_last_seen()
-                    post_door_swipe_to_discord(
-                        user.profile.get_full_name(), interlock.name, "not_signed_in"
-                    )
+                    if interlock.post_to_discord:
+                        post_interlock_swipe_to_discord(
+                            user.profile.get_full_name(),
+                            interlock.name,
+                            "not_signed_in",
+                        )
                     return JsonResponse(
                         {"access": False, "name": user.profile.first_name}
                     )
 
                 session = interlock.create_session(user)
                 user.profile.update_last_seen()
-                post_interlock_swipe_to_discord(
-                    user.profile.get_full_name(), interlock.name, "activated"
-                )
+                if interlock.post_to_discord:
+                    post_interlock_swipe_to_discord(
+                        user.profile.get_full_name(), interlock.name, "activated"
+                    )
                 if interlock.play_theme:
                     play_theme_song(user)
 
@@ -317,9 +322,10 @@ def check_interlock_access(request, rfid_code=None, interlock_id=None, session_i
 
     # if they are inactive or don't have access
     user.profile.update_last_seen()
-    post_interlock_swipe_to_discord(
-        user.profile.get_full_name(), interlock.name, "rejected"
-    )
+    if interlock.post_to_discord:
+        post_interlock_swipe_to_discord(
+            user.profile.get_full_name(), interlock.name, "rejected"
+        )
     return JsonResponse({"access": False, "name": user.profile.first_name})
 
 
@@ -383,12 +389,13 @@ def interlock_cron(request):
             on_time = humanize.naturaldelta(
                 session.last_heartbeat - session.first_heartbeat
             )
-            post_interlock_swipe_to_discord(
-                session.user.profile.get_full_name(),
-                session.interlock.name,
-                "left_on",
-                on_time,
-            )
+            if session.interlock.post_to_discord:
+                post_interlock_swipe_to_discord(
+                    session.user.profile.get_full_name(),
+                    session.interlock.name,
+                    "left_on",
+                    on_time,
+                )
 
     return HttpResponseRedirect("/")
 
@@ -411,12 +418,13 @@ def end_interlock_session(request, session_id, rfid=None):
         on_time = humanize.naturaldelta(
             session.last_heartbeat - session.first_heartbeat
         )
-        post_interlock_swipe_to_discord(
-            session.user_off.profile.get_full_name(),
-            session.interlock.name,
-            "deactivated",
-            on_time,
-        )
+        if session.interlock.post_to_discord:
+            post_interlock_swipe_to_discord(
+                session.user_off.profile.get_full_name(),
+                session.interlock.name,
+                "deactivated",
+                on_time,
+            )
 
         return JsonResponse({"access": True})
 

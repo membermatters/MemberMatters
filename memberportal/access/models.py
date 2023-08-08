@@ -31,8 +31,12 @@ class AccessControlledDevice(models.Model):
     all_members = models.BooleanField("Members have access by default", default=False)
     locked_out = models.BooleanField("Maintenance lockout enabled", default=False)
     play_theme = models.BooleanField("Play theme on door swipe", default=False)
+    post_to_discord = models.BooleanField("Post to discord on door swipe", default=True)
     exempt_signin = models.BooleanField(
         "Exempt this device from requiring a sign in", default=False
+    )
+    report_online_status = models.BooleanField(
+        "Report the online status of this device.", default=True
     )
     hidden = models.BooleanField(
         "Hidden from members in their access permissions screen", default=False
@@ -62,10 +66,28 @@ class AccessControlledDevice(models.Model):
 
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
-                "door_" + self.serial_number, {"type": "door_sync"}
+                "door_" + self.serial_number, {"type": "sync_users"}
             )
 
             return True
+
+        else:
+            logger.error(
+                "Cannot sync door without websocket support (for {})!".format(self.name)
+            )
+
+    def reboot(self):
+        if self.serial_number:
+            logger.info(
+                "Sending door reboot to channels for {}".format(
+                    "door_" + self.serial_number
+                )
+            )
+
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "door_" + self.serial_number, {"type": "device_reboot"}
+            )
 
         else:
             logger.error(
@@ -81,25 +103,6 @@ class MemberbucksDevice(AccessControlledDevice):
 
     def unlock(self):
         return False
-
-    def reboot(self):
-        import requests
-
-        r = requests.get("http://{}/reboot".format(self.ip_address), timeout=10)
-        if r.status_code == 200:
-            log_event(
-                self.name + " rebooted from admin interface.",
-                "memberbucks",
-                "Status: {}. Content: {}".format(r.status_code, r.content),
-            )
-            return True
-        else:
-            log_event(
-                self.name + " rebooted from admin interface failed.",
-                "memberbucks",
-                "Status: {}. Content: {}".format(r.status_code, r.content),
-            )
-            return False
 
 
 class Doors(AccessControlledDevice):
@@ -142,38 +145,6 @@ class Doors(AccessControlledDevice):
                 return False
 
         return True
-
-    def reboot(self):
-        if self.serial_number:
-            logger.info(
-                "Sending door reboot to channels for {}".format(
-                    "door_" + self.serial_number
-                )
-            )
-
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                "door_" + self.serial_number, {"type": "door_reboot"}
-            )
-
-        else:
-            import requests
-
-            r = requests.get("http://{}/reboot".format(self.ip_address), timeout=10)
-            if r.status_code == 200:
-                log_event(
-                    self.name + " rebooted from admin interface.",
-                    "door",
-                    "Status: {}. Content: {}".format(r.status_code, r.content),
-                )
-                return True
-            else:
-                log_event(
-                    self.name + " rebooted from admin interface failed.",
-                    "door",
-                    "Status: {}. Content: {}".format(r.status_code, r.content),
-                )
-                return False
 
     def log_access(self, member_id, success=True):
         logger.info("Logging access for {}".format(self.name))
@@ -232,25 +203,6 @@ class Interlock(AccessControlledDevice):
             "last_heartbeat"
         )
         return interlocklog.last_heartbeat
-
-    def reboot(self):
-        import requests
-
-        r = requests.get("http://{}/reboot".format(self.ip_address), timeout=10)
-        if r.status_code == 200:
-            log_event(
-                self.name + " rebooted from admin interface.",
-                "interlock",
-                "Status: {}. Content: {}".format(r.status_code, r.content),
-            )
-            return True
-        else:
-            log_event(
-                self.name + " rebooted from admin interface failed.",
-                "interlock",
-                "Status: {}. Content: {}".format(r.status_code, r.content),
-            )
-            return False
 
 
 class DoorLog(models.Model):
