@@ -10,7 +10,7 @@ pre-commit==2.19.0
 djangorestframework~=3.13.1
 djangorestframework-simplejwt>=4.7.2
 django-csp~=3.7
-sentry-sdk==1.5.12
+sentry-sdk==1.14.0
 mysqlclient
 git+https://github.com/mailchimp/mailchimp-marketing-python.git
 channels~=3.0.4
