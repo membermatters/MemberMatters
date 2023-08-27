@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+    "oidc_provider",
     "channels",
     "profile",
     "access",
@@ -270,7 +271,7 @@ STATIC_ROOT = os.environ.get(
     "MM_STATIC_LOCATION", "/usr/src/app/memberportal/membermatters/static"
 )
 LOGIN_REDIRECT_URL = "/"
-LOGIN_URL = "/signin"
+LOGIN_URL = "/login"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.environ.get("MM_MEDIA_LOCATION", "/usr/src/data/media/")
 
@@ -287,3 +288,8 @@ CELERY_BROKER_URL = os.getenv("MM_REDIS_HOST")
 CONSTANCE_BACKEND = "membermatters.constance_backend.DatabaseBackend"
 CONSTANCE_CONFIG = CONSTANCE_CONFIG
 CONSTANCE_CONFIG_FIELDSETS = CONSTANCE_CONFIG_FIELDSETS
+
+OIDC_USERINFO = "membermatters.oidc_provider_settings.userinfo"
+
+# Needed for testing OIDC on local development environment with ngrok (oauth requires HTTPS)
+# SITE_URL = "https://1bd0-122-148-148-138.ngrok-free.app"
