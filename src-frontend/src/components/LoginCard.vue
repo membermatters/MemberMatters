@@ -322,6 +322,12 @@ export default defineComponent({
 
       this.loginComplete = true;
       this.$emit('login-complete');
+
+      // oidc login redirect
+      if (this.$route.query.next)
+        window.location.replace(this.$route.query.next as string);
+
+      // our own login redirect
       if (this.$route.query.nextUrl) {
         this.setLoggedIn(true);
         this.$router.push(this.$route.query.nextUrl as string);
