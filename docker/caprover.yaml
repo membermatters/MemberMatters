@@ -1,57 +1,8 @@
 captainVersion: 4
-services:
-  # MemberMatters
-  $$cap_appname:
-    image: membermatters/membermatters:$$cap_version
-    restart: always
-    environment:
-      MM_ENV: $$cap_env
-      MM_REDIS_HOST: "redis://srv-captain--$$cap_appname-redis:6379/0"
-    volumes:
-      - $$cap_appname-data:/usr/src/data
-    depends_on:
-      - $$cap_appname-redis
-    caproverExtra:
-      containerHttpPort: "8000"
-
-  # MemberMatters Redis
-  $$cap_appname-redis:
-    image: redis:alpine
-    restart: always
-
-  # MemberMatters Celery Worker
-  $$cap_appname-celery-worker:
-    image: membermatters/membermatters:$$cap_version
-    command: ["celery", "-A", "membermatters.celeryapp", "worker", "-l", "INFO"]
-    restart: always
-    environment:
-      MM_ENV: $$cap_env
-      MM_RUN_MODE: "celery_worker"
-      MM_REDIS_HOST: "redis://srv-captain--$$cap_appname-redis:6379/0"
-    volumes:
-      - $$cap_appname-data:/usr/src/data
-    depends_on:
-      - $$cap_appname-redis
-      - $$cap_appname
-
-  # MemberMatters Celery Beat
-  $$cap_appname-celery-beat:
-    image: membermatters/membermatters:$$cap_version
-    command: ["celery", "-A", "membermatters.celeryapp", "beat", "-l", "INFO"]
-    restart: always
-    environment:
-      MM_ENV: $$cap_env
-      MM_RUN_MODE: "celery_beat"
-      MM_REDIS_HOST: "redis://srv-captain--$$cap_appname-redis:6379/0"
-    volumes:
-      - $$cap_appname-data:/usr/src/data
-    depends_on:
-      - $$cap_appname-redis
-      - $$cap_appname
 caproverOneClickApp:
   variables:
-    - id: $$cap_version
-      label: Version
+    - id: $$cap_mm_version
+      label: MemberMatters Version
       defaultValue: "latest"
       description: Check out the docker page for the valid tags https://hub.docker.com/r/membermatters/membermatters/tags
       validRegex: /^([^\s^\/])+$/
@@ -60,13 +11,124 @@ caproverOneClickApp:
       defaultValue: "Production"
       description: The environment your installation is running in. You can set this to "Development" for additional debug logging.
       validRegex: /^([^\s^\/])+$/
+    - id: $$cap_postgres_user
+      label: Postgres User
+      defaultValue: "membermatters"
+      description: The username for default postgres user (you shouldn't need to change this).
+      validRegex: /^([^\s^\/])+$/
+    - id: $$cap_postgres_password
+      label: Postgres Password
+      defaultValue: "$$cap_gen_random_hex(30)"
+      description: The password for default postgres user (you shouldn't need to change this).
+      validRegex: /^([^\s^\/])+$/
+    - id: $$cap_postgres_db
+      label: Postgres Database Name
+      defaultValue: "membermatters"
+      description: The postgres database name to use (you shouldn't need to change this).
+      validRegex: /^([^\s^\/])+$/
+    - id: $$cap_mm_secret_key
+      label: MemberMatters Django Secret Key
+      defaultValue: "$$cap_gen_random_hex(30)"
+      description: The Django secret key (you shouldn't need to change this).
+      validRegex: /^([^\s^\/])+$/
   instructions:
     start: >-
-      MemberMatters is an open source membership management platform for makerspaces and community groups.
+      Getting ready to deploy MemberMatters.
     end: >-
       Done! 😄
-      Your service is available at http://$$cap_appname.$$cap_root_domain
+      Your service is available at http://$$cap_appname.$$cap_root_domain. 
+      You may need to load the data fixtures or create an admin login using the Django cli.
+      You can connect to the running container and run something like `python3 manage.py loaddata fixtures/initial.json` to do this.
   displayName: "MemberMatters"
   isOfficial: true
   description: Open source membership management platform for makerspaces and community groups.
   documentation: https://membermatters.org
+########
+services:
+  $$cap_appname-mm-postgres:
+    image: postgres:15.3-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: $$cap_postgres_user
+      POSTGRES_PASSWORD: $$cap_postgres_password
+      POSTGRES_DB: $$cap_postgres_db
+    volumes:
+      - $$cap_appname-mm-postgres-volume:/var/lib/postgresql/data
+    caproverExtra:
+      notExposeAsWebApp: true
+
+  # MemberMatters Redis
+  $$cap_appname-mm-redis:
+    image: redis:alpine
+    restart: always
+    depends_on:
+      - $$cap_appname-mm-postgres
+    caproverExtra:
+      notExposeAsWebApp: true
+
+  # MemberMatters
+  $$cap_appname-mm-webapp:
+    image: membermatters/membermatters:$$cap_mm_version
+    restart: always
+    environment:
+      MM_ENV: $$cap_env
+      MM_SECRET_KEY: $$cap_mm_secret_key
+      MM_REDIS_HOST: "redis://srv-captain--$$cap_appname-mm-redis:6379/0"
+      MM_USE_POSTGRES: True
+      POSTGRES_DB: $$cap_postgres_db
+      POSTGRES_USER: $$cap_postgres_user
+      POSTGRES_PASSWORD: $$cap_postgres_password
+      POSTGRES_HOST: "srv-captain--$$cap_appname-mm-postgres"
+    volumes:
+      - $$cap_appname-mm-webapp-data:/usr/src/data
+    depends_on:
+      - $$cap_appname-mm-redis
+      - $$cap_appname-mm-postgres
+    caproverExtra:
+      containerHttpPort: "8000"
+
+  # MemberMatters Celery Worker
+  $$cap_appname-mm-celery-worker:
+    image: membermatters/membermatters:$$cap_mm_version
+    # command: ["celery", "-A", "membermatters.celeryapp", "worker", "-l", "INFO"]
+    restart: always
+    environment:
+      MM_ENV: $$cap_env
+      MM_USE_POSTGRES: True
+      POSTGRES_DB: $$cap_postgres_db
+      POSTGRES_USER: $$cap_postgres_user
+      POSTGRES_PASSWORD: $$cap_postgres_password
+      POSTGRES_HOST: "srv-captain--$$cap_appname-mm-postgres"
+      MM_RUN_MODE: "celery_worker"
+      MM_REDIS_HOST: "redis://srv-captain--$$cap_appname-mm-redis:6379/0"
+    volumes:
+      - $$cap_appname-mm-data:/usr/src/data
+    depends_on:
+      - $$cap_appname-mm-redis
+      - $$cap_appname-mm-postgres
+      - $$cap_appname-mm-webapp
+    caproverExtra:
+      notExposeAsWebApp: true
+
+  # MemberMatters Celery Beat
+  $$cap_appname-mm-celery-beat:
+    image: membermatters/membermatters:$$cap_mm_version
+    # command: ["celery", "-A", "membermatters.celeryapp", "beat", "-l", "INFO"]
+    restart: always
+    environment:
+      MM_ENV: $$cap_env
+      MM_USE_POSTGRES: True
+      POSTGRES_DB: $$cap_postgres_db
+      POSTGRES_USER: $$cap_postgres_user
+      POSTGRES_PASSWORD: $$cap_postgres_password
+      POSTGRES_HOST: "srv-captain--$$cap_appname-mm-postgres"
+      MM_RUN_MODE: "celery_beat"
+      MM_REDIS_HOST: "redis://srv-captain--$$cap_appname-mm-redis:6379/0"
+    volumes:
+      - $$cap_appname-mm-data:/usr/src/data
+    depends_on:
+      - $$cap_appname-mm-redis
+      - $$cap_appname-mm-postgres
+      - $$cap_appname-mm-webapp
+    caproverExtra:
+      notExposeAsWebApp: true
