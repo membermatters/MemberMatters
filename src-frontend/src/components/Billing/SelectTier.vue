@@ -279,7 +279,7 @@ export default defineComponent({
       this.disableFinish = true;
       this.loading = true;
       this.$axios
-        .post(`api/billing/plans/${this.selectedPlan.id}/signup/`)
+        .post(`/api/billing/plans/${this.selectedPlan.id}/signup/`)
         .then((response) => {
           if (response.data.success) {
             this.finishSuccess = true;

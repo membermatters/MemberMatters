@@ -229,7 +229,7 @@ export default defineComponent({
       this.updateInductionStatus();
     }, 10000);
 
-    api.get('api/billing/can-signup/').then((result) => {
+    api.get('/api/billing/can-signup/').then((result) => {
       if (result.data.success) {
         this.step = 3; // skip straight to the end
       } else {

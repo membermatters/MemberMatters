@@ -156,7 +156,7 @@ export default {
     submitProxy() {
       this.loading = true;
       this.$axios
-        .post('api/proxies/', {
+        .post('/api/proxies/', {
           meeting: this.meeting.id,
           memberCity: this.memberCity,
           proxy: this.proxy.member.id,

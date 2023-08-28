@@ -88,7 +88,7 @@ export default {
   },
   methods: {
     getIdToken() {
-      this.$axios.get('api/profile/idtoken/').then((result) => {
+      this.$axios.get('/api/profile/idtoken/').then((result) => {
         QRCode.toDataURL(result.data.token, async (err, url) => {
           this.qrcode = url;
         });
