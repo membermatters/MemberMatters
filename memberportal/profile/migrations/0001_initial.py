@@ -316,7 +316,6 @@ class Migration(migrations.Migration):
                     models.CharField(blank=True, default="", max_length=6, null=True),
                 ),
                 ("doors", models.ManyToManyField(blank=True, to="access.Doors")),
-                ("groups", models.ManyToManyField(to="group.Group")),
                 (
                     "interlocks",
                     models.ManyToManyField(blank=True, to="access.Interlock"),
