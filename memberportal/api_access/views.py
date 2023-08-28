@@ -87,7 +87,7 @@ class AuthoriseDoor(APIView):
 
 class AuthoriseInterlock(APIView):
     """
-    post: This method authorises a member to access an interlock.
+    put: This method authorises a member to access an interlock.
     """
 
     permission_classes = (permissions.IsAdminUser,)
@@ -105,7 +105,7 @@ class AuthoriseInterlock(APIView):
 
 class RevokeDoor(APIView):
     """
-    post: This method revokes a member's access to a door.
+    put: This method revokes a member's access to a door.
     """
 
     permission_classes = (permissions.IsAdminUser,)
