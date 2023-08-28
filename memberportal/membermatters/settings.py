@@ -291,5 +291,8 @@ CONSTANCE_CONFIG_FIELDSETS = CONSTANCE_CONFIG_FIELDSETS
 
 OIDC_USERINFO = "membermatters.oidc_provider_settings.userinfo"
 
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 # Needed for testing OIDC on local development environment with ngrok (oauth requires HTTPS)
 # SITE_URL = "https://1bd0-122-148-148-138.ngrok-free.app"
