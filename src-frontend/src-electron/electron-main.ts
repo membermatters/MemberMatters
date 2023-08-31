@@ -1,4 +1,4 @@
-import { app, BrowserWindow, nativeTheme } from 'electron';
+import { app, BrowserWindow, nativeTheme, session } from 'electron';
 import path from 'path';
 import os from 'os';
 
@@ -28,6 +28,18 @@ function createWindow() {
       // More info: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/electron-preload-script
       preload: path.resolve(__dirname, process.env.QUASAR_ELECTRON_PRELOAD),
     },
+  });
+
+  // Set the SameSite attribute to "None" for all cookies
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    if (details.responseHeaders && details.responseHeaders['set-cookie']) {
+      details.responseHeaders['set-cookie'] = details.responseHeaders[
+        'set-cookie'
+      ].map((cookie: string) => {
+        return cookie + '; SameSite=None; Secure';
+      });
+    }
+    callback({ cancel: false, responseHeaders: details.responseHeaders });
   });
 
   mainWindow.loadURL(process.env.APP_URL);

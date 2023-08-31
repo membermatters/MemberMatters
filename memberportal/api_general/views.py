@@ -258,15 +258,19 @@ class LoginKiosk(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         try:
+            kiosk = Kiosk.objects.get(kiosk_id=body.get("kioskId"))
+
+        except Kiosk.DoesNotExist:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        if not kiosk.authorised:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        try:
             user = Profile.objects.get(rfid=body.get("cardId")).user
 
         except Profile.DoesNotExist:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-        kiosk = Kiosk.objects.get(kiosk_id=body.get("kioskId"))
-
-        if not kiosk.authorised:
-            return Response(status=status.HTTP_403_FORBIDDEN)
 
         if not user.email_verified:
             return Response(
