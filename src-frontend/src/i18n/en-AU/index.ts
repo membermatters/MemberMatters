@@ -14,6 +14,7 @@ export default {
     manageTiers: 'Membership Plans',
     manageTier: 'Manage Membership Plan',
     managePlan: 'Manage Payment Plan',
+    verifyEmail: 'Verify your email to continue',
 
     adminTools: 'Admin Tools',
     meetings: 'Meetings',
