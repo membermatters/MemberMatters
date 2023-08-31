@@ -5,7 +5,6 @@ logger = logging.getLogger("app")
 from django.db import models
 from datetime import timedelta
 from django.utils import timezone
-from membermatters.helpers import log_event
 import pytz
 from django.conf import settings
 from django.contrib import auth

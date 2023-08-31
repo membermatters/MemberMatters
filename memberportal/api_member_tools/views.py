@@ -1,7 +1,6 @@
 from profile.models import User, Profile
 from api_meeting.models import Meeting
 from constance import config
-from membermatters.helpers import log_user_event
 from services.emails import send_single_email
 from random import shuffle
 import requests
@@ -133,8 +132,7 @@ class IssueDetail(APIView):
             response = requests.request("POST", url, params=querystring)
 
             if response.status_code == 200:
-                log_user_event(
-                    request.user,
+                request.user.log_event(
                     "Submitted issue: " + title + " Content: " + description,
                     "generic",
                 )

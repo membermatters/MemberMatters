@@ -17,8 +17,8 @@ from api_general.models import SiteSession
 from api_admin_tools.models import MemberTier, PaymentPlan
 import json
 import uuid
-from postmarker.core import PostmarkClient
 import logging
+from services.emails import send_single_email
 from services import sms
 
 logger = logging.getLogger("app")
@@ -57,8 +57,8 @@ class EventLog(Log):
     pass
 
 
-# this needs to be here because it relies on the models defined above
-from membermatters.helpers import log_user_event
+def log_event(description, event_type, data=""):
+    EventLog(description=description, logtype=event_type, data=data).save()
 
 
 class UserManager(BaseUserManager):
@@ -140,32 +140,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         "Is the user a admin member?"
         return self.admin
 
+    def log_event(description, event_type, data=""):
+        UserEventLog(
+            description=description, logtype=event_type, user=user, data=data
+        ).save()
+
     def __send_email(self, subject, body):
-        # TODO: move this to celery
-
-        if config.POSTMARK_API_KEY:
-            postmark = PostmarkClient(server_token=config.POSTMARK_API_KEY)
-            postmark.emails.send(
-                From=config.EMAIL_DEFAULT_FROM,
-                To=self.email,
-                Subject=subject,
-                HtmlBody=body,
-            )
-            log_user_event(
-                self,
-                "Sent email with subject: " + subject,
-                "email",
-                "Email content: " + body,
-            )
-        else:
-            log_user_event(
-                self,
-                "Email NOT sent due to configuration issue: " + subject,
-                "email",
-                "Email content: " + body,
-            )
-
-        return True
+        return send_single_email(self, self.email, subject, subject, body)
 
     def email_notification(self, subject, title, preheader, message):
         email_vars = {"preheader": preheader, "title": title, "message": message}
@@ -245,7 +226,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return False
 
     def reset_password(self):
-        log_user_event(self, "Password reset requested", "profile")
+        self.log_event("Password reset requested", "profile")
         self.password_reset_key = uuid.uuid4()
         self.password_reset_expire = timezone.now() + timedelta(hours=24)
         self.save()
@@ -381,14 +362,12 @@ class Profile(models.Model):
 
     def deactivate(self, request=None):
         if request:
-            log_user_event(
-                self.user,
+            self.user.log_event(
                 request.user.profile.get_full_name() + " deactivated member",
                 "profile",
             )
         else:
-            log_user_event(
-                self.user,
+            self.user.log_event(
                 "system deactivated member",
                 "profile",
             )
@@ -403,14 +382,12 @@ class Profile(models.Model):
 
     def activate(self, request=None):
         if request:
-            log_user_event(
-                self.user,
+            self.user.log_event(
                 request.user.profile.get_full_name() + " activated member",
                 "profile",
             )
         else:
-            log_user_event(
-                self.user,
+            self.user.log_event(
                 "system activated member",
                 "profile",
             )
@@ -440,21 +417,9 @@ class Profile(models.Model):
         )
         subject = "A new member signed up! ({})".format(self.get_full_name())
 
-        postmark = PostmarkClient(server_token=config.POSTMARK_API_KEY)
-        postmark.emails.send(
-            From=config.EMAIL_DEFAULT_FROM,
-            To=to_email,
-            Subject=subject,
-            HtmlBody=email_string,
+        return send_single_email(
+            self.user, to_email, subject=subject, title=subject, message=email_string
         )
-
-        log_user_event(
-            self.user,
-            "Sent email with subject: " + subject,
-            "email",
-            "Email content: " + email_string,
-        )
-        return True
 
     def get_logs(self):
         return UserEventLog.objects.filter(user=self.user)
