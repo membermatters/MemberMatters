@@ -36,10 +36,10 @@ function createWindow() {
     // if on DEV or Production with debug enabled
     mainWindow.webContents.openDevTools();
   } else {
-    // we're on production; no access to devtools pls
-    mainWindow.webContents.on('devtools-opened', () => {
-      mainWindow?.webContents.closeDevTools();
-    });
+    // TODO: comment out if you want to block access to dev tools in production
+    // mainWindow.webContents.on('devtools-opened', () => {
+    //   mainWindow?.webContents.closeDevTools();
+    // });
   }
 
   mainWindow.on('closed', () => {
