@@ -5,28 +5,92 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v3.3.0] - 2022-10-10
+## [v3.4.0] - 2023-08-31
+
+### Removed
+
+- raw sql queries and replaced with Django ORM
+- automatic loading of fixtures on first run
+- db migrations that refer to now non-existent app
+
 ### Added
+
+- oauth2 / openid connect (provider) support for SSO
+- automatic door/interlock syncing on access changes
+- access system status endpoint
+- list of links as option for homepage cards
+- added dedicated web socket sync/reboot commands
+- option to enable discord swipe only on certain doors/interlocks
+- automatically sync all rfid card changes to devices
+- maintenance lockouts to devices
+- flag to opt out accounts from email export
+- check for invalid webcam/homepage cards config
+- copy to clipboard feature for email export
+- types for member objects
+- support for postgres database backend
+
+### Changed
+
+- changed all environment variables to start with MM\_
+- refactored web socket code
+- refactored frontend code and moved to src-frontend folder
+- moved to vite and added polyfills etc.
+- login page to add background gradient and logo
+- migrated lots of frontend code to typescript
+- MM logo
+- screenshots in docs folder
+- updated dockerfile to node 18
+- improved robustness of postmark integration
+- increased size limit of some title/description fields
+- caprover deployment example
+- some API routes to be more consistent layout
+- Dockerfile NGINX proxy_pass setup to work behind a second reverse proxy
+
+### Fixed
+
+- error messages for successful actions
+- discord swipe log url
+- manage member subscription data display
+- reset access permissions for each member when “all_members” option is toggled off/on
+- hide device from members feature
+- homepage/welcome email cards and webcam examples
+- missing translation strings
+- minor bugs in manage member page
+- GitHub actions
+- dayjs imports
+- registration requiring vehicle registration plate (should be optional)
+- signals running in raw mode (ie when data importing)
+- some frontend URLs in API requests (405 method not allowed errors)
+
+## [v3.3.0] - 2022-10-10
+
+### Added
+
 - Door bump API for unlocking doors from a 3rd party system
 - better webcam cache busting logic and documentation to configure webcams
 - option to collect vehicle registration "rego" plates on a member's profile
 
 ### Fixed
+
 - Don't initialise twilio if not enabled (thanks @rechner)
 
-
 ## [v3.2.0] - 2022-09-05
+
 ### Added
+
 - Enable/disable Canvas induction via constance option
 - Support memberbucks without Stripe enabled
 - Support for a site wide currency format via the SITE_LOCALE_CURRENCY option
 - NZD, USD, and EUR currency locale formats
 
 ### Fixed
+
 - Allow signup to succeed if access card requirement is true (commit #cb32009ef08ce21704231f577d61e50250f46463)
 
 ## [v3.1.0] - 2022-08-29
+
 ### Added
+
 - Twilio integration for sending SMS alerts to members
 - Version to config endpoint for easier debugging
 - Basic celery setup (and container start script)
@@ -34,15 +98,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Locale detection and support for GBP currency
 
 ### Changed
+
 - Split constance config into separate module
 - Specified member's email as reply-to in issue card
 - Bumped deps by github security bot
 
 ### Fixed
+
 - Bug with database fixtures preventing fixtures from loading
 
 ## [v3.0.0] - 2022-05-27
+
 ### Removed
+
 - All Xero support
 - Legacy http API for door controllers
 - Member Types (for use with Xero)
@@ -50,6 +118,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unnecessary environment variables
 
 ### Added
+
 - Websocket API for access control devices (ping/pong, authorise, sync tags, log access, update device ip)
 - Django pwned passwords
 - Loading spinner while app / login page is loading
@@ -61,14 +130,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - User event, door and interlock logs to manage member screen
 
 ### Changed
+
 - Upgraded to Vue 3, Qusar 2, all frontend dependencies updated
 - Bumped backend dependencies
 - Messaging around membership plan / payment plans to make it more clear
-- References to "donate" to "make payment" as an exchange of money for goods/services is *not* a donation
+- References to "donate" to "make payment" as an exchange of money for goods/services is _not_ a donation
 - Tidied up manage member UI and made it cleaner
 - Export mailing list translation to make it clearer
 
 ### Fixed
+
 - Logging so it's actually useful now that we've moved to daphne
 - Redirect on loging sometimes getting stuck
 - Some forms not saving after modification
@@ -84,28 +155,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Loading states for door unlock/reboot buttons
 - Typo in first joined date on digital ID
 - Door checkin via websocket overriding door object in database
-- 
+-
 
 ## [v2.8.0] - 2021-10-20
+
 ### Removed
+
 - Sendgrid integration for email sending
 
 ### Added
+
 - Postmark integration for email sending
 - Mailchimp integration
 
 ### Changed
+
 - Made site sign in/users on site feature optional
 - Made Dockerfile more development friendly (at expensive of slightly larger images)
 
 ### Fixed
+
 - Inconsistent login bug on some browsers and iOS
 - Not quite mobile friendly sign up page
 - CSS and layout of membership plan/pricing pages
 
-
 ## [v2.7.0] - 2021-10-20
+
 ### Added
+
 - Feature flag system
 - Most optional features to feature flags
 - Option for collecting access card instead of inputting it
@@ -114,6 +191,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Xero configuration options to database config
 
 ### Fixed
+
 - Canvas randomly failing to sync user induction progress (canvas have started including a random null user for some reason)
 - Canvas api failure logic
 - Sentry error logging
@@ -128,13 +206,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Excessively wide credit card form during signup
 
 ### Removed
+
 - Groups feature
 
 ### Deprecated
+
 - Access device HTTP endpoints. In a future release the current HTTP endpoints for access control devices will be removed and replaced with the new websocket protocol.
 
 ## [v2.6.3] - 2021-09-27
+
 ### Fixed
+
 - Enable stripe billing menu visibility race condition
 - Sentry / stripe token race condition
 - Removed excess console logging
@@ -145,26 +227,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Date display issue on proxy form
 
 ### Changed
+
 - Replaced momentjs with dayjs
-  
+
 ### Added
+
 - Caprover example template
 - Basic read the docs website
 - Build docker image GitHub action
 
 ## [v2.6.2] - 2021-09-06
+
 ### Fixed
+
 - Can't override existing card during signup
 - Occasional constance settings reset to default value
 
 ### Added
+
 - Member billing and subscription info on admin page
 - Support for sentry error logging
 
 ### Changed
+
 - Upgraded base docker image to Alpine 3.14
 
 ## [v2.6.1] - 2021-07-11
+
 ### Fixed
 
 - Fixed checking induction requirements being skipped during signup
@@ -180,6 +269,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v2.6.0] - 2021-07-08
 
 ### Changed
+
 - More work on usage statistics
 
 ### Fixed

@@ -601,9 +601,9 @@ class MemberBillingInfo(StripeAPIView):
             s = None
 
             # if we have a subscription id, fetch the details
-            if member.user.profile.stripe_subscription_id:
+            if member.profile.stripe_subscription_id:
                 s = stripe.Subscription.retrieve(
-                    member.user.profile.stripe_subscription_id,
+                    member.profile.stripe_subscription_id,
                 )
 
             # if we got subscription details

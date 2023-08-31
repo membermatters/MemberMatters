@@ -160,7 +160,7 @@ export default {
       if (!this.memberId) return;
       const device = type === 'interlock' ? 'interlocks' : 'doors';
       this.$axios
-        .put(`api/access/${device}/${deviceId}/authorise/${memberId}/`)
+        .put(`/api/access/${device}/${deviceId}/authorise/${memberId}/`)
         .then(() => {
           this.getMemberAccess();
         })
@@ -176,7 +176,7 @@ export default {
       if (!this.memberId) return;
       const device = type === 'interlock' ? 'interlocks' : 'doors';
       this.$axios
-        .put(`api/access/${device}/${deviceId}/revoke/${memberId}/`)
+        .put(`/api/access/${device}/${deviceId}/revoke/${memberId}/`)
         .then(() => {
           this.getMemberAccess();
         })

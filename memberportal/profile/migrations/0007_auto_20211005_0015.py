@@ -9,10 +9,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name="profile",
-            name="groups",
-        ),
         migrations.AlterField(
             model_name="log",
             name="id",

@@ -38,7 +38,7 @@ def safe_constance_get(fld: str):
 #     pass
 
 urlpatterns = [
-    path("openid/", include("oidc_provider.urls", namespace="oidc_provider")),
+    path("api/openid/", include("oidc_provider.urls", namespace="oidc_provider")),
     path("", include("access.urls")),
     path("", include("memberbucks.urls")),
     path("", include("api_spacedirectory.urls")),
@@ -48,10 +48,9 @@ urlpatterns = [
     path("", include("api_meeting.urls")),
     path("", include("api_member_bucks.urls")),
     path("", include("api_billing.urls")),
-    path("api/admin/", include("api_admin_tools.urls")),
+    path("", include("api_admin_tools.urls")),
+    path("api/", include("django_prometheus.urls")),
     path("admin/", admin.site.urls),
-    path("api-auth/", include("rest_framework.urls")),
-    path("", include("django_prometheus.urls")),
 ]
 
 if settings.DEBUG:

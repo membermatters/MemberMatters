@@ -151,7 +151,7 @@ export default defineComponent({
   methods: {
     ...mapActions('profile', ['getProfile']),
     getSubscriptionInfo() {
-      this.$axios.get('api/billing/myplan/').then((result) => {
+      this.$axios.get('/api/billing/myplan/').then((result) => {
         if (result.data.success) {
           this.subscriptionInfo = result.data.subscription;
         }
@@ -159,7 +159,7 @@ export default defineComponent({
     },
     getCanSignup() {
       this.$axios
-        .get('api/billing/can-signup/')
+        .get('/api/billing/can-signup/')
         .then((result) => {
           if (result.data.success) {
             this.canSignup = true;
@@ -188,7 +188,7 @@ export default defineComponent({
           this.disableButton = true;
           this.loadingButton = true;
           this.$axios
-            .post('api/billing/myplan/cancel/')
+            .post('/api/billing/myplan/cancel/')
             .then((result) => {
               if (result.data.success) {
                 this.cancelSuccess = true;
@@ -219,7 +219,7 @@ export default defineComponent({
       this.disableButton = true;
       this.loadingButton = true;
       this.$axios
-        .post('api/billing/myplan/resume/')
+        .post('/api/billing/myplan/resume/')
         .then((result) => {
           if (result.data.success) {
             location.reload();
