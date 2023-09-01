@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v3.4.1] - 2023-09-01
+
+### Added
+
+- allow dev tools in prod builds of electron
+
+### Changed
+
+- refactored user logging and email system
+
+### Fixed
+
+- electron build failing
+- electron build to handle SameSite attribute on session cookie
+
 ## [v3.4.0] - 2023-08-31
 
 ### Removed
