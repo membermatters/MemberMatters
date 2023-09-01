@@ -13,7 +13,6 @@ import logging
 from services import canvas, sms
 from services.emails import send_email_to_admin
 from constance import config
-from membermatters.helpers import log_user_event
 from django.db.utils import OperationalError
 from sentry_sdk import capture_exception
 
@@ -65,8 +64,8 @@ class MemberBucksAddCard(StripeAPIView):
 
         if not customer_exists:
             try:
-                log_user_event(
-                    request.user, "Attempting to create stripe customer.", "stripe"
+                request.user.log_event(
+                    "Attempting to create stripe customer.", "stripe"
                 )
                 customer = stripe.Customer.create(
                     email=request.user.email,
@@ -77,8 +76,7 @@ class MemberBucksAddCard(StripeAPIView):
                 profile.stripe_customer_id = customer.id
                 profile.save()
 
-                log_user_event(
-                    request.user,
+                request.user.log_event(
                     f"Created stripe customer {request.user.profile.get_full_name()} (Stripe ID: {customer.id}).",
                     "stripe",
                 )
@@ -88,8 +86,7 @@ class MemberBucksAddCard(StripeAPIView):
                 return Response({"clientSecret": intent.client_secret})
 
             except stripe.error.StripeError as e:
-                log_user_event(
-                    request.user,
+                request.user.log_event(
                     "Unknown stripe while saving payment details.",
                     "stripe",
                     request,
@@ -105,8 +102,7 @@ class MemberBucksAddCard(StripeAPIView):
                 )
 
             except Exception as e:
-                log_user_event(
-                    request.user,
+                request.user.log_event(
                     "Unknown other error while saving payment details.",
                     "stripe",
                     request,
@@ -219,8 +215,7 @@ class PaymentPlanSignup(StripeAPIView):
             attempts += 1
 
             if attempts > 3:
-                log_user_event(
-                    request.user,
+                request.user.log_event(
                     "Too many attempts while creating subscription.",
                     "stripe",
                     "",
@@ -249,8 +244,7 @@ class PaymentPlanSignup(StripeAPIView):
                     error["code"] == "resource_missing"
                     and "default payment method" in error["message"]
                 ):
-                    log_user_event(
-                        request.user,
+                    request.user.log_event(
                         "InvalidRequestError (missing default payment method) from Stripe while creating subscription.",
                         "stripe",
                         error,
@@ -270,8 +264,7 @@ class PaymentPlanSignup(StripeAPIView):
                     error["code"] == "resource_missing"
                     and "a similar object exists in live mode" in error["message"]
                 ):
-                    log_user_event(
-                        request.user,
+                    request.user.log_event(
                         "InvalidRequestError (used test key with production object) from Stripe while "
                         "creating subscription.",
                         "stripe",
@@ -287,8 +280,7 @@ class PaymentPlanSignup(StripeAPIView):
                     )
 
                 else:
-                    log_user_event(
-                        request.user,
+                    request.user.log_event(
                         "InvalidRequestError from Stripe while creating subscription.",
                         "stripe",
                         error,
@@ -302,8 +294,7 @@ class PaymentPlanSignup(StripeAPIView):
                     )
 
             except Exception as e:
-                log_user_event(
-                    request.user,
+                request.user.log_event(
                     "InvalidRequestError from Stripe while creating subscription.",
                     "stripe",
                     e,
@@ -326,8 +317,7 @@ class PaymentPlanSignup(StripeAPIView):
                 request.user.profile.subscription_status = "active"
                 request.user.profile.save()
 
-                log_user_event(
-                    request.user,
+                request.user.log_event(
                     "Successfully created subscription in Stripe.",
                     "stripe",
                     "",
@@ -337,8 +327,7 @@ class PaymentPlanSignup(StripeAPIView):
 
             elif new_subscription.status == "incomplete":
                 # if we got here, that means the subscription wasn't successfully created
-                log_user_event(
-                    request.user,
+                request.user.log_event(
                     f"Failed to create subscription in Stripe with status {new_subscription.status}.",
                     "stripe",
                     "",
@@ -349,8 +338,7 @@ class PaymentPlanSignup(StripeAPIView):
                 )
 
             else:
-                log_user_event(
-                    request.user,
+                request.user.log_event(
                     f"Failed to create subscription in Stripe with status {new_subscription.status}.",
                     "stripe",
                     "",

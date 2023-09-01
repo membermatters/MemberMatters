@@ -1,6 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
-from membermatters.helpers import log_user_event
 from .models import MemberBucks
 from profile.models import Profile, User
 from constance import config
@@ -70,8 +69,7 @@ class MemberbucksDebit(APIView):
                     subject, subject, subject, message
                 )
 
-                log_user_event(
-                    profile.user,
+                profile.user.log_event(
                     f"Successfully debited ${amount} from {config.MEMBERBUCKS_NAME} account.",
                     "memberbucks",
                 )
@@ -81,8 +79,7 @@ class MemberbucksDebit(APIView):
                 )
 
             else:
-                log_user_event(
-                    profile.user,
+                profile.user.log_event(
                     f"Not enough funds to debit ${amount} from {config.MEMBERBUCKS_NAME} account.",
                     "memberbucks",
                 )

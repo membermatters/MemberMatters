@@ -179,85 +179,84 @@ module.exports = configure(async function (ctx) {
       //   electronMain: 'src-electron/electron-main',
       //   electronPreload: 'src-electron/electron-preload'
       // },
+    },
+    // https://v2.quasar.dev/quasar-cli-vite/developing-ssr/configuring-ssr
+    ssr: {
+      // ssrPwaHtmlFilename: 'offline.html', // do NOT use index.html as name!
+      // will mess up SSR
 
-      // https://v2.quasar.dev/quasar-cli-vite/developing-ssr/configuring-ssr
-      ssr: {
-        // ssrPwaHtmlFilename: 'offline.html', // do NOT use index.html as name!
-        // will mess up SSR
+      // extendSSRWebserverConf (esbuildConf) {},
+      // extendPackageJson (json) {},
 
-        // extendSSRWebserverConf (esbuildConf) {},
-        // extendPackageJson (json) {},
+      pwa: false,
 
-        pwa: false,
+      // manualStoreHydration: true,
+      // manualPostHydrationTrigger: true,
 
-        // manualStoreHydration: true,
-        // manualPostHydrationTrigger: true,
+      prodPort: 3000, // The default port that the production server should use
+      // (gets superseded if process.env.PORT is specified at runtime)
 
-        prodPort: 3000, // The default port that the production server should use
-        // (gets superseded if process.env.PORT is specified at runtime)
+      middlewares: [
+        'render', // keep this as last one
+      ],
+    },
 
-        middlewares: [
-          'render', // keep this as last one
-        ],
+    // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
+    pwa: {
+      workboxMode: 'generateSW', // or 'injectManifest'
+      injectPwaMetaTags: true,
+      swFilename: 'sw.js',
+      manifestFilename: 'manifest.json',
+      useCredentialsForManifestTag: false,
+    },
+
+    // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-cordova-apps/configuring-cordova
+    cordova: {
+      // noIosLegacyBuildFlag: true, // uncomment only if you know what you are doing
+    },
+
+    // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-capacitor-apps/configuring-capacitor
+    capacitor: {
+      hideSplashscreen: false,
+      iosStatusBarPadding: true,
+    },
+
+    // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/configuring-electron
+    electron: {
+      // extendElectronMainConf (esbuildConf)
+      // extendElectronPreloadConf (esbuildConf)
+
+      inspectPort: 5858,
+
+      bundler: 'packager', // 'packager' or 'builder'
+
+      packager: {
+        // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
+        // OS X / Mac App Store
+        // appBundleId: '',
+        // appCategoryType: '',
+        // osxSign: '',
+        // protocol: 'myapp://path',
+        // Windows only
+        // win32metadata: { ... }
       },
 
-      // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
-      pwa: {
-        workboxMode: 'generateSW', // or 'injectManifest'
-        injectPwaMetaTags: true,
-        swFilename: 'sw.js',
-        manifestFilename: 'manifest.json',
-        useCredentialsForManifestTag: false,
+      builder: {
+        // https://www.electron.build/configuration/configuration
+
+        appId: 'membermatters',
       },
 
-      // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-cordova-apps/configuring-cordova
-      cordova: {
-        // noIosLegacyBuildFlag: true, // uncomment only if you know what you are doing
-      },
+      nodeIntegration: true,
+    },
 
-      // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-capacitor-apps/configuring-capacitor
-      capacitor: {
-        hideSplashscreen: false,
-        iosStatusBarPadding: true,
-      },
-
-      // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/configuring-electron
-      electron: {
-        // extendElectronMainConf (esbuildConf)
-        // extendElectronPreloadConf (esbuildConf)
-
-        inspectPort: 5858,
-
-        bundler: 'packager', // 'packager' or 'builder'
-
-        packager: {
-          // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
-          // OS X / Mac App Store
-          // appBundleId: '',
-          // appCategoryType: '',
-          // osxSign: '',
-          // protocol: 'myapp://path',
-          // Windows only
-          // win32metadata: { ... }
-        },
-
-        builder: {
-          // https://www.electron.build/configuration/configuration
-
-          appId: 'membermatters',
-        },
-
-        nodeIntegration: true,
-      },
-
-      // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-browser-extensions/configuring-bex
-      bex: {
-        // contentScripts: [
-        //   'my-content-script'
-        // ],
-        // extendBexScriptsConf (esbuildConf) {}
-        // extendBexManifestJson (json) {}
-      },
+    // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-browser-extensions/configuring-bex
+    bex: {
+      // contentScripts: [
+      //   'my-content-script'
+      // ],
+      // extendBexScriptsConf (esbuildConf) {}
+      // extendBexManifestJson (json) {}
     },
   };
 });
