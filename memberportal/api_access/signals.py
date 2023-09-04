@@ -21,10 +21,11 @@ def save_or_create_door(sender, instance, **kwargs):
     created = instance.pk is None
     door_all_members_changed = False
     door_maintenance_lockout_changed = False
-    door = Doors.objects.get(pk=instance.id)
+    door = None
 
     # if we didn't just create the door check if it's properties have changed
     if not created:
+        door = Doors.objects.get(pk=instance.id)
         door_all_members_changed = instance.all_members != door.all_members
         door_maintenance_lockout_changed = instance.locked_out != door.locked_out
 
@@ -60,7 +61,8 @@ def save_or_create_door(sender, instance, **kwargs):
         )
 
     # update the door object on the websocket consumer
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        "door_" + door.serial_number, {"type": "update_door_device"}
-    )
+    if door is not None:
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "door_" + door.serial_number, {"type": "update_door_device"}
+        )
