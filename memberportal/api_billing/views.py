@@ -10,7 +10,11 @@ from rest_framework.views import APIView
 
 import stripe
 import logging
-from services import canvas, sms
+from services.canvas import Canvas
+from services.moodle_integration import (
+    moodle_get_course_activity_completion_status,
+    moodle_get_user_from_email,
+)
 from services.emails import send_email_to_admin
 from constance import config
 from django.db.utils import OperationalError
@@ -374,26 +378,37 @@ class AssignAccessCard(APIView):
 
 class CheckInductionStatus(APIView):
     """
-    post: checks if the member has completed the induction (via the canvas API).
+    post: checks if the member has completed the induction (via the canvas/moodle API).
     """
 
     def post(self, request):
-        try:
-            canvas_api = canvas.Canvas()
-        except OperationalError as error:
-            capture_exception(error)
-            return Response({"success": False, "score": 0})
-
         if "induction" not in request.user.profile.can_signup()["requiredSteps"]:
             return Response({"success": True, "score": 0, "notRequired": True})
 
-        try:
+        score = 0
+
+        if config.MOODLE_INDUCTION_ENABLED:
+            user_id = moodle_get_user_from_email(request.user.email).get("id")
+            activities = moodle_get_course_activity_completion_status(
+                config.MOODLE_INDUCTION_COURSE_ID, user_id
+            )
+            score = activities["percentage_completed"]
+
+        elif config.CANVAS_INDUCTION_ENABLED:
+            try:
+                canvas_api = Canvas()
+            except OperationalError as error:
+                capture_exception(error)
+                return Response({"success": False, "score": 0})
+
             score = (
                 canvas_api.get_student_score_for_course(
                     config.INDUCTION_COURSE_ID, request.user.email
                 )
                 or 0
             )
+
+        try:
             if score or config.MIN_INDUCTION_SCORE == 0:
                 induction_passed = score >= config.MIN_INDUCTION_SCORE
 

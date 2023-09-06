@@ -140,9 +140,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         "Is the user a admin member?"
         return self.admin
 
-    def log_event(description, event_type, data=""):
+    def log_event(self, description, event_type, data=""):
         UserEventLog(
-            description=description, logtype=event_type, user=user, data=data
+            description=description, logtype=event_type, user=self, data=data
         ).save()
 
     def __send_email(self, subject, body):
@@ -540,7 +540,10 @@ class Profile(models.Model):
         if config.MAX_INDUCTION_DAYS > 0 and (
             last_inducted is None or last_inducted < furthest_previous_date
         ):
-            if config.CANVAS_INDUCTION_ENABLED is True:
+            if (
+                config.CANVAS_INDUCTION_ENABLED is True
+                or config.MOODLE_INDUCTION_ENABLED is True
+            ):
                 required_steps.append("induction")
 
         # check if they have an RFID card assigned

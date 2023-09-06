@@ -123,6 +123,7 @@ export default {
     continue: 'Continue',
     back: 'Back',
     contactUs: 'Contact Us',
+    startInduction: 'Start Onboarding Induction',
   },
   loginCard: {
     login: 'Login',
@@ -513,12 +514,13 @@ export default {
     requiredSteps:
       'You must complete the following steps to complete your membership.',
     completeInduction: 'Complete an induction',
+    startInduction: 'Start your induction',
     completedInduction: 'Induction completed',
     registerAccessCard: 'Register your access card',
     completeInductionDescription:
-      "Complete your induction via Canvas by clicking the button below. Keep this page open and come back to it once you're finished.",
-    emailWarning:
-      "Please use the same email address you used during signup ({email}) or your progress won't sync.",
+      "Complete your induction by clicking the button below. Keep this page open and come back to it once you're finished.",
+    canvasEmailWarning:
+      "Please use the same email address you used during signup ({email}) or your progress won't sync. This is a limitation of the Canvas platform.",
     waitingCompletion: 'Waiting for completion...',
     accessCard: 'Access Card',
     accessCardNumber: 'Access Card Number',

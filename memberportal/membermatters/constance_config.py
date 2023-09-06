@@ -240,17 +240,37 @@ CONSTANCE_CONFIG = {
         "The API key used to send email with Postmark.",
     ),
     # Induction
-    "CANVAS_INDUCTION_ENABLED": (
+    "MOODLE_INDUCTION_ENABLED": (
         True,
-        "Whether induction is performed via the Canvas platform or not",
+        "Whether induction is performed via the Moodle platform or not. This setting overrides the Canvas settings below. If both are enabled, Moodle will be used.",
+    ),
+    "MOODLE_API_BASE_URL": (
+        "PLEASE_CHANGE_ME",
+        "The base URL for your Moodle instance without trailing slash (ie https://learn.example.com).",
+    ),
+    "MOODLE_API_TOKEN": (
+        "PLEASE_CHANGE_ME",
+        "Moodle API token.",
+    ),
+    "MOODLE_INDUCTION_COURSE_ID": (
+        "",
+        "Moodle course id for the induction.",
+    ),
+    "CANVAS_INDUCTION_ENABLED": (
+        False,
+        "Whether induction is performed via the Canvas platform or not. This setting is overriden by the Moodle settings above. If both are enabled, Moodle will be used.",
+    ),
+    "CANVAS_API_TOKEN": (
+        "PLEASE_CHANGE_ME",
+        "Canvas API token.",
+    ),
+    "CANVAS_INDUCTION_COURSE_ID": (
+        "",
+        "Canvas course id for the induction.",
     ),
     "INDUCTION_ENROL_LINK": (
         "",
         "The link that a member can use to enrol into an induction.",
-    ),
-    "INDUCTION_COURSE_ID": (
-        "",
-        "Canvas course id for the induction.",
     ),
     "MAX_INDUCTION_DAYS": (
         180,
@@ -267,10 +287,6 @@ CONSTANCE_CONFIG = {
     "COLLECT_VEHICLE_REGISTRATION_PLATE": (
         False,
         "Display a field that collects the member's vehicle registration plate on signup & in the profile page.",
-    ),
-    "CANVAS_API_TOKEN": (
-        "PLEASE_CHANGE_ME",
-        "Canvas API token.",
     ),
     "ENABLE_PROXY_VOTING": (False, "Enables the proxy voting management feature."),
     "ENABLE_WEBCAMS": (
@@ -359,7 +375,6 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             "Signup",
             (
                 "INDUCTION_ENROL_LINK",
-                "INDUCTION_COURSE_ID",
                 "MAX_INDUCTION_DAYS",
                 "MIN_INDUCTION_SCORE",
                 "REQUIRE_ACCESS_CARD",
@@ -367,10 +382,20 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ),
         ),
         (
+            "Moodle (LMS) Integration",
+            (
+                "MOODLE_INDUCTION_ENABLED",
+                "MOODLE_API_TOKEN",
+                "MOODLE_API_BASE_URL",
+                "MOODLE_INDUCTION_COURSE_ID",
+            ),
+        ),
+        (
             "Canvas (LMS) Integration",
             (
-                "CANVAS_API_TOKEN",
                 "CANVAS_INDUCTION_ENABLED",
+                "CANVAS_API_TOKEN",
+                "CANVAS_INDUCTION_COURSE_ID",
             ),
         ),
         ("Postmark (EMAIL) Integration", ("POSTMARK_API_KEY",)),
