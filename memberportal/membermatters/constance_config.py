@@ -78,11 +78,6 @@ CONSTANCE_CONFIG = {
         "Memberbucks",
         "You can customise the name of the built in currency.",
     ),
-    "GROUP_NAME": ("Group", "You can customise what we call a group."),
-    "ADMIN_NAME": (
-        "Administrators",
-        "You can specify a different name for your admin group like executive or management committee.",
-    ),
     "WEBCAM_PAGE_URLS": (
         """[["Example", "https://brisbanemaker.space/wp-content/uploads/2021/10/BMS-Logo-ONLY.png"]]""",
         "A JSON serialised array of URLs to pull webcam images from.",
@@ -190,7 +185,7 @@ CONSTANCE_CONFIG = {
     ),
     "ENABLE_THEME_SWIPE": (
         False,
-        "Enable playing a member's theme song on a swipe.",
+        "Enable playing a member's theme song on a card swipe.",
     ),
     "THEME_SWIPE_URL": (
         "http://10.0.1.50/playmp3.php?nickname={}",
@@ -206,7 +201,7 @@ CONSTANCE_CONFIG = {
     ),
     "ENABLE_DISCORD_INTEGRATION": (
         False,
-        "Enable playing a member's theme song on a swipe.",
+        "Enable posting a notification to the discord channel on a card swipe.",
     ),
     "DISCORD_DOOR_WEBHOOK": (
         "https://discordapp.com/api/webhooks/<token>",
@@ -445,8 +440,6 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             "Group Localisation",
             (
                 "MEMBERBUCKS_NAME",
-                "GROUP_NAME",
-                "ADMIN_NAME",
                 "WEBCAM_PAGE_URLS",
                 "HOME_PAGE_CARDS",
                 "WELCOME_EMAIL_CARDS",
