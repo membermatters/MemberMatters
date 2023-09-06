@@ -1,4 +1,3 @@
-from moodle import Moodle
 from constance import config
 import requests
 import math
