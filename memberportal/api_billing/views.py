@@ -154,8 +154,6 @@ class MemberBucksAddCard(StripeAPIView):
         try:
             request.user.email_notification(
                 subject,
-                subject,
-                subject,
                 "Don't worry, your card details are stored safe "
                 "with Stripe and are not on our servers. You "
                 "can remove this card at any time via the "
@@ -423,40 +421,28 @@ class CheckInductionStatus(APIView):
             return Response({"success": False, "score": 0, "error": str(e)})
 
 
-def send_submitted_application_emails(member):
-    subject = "Your membership application has been submitted"
-    title = subject
-    message = "Thanks for submitting your membership application! Your membership application has been submitted and you are now a 'member applicant'. Your membership will be officially accepted after 7 days, but we have granted site access immediately. You will receive an email confirming that your access card has been enabled. If for some reason your membership is rejected within this period, you will receive an email with further information."
-    member.user.email_notification(subject, title, "", message)
-
-    subject = f"A new person just became a member applicant: {member.get_full_name()}"
-    title = subject
-    message = f"{member.get_full_name()} just completed all steps required to sign up and is now a member applicant. Their site access has been enabled and membership will automatically be accepted within 7 days without objection from the executive."
-    send_email_to_admin(subject, title, message, reply_to=member.user.email)
-
-
 class CompleteSignup(StripeAPIView):
     """
     post: completes the member's signup if they have completed all requirements and enables access
     """
 
     def post(self, request):
-        member = request.user.profile
-        signupCheck = member.can_signup()
+        member_profile = request.user.profile
+        signupCheck = member_profile.can_signup()
 
         if signupCheck["success"]:
-            member.activate()
-            send_submitted_application_emails(member)
+            member_profile.activate()
 
             # give default door access
             for door in Doors.objects.filter(all_members=True):
-                member.doors.add(door)
+                member_profile.doors.add(door)
 
             # give default interlock access
             for interlock in Interlock.objects.filter(all_members=True):
-                member.interlocks.add(interlock)
+                member_profile.interlocks.add(interlock)
 
-            member.user.email_welcome()
+            member_profile.user.email_membership_application()
+            member_profile.user.email_welcome()
 
             return Response({"success": True})
 
@@ -584,7 +570,7 @@ class StripeWebhook(StripeAPIView):
 
         data = data["object"]
         try:
-            member = Profile.objects.get(stripe_customer_id=data["customer"])
+            member_profile = Profile.objects.get(stripe_customer_id=data["customer"])
 
         except Profile.DoesNotExist as e:
             capture_exception(e)
@@ -592,7 +578,7 @@ class StripeWebhook(StripeAPIView):
 
         # Just in case the linked Stripe account also processes other payments we should just ignore a non existent
         # customer.
-        if not member:
+        if not member_profile:
             return Response()
 
         if event_type == "invoice.paid":
@@ -601,55 +587,51 @@ class StripeWebhook(StripeAPIView):
             # If they aren't an active member, are allowed to signup, and have paid the invoice
             # then lets activate their account (this could be a new OR returning member)
             if (
-                member.state != "active"
-                and member.can_signup()["success"]
+                member_profile.state != "active"
+                and member_profile.can_signup()["success"]
                 and invoice_status == "paid"
             ):
                 subject = "Your payment was successful."
-                title = subject
                 message = (
                     "Thanks for making a membership payment using our online payment system. "
                     "You've already met all of the requirements for activating your site access. Please check "
                     "for another email message confirming this was successful."
                 )
-                member.user.email_notification(subject, title, "", message)
+                member_profile.user.email_notification(subject, message)
 
                 # set the subscription status to active
-                member.subscription_status = "active"
-                member.save()
+                member_profile.subscription_status = "active"
+                member_profile.save()
 
                 # activate their access card
-                member.activate()
-                member.user.email_enable_member()
+                member_profile.activate()
+                member_profile.user.email_enable_member()
 
             # If they aren't an active member, are NOT allowed to signup, and have paid the invoice
             # then we need to let them know and mark the subscription as active
             # (this could be a new OR returning member that's been too long since induction etc.)
-            elif member.state != "active" and invoice_status == "paid":
+            elif member_profile.state != "active" and invoice_status == "paid":
                 subject = "Your payment was successful."
-                title = subject
                 message = (
                     "Thanks for making a membership payment using our online payment system. "
                     "You haven't yet met all of the requirements for activating your site access. Once this "
                     "happens, you'll receive an email confirmation that your access card was activated. "
                     "If you are unsure how to proceed, or this email is unexpected, please contact us."
                 )
-                member.user.email_notification(subject, title, "", message)
+                member_profile.user.email_notification(subject, message)
 
-                member.subscription_status = "active"
-                member.save()
+                member_profile.subscription_status = "active"
+                member_profile.save()
 
                 # if this is a returning member then send the exec an email (new members have
                 # already had this sent)
-                if member.state != "noob":
-                    send_submitted_application_emails(member)
+                if member_profile.state != "noob":
+                    member_profile.user.email_membership_application()
 
             # in all other instances, we don't care about a paid invoice and can ignore it
 
         if event_type == "invoice.payment_failed":
             subject = "Your membership payment failed"
-            title = subject
-            preheader = ""
             message = (
                 "Hi there, we tried to collect your membership payment via our online payment system but "
                 "weren't successful. Please update your billing information via the member portal or contact "
@@ -657,31 +639,36 @@ class StripeWebhook(StripeAPIView):
                 "membership may be cancelled."
             )
 
-            member.user.email_notification(subject, title, preheader, message)
+            member_profile.user.email_notification(subject, message)
 
         if event_type == "customer.subscription.deleted":
             # the subscription was deleted, so deactivate the member
             subject = "Your membership has been cancelled"
-            title = subject
-            preheader = ""
             message = (
                 "You will receive another email shortly confirming that your access has been deactivated. Your "
                 "membership was cancelled because we couldn't collect your payment, or you chose not to renew it."
             )
 
-            member.user.email_notification(subject, title, preheader, message)
-            member.deactivate()
-            member.membership_plan = None
-            member.stripe_subscription_id = None
-            member.subscription_status = "inactive"
-            member.save()
+            member_profile.user.email_notification(subject, message)
+            member_profile.deactivate()
+            member_profile.membership_plan = None
+            member_profile.stripe_subscription_id = None
+            member_profile.subscription_status = "inactive"
+            member_profile.save()
 
-            subject = f"The membership for {member.get_full_name()} was just cancelled"
+            subject = f"The membership for {member_profile.get_full_name()} was just cancelled"
             title = subject
             message = (
-                f"The Stripe subscription for {member.get_full_name()} ended, so their membership has "
+                f"The Stripe subscription for {member_profile.get_full_name()} ended, so their membership has "
                 f"been cancelled. Their site access has been turned off."
             )
-            send_email_to_admin(subject, title, message, reply_to=member.user.email)
+            template_vars = {"title": title, "message": message}
+
+            send_email_to_admin(
+                subject,
+                template_vars=template_vars,
+                reply_to=member_profile.user.email,
+                user=member_profile.user,
+            )
 
         return Response()

@@ -5,27 +5,29 @@ from postmarker.core import PostmarkClient
 
 
 def send_single_email(
-    user: object,
-    email: object,
+    to_email: object,
     subject: object,
-    title: object,
-    message: object,
+    template_vars: object,
+    template_name="email_without_button.html",
     reply_to=None,
+    user: object | None = None,
 ) -> object:
     # TODO: move to celery
 
-    message = escape(message)
-    message = message.replace("~br~", "<br>")
-    email_vars = {"preheader": "", "title": title, "message": message}
+    if template_vars.get("message"):
+        template_vars["message"] = escape(template_vars["message"]).replace(
+            "~br~", "<br>"
+        )
+
     email_string = render_to_string(
-        "email_without_button.html", {"email": email_vars, "config": config}
+        template_name, {"email": template_vars, "config": config}
     )
 
     if config.POSTMARK_API_KEY:
         postmark = PostmarkClient(server_token=config.POSTMARK_API_KEY)
         postmark.emails.send(
             From=config.EMAIL_DEFAULT_FROM,
-            To=email,
+            To=to_email,
             Subject=subject,
             HtmlBody=email_string,
             ReplyTo=reply_to or config.EMAIL_DEFAULT_FROM,
@@ -35,17 +37,30 @@ def send_single_email(
             user.log_event(
                 "Sent email with subject: " + subject,
                 "email",
-                "Email content: " + message,
+                "Email content: " + template_vars.get("message"),
             )
     else:
         if user:
             user.log_event(
                 "Email NOT sent due to configuration issue: " + subject,
                 "email",
-                "Email content: " + message,
+                "Email content: " + template_vars.get("message"),
             )
     return True
 
 
-def send_email_to_admin(subject: object, title: object, message: object, reply_to=None):
-    return send_single_email(config.EMAIL_ADMIN, subject, title, message, reply_to)
+def send_email_to_admin(
+    subject: object,
+    template_vars: object,
+    template_name="email_without_button.html",
+    reply_to=None,
+    user: object | None = None,
+) -> object:
+    return send_single_email(
+        config.EMAIL_ADMIN,
+        subject,
+        template_vars,
+        template_name=template_name,
+        reply_to=reply_to,
+        user=user,
+    )

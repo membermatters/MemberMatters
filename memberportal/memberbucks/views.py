@@ -65,9 +65,7 @@ class MemberbucksDebit(APIView):
                         transaction.description, profile.memberbucks_balance
                     )
                 )
-                User.objects.get(profile=profile).email_notification(
-                    subject, subject, subject, message
-                )
+                User.objects.get(profile=profile).email_notification(subject, message)
 
                 profile.user.log_event(
                     f"Successfully debited ${amount} from {config.MEMBERBUCKS_NAME} account.",
@@ -87,8 +85,6 @@ class MemberbucksDebit(APIView):
                     f"Failed to make a ${amount} {config.MEMBERBUCKS_NAME} purchase."
                 )
                 User.objects.get(profile=profile).email_notification(
-                    subject,
-                    subject,
                     subject,
                     f"We just tried to debit ${amount} from your {config.MEMBERBUCKS_NAME} balance but were not successful. "
                     f"You currently have ${profile.memberbucks_balance}. If this wasn't you, please let us know "

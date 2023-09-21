@@ -1,7 +1,7 @@
 from profile.models import User, Profile
 from api_meeting.models import Meeting
 from constance import config
-from services.emails import send_single_email
+from services.emails import send_email_to_admin
 from random import shuffle
 import requests
 from django.utils import timezone
@@ -147,16 +147,15 @@ class IssueDetail(APIView):
 
         # if Trello isn't configured, use email instead
         else:
-            subject = (
-                f"{request.user.profile.get_full_name()} submitted an issue ({title})"
-            )
+            subject = f"{request.user.profile.get_full_name()} submitted an issue about {title}"
 
-            if send_single_email(
-                request.user,
-                config.EMAIL_ADMIN,
-                subject,
-                subject,
-                description,
+            if send_email_to_admin(
+                subject=subject,
+                template_vars={
+                    "title": subject,
+                    "message": description,
+                },
+                user=request.user,
                 reply_to=request.user.email,
             ):
                 return Response(

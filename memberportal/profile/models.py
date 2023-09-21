@@ -18,7 +18,7 @@ from api_admin_tools.models import MemberTier, PaymentPlan
 import json
 import uuid
 import logging
-from services.emails import send_single_email
+from services.emails import send_single_email, send_email_to_admin
 from services import sms
 
 logger = logging.getLogger("app")
@@ -145,44 +145,55 @@ class User(AbstractBaseUser, PermissionsMixin):
             description=description, logtype=event_type, user=self, data=data
         ).save()
 
-    def __send_email(self, subject, body):
-        return send_single_email(self, self.email, subject, subject, body)
-
-    def email_notification(self, subject, title, preheader, message):
-        email_vars = {"preheader": preheader, "title": title, "message": message}
-        email_string = render_to_string(
-            "email_without_button.html", {"email": email_vars, "config": config}
+    def __send_email(self, subject, template_vars, template_name=None):
+        return send_single_email(
+            to_email=self.email,
+            subject=subject,
+            template_vars=template_vars,
+            user=self,
+            template_name=template_name,
         )
 
-        if self.__send_email(subject, email_string):
-            return True
-
-    def email_password_reset(self, link):
-        email_vars = {"link": link}
-        email_string = render_to_string(
-            "email_password_reset.html", {"email": email_vars, "config": config}
-        )
-
-        if self.__send_email(f"Reset your {config.SITE_OWNER} password", email_string):
-            return True
-
-    def email_link(self, subject, title, preheader, message, link, btn_text):
-        email_vars = {
-            "preheader": preheader,
+    def email_link(self, subject, title, message, link, btn_text):
+        template_vars = {
             "title": title,
             "message": message,
             "link": link,
             "btn_text": btn_text,
         }
-        email_string = render_to_string(
-            "email_with_button.html",
-            {"email": email_vars, "config": config, "config": config},
+
+        return self.__send_email(
+            subject=subject,
+            template_vars=template_vars,
+            template_name="email_with_button.html",
         )
 
-        if self.__send_email(subject, email_string):
-            return True
+    def email_notification(self, subject, message):
+        template_vars = {"title": subject, "message": message}
+        return self.__send_email(subject, template_vars=template_vars)
 
-        return False
+    def email_password_reset(self, link):
+        template_vars = {"link": link}
+
+        return self.__send_email(
+            f"Reset your {config.SITE_OWNER} password",
+            template_vars,
+            template_name="email_password_reset.html",
+        )
+
+    def email_membership_application(self):
+        subject = "Your membership application has been submitted"
+        message = "Thanks for submitting your membership application! Your membership application has been submitted and you are now a 'member applicant'. Your membership will be officially accepted shortly, but we have granted site access immediately. You will receive an email confirming that your access card has been enabled. If for some reason your membership is rejected within this period, you will receive an email with further information."
+
+        self.email_notification(subject, message)
+
+        subject = f"A new person just became a member applicant: {self.profile.get_full_name()}"
+        message = f"{self.profile.get_full_name()} just completed all steps required to sign up and is now a member applicant. Their site access has been enabled and membership will automatically be accepted within 7 days without objection."
+        template_vars = {"message": message}
+
+        return send_email_to_admin(
+            subject, template_vars=template_vars, reply_to=self.email, user=self
+        )
 
     def email_welcome(self):
         cards = (
@@ -192,38 +203,30 @@ class User(AbstractBaseUser, PermissionsMixin):
         )
         cards = json.loads(cards)
 
-        email_string = render_to_string(
-            "email_welcome.html", {"config": config, "cards": cards}
-        )
+        subject = f"Welcome to {config.SITE_OWNER}"
+        template_vars = {"title": subject, "cards": cards}
 
-        if self.__send_email(f"Welcome to {config.SITE_OWNER}", email_string):
+        if self.__send_email(
+            subject=subject,
+            template_vars=template_vars,
+            template_name="email_welcome.html",
+        ):
             return "Successfully sent welcome email to user. ✉"
 
         return False
 
     def email_disable_member(self):
-        if self.email_notification(
-            f"{self.profile.first_name}, your {config.SITE_OWNER} site access has been disabled.",
-            "Your access has been disabled.",
+        return self.email_notification(
             f"Your {config.SITE_OWNER} site access has been disabled.",
-            f"Your access to {config.SITE_OWNER} has been disabled. This could be due to overdue membership fees, a"
-            " ban being issued or your membership ending. If this is because of a ban, you are not allowed back on "
-            "site until your ban has ended and your membership has been reactivated.",
-        ):
-            return True
-
-        return False
+            f"Your access to {config.SITE_OWNER} has been disabled. This could be due to many reasons, but is "
+            f"usually due to a failed membership payment. If this is unexpected, please let us know.",
+        )
 
     def email_enable_member(self):
-        if self.email_notification(
-            f"{self.profile.first_name}, your {config.SITE_OWNER} site access has been enabled.",
-            "Your access has been enabled.",
-            f"Your {config.SITE_OWNER} site access has been enabled.",
-            f"Great news! Your access to {config.SITE_OWNER} has been enabled.",
-        ):
-            return True
+        message = f"Great news {self.profile.first_name}, your {config.SITE_OWNER} site access has been enabled."
+        subject = f"Your {config.SITE_OWNER} site access has been enabled."
 
-        return False
+        return self.email_notification(subject, message)
 
     def reset_password(self):
         self.log_event("Password reset requested", "profile")
@@ -411,14 +414,15 @@ class Profile(models.Model):
             f"{self.get_full_name()} has just signed up on the portal."
             f"Their email is {self.user.email}."
         )
-        email_vars = {"preheader": "", "title": "New member signup", "message": message}
-        email_string = render_to_string(
-            "email_without_button.html", {"email": email_vars, "config": config}
-        )
+        template_vars = {"title": "New member signup", "message": message}
         subject = "A new member signed up! ({})".format(self.get_full_name())
 
         return send_single_email(
-            self.user, to_email, subject=subject, title=subject, message=email_string
+            to_email,
+            subject,
+            template_vars=template_vars,
+            user=self.user,
+            reply_to=self.user.email,
         )
 
     def get_logs(self):

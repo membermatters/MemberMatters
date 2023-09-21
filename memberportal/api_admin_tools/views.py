@@ -4,7 +4,7 @@ from access import models
 from .models import MemberTier, PaymentPlan
 from memberbucks.models import MemberBucks
 from constance import config
-from services.emails import send_single_email
+from services.emails import send_email_to_admin
 import json
 import stripe
 from sentry_sdk import capture_message
@@ -104,8 +104,10 @@ class MakeMember(APIView):
             user.profile.save()
 
             subject = f"{user.profile.get_full_name()} just got turned into a member!"
-            send_single_email(
-                request.user, config.EMAIL_ADMIN, subject, subject, subject
+            send_email_to_admin(
+                subject=subject,
+                template_vars={"title": subject, "message": subject},
+                user=request.user,
             )
 
             if email:
