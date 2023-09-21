@@ -8,11 +8,13 @@ def send_single_email(
     to_email: object,
     subject: object,
     template_vars: object,
-    template_name="email_without_button.html",
+    template_name,
     reply_to=None,
     user: object | None = None,
 ) -> object:
     # TODO: move to celery
+
+    template_to_use = template_name if template_name else "email_without_button.html"
 
     if template_vars.get("message"):
         template_vars["message"] = escape(template_vars["message"]).replace(
@@ -20,7 +22,7 @@ def send_single_email(
         )
 
     email_string = render_to_string(
-        template_name, {"email": template_vars, "config": config}
+        template_to_use, {"email": template_vars, "config": config}
     )
 
     if config.POSTMARK_API_KEY:
@@ -52,7 +54,7 @@ def send_single_email(
 def send_email_to_admin(
     subject: object,
     template_vars: object,
-    template_name="email_without_button.html",
+    template_name,
     reply_to=None,
     user: object | None = None,
 ) -> object:
