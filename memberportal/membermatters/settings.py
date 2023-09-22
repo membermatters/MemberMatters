@@ -199,8 +199,12 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,
     "formatters": {
-        "console": {"format": "%(asctime)s %(name)s %(levelname)-8s %(message)s"},
-        "file": {"format": "%(asctime)s %(name)s %(levelname)-8s %(message)s"},
+        "console": {
+            "format": "%(asctime)s %(name)s %(filename)s:%(lineno)s  %(levelname)-8s %(message)s"
+        },
+        "file": {
+            "format": "%(asctime)s %(name)s %(filename)s:%(lineno)s  %(levelname)-8s %(message)s"
+        },
     },
     "handlers": {
         "console": {
