@@ -79,7 +79,7 @@ def send_single_email(
 def send_email_to_admin(
     subject: object,
     template_vars: object,
-    template_name,
+    template_name=None,
     reply_to=None,
     user: object | None = None,
 ) -> object:
