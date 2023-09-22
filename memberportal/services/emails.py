@@ -52,7 +52,7 @@ def send_single_email(
                     user.log_event(
                         "Email NOT sent because recipient is INACTIVE in postmark: ",
                         "email",
-                        "Email content: " + template_vars,
+                        "Email content: " + json.dumps(template_vars),
                     )
             else:
                 logger.error("Error sending email: " + str(e))
