@@ -63,7 +63,7 @@ def send_single_email(
             user.log_event(
                 "Sent email with subject: " + subject,
                 "email",
-                "Email content: " + template_vars.get("message"),
+                "Email content: " + json.dumps(template_vars),
             )
     else:
         logger.warning("No postmark API key set, not sending email")
@@ -71,7 +71,7 @@ def send_single_email(
             user.log_event(
                 "Email NOT sent due to configuration issue: " + subject,
                 "email",
-                "Email content: " + template_vars.get("message"),
+                "Email content: " + json.dumps(template_vars),
             )
     return True
 
