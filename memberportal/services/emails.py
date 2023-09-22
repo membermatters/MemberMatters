@@ -20,7 +20,7 @@ def send_single_email(
 
     template_to_use = template_name if template_name else "email_without_button.html"
     logger.debug("Using email template: " + template_to_use)
-    logger.debug("Using template vars: " + json.stringify(template_vars))
+    logger.debug("Using template vars: " + json.dumps(template_vars))
 
     if template_vars.get("message"):
         template_vars["message"] = escape(template_vars["message"]).replace(
