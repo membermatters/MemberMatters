@@ -159,11 +159,7 @@
                 ),
                 intervalCount: selectedPlan.intervalCount,
                 interval: $tc(
-                  `paymentPlans.${
-                    selectedPlan.intervalCount > 1
-                      ? 'intervalPlurals'
-                      : 'interval'
-                  }.${selectedPlan.interval.toLowerCase()}`
+                  `paymentPlans.interval.${selectedPlan.interval.toLowerCase()}`
                 ),
               }),
             })
