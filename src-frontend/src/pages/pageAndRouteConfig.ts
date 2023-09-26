@@ -51,7 +51,7 @@ const PageAndRouteConfig: PageAndRouteConfigType[] = [
     icon: icons.webcams,
     to: '/webcams',
     name: 'webcams',
-    loggedIn: true,
+    loggedIn: false,
     kiosk: true,
     featureEnabledFlag: 'enableWebcams',
     component: () => import('pages/Webcams.vue'),
