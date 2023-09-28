@@ -25,6 +25,6 @@ django-celery-results~=2.3.1
 django-celery-beat~=2.2.1
 redis~=4.3.1
 twilio~=7.9.2
-django-prometheus==2.2.0
+django-prometheus==2.3.1
 psycopg2-binary~=2.9.6
 django-oidc-provider~=0.8.0

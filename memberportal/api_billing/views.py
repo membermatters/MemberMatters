@@ -401,7 +401,7 @@ class CheckInductionStatus(APIView):
 
             score = (
                 canvas_api.get_student_score_for_course(
-                    config.INDUCTION_COURSE_ID, request.user.email
+                    config.CANVAS_INDUCTION_COURSE_ID, request.user.email
                 )
                 or 0
             )
