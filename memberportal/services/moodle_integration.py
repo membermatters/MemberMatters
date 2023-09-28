@@ -2,18 +2,18 @@ from constance import config
 import requests
 import math
 
-MOODLE_BASE_URL = config.MOODLE_API_BASE_URL
-MOODLE_TOKEN = config.MOODLE_API_TOKEN
-
-MOODLE_URL = (
-    MOODLE_BASE_URL
-    + "/webservice/rest/server.php?wstoken="
-    + MOODLE_TOKEN
-    + "&moodlewsrestformat=json&wsfunction="
-)
-
 
 def get_moodle_url(function_name: str):
+    MOODLE_BASE_URL = config.MOODLE_API_BASE_URL
+    MOODLE_TOKEN = config.MOODLE_API_TOKEN
+
+    MOODLE_URL = (
+        MOODLE_BASE_URL
+        + "/webservice/rest/server.php?wstoken="
+        + MOODLE_TOKEN
+        + "&moodlewsrestformat=json&wsfunction="
+    )
+
     return MOODLE_URL + function_name
 
 
@@ -87,9 +87,3 @@ def moodle_get_user_from_email(user_email: str):
         }
 
         return user
-
-
-# user_id = moodle_get_user_from_email("hello@jaimyn.com.au").get("id")
-# activities = moodle_get_course_activity_completion_status(2, user_id)
-# print(activities["total_course_activities"])
-# print(activities["percentage_completed"])
