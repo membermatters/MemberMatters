@@ -35,7 +35,7 @@ directory. This installs and configures the pre commit hooks automatically. Afte
 when you try to commit a file (for example, with `git commit -m "update thing"`).
 
 ### Vue.js JavaScript frontend 
-Please see the [readme](frontend/README.md) file inside the `frontend` folder. This folder contains all of the source
+Please see the [readme](src-frontend/README.md) file inside the `src-frontend` folder. This folder contains all of the source
 code and other assets needed by the frontend.
 
 ### Django Python backend
