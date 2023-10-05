@@ -128,7 +128,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def get_short_name(self):
-        return self.profile.first_name
+        return self.profile.get_short_name()
+
+    def get_full_name(self):
+        return self.profile.get_full_name()
 
     @property
     def is_staff(self):

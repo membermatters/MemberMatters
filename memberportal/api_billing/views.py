@@ -505,6 +505,9 @@ class PaymentPlanResumeCancel(StripeAPIView):
         resume = True if resume == "resume" else False
 
         if not current_plan:
+            request.user.log_event(
+                "Member tried to modify nonexistant membership plan.", "stripe"
+            )
             return Response(
                 {"success": False, "message": "paymentPlan.notExists"},
                 status=status.HTTP_404_NOT_FOUND,
@@ -521,7 +524,37 @@ class PaymentPlanResumeCancel(StripeAPIView):
                 if modified_subscription.cancel_at_period_end == False:
                     request.user.profile.subscription_status = "active"
                     request.user.profile.save()
+                    subject = f"{request.user.get_full_name()} resumed their about to cancel membership plan."
+                    send_email_to_admin(
+                        subject=subject,
+                        template_vars={
+                            "title": subject,
+                            "message": subject,
+                        },
+                        user=request.user,
+                        reply_to=request.user.email,
+                    )
+                    request.user.log_event(
+                        subject,
+                        "stripe",
+                    )
                     return Response({"success": True})
+
+                else:
+                    subject = f"{request.user.get_full_name()} tried to resume their about to cancel membership plan but it failed."
+                    send_email_to_admin(
+                        subject=subject,
+                        template_vars={
+                            "title": subject,
+                            "message": subject,
+                        },
+                        user=request.user,
+                        reply_to=request.user.email,
+                    )
+                    request.user.log_event(
+                        subject,
+                        "stripe",
+                    )
 
             else:
                 modified_subscription = stripe.Subscription.modify(
@@ -532,7 +565,38 @@ class PaymentPlanResumeCancel(StripeAPIView):
                 if modified_subscription.cancel_at_period_end == True:
                     request.user.profile.subscription_status = "cancelling"
                     request.user.profile.save()
+                    subject = f"{request.user.get_full_name()} requested to cancel their membership plan."
+
+                    send_email_to_admin(
+                        subject=subject,
+                        template_vars={
+                            "title": subject,
+                            "message": subject,
+                        },
+                        user=request.user,
+                        reply_to=request.user.email,
+                    )
+                    request.user.log_event(
+                        subject,
+                        "stripe",
+                    )
                     return Response({"success": True})
+
+                else:
+                    subject = f"{request.user.get_full_name()} requested to cancel their membership plan but it failed."
+                    send_email_to_admin(
+                        subject=subject,
+                        template_vars={
+                            "title": subject,
+                            "message": subject,
+                        },
+                        user=request.user,
+                        reply_to=request.user.email,
+                    )
+                    request.user.log_event(
+                        subject,
+                        "stripe",
+                    )
 
             return Response({"success": False})
 
@@ -584,6 +648,8 @@ class StripeWebhook(StripeAPIView):
         if event_type == "invoice.paid":
             invoice_status = data["status"]
 
+            member_profile.user.log_event("Membership payment received", "stripe")
+
             # If they aren't an active member, are allowed to signup, and have paid the invoice
             # then lets activate their account (this could be a new OR returning member)
             if (
@@ -607,6 +673,11 @@ class StripeWebhook(StripeAPIView):
                 member_profile.activate()
                 member_profile.user.email_enable_member()
 
+                member_profile.user.log_event(
+                    "Activated membership because member met all requirements.",
+                    "stripe",
+                )
+
             # If they aren't an active member, are NOT allowed to signup, and have paid the invoice
             # then we need to let them know and mark the subscription as active
             # (this could be a new OR returning member that's been too long since induction etc.)
@@ -625,7 +696,7 @@ class StripeWebhook(StripeAPIView):
 
                 # if this is a returning member then send the exec an email (new members have
                 # already had this sent)
-                if member.state != "noob":
+                if member_profile.state != "noob":
                     subject = "Action Required: Verify returning member"
                     title = subject
                     message = (
@@ -633,21 +704,27 @@ class StripeWebhook(StripeAPIView):
                         "has setup a membership subscription. You must now decide whether to enable their site access."
                     )
                     send_email_to_admin(
-                        subject, title, message, reply_to=member.user.email
+                        subject, title, message, reply_to=member_profile.user.email
                     )
+
+                member_profile.user.log_event(
+                    "Did not activate membership because member did not meet all requirements.",
+                    "stripe",
+                )
 
             # in all other instances, we don't care about a paid invoice and can ignore it
 
         if event_type == "invoice.payment_failed":
             subject = "Your membership payment failed"
             message = (
-                "Hi there, we tried to collect your membership payment via our online payment system but "
-                "weren't successful. Please update your billing information via the member portal or contact "
-                "us to resolve this issue. We'll try again, but if we're unable to collect your payment, your "
-                "membership may be cancelled."
+                "Hi there, we tried to collect your membership payment but "
+                "weren't successful. Please update your billing method or contact "
+                "us if you need more time. We'll try again a few times, but if we're unable to "
+                "collect your payment soon, your membership may be cancelled."
             )
 
             member_profile.user.email_notification(subject, message)
+            member_profile.user.log_event("Membership payment failed", "stripe")
 
         if event_type == "customer.subscription.deleted":
             # the subscription was deleted, so deactivate the member
@@ -657,12 +734,17 @@ class StripeWebhook(StripeAPIView):
                 "membership was cancelled because we couldn't collect your payment, or you chose not to renew it."
             )
 
-            member_profile.user.email_notification(subject, message)
             member_profile.deactivate()
+            member_profile.user.email_notification(subject, message)
+
             member_profile.membership_plan = None
             member_profile.stripe_subscription_id = None
             member_profile.subscription_status = "inactive"
             member_profile.save()
+
+            member_profile.user.log_event(
+                "Membership was cancelled due to Stripe subscription ending", "stripe"
+            )
 
             subject = f"The membership for {member_profile.get_full_name()} was just cancelled"
             title = subject
