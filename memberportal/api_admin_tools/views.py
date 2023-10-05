@@ -654,7 +654,9 @@ class MemberLogs(APIView):
         door_logs = []
         interlock_logs = []
 
-        for user_event_log in UserEventLog.objects.filter(user=user)[:1000]:
+        for user_event_log in UserEventLog.objects.order_by("-date").filter(user=user)[
+            :1000
+        ]:
             user_event_logs.append(
                 {
                     "date": user_event_log.date,
@@ -663,7 +665,7 @@ class MemberLogs(APIView):
                 }
             )
 
-        for door_log in DoorLog.objects.filter(user=user)[:1000]:
+        for door_log in DoorLog.objects.order_by("-date").filter(user=user)[:500]:
             door_logs.append(
                 {
                     "date": door_log.date,
