@@ -1,4 +1,4 @@
-from profile.models import User, UserEventLog, Profile
+from profile.models import User, UserEventLog
 from access.models import DoorLog, InterlockLog
 from access import models
 from .models import MemberTier, PaymentPlan
@@ -41,12 +41,19 @@ class GetMembers(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def get(self, request):
-        members = User.objects.select_related("profile").all()
-
         filtered = []
 
-        for member in members:
+        memberId = request.GET.get("memberId")
+        if memberId is not None:
+            member = User.objects.select_related("profile").get(
+                profile__screen_name=memberId
+            )
             filtered.append(member.profile.get_basic_profile())
+        else:
+            members = User.objects.select_related("profile").all()
+
+            for member in members:
+                filtered.append(member.profile.get_basic_profile())
 
         return Response(filtered)
 
@@ -377,26 +384,6 @@ class MemberProfile(APIView):
                 door.sync()
 
         return Response()
-
-
-class MemberProfileByName(APIView):
-    """
-    get: This method gets a specific member's profile.
-    """
-
-    permission_classes = (permissions.IsAdminUser,)
-
-    def get(self, request, screen_name=None):
-        member = {}
-        if not screen_name:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        member_object = Profile.objects.get(screen_name=screen_name)
-        member["screen_name"] = member_object.screen_name
-        member["rfid_token"] = member_object.rfid
-        member["email_address"] = member_object.user.email
-
-        return Response(member)
 
 
 class MemberTiers(StripeAPIView):
