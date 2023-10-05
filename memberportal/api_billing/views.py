@@ -688,7 +688,6 @@ class StripeWebhook(StripeAPIView):
 
                 # activate their access card
                 member_profile.activate()
-                member_profile.user.email_enable_member()
 
                 member_profile.user.log_event(
                     "Activated membership because member met all requirements.",
