@@ -201,7 +201,7 @@ class UnlockDoor(APIView):
     def post(self, request, door_id):
         door = Doors.objects.get(pk=door_id)
 
-        return Response({"success": door.unlock()})
+        return Response({"success": door.unlock(request=request)})
 
 
 class BumpDoor(APIView):

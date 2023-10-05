@@ -428,6 +428,16 @@ class CompleteSignup(StripeAPIView):
 
     def post(self, request):
         member_profile = request.user.profile
+
+        if member_profile.subscription_status != "active":
+            return Response(
+                {
+                    "success": False,
+                    "message": "signup.requirementsNotMet",
+                    "items": ["No active subscription found."],
+                }
+            )
+
         signupCheck = member_profile.can_signup()
 
         if signupCheck["success"]:
@@ -648,7 +658,7 @@ class StripeWebhook(StripeAPIView):
         if event_type == "invoice.paid":
             invoice_status = data["status"]
 
-            member_profile.user.log_event("Membership payment received", "stripe")
+            member_profile.user.log_event("Membership payment received.", "stripe")
 
             # If they aren't an active member, are allowed to signup, and have paid the invoice
             # then lets activate their account (this could be a new OR returning member)
