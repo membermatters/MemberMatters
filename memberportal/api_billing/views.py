@@ -19,6 +19,7 @@ from services.emails import send_email_to_admin
 from constance import config
 from django.db.utils import OperationalError
 from sentry_sdk import capture_exception
+from django.utils import timezone
 
 logger = logging.getLogger("app")
 
@@ -666,6 +667,13 @@ class StripeWebhook(StripeAPIView):
             invoice_status = data["status"]
 
             member_profile.user.log_event("Membership payment received.", "stripe")
+
+            if (
+                invoice_status == "paid"
+                and not member_profile.subscription_first_created
+            ):
+                member_profile.subscription_first_created = timezone.now()
+                member_profile.save()
 
             # If they aren't an active member, are allowed to signup, and have paid the invoice
             # then lets activate their account (this could be a new OR returning member)

@@ -340,6 +340,9 @@ class Profile(models.Model):
     subscription_status = models.CharField(
         max_length=10, default="inactive", choices=SUBSCRIPTION_STATES
     )
+    subscription_first_created = models.DateTimeField(
+        default=None, blank=True, null=True, editable=False
+    )
 
     def generate_digital_id_token(self):
         self.digital_id_token = uuid.uuid4()
