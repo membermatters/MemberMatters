@@ -31,12 +31,12 @@ LOG_TYPES = (
     ("stripe", "Stripe related event"),
     ("memberbucks", "Memberbucks related event"),
     ("spacebucks", "Spacebucks related event"),
-    ("profile", "Member profile edited"),
+    ("profile", "Member profile was edited or updated"),
     ("interlock", "Interlock related event"),
     ("door", "Door related event"),
-    ("email", "Email send event"),
-    ("admin", "Generic admin event"),
-    ("error", "Some event that causes an error"),
+    ("email", "An email was sent or attempted to be sent"),
+    ("admin", "An admin performed an action"),
+    ("error", "An event or action caused an error"),
     ("xero", "Generic xero log entry"),
 )
 
@@ -368,13 +368,17 @@ class Profile(models.Model):
 
     def deactivate(self, request=None):
         if request:
+            request.user.log_event(
+                f"{request.user.profile.get_full_name()} deactivated member ({self.get_full_name()}).",
+                "admin",
+            )
             self.user.log_event(
-                request.user.profile.get_full_name() + " deactivated member",
-                "profile",
+                f"{request.user.profile.get_full_name()} deactivated member.",
+                "admin",
             )
         else:
             self.user.log_event(
-                "system deactivated member",
+                f"system deactivated member ({self.get_full_name()}).",
                 "profile",
             )
 
@@ -388,13 +392,17 @@ class Profile(models.Model):
 
     def activate(self, request=None):
         if request:
+            request.user.log_event(
+                f"{request.user.profile.get_full_name()} activated member ({self.get_full_name()}).",
+                "admin",
+            )
             self.user.log_event(
-                request.user.profile.get_full_name() + " activated member",
-                "profile",
+                f"{request.user.profile.get_full_name()} activated member.",
+                "admin",
             )
         else:
             self.user.log_event(
-                "system activated member",
+                f"system activated member ({self.get_full_name()})",
                 "profile",
             )
 

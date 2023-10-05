@@ -1,5 +1,7 @@
 import logging
 
+from profile.models import log_event
+
 logger = logging.getLogger("app")
 
 from django.db import models
@@ -112,41 +114,33 @@ class Doors(AccessControlledDevice):
             ("manage_doors", "Can manage doors"),
         ]
 
-    def unlock(self):
+    def unlock(self, request=None):
         if self.serial_number:
-            logger.info(
-                "Sending door bump to channels for {}".format(
-                    "door_" + self.serial_number
-                )
-            )
-
+            logger.info(f"Sending door bump to channels for {self.name}")
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 "door_" + self.serial_number, {"type": "door_bump"}
             )
 
-        elif self.ip_address:
-            import requests
-
-            r = requests.get("http://{}/bump".format(self.ip_address), timeout=5)
-            if r.status_code == 200:
-                log_event(
-                    self.name + " bumped from admin interface.",
-                    "door",
-                    "Status: {}. Content: {}".format(r.status_code, r.content),
+            if request:
+                self.log_access(request.user.id)
+                request.user.log_event(
+                    f"Bumped the {self.name} {self.Meta.verbose_name}.",
+                    "admin",
                 )
+
             else:
                 log_event(
-                    self.name + " bumped from admin interface failed.",
-                    "door",
-                    "Status: {}. Content: {}".format(r.status_code, r.content),
+                    f"Unknown user (system) bumped the {self.name} {self.Meta.verbose_name}.",
+                    "admin",
                 )
-                return False
 
-        return True
+            return True
+
+        return False
 
     def log_access(self, member_id, success=True):
-        logger.info("Logging access for {}".format(self.name))
+        logger.debug("Logging access for {}".format(self.name))
 
         user_object = User.objects.get(pk=member_id)
         door_log = DoorLog.objects.create(user=user_object, door=self, success=success)
