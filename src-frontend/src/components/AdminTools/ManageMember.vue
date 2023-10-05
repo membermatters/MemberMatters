@@ -727,9 +727,8 @@
               <q-item-section>
                 <q-item-label lines="1">
                   {{
-                    billing?.memberbucks.stripe_card_expiry
-                      ? billing.memberbucks.stripe_card_expiry
-                      : $t('error.noValue')
+                    billing?.memberbucks.stripe_card_expiry ||
+                    $t('error.noValue')
                   }}
                 </q-item-label>
                 <q-item-label caption>
@@ -742,9 +741,8 @@
               <q-item-section>
                 <q-item-label lines="1">
                   {{
-                    billing?.memberbucks.stripe_card_last_digits
-                      ? formatWhen(billing.memberbucks.lastPurchase)
-                      : $t('error.noValue')
+                    billing?.memberbucks.stripe_card_last_digits ||
+                    $t('error.noValue')
                   }}
                 </q-item-label>
                 <q-item-label caption>
