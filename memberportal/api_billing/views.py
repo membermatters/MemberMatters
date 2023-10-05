@@ -534,7 +534,7 @@ class PaymentPlanResumeCancel(StripeAPIView):
                 if modified_subscription.cancel_at_period_end == False:
                     request.user.profile.subscription_status = "active"
                     request.user.profile.save()
-                    subject = f"{request.user.get_full_name()} resumed their about to cancel membership plan."
+                    subject = f"{request.user.get_full_name()} resumed their cancelling membership plan."
                     send_email_to_admin(
                         subject=subject,
                         template_vars={
@@ -551,7 +551,7 @@ class PaymentPlanResumeCancel(StripeAPIView):
                     return Response({"success": True})
 
                 else:
-                    subject = f"{request.user.get_full_name()} tried to resume their about to cancel membership plan but it failed."
+                    subject = f"{request.user.get_full_name()} tried to resume their cancelling membership plan but it failed."
                     send_email_to_admin(
                         subject=subject,
                         template_vars={
@@ -576,16 +576,22 @@ class PaymentPlanResumeCancel(StripeAPIView):
                     request.user.profile.subscription_status = "cancelling"
                     request.user.profile.save()
                     subject = f"{request.user.get_full_name()} requested to cancel their membership plan."
+                    description = "No further action is required, the subscription will automatically cancel at the end of the current billing period."
 
                     send_email_to_admin(
                         subject=subject,
                         template_vars={
                             "title": subject,
-                            "message": subject,
+                            "message": description,
                         },
                         user=request.user,
                         reply_to=request.user.email,
                     )
+
+                    subject = "You've requested to cancel your membership plan."
+                    description = "No further action is required, the subscription will automatically cancel at the end of the current billing period. You can cancel this request at any time from the member portal."
+                    request.user.email_notification(subject, description)
+
                     request.user.log_event(
                         subject,
                         "stripe",
@@ -594,11 +600,12 @@ class PaymentPlanResumeCancel(StripeAPIView):
 
                 else:
                     subject = f"{request.user.get_full_name()} requested to cancel their membership plan but it failed."
+
                     send_email_to_admin(
                         subject=subject,
                         template_vars={
                             "title": subject,
-                            "message": subject,
+                            "message": "We're not sure what happened, you should check Stripe and contact the member.",
                         },
                         user=request.user,
                         reply_to=request.user.email,
