@@ -614,9 +614,9 @@ class StripeWebhook(StripeAPIView):
                 subject = "Your payment was successful."
                 message = (
                     "Thanks for making a membership payment using our online payment system. "
-                    "You haven't yet met all of the requirements for activating your site access. Once this "
-                    "happens, you'll receive an email confirmation that your access card was activated. "
-                    "If you are unsure how to proceed, or this email is unexpected, please contact us."
+                    "You haven't yet met all of the requirements for automatically activating your site access. "
+                    "You'll receive confirmation that your site access is enabled soon, or we'll be in touch. "
+                    "If you don't hear from us soon or require assistance, please contact us."
                 )
                 member_profile.user.email_notification(subject, message)
 
@@ -625,8 +625,16 @@ class StripeWebhook(StripeAPIView):
 
                 # if this is a returning member then send the exec an email (new members have
                 # already had this sent)
-                if member_profile.state != "noob":
-                    member_profile.user.email_membership_application()
+                if member.state != "noob":
+                    subject = "Action Required: Verify returning member"
+                    title = subject
+                    message = (
+                        "An existing member (or someone who clicked 'skip signup I just want an account') "
+                        "has setup a membership subscription. You must now decide whether to enable their site access."
+                    )
+                    send_email_to_admin(
+                        subject, title, message, reply_to=member.user.email
+                    )
 
             # in all other instances, we don't care about a paid invoice and can ignore it
 
