@@ -175,7 +175,7 @@ class SyncDoor(APIView):
     def post(self, request, door_id):
         door = Doors.objects.get(pk=door_id)
 
-        return Response({"success": door.sync()})
+        return Response({"success": door.sync(request=request)})
 
 
 class RebootDoor(APIView):
@@ -188,7 +188,7 @@ class RebootDoor(APIView):
     def post(self, request, door_id):
         door = Doors.objects.get(pk=door_id)
 
-        return Response({"success": door.reboot()})
+        return Response({"success": door.reboot(request=request)})
 
 
 class UnlockDoor(APIView):
@@ -206,7 +206,7 @@ class UnlockDoor(APIView):
 
 class BumpDoor(APIView):
     """
-    post: This method will 'bump' the specified door.
+    post: This method will 'bump' the specified door. This is an EXTERNAL API for integration with other systems.
     """
 
     permission_classes = (permissions.AllowAny,)

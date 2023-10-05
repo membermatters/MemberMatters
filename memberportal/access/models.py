@@ -57,10 +57,10 @@ class AccessControlledDevice(models.Model):
     def __str__(self):
         return self.name
 
-    def sync(self):
+    def sync(self, request=None):
         if self.serial_number:
             logger.info(
-                "Sending door sync to channels for {}".format(
+                "Sending device sync to channels for {}".format(
                     "door_" + self.serial_number
                 )
             )
@@ -70,29 +70,41 @@ class AccessControlledDevice(models.Model):
                 "door_" + self.serial_number, {"type": "sync_users"}
             )
 
+            if request:
+                request.user.log_event(
+                    f"Sent a sync request to the {self.name} {self.Meta.verbose_name}.",
+                    "admin",
+                )
+
             return True
 
         else:
             logger.error(
-                "Cannot sync door without websocket support (for {})!".format(self.name)
-            )
-
-    def reboot(self):
-        if self.serial_number:
-            logger.info(
-                "Sending door reboot to channels for {}".format(
-                    "door_" + self.serial_number
+                "Cannot sync device without websocket support (for {})!".format(
+                    self.name
                 )
             )
+
+    def reboot(self, request=None):
+        if self.serial_number:
+            logger.info(f"Sending door reboot to channels for {self.name}")
 
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 "door_" + self.serial_number, {"type": "device_reboot"}
             )
 
+            if request:
+                request.user.log_event(
+                    f"Sent a reboot request to the {self.name} {self.Meta.verbose_name}.",
+                    "admin",
+                )
+
         else:
             logger.error(
-                "Cannot sync door without websocket support (for {})!".format(self.name)
+                "Cannot reboot device without websocket support (for {})!".format(
+                    self.name
+                )
             )
 
 
