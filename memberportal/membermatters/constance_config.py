@@ -219,9 +219,9 @@ CONSTANCE_CONFIG = {
         "",
         "Secret key for the discourse SSO protocol (if enabled).",
     ),
-    "GOOGLE_ANALYTICS_PROPERTY_ID": (
+    "GOOGLE_ANALYTICS_MEASUREMENT_ID": (
         "",
-        "Place you google analytics property ID here to enable Google analytics integration.",
+        "Enter your measurement ID to enable Google analytics. Only the new GA4 measurement IDs are supported. It should look something like G-XXXXXXXXXX.",
     ),
     "API_SECRET_KEY": (
         "PLEASE_CHANGE_ME",
@@ -343,7 +343,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SITE_NAME",
                 "SITE_OWNER",
                 "SITE_LOCALE_CURRENCY",
-                "GOOGLE_ANALYTICS_PROPERTY_ID",
+                "GOOGLE_ANALYTICS_MEASUREMENT_ID",
                 "API_SECRET_KEY",
                 "SITE_BANNER",
             ),

@@ -69,7 +69,7 @@ However, as noted below, currencies will use a hardcoded value set by a configur
 ### General
   * "SITE_NAME" - Name of the website.
   * "SITE_OWNER" - Name of the organisation running this website.
-  * "GOOGLE_ANALYTICS_PROPERTY_ID" - Enter your Google Analytics Tracking ID to enable Google Analytics Tracking.
+  * "GOOGLE_ANALYTICS_MEASUREMENT_ID" - Enter your measurement ID to enable Google analytics. Only the new GA4 measurement IDs are supported. It should look something like G-XXXXXXXXXX.
   * "API_SECRET_KEY" - Secret key used to authenticate some requests from access control devices.
 
 ### Signup

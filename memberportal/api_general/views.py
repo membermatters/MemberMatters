@@ -111,7 +111,7 @@ class GetConfig(APIView):
             "webcamLinks": webcam_links,
             "keys": keys,
             "features": features,
-            "analyticsId": config.GOOGLE_ANALYTICS_PROPERTY_ID,
+            "analyticsId": config.GOOGLE_ANALYTICS_MEASUREMENT_ID,
             "sentryDSN": config.SENTRY_DSN_FRONTEND,
         }
 
