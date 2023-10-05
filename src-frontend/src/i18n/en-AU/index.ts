@@ -386,6 +386,7 @@ export default {
   confirm: 'Confirm',
   confirmAction: 'Confirm Action',
   confirmRemove: 'Are you sure you want to remove this?',
+  never: 'Never',
   edit: 'Edit',
   delete: 'Delete',
   dataRefreshWarning:
