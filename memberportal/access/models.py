@@ -72,7 +72,7 @@ class AccessControlledDevice(models.Model):
 
             if request:
                 request.user.log_event(
-                    f"Sent a sync request to the {self.name} {self.Meta.verbose_name}.",
+                    f"Sent a sync request to the {self.name} {self._meta.verbose_name}.",
                     "admin",
                 )
 
@@ -96,7 +96,7 @@ class AccessControlledDevice(models.Model):
 
             if request:
                 request.user.log_event(
-                    f"Sent a reboot request to the {self.name} {self.Meta.verbose_name}.",
+                    f"Sent a reboot request to the {self.name} {self._meta.verbose_name}.",
                     "admin",
                 )
 
@@ -137,13 +137,13 @@ class Doors(AccessControlledDevice):
             if request:
                 self.log_access(request.user.id)
                 request.user.log_event(
-                    f"Bumped the {self.name} {self.Meta.verbose_name}.",
+                    f"Bumped the {self.name} {self._meta.verbose_name}.",
                     "admin",
                 )
 
             else:
                 log_event(
-                    f"Unknown user (system) bumped the {self.name} {self.Meta.verbose_name}.",
+                    f"Unknown user (system) bumped the {self.name} {self._meta.verbose_name}.",
                     "admin",
                 )
 
