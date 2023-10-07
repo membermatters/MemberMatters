@@ -41,12 +41,19 @@ class GetMembers(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def get(self, request):
-        members = User.objects.select_related("profile").all()
-
         filtered = []
 
-        for member in members:
+        memberId = request.GET.get("memberId")
+        if memberId is not None:
+            member = User.objects.select_related("profile").get(
+                profile__screen_name=memberId
+            )
             filtered.append(member.profile.get_basic_profile())
+        else:
+            members = User.objects.select_related("profile").all()
+
+            for member in members:
+                filtered.append(member.profile.get_basic_profile())
 
         return Response(filtered)
 
