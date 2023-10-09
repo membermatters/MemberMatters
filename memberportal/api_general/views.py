@@ -565,6 +565,12 @@ class SiteSignIn(APIView):
         SiteSession.objects.create(user=request.user, guests=guests)
         post_kiosk_swipe_to_discord(request.user.profile.get_full_name(), True)
 
+        for door in request.user.profile.doors.all():
+            door.sync()
+
+        for interlock in request.user.profile.interlocks.all():
+            interlock.sync()
+
         return Response()
 
 
@@ -574,11 +580,20 @@ class SiteSignOut(APIView):
     """
 
     def put(self, request):
-        session = SiteSession.objects.filter(user=request.user).order_by(
-            "-signin_date"
-        )[0]
-        session.signout()
+        sessions = (
+            SiteSession.objects.filter(user=request.user)
+            .filter(signout_date__isnull=True)
+            .all()
+        )
+        for session in sessions:
+            session.signout()
         post_kiosk_swipe_to_discord(request.user.profile.get_full_name(), False)
+
+        for door in request.user.profile.doors.all():
+            door.sync()
+
+        for interlock in request.user.profile.interlocks.all():
+            interlock.sync()
 
         return Response()
 
