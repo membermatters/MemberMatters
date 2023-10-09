@@ -43,17 +43,16 @@ class GetMembers(APIView):
     def get(self, request):
         filtered = []
 
-        memberId = request.GET.get("memberId")
-        if memberId is not None:
-            member = User.objects.select_related("profile").get(
-                profile__screen_name=memberId
-            )
-            filtered.append(member.profile.get_basic_profile())
-        else:
-            members = User.objects.select_related("profile").all()
+        members_queryset = User.objects.select_related("profile")
 
-            for member in members:
-                filtered.append(member.profile.get_basic_profile())
+        screenName = request.GET.get("screenName")
+        if screenName is not None:
+            members_queryset = members_queryset.filter(profile__screen_name=screenName)
+
+        members = members_queryset.all()
+
+        for member in members:
+            filtered.append(member.profile.get_basic_profile())
 
         return Response(filtered)
 
