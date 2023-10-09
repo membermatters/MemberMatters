@@ -5,33 +5,46 @@ from constance import config
 import logging
 import datetime
 
-from access.models import Doors
+from access.models import Doors, Interlock, MemberbucksDevice, AccessControlledDevice
 from services.discord import post_door_swipe_to_discord
 from profile.models import Profile
-from access.models import AccessControlledDeviceAPIKey
 from services import sms
 
 logger = logging.getLogger("app")
 
 
-def get_door_tags(door_id, return_hash=False):
-    door = Doors.objects.get(pk=door_id)
-    profiles = Profile.objects.all()
-
+def get_device_tags(device_id, type):
+    # Find profiles that are active and have an RFID tag assigned to them
+    ProfileQueryset = Profile.objects.filter(state="active").exclude(rfid__isnull=True)
     authorised_tags = list()
+    device = None
 
-    for profile in profiles:
-        if door in profile.doors.all() and profile.state == "active":
-            if profile.rfid and (
-                profile.is_signed_into_site() or door.exempt_signin is True
-            ):
-                authorised_tags.append(profile.rfid)
-
-    if return_hash:
-        return hashlib.md5(str(authorised_tags).encode("utf-8")).hexdigest()
-
+    # Get the device object
+    if type == "door":
+        device = Doors.objects.get(pk=device_id)
+        ProfileQueryset = ProfileQueryset.filter(doors__in=[device])
+    elif type == "interlock":
+        device = Interlock.objects.get(pk=device_id)
+        ProfileQueryset = ProfileQueryset.filter(interlocks__in=[device])
+    elif type == "memberbucks":
+        device = MemberbucksDevice.objects.get(pk=device_id)
+        ProfileQueryset = ProfileQueryset.filter(memberbucks_devices__in=[device])
     else:
-        return authorised_tags
+        raise Exception("Unknown device type")
+
+    for profile in ProfileQueryset.all():
+        # If the site sign in feature is disabled, or the device is exempt
+        # from sign in, then all tags are authorised.
+        # Otherwise check if the member is signed in to the site
+        if config.ENABLE_PORTAL_SITE_SIGN_IN == False or (
+            device.exempt_signin is True or profile.is_signed_into_site()
+        ):
+            authorised_tags.append(profile.rfid)
+
+    return (
+        authorised_tags,
+        hashlib.md5(str(authorised_tags).encode("utf-8")).hexdigest(),
+    )
 
 
 class AccessDoorConsumer(JsonWebsocketConsumer):
@@ -58,15 +71,31 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
 
         self.connected_at = datetime.datetime.now()
         self.last_seen = self.connected_at
-        self.door = Doors.objects.get(serial_number=self.door_id)
+        door_defaults = {
+            "name": f"New Device ({self.door_id})",
+            "description": "New device that is yet to be setup.",
+            "serial_number": self.door_id,
+            "hidden": True,
+        }
+
+        door_object, created = Doors.objects.get_or_create(
+            serial_number=self.door_id, defaults=door_defaults
+        )
+        self.door = door_object
         self.door.checkin()
 
-        # if we got a door object, then accept it
-        if self.door:
-            self.accept()
-            return
+        if created:
+            logger.warning(f"Created new door object for {self.door_id}")
 
-        self.close()
+        if self.door.authorised:
+            print(get_device_tags(self.door.id, "door"))
+            self.accept()
+
+        else:
+            logger.warning(
+                f"Device ({self.door_id}) is not authorised yet and has been disconnected."
+            )
+            self.close()
 
     def disconnect(self, close_code):
         logger.info("Door disconnected!")
@@ -174,8 +203,7 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
     def sync_users(self, event=None):
         # Handles the "sync_users" event when it's sent to us.
 
-        tags = get_door_tags(self.door.id)
-        tags_hash = hashlib.md5(str(tags).encode("utf-8")).hexdigest()
+        tags, tags_hash = get_device_tags(self.door.id, "door")
 
         logger.info("Syncing door " + self.door_id)
         self.send_json({"command": "sync", "tags": tags, "hash": tags_hash})

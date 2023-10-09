@@ -42,6 +42,9 @@ class HasExternalAccessControlAPIKey(BaseHasAPIKey):
 
 class AccessControlledDevice(models.Model):
     id = models.AutoField(primary_key=True)
+    authorised = models.BooleanField(
+        "Is this device authorised to access the system?", default=False
+    )
     name = models.CharField("Name", max_length=30, unique=True)
     description = models.CharField("Description/Location", max_length=100)
     ip_address = models.GenericIPAddressField(
