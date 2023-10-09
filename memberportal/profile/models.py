@@ -243,9 +243,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         return True
 
 
-from access.models import Doors, Interlock
-
-
 class Profile(models.Model):
     def path_and_rename(self, filename):
         ext = filename.split(".")[-1]
@@ -518,6 +515,8 @@ class Profile(models.Model):
         interlocks = []
 
         user_active = self.state == "active"
+
+        from access.models import Doors, Interlock
 
         for door in Doors.objects.all():
             if door.hidden:

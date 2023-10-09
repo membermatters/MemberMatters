@@ -1,5 +1,7 @@
 import logging
-from profile.models import log_event
+from services.discord import post_door_swipe_to_discord
+from services import sms
+from profile.models import Profile, log_event
 from django.db import models
 from datetime import timedelta
 from django.utils import timezone
@@ -10,6 +12,8 @@ import uuid
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from rest_framework_api_key.permissions import BaseHasAPIKey, AbstractAPIKey
+from constance import config
+import hashlib
 
 logger = logging.getLogger("app")
 User = auth.get_user_model()
@@ -45,6 +49,7 @@ class AccessControlledDevice(models.Model):
     authorised = models.BooleanField(
         "Is this device authorised to access the system?", default=False
     )
+    type: str = None
     name = models.CharField("Name", max_length=30, unique=True)
     description = models.CharField("Description/Location", max_length=100)
     ip_address = models.GenericIPAddressField(
@@ -82,17 +87,18 @@ class AccessControlledDevice(models.Model):
     def __str__(self):
         return self.name
 
+    def log_access(self, member_id, success=True):
+        pass
+
     def sync(self, request=None):
         if self.serial_number:
             logger.info(
-                "Sending device sync to channels for {}".format(
-                    "door_" + self.serial_number
-                )
+                "Sending device sync to channels for {}".format(self.serial_number)
             )
 
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
-                "door_" + self.serial_number, {"type": "sync_users"}
+                self.serial_number, {"type": "sync_users"}
             )
 
             if request:
@@ -116,7 +122,7 @@ class AccessControlledDevice(models.Model):
 
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
-                "door_" + self.serial_number, {"type": "device_reboot"}
+                self.serial_number, {"type": "device_reboot"}
             )
 
             if request:
@@ -132,9 +138,42 @@ class AccessControlledDevice(models.Model):
                 )
             )
 
+    def get_tags(self):
+        # Find profiles that are active and have an RFID tag assigned to them
+        ProfileQueryset = Profile.objects.filter(state="active").exclude(
+            rfid__isnull=True
+        )
+        authorised_tags = list()
+
+        # Get the device object
+        if self.type == "door":
+            ProfileQueryset = ProfileQueryset.filter(doors__in=[self])
+        elif self.type == "interlock":
+            ProfileQueryset = ProfileQueryset.filter(interlocks__in=[self])
+        elif self.type == "memberbucks":
+            pass
+            # all profiles are authorised for memberbucks devices
+        else:
+            raise Exception("Unknown device type")
+
+        for profile in ProfileQueryset.all():
+            # If the site sign in feature is disabled, or the device is exempt
+            # from sign in, then all tags are authorised.
+            # Otherwise check if the member is signed in to the site
+            if config.ENABLE_PORTAL_SITE_SIGN_IN == False or (
+                self.exempt_signin is True or profile.is_signed_into_site()
+            ):
+                authorised_tags.append(profile.rfid)
+
+        return (
+            authorised_tags,
+            hashlib.md5(str(authorised_tags).encode("utf-8")).hexdigest(),
+        )
+
 
 class MemberbucksDevice(AccessControlledDevice):
     all_members = False
+    type = "memberbucks"
 
     def lock(self):
         return False
@@ -144,6 +183,8 @@ class MemberbucksDevice(AccessControlledDevice):
 
 
 class Doors(AccessControlledDevice):
+    type = "door"
+
     class Meta:
         verbose_name = "Door"
         verbose_name_plural = "Doors"
@@ -156,7 +197,7 @@ class Doors(AccessControlledDevice):
             logger.info(f"Sending door bump to channels for {self.name}")
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
-                "door_" + self.serial_number, {"type": "door_bump"}
+                self.serial_number, {"type": "door_bump"}
             )
 
             if request:
@@ -181,15 +222,34 @@ class Doors(AccessControlledDevice):
 
         user_object = User.objects.get(pk=member_id)
         door_log = DoorLog.objects.create(user=user_object, door=self, success=success)
-
         profile = user_object.profile
         profile.last_seen = timezone.now()
         profile.save()
+
+        if success == True:
+            if self.post_to_discord:
+                post_door_swipe_to_discord(
+                    profile.get_full_name(), self.door.name, success
+                )
+
+        elif success == False:
+            sms_message = sms.SMS()
+            sms_message.send_inactive_swipe_alert(profile.phone)
+
+        elif success == "locked out":
+            post_door_swipe_to_discord(
+                profile.get_full_name(), self.door.name, "maintenance_lock_out"
+            )
+
+            sms_message = sms.SMS()
+            sms_message.send_locked_out_swipe_alert(profile.phone)
 
         return door_log
 
 
 class Interlock(AccessControlledDevice):
+    type = "interlock"
+
     class Meta:
         permissions = [
             ("manage_interlocks", "Can manage interlocks"),
