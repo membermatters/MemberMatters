@@ -102,11 +102,13 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
                     logger.debug("Authorisation failed from " + self.door_id)
                     self.authorised = False
                     self.send_json({"authorised": False})
+                    self.close()
                 return
 
             elif not self.authorised:
                 logger.info("Device is not authorised!")
                 self.send_json({"authorised": False})
+                self.close()
                 return
 
             if content.get("command") == "ping":
