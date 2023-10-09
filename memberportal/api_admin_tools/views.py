@@ -8,7 +8,7 @@ from services.emails import send_email_to_admin
 import json
 import stripe
 from sentry_sdk import capture_message
-
+from rest_framework_api_key.permissions import HasAPIKey
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
@@ -38,7 +38,7 @@ class GetMembers(APIView):
     get: This method returns a list of members.
     """
 
-    permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser | HasAPIKey,)
 
     def get(self, request):
         filtered = []
@@ -169,8 +169,6 @@ class Doors(APIView):
                 .annotate(records=Count("user_id"), lastSeen=Max("date"))
                 .order_by("-records")
             )
-
-            print(stats)
 
             return {
                 "id": door.id,
@@ -326,7 +324,7 @@ class MemberAccess(APIView):
     get: This method gets a member's access permissions.
     """
 
-    permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser | HasAPIKey,)
 
     def get(self, request, member_id):
         member = User.objects.get(id=member_id)
@@ -597,7 +595,7 @@ class MemberBillingInfo(StripeAPIView):
     get: This method gets a member's billing info.
     """
 
-    permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser | HasAPIKey,)
 
     def get(self, request, member_id):
         member = User.objects.get(id=member_id)
@@ -651,7 +649,7 @@ class MemberLogs(APIView):
     get: This method gets a member's logs.
     """
 
-    permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAdminUser | HasAPIKey,)
 
     def get(self, request, member_id):
         user = User.objects.get(id=member_id)
