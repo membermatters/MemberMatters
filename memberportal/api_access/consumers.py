@@ -8,6 +8,7 @@ import datetime
 from access.models import Doors
 from services.discord import post_door_swipe_to_discord
 from profile.models import Profile
+from access.models import AccessControlledDeviceAPIKey
 from services import sms
 
 logger = logging.getLogger("app")
@@ -85,7 +86,13 @@ class AccessDoorConsumer(JsonWebsocketConsumer):
 
             if content.get("api_secret_key"):
                 logger.info("Received an authorisation packet from " + self.door_id)
-                if content.get("api_secret_key") == config.API_SECRET_KEY:
+
+                raw_api_key = content.get("api_secret_key")
+                api_key_is_valid = AccessControlledDeviceAPIKey.objects.is_valid(
+                    raw_api_key
+                )
+
+                if api_key_is_valid:
                     logger.info("Authorisation successful from " + self.door_id)
                     self.authorised = True
                     self.send_json({"authorised": True})

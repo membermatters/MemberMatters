@@ -1,5 +1,16 @@
 from django.contrib import admin
+from rest_framework_api_key.admin import APIKeyModelAdmin
 from .models import *
+
+
+@admin.register(AccessControlledDeviceAPIKey)
+class AccessControlledDeviceAPIKey(APIKeyModelAdmin):
+    pass
+
+
+@admin.register(ExternalAccessControlAPIKey)
+class ExternalAccessControlAPIKey(APIKeyModelAdmin):
+    pass
 
 
 @admin.register(Doors)

@@ -5,11 +5,6 @@ from . import views
 
 urlpatterns = [
     path("api/admin/members/", views.GetMembers.as_view(), name="GetMembers"),
-    #    path(
-    #        "api/admin/member/<str:screen_name>/",
-    #        views.MemberProfileByName.as_view(),
-    #        name="MemberProfileByName",
-    #    ),
     path(
         "api/admin/members/<int:member_id>/state/<str:state>/",
         views.MemberState.as_view(),

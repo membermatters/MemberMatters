@@ -195,10 +195,6 @@ CONSTANCE_CONFIG = {
         False,
         "Enable an API endpoint that 'bumps' (temporarily unlocks) a door for third party integration.",
     ),
-    "DOOR_BUMP_API_KEY": (
-        "",
-        "The API key used to authenticate requests to the door bump API endpoint. MUST be set or the endpoint is automatically disabled. Check docs for usage.",
-    ),
     "ENABLE_DISCORD_INTEGRATION": (
         False,
         "Enable posting a notification to the discord channel on a card swipe.",
@@ -362,6 +358,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "ENABLE_THEME_SWIPE",
                 "ENABLE_PORTAL_SITE_SIGN_IN",
                 "ENABLE_PORTAL_MEMBERS_ON_SITE",
+                "ENABLE_DOOR_BUMP_API",
             ),
         ),
         (
@@ -440,7 +437,6 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ),
         ),
         ("Theme Swipe Integration", ("THEME_SWIPE_URL",)),
-        ("Door Bump API", ("ENABLE_DOOR_BUMP_API", "DOOR_BUMP_API_KEY")),
         (
             "Contact Information",
             (

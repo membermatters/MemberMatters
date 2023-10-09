@@ -1,9 +1,5 @@
 import logging
-
 from profile.models import log_event
-
-logger = logging.getLogger("app")
-
 from django.db import models
 from datetime import timedelta
 from django.utils import timezone
@@ -13,9 +9,35 @@ from django.contrib import auth
 import uuid
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from rest_framework_api_key.permissions import BaseHasAPIKey, AbstractAPIKey
 
+logger = logging.getLogger("app")
 User = auth.get_user_model()
 utc = pytz.UTC
+
+
+class AccessControlledDeviceAPIKey(AbstractAPIKey):
+    class Meta:
+        # Add verbose name
+        verbose_name = "API Key For Access Controlled Device"
+
+    pass
+
+
+class HasAccessControlledDeviceAPIKey(BaseHasAPIKey):
+    model = AccessControlledDeviceAPIKey
+
+
+class ExternalAccessControlAPIKey(AbstractAPIKey):
+    class Meta:
+        # Add verbose name
+        verbose_name = "API Key For External Access Control API"
+
+    pass
+
+
+class HasExternalAccessControlAPIKey(BaseHasAPIKey):
+    model = ExternalAccessControlAPIKey
 
 
 class AccessControlledDevice(models.Model):
