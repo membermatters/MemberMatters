@@ -2,12 +2,10 @@ from django.urls import path
 from . import consumers
 
 urlpatterns = [
-    path("access/door/<str:door_id>", consumers.AccessDeviceConsumer.as_asgi()),
+    path("access/door/<str:device_id>", consumers.DoorConsumer.as_asgi()),
+    path("access/interlock/<str:device_id>", consumers.InterlockConsumer.as_asgi()),
     path(
-        "access/interlock/<str:interlock_id>", consumers.AccessDeviceConsumer.as_asgi()
-    ),
-    path(
-        "access/memberbucks/<str:memberbucks_id>",
-        consumers.AccessDeviceConsumer.as_asgi(),
+        "access/memberbucks/<str:device_id>",
+        consumers.MemberbucksConsumer.as_asgi(),
     ),
 ]

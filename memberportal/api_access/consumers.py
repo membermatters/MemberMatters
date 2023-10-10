@@ -30,23 +30,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
     def connect(self):
         logger.info("Device connected!")
         kwargs = self.scope["url_route"]["kwargs"]
-        device_id = None
-
-        if kwargs.get("door_id"):
-            device_id = kwargs.get("door_id")
-            self.DeviceClass = Doors
-
-        elif kwargs.get("interlock_id"):
-            device_id = kwargs.get("interlock_id")
-            self.DeviceClass = Interlock
-
-        elif kwargs.get("memberbucks_id"):
-            device_id = kwargs.get("memberbucks_id")
-            self.DeviceClass = MemberbucksDevice
-
-        else:
-            logger.error("Unknown device type tried to connect")
-            self.close()
+        device_id = kwargs.get("device_id")
 
         defaults = {
             "name": f"New Device ({device_id})",
@@ -74,12 +58,10 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
 
         if created:
             logger.warning(
-                f"Created new {self.device.type} object for {self.device_id}"
+                f"Commissioned new {self.device.type} device for {self.device_id}"
             )
 
         if self.device.authorised:
-            tags, hash = self.device.get_tags()
-            print(tags, hash)
             self.accept()
 
         else:
@@ -150,39 +132,45 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
             elif content.get("command") == "sync":
                 self.sync_users({})
 
-            elif content.get("command") == "log_access":
-                card_id = content.get("card_id")
-                profile = Profile.objects.get(rfid=card_id)
-                self.device.log_access(profile.user.id, success=True)
-
-            elif content.get("command") == "log_access_denied":
-                card_id = content.get("card_id")
-                profile = Profile.objects.get(rfid=card_id)
-                self.device.log_access(profile.user.id, success=False)
-
-            elif content.get("command") == "log_access_locked_out":
-                card_id = content.get("card_id")
-                profile = Profile.objects.get(rfid=card_id)
-                self.device.log_access(profile.user.id, success="locked_out")
-
             else:
-                logger.info(
-                    "Received an unknown packet from " + self.device.serial_number
-                )
+                if not self.handle_other_packet(content):
+                    # if the packet wasn't handled by the subclass, log it
+                    logger.warning(
+                        f'Received an unknown packet ({content.get("command")}) from {self.device.serial_number}'
+                    )
 
         except Exception as e:
             logger.error("Error receiving message from device: %s", e)
             logger.error(e)
             self.send_json({"command": "error"})
 
-    def door_bump(self, event=None):
-        # Handles the "door_bump" event when it's sent to us.
+    def handle_other_packet(content):
+        raise NotImplementedError(
+            "handle_other_packet() must be implemented by subclass"
+        )
 
-        logger.info("Sending door bump for {}".format(self.device.serial_number))
-        print("Sending door bump for {}".format(self.device.serial_number))
-        self.send_json({"command": "bump"})
+    def send_ack(self, command, success=True):
+        self.send_json(
+            {
+                "command": command,
+                "success": success,
+            }
+        )
+
+    def check_authorised(self):
+        if self.authorised:
+            return True
+        else:
+            logger.warning(
+                f"Device {self.device.serial_number} is not authorised but data was sent to it!"
+            )
+            raise RuntimeError(
+                f"Device {self.device.serial_number} is not authorised but data was sent to it!"
+            )
 
     def sync_users(self, event=None):
+        self.check_authorised()
+
         # Handles the "sync_users" event when it's sent to us.
         tags, tags_hash = self.device.get_tags()
 
@@ -195,6 +183,8 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
         self.send_json({"command": "reboot"})
 
     def update_device_locked_out(self, event=None):
+        self.check_authorised()
+
         # Handles the "update_locked_out" event when it's sent to us.
         logger.info(
             "Sending update_device_locked_out for device " + self.device.serial_number
@@ -209,3 +199,73 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
 
     def update_device_object(self, event=None):
         self.device = self.DeviceClass.objects.get(id=self.device.id)
+
+
+class DoorConsumer(AccessDeviceConsumer):
+    type = "door"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.DeviceClass = Doors
+
+    def handle_other_packet(self, content):
+        if content.get("command") == "log_access":
+            card_id = content.get("card_id")
+            profile = Profile.objects.get(rfid=card_id)
+            self.device.log_access(profile.user.id, success=True)
+            self.send_ack("log_access")
+            return True
+
+        elif content.get("command") == "log_access_denied":
+            card_id = content.get("card_id")
+            profile = Profile.objects.get(rfid=card_id)
+            self.device.log_access(profile.user.id, success=False)
+            self.send_ack("log_access_denied")
+            return True
+
+        elif content.get("command") == "log_access_locked_out":
+            card_id = content.get("card_id")
+            profile = Profile.objects.get(rfid=card_id)
+            self.device.log_access(profile.user.id, success="locked_out")
+            self.send_ack("log_access_locked_out")
+            return True
+
+        else:
+            return False
+
+    def door_bump(self, event=None):
+        self.check_authorised()
+
+        # Handles the "door_bump" event when it's sent to us.
+
+        logger.info("Sending door bump for {}".format(self.device.serial_number))
+        print("Sending door bump for {}".format(self.device.serial_number))
+        self.send_json({"command": "bump"})
+
+
+class InterlockConsumer(AccessDeviceConsumer):
+    type = "interlock"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.DeviceClass = Interlock
+
+    def handle_other_packet(self, content):
+        if content.get("command") == "session":
+            pass  # TODO: implement
+        else:
+            return False
+
+
+class MemberbucksConsumer(AccessDeviceConsumer):
+    type = "memberbucks"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.DeviceClass = MemberbucksConsumer
+
+    def handle_other_packet(self, content):
+        if content.get("command") == "debit":
+            pass  # TODO: implement
+        else:
+            return False

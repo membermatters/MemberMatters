@@ -456,7 +456,11 @@ export default {
     description: 'Door Description',
     ipAddress: 'Door IP Address',
     remove: 'Remove this door',
-    unlocked: 'Unlock successful',
+  },
+  device: {
+    unlocked: 'Sent unlock request',
+    rebooted: 'Sent reboot request',
+    requestFailed: 'Failed to send request to device',
   },
   paymentPlans: {
     title: 'Membership Payment Plans',

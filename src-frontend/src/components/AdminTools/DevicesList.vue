@@ -262,10 +262,15 @@ export default {
 
       this.$axios
         .post(`/api/access/${this.deviceChoice}/${deviceId}/reboot/`)
+        .then(() => {
+          this.$q.notify({
+            message: this.$t('device.rebooted'),
+          });
+        })
         .catch(() => {
           this.$q.dialog({
             title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
+            message: this.$t('device.failedRequest'),
           });
         })
         .finally(() => {
@@ -280,13 +285,13 @@ export default {
         .post(`/api/access/doors/${doorId}/unlock/`)
         .then(() => {
           this.$q.notify({
-            message: this.$t('doors.unlocked'),
+            message: this.$t('device.unlocked'),
           });
         })
         .catch(() => {
           this.$q.dialog({
             title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
+            message: this.$t('device.failedRequest'),
           });
         })
         .finally(() => {

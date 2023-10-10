@@ -168,7 +168,7 @@ module.exports = configure(async function (ctx) {
         // directives: [],
       },
       // Quasar plugins
-      plugins: ['Dialog', 'LoadingBar', 'Cookies'],
+      plugins: ['Dialog', 'LoadingBar', 'Cookies', 'Notify'],
 
       // animations: 'all', // --- includes all animations
       // https://v2.quasar.dev/options/animations

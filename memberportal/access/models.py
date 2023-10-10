@@ -49,7 +49,6 @@ class AccessControlledDevice(models.Model):
     authorised = models.BooleanField(
         "Is this device authorised to access the system?", default=False
     )
-    type: str = None
     name = models.CharField("Name", max_length=30, unique=True)
     description = models.CharField("Description/Location", max_length=100)
     ip_address = models.GenericIPAddressField(
@@ -228,9 +227,7 @@ class Doors(AccessControlledDevice):
 
         if success == True:
             if self.post_to_discord:
-                post_door_swipe_to_discord(
-                    profile.get_full_name(), self.door.name, success
-                )
+                post_door_swipe_to_discord(profile.get_full_name(), self.name, success)
 
         elif success == False:
             sms_message = sms.SMS()
@@ -238,7 +235,7 @@ class Doors(AccessControlledDevice):
 
         elif success == "locked out":
             post_door_swipe_to_discord(
-                profile.get_full_name(), self.door.name, "maintenance_lock_out"
+                profile.get_full_name(), self.name, "maintenance_lock_out"
             )
 
             sms_message = sms.SMS()
