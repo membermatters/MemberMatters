@@ -196,34 +196,19 @@ class RebootDoor(APIView):
         return Response({"success": door.reboot(request=request)})
 
 
-class UnlockDoor(APIView):
-    """
-    post: This method will unlock the specified door.
-    """
-
-    permission_classes = (permissions.IsAdminUser,)
-
-    def post(self, request, door_id):
-        door = Doors.objects.get(pk=door_id)
-
-        return Response({"success": door.unlock(request=request)})
-
-
 class BumpDoor(APIView):
     """
-    post: This method will 'bump' the specified door. This is an EXTERNAL API for integration with other systems.
+    post: This method will 'bump' the specified door. Note this MAY be called externally with an API key.
     """
 
-    permission_classes = (HasExternalAccessControlAPIKey,)
+    permission_classes = (HasExternalAccessControlAPIKey | permissions.IsAdminUser,)
 
     def post(self, request, door_id):
-        bump_api_enabled = (
-            config.ENABLE_DOOR_BUMP_API
-        )  # grab the enabled status from the config
-
-        if bump_api_enabled:
+        # at this point the credentials been authorised by the permissions classes above
+        # BUT we still need to check if the API is enabled or it's a user making the request
+        if config.ENABLE_DOOR_BUMP_API or request.user.is_authenticated:
             door = Doors.objects.get(pk=door_id)
-            return Response({"success": door.unlock()})
+            return Response({"success": door.bump()})
         else:
             return Response(
                 {"success": False, "error": "This API is disabled in the config."},

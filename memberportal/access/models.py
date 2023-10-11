@@ -174,12 +174,6 @@ class MemberbucksDevice(AccessControlledDevice):
     all_members = False
     type = "memberbucks"
 
-    def lock(self):
-        return False
-
-    def unlock(self):
-        return False
-
 
 class Doors(AccessControlledDevice):
     type = "door"
@@ -191,7 +185,7 @@ class Doors(AccessControlledDevice):
             ("manage_doors", "Can manage doors"),
         ]
 
-    def unlock(self, request=None):
+    def bump(self, request=None):
         if self.serial_number:
             logger.info(f"Sending door bump to channels for {self.name}")
             channel_layer = get_channel_layer()
@@ -251,25 +245,6 @@ class Interlock(AccessControlledDevice):
         permissions = [
             ("manage_interlocks", "Can manage interlocks"),
         ]
-
-    def lock(self):
-        import requests
-
-        r = requests.get("http://{}/end".format(self.ip_address), timeout=10)
-        if r.status_code == 200:
-            log_event(
-                self.name + " locked from admin interface.",
-                "interlock",
-                "Status: {}. Content: {}".format(r.status_code, r.content),
-            )
-            return True
-        else:
-            log_event(
-                self.name + " lock request from admin interface failed.",
-                "interlock",
-                "Status: {}. Content: {}".format(r.status_code, r.content),
-            )
-            return False
 
     def create_session(self, user):
         session = InterlockLog.objects.create(
