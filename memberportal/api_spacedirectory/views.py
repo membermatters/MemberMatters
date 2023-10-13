@@ -91,6 +91,7 @@ class SpaceDirectoryStatus(APIView):
 
 
 class SpaceDirectoryUpdate(APIView):
+    """Allows authenticated users to update the SpaceAPI information"""
 
     permissions_classes = permissions.IsAuthenticated
 
