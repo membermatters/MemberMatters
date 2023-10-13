@@ -7,4 +7,9 @@ urlpatterns = [
         views.SpaceDirectoryStatus.as_view(),
         name="spacedirectory_status",
     ),
+    path(
+        "api/spacedirectory/update",
+        views.SpaceDirectoryUpdate.as_view(),
+        name="spacedirectory_update",
+    ),
 ]

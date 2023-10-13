@@ -88,3 +88,93 @@ class SpaceDirectoryStatus(APIView):
             }
 
             return Response(spaceapi)
+
+
+class SpaceDirectoryUpdate(APIView):
+
+    permissions_classes = permissions.IsAuthenticated
+
+    def post(self, request):
+        # Get the current state of the space
+        current_status = SpaceAPI.objects.get()
+
+        ## Do we need to update the open/closed status
+        if "is_open" in request.data:
+            current_status.space_is_open = request.data["is_open"]
+
+        ## Do we need to update the message?
+        if "message" in request.data:
+            current_status.space_message = request.data["message"]
+
+        ## Do we have any sensor data?
+        if "sensors" in request.data:
+            for sensor in request.data["sensors"]:
+                ### See if we have an existing sensor, if we do, update it,
+                ### if we don't, create it.
+                try:
+                    current_sensor = (
+                        SpaceAPISensor.objects.all().filter(name=sensor["name"]).first()
+                    )
+                    print(f"Found sensor: {current_sensor}")
+                    if "type" in sensor:
+                        current_sensor.sensor_type = sensor["type"]
+                    if "value" in sensor:
+                        current_sensor.value = sensor["value"]
+                    if "unit" in sensor:
+                        current_sensor.unit = sensor["unit"]
+                    if "location" in sensor:
+                        current_sensor.location = sensor["location"]
+                    if "description" in sensor:
+                        current_sensor.description = sensor["description"]
+
+                    if "properties" in sensor:
+                        for prop in sensor["properties"]:
+                            #### Does the property exist? If so, update,
+                            #### if not, create
+                            try:
+                                current_prop = SpaceAPISensorProperties.objects.filter(
+                                    name=prop["name"], sensor_id=current_sensor
+                                ).get()
+                                print(f"Found property: {current_prop}")
+                                if "name" in prop:
+                                    current_prop.name = prop["name"]
+                                if "value" in prop:
+                                    current_prop.value = prop["value"]
+                                if "unit" in prop:
+                                    current_prop.unit = prop["unit"]
+                                current_prop.save()
+                            except:
+                                new_prop = SpaceAPISensorProperties()
+                                new_prop.name = prop["name"]
+                                new_prop.value = prop["value"]
+                                new_prop.unit = prop["unit"]
+                                new_prop.sensor_id = current_sensor
+                                new_prop.save()
+
+                    current_sensor.save()
+                except Exception as e:
+                    print(e)
+                    new_sensor = SpaceAPISensor()
+                    new_sensor.sensor_type = sensor["type"]
+                    new_sensor.name = sensor["name"]
+                    if "value" in sensor:
+                        new_sensor.value = sensor["value"]
+                    if "unit" in sensor:
+                        new_sensor.unit = sensor["unit"]
+                    new_sensor.location = sensor["location"]
+                    new_sensor.description = sensor["description"]
+                    new_sensor.save()
+
+                    if "properties" in sensor:
+                        ## This is a new sensor, we will always want to create the properties
+                        for prop in sensor["properties"]:
+                            new_prop = SpaceAPISensorProperties()
+                            new_prop.name = prop["name"]
+                            new_prop.value = prop["value"]
+                            new_prop.unit = prop["unit"]
+                            new_prop.sensor_id = new_sensor
+                            new_prop.save()
+
+        current_status.save()
+
+        return Response()
