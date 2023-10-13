@@ -3,6 +3,8 @@ from rest_framework import status, permissions
 from rest_framework.views import APIView
 from constance import config
 from .models import SpaceAPI, SpaceAPISensor, SpaceAPISensorProperties
+from profile.models import Profile
+from api_general.models import SiteSession
 import json
 
 
@@ -38,23 +40,32 @@ class SpaceDirectoryStatus(APIView):
                 "issue_report_channels": ["email"],
             }
 
+            # Get the default data
             spaceapi_data = SpaceAPI.objects.get()
 
+            # Get a list of all the sensors
             spaceapi_sensors = SpaceAPISensor.objects.all()
 
+            # Create an empty dict to add the sensor data to
             sensor_data = {}
 
+            # Iterate over the sensors and update the dict as appropriate
             for sensor in spaceapi_sensors:
                 sensor_details = {}
+                # Do we already have a sensor of this type? If not, create it now
                 if sensor.sensor_type not in sensor_data:
                     sensor_data[sensor.sensor_type] = []
+
+                ## Setup the basic details
                 sensor_details = {
                     "name": sensor.name,
                     "description": sensor.description,
                     "location": sensor.location,
-                    "properties": {},
                 }
+
+                ### Do we have properties? If so, let's add them
                 if len(sensor.properties.all()) > 0:
+                    sensor_details["properties"] = {}
                     for prop in sensor.properties.all():
                         properties = {
                             prop.name: {"value": prop.value, "unit": prop.unit}
@@ -65,9 +76,23 @@ class SpaceDirectoryStatus(APIView):
 
                 sensor_data[sensor.sensor_type].append(sensor_details)
 
+            ## Add the user count and members on site count to the sensors
+            spaceapi_user_count = Profile.objects.all().filter(state="active").count()
+            spaceapi_members_on_site = SiteSession.objects.filter(
+                signout_date=None
+            ).order_by("-signin_date")
+
+            sensor_data["total_member_count"] = {"value": spaceapi_user_count}
+
+            sensor_data["people_now_present"] = {
+                "value": spaceapi_members_on_site.count()
+            }
+
+            # Is the camera array empty? If not, add them
             if not config.SPACE_DIRECTORY_CAMS:
                 spaceapi["cameras"] = config.SPACE_DIRECTORY_CAMS
 
+            # Set the STATE part of the schema, the icons, and the schema version
             spaceapi["state"] = {
                 "open": spaceapi_data.space_is_open,
                 "message": spaceapi_data.space_message,
@@ -79,14 +104,17 @@ class SpaceDirectoryStatus(APIView):
             }
             spaceapi["api_compatibility"] = ["0.14"]
 
+            ## Add the sensor data to the main body of the schema
             spaceapi["sensors"] = sensor_data
 
+            ## Add the location data based on the values in Constance
             spaceapi["location"] = {
                 "address": config.SPACE_DIRECTORY_LOCATION_ADDRESS,
                 "lat": config.SPACE_DIRECTORY_LOCATION_LAT,
                 "lon": config.SPACE_DIRECTORY_LOCATION_LON,
             }
 
+            # Return the JSON document
             return Response(spaceapi)
 
 
