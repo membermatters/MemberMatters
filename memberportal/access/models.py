@@ -1,5 +1,5 @@
 import logging
-from services.discord import post_door_swipe_to_discord
+from services.discord import post_door_swipe_to_discord, post_interlock_swipe_to_discord
 from services import sms
 from profile.models import Profile, log_event
 from django.db import models
@@ -90,6 +90,12 @@ class AccessControlledDevice(models.Model):
         pass
 
     def sync(self, request=None):
+        if self.type != "door":
+            logger.debug(
+                "Cannot sync device that is not a door (for {})!".format(self.name)
+            )
+            return True
+
         if self.serial_number:
             logger.info(
                 "Sending device sync to channels for {}".format(self.serial_number)
@@ -224,6 +230,10 @@ class Doors(AccessControlledDevice):
                 post_door_swipe_to_discord(profile.get_full_name(), self.name, success)
 
         elif success == False:
+            if self.post_to_discord:
+                post_door_swipe_to_discord(
+                    profile.get_full_name(), self.name, "rejected"
+                )
             sms_message = sms.SMS()
             sms_message.send_inactive_swipe_alert(profile.phone)
 
@@ -241,30 +251,67 @@ class Doors(AccessControlledDevice):
 class Interlock(AccessControlledDevice):
     type = "interlock"
 
-    class Meta:
-        permissions = [
-            ("manage_interlocks", "Can manage interlocks"),
-        ]
+    cost_per_session = models.IntegerField(
+        "Fixed cost per session (in cents)", default=0
+    )
+    cost_per_hour = models.IntegerField("Cost per hour (in cents)", default=0)
+    cost_per_kwh = models.IntegerField("Cost per kWh (in cents)", default=0)
 
-    def create_session(self, user):
+    def get_active_sessions(self):
+        return InterlockLog.objects.filter(interlock=self, date_ended=None).all()
+
+    def session_start(self, user):
+        active_sessions = self.get_active_sessions()
+        for session in active_sessions:
+            session.session_end(user)
+
+        return InterlockLog.objects.create(interlock=self, user_started=user)
+
+    def session_rejected(self, user, reason):
+        active_sessions = self.get_active_sessions()
+        for session in active_sessions:
+            session.session_end(user)
+
         session = InterlockLog.objects.create(
-            id=uuid.uuid4(),
-            user=user,
-            interlock=self,
-            first_heartbeat=timezone.now(),
-            last_heartbeat=timezone.now(),
+            interlock=self, user_started=user, success=False, reason=reason
         )
+        session.session_end(user, skip_cost=True)
+        return session
 
-        if session:
-            return session
+    def log_access(self, user, type="activated"):
+        logger.debug("Logging access for {}".format(self.name))
 
-        return False
+        profile = user.profile
+        profile.last_seen = timezone.now()
+        profile.save()
 
-    def get_last_active(self):
-        interlocklog = InterlockLog.objects.filter(interlock=self).latest(
-            "last_heartbeat"
-        )
-        return interlocklog.last_heartbeat
+        if self.post_to_discord:
+            post_interlock_swipe_to_discord(
+                profile.get_full_name(), self.name, type=type
+            )
+
+        if type == "activated":
+            return True
+
+        elif type == "left_on":
+            return True
+
+        elif type == "deactivated":
+            return True
+
+        elif type == "rejected":
+            sms_message = sms.SMS()
+            sms_message.send_inactive_swipe_alert(profile.phone)
+
+        elif type == "maintenance_lock_out":
+            sms_message = sms.SMS()
+            sms_message.send_locked_out_swipe_alert(profile.phone)
+
+        elif type == "not_signed_in":
+            pass
+
+        self.session_rejected(user, reason=type)
+        return True
 
 
 class DoorLog(models.Model):
@@ -277,20 +324,59 @@ class DoorLog(models.Model):
 
 class InterlockLog(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    user_off = models.ForeignKey(
+    interlock = models.ForeignKey(Interlock, on_delete=models.CASCADE)
+    user_started = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user_ended = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         blank=True,
         null=True,
-        related_name="user_off",
+        related_name="user_ended",
     )
-    interlock = models.ForeignKey(Interlock, on_delete=models.CASCADE)
-    first_heartbeat = models.DateTimeField(default=timezone.now)
-    last_heartbeat = models.DateTimeField(default=timezone.now)
-    session_complete = models.BooleanField(default=False)
+    success = models.BooleanField(default=True)
+    reason = models.CharField(max_length=100, blank=True, null=True)
 
-    def heartbeat(self):
-        self.last_heartbeat = timezone.now()
+    date_started = models.DateTimeField(default=timezone.now, editable=False)
+    date_updated = models.DateTimeField(default=timezone.now)
+    date_ended = models.DateTimeField(default=None, blank=True, null=True)
+
+    total_time = models.DurationField(default=timedelta(0))
+    total_kwh = models.FloatField(default=None, blank=True, null=True)
+    total_cost = models.FloatField(default=None, blank=True, null=True)
+
+    def session_update(self, kwh=None):
+        self.date_updated = timezone.now()
+        self.total_time = self.date_updated - self.date_started
         self.interlock.checkin()
+
+        if kwh:
+            self.total_kwh = kwh
+
         self.save()
+
+    def session_end(self, user=None, skip_cost=False):
+        self.session_update()
+        self.user_ended = user
+        self.date_ended = timezone.now()
+
+        if skip_cost:
+            self.save()
+            return True
+
+        else:
+            self.total_cost = self.interlock.cost_per_session
+
+            if self.interlock.cost_per_hour:
+                self.total_cost += (
+                    self.total_time.total_seconds()
+                    / 3600
+                    * self.interlock.cost_per_hour
+                )
+            if self.interlock.cost_per_kwh:
+                self.total_cost += self.total_kwh * self.interlock.cost_per_kwh
+
+            self.save()
+
+            # TODO: bill the member
+
+            return True
