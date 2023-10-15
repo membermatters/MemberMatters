@@ -6,10 +6,12 @@ import datetime
 from access.models import (
     Doors,
     Interlock,
+    InterlockLog,
     MemberbucksDevice,
     AccessControlledDeviceAPIKey,
 )
 from profile.models import Profile
+from constance import config
 
 logger = logging.getLogger("app")
 
@@ -58,7 +60,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
 
         if created:
             logger.warning(
-                f"Commissioned new {self.device.type} device for {self.device_id}"
+                f"Commissioned new {self.device.type} device for {self.device.serial_number}"
             )
 
         if self.device.authorised:
@@ -88,12 +90,12 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
             self.last_seen = datetime.datetime.now()
             self.device.checkin()
 
-            if content.get("api_secret_key"):
+            if content.get("command") == "authenticate":
                 logger.info(
                     "Received an authorisation packet from " + self.device.serial_number
                 )
 
-                raw_api_key = content.get("api_secret_key")
+                raw_api_key = content.get("secret_key")
                 api_key_is_valid = AccessControlledDeviceAPIKey.objects.is_valid(
                     raw_api_key
                 )
@@ -141,8 +143,8 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
 
         except Exception as e:
             logger.error("Error receiving message from device: %s", e)
-            logger.error(e)
             self.send_json({"command": "error"})
+            raise e
 
     def handle_other_packet(content):
         raise NotImplementedError(
@@ -170,6 +172,14 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
 
     def sync_users(self, event=None):
         self.check_authorised()
+
+        if self.device.type != "door":
+            logger.debug(
+                "Skipping device sync for device that is not a door ({}).".format(
+                    self.device.name
+                )
+            )
+            return True
 
         # Handles the "sync_users" event when it's sent to us.
         tags, tags_hash = self.device.get_tags()
@@ -221,6 +231,7 @@ class DoorConsumer(AccessDeviceConsumer):
             profile = Profile.objects.get(rfid=card_id)
             self.device.log_access(profile.user.id, success=False)
             self.send_ack("log_access_denied")
+            self.sync_users()
             return True
 
         elif content.get("command") == "log_access_locked_out":
@@ -245,14 +256,135 @@ class DoorConsumer(AccessDeviceConsumer):
 
 class InterlockConsumer(AccessDeviceConsumer):
     type = "interlock"
+    session = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.DeviceClass = Interlock
 
     def handle_other_packet(self, content):
-        if content.get("command") == "session":
-            pass  # TODO: implement
+        if content.get("command") == "interlock_session_start":
+            card_id = content.get("card_id")
+            profile = Profile.objects.filter(rfid=card_id).first()
+            if profile:
+                profile.update_last_seen()
+            reason = "rejected"
+
+            if profile:
+                profile.update_last_seen()
+                if profile.state == "active":
+                    if self.device.locked_out:
+                        reason = "maintenance_lock_out"
+
+                    else:
+                        allowed_interlocks = profile.interlocks.all()
+
+                        # user has access to this interlock
+                        if allowed_interlocks and self.device in allowed_interlocks:
+                            if (
+                                profile.is_signed_into_site()
+                                or self.device.exempt_signin is True
+                                or config.ENABLE_PORTAL_SITE_SIGN_IN is False
+                            ):
+                                self.device.log_access(profile.user, type="activated")
+                                self.session = self.device.session_start(profile.user)
+                                self.send_json(
+                                    {
+                                        "command": "interlock_session_start",
+                                        "session_id": str(self.session.id),
+                                    }
+                                )
+
+                                return True
+                            else:
+                                # user is not signed into the site
+                                reason = "not_signed_in"
+
+                # if they are inactive or don't have access
+                self.device.log_access(profile.user if profile else None, reason)
+
+            self.send_json(
+                {
+                    "command": "interlock_session_rejected",
+                    "reason": reason,
+                }
+            )
+
+            return True
+
+        elif content.get("command") == "interlock_session_update":
+            session_id = content.get("session_id")
+            session_kwh = content.get("session_kwh")
+
+            session = InterlockLog.objects.get(id=session_id)
+
+            if session.date_ended:
+                self.send_json(
+                    {
+                        "command": "interlock_session_update",
+                        "success": False,
+                        "reason": "session_already_ended",
+                    }
+                )
+                return True
+
+            if session.session_update(session_kwh):
+                self.send_json(
+                    {
+                        "command": "interlock_session_update",
+                        "success": True,
+                    }
+                )
+
+            else:
+                self.send_json(
+                    {
+                        "command": "interlock_session_update",
+                        "success": False,
+                    }
+                )
+
+            return True
+
+        elif content.get("command") == "interlock_session_end":
+            card_id = content.get("card_id")
+            session_id = content.get("session_id")
+            session_kwh = content.get("session_kwh")
+
+            profile = (
+                Profile.objects.filter(rfid=card_id).select_related("user").first()
+            )
+            user = profile.user if profile else None
+            session = InterlockLog.objects.get(id=session_id)
+
+            if session.date_ended:
+                self.send_json(
+                    {
+                        "command": "interlock_session_end",
+                        "success": False,
+                        "reason": "session_already_ended",
+                    }
+                )
+                return True
+
+            if session.session_end(user, session_kwh):
+                self.send_json(
+                    {
+                        "command": "interlock_session_end",
+                        "success": True,
+                    }
+                )
+
+            else:
+                self.send_json(
+                    {
+                        "command": "interlock_session_end",
+                        "success": False,
+                    }
+                )
+
+            return True
+
         else:
             return False
 

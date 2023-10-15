@@ -16,6 +16,10 @@ class MemberBucks(models.Model):
             "card",
             "Membership Card",
         ),  # used to track debits from vending machines / debit endpoints
+        (
+            "interlock",
+            "Interlock Cost",
+        ),  # used to track automatic debits from interlock sessions
         ("other", "Other"),
     )
 

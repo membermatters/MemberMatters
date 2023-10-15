@@ -2,6 +2,7 @@ import logging
 from services.discord import post_door_swipe_to_discord, post_interlock_swipe_to_discord
 from services import sms
 from profile.models import Profile, log_event
+from memberbucks.models import MemberBucks
 from django.db import models
 from datetime import timedelta
 from django.utils import timezone
@@ -344,39 +345,48 @@ class InterlockLog(models.Model):
     total_kwh = models.FloatField(default=None, blank=True, null=True)
     total_cost = models.FloatField(default=None, blank=True, null=True)
 
+    def calculate_cost(self):
+        total_cost = self.interlock.cost_per_session
+
+        if self.interlock.cost_per_hour:
+            total_cost += (
+                self.total_time.total_seconds() / 3600 * self.interlock.cost_per_hour
+            )
+        if self.interlock.cost_per_kwh:
+            total_cost += self.total_kwh * self.interlock.cost_per_kwh
+
+        return round(total_cost)
+
     def session_update(self, kwh=None):
         self.date_updated = timezone.now()
         self.total_time = self.date_updated - self.date_started
         self.interlock.checkin()
+        self.total_cost = self.calculate_cost()
 
         if kwh:
             self.total_kwh = kwh
 
         self.save()
 
-    def session_end(self, user=None, skip_cost=False):
-        self.session_update()
+        return True
+
+    def session_end(self, user=None, kwh=None, skip_cost=False):
+        self.session_update(kwh)
         self.user_ended = user
         self.date_ended = timezone.now()
+        self.save()
 
         if skip_cost:
-            self.save()
             return True
 
         else:
-            self.total_cost = self.interlock.cost_per_session
-
-            if self.interlock.cost_per_hour:
-                self.total_cost += (
-                    self.total_time.total_seconds()
-                    / 3600
-                    * self.interlock.cost_per_hour
-                )
-            if self.interlock.cost_per_kwh:
-                self.total_cost += self.total_kwh * self.interlock.cost_per_kwh
-
-            self.save()
-
-            # TODO: bill the member
+            minutes = round(self.total_time.total_seconds() / 60)
+            description = f"For using {self.interlock.name} for {minutes} minutes."
+            transaction = MemberBucks.objects.create(
+                user=self.user_started,
+                amount=(self.total_cost / 100) * -1,
+                transaction_type="interlock",
+                description=description,
+            )
 
             return True
