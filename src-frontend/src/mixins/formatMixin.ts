@@ -2,7 +2,10 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import duration from 'dayjs/plugin/duration';
+import { i18n } from 'boot/i18n';
 
+dayjs.extend(duration);
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(relativeTime);
@@ -21,12 +24,40 @@ export function formatDate(date: Date, time = true) {
 }
 
 export function formatDateSimple(date: Date, time = true) {
-  if (time) return dayjs(date).local().format('DD/MM/YY, h:mm a');
-  return dayjs(date).local().format('Do MMM YYYY');
+  if (time) return dayjs(date).local().format('DD/MM/YYYY, h:mm a');
+  return dayjs(date).local().format('D/MMM/YYYY');
 }
 
 export function formatWhen(date: Date) {
   return dayjs(date).local().fromNow();
+}
+
+export function humanizeDurationOfSeconds(secondsToHumanize: number) {
+  return dayjs.duration(secondsToHumanize, 'seconds').humanize();
+}
+
+export function humanizeDurationOfSecondsPrecise(secondsToHumanize: number) {
+  const duration = dayjs.duration(secondsToHumanize, 'seconds');
+  const days = duration.days();
+  const hours = duration.hours();
+  const minutes = duration.minutes();
+  const seconds = duration.seconds();
+
+  let formatted = '';
+  if (days > 0) {
+    formatted += `${days}d `;
+  }
+  if (hours > 0) {
+    formatted += `${hours}h `;
+  }
+  if (minutes > 0) {
+    formatted += `${minutes}m `;
+  }
+  if (seconds > 0) {
+    formatted += `${seconds}s`;
+  }
+
+  return formatted;
 }
 
 export function formatBooleanYesNo(value: boolean) {
@@ -40,6 +71,12 @@ export function capitaliseFirst(value: string) {
   );
 }
 
+export function sortByFloat(a: string, b: string) {
+  if (parseFloat(a) < parseFloat(b)) return -1;
+  if (parseFloat(a) > parseFloat(b)) return 1;
+  return 0;
+}
+
 export default {
   methods: {
     formatCsvList,
@@ -48,5 +85,8 @@ export default {
     formatWhen,
     formatBooleanYesNo,
     capitaliseFirst,
+    humanizeDurationOfSeconds,
+    humanizeDurationOfSecondsPrecise,
+    sortByFloat,
   },
 };

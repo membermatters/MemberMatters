@@ -9,7 +9,7 @@
         {{ error ? $t('form.error') : $t('form.saved') }}
       </template>
       <q-icon
-        :color="error ? 'fail' : 'success'"
+        :color="error ? 'fail' : 'actionSuccess'"
         :name="error ? icons.fail : icons.success"
       />
     </div>
