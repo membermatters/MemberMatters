@@ -55,7 +55,10 @@
 
             <q-separator />
 
-            <q-item class="q-mt-sm row justify-center">
+            <q-item
+              v-if="props.row.authorised"
+              class="q-mt-sm row justify-center"
+            >
               <template v-if="deviceChoice === 'doors'">
                 <q-btn
                   :loading="deviceLoading[props.row.id]?.bump"
@@ -196,7 +199,7 @@ export default {
       filter: '',
       pagination: {
         sortBy: 'lastSeen',
-        descending: true,
+        descending: false,
         rowsPerPage: this.$q.screen.xs ? 3 : 10,
       },
       deviceLoading: {},
@@ -226,11 +229,10 @@ export default {
             field: 'id',
             sortable: true,
           },
-          { name: 'name', label: 'Name', field: 'name', sortable: true },
           {
-            name: 'ipAddress',
-            label: 'IP',
-            field: 'ipAddress',
+            name: 'name',
+            label: this.$t('form.name'),
+            field: 'name',
             sortable: true,
           },
           {
@@ -241,34 +243,39 @@ export default {
             format: (val) => this.formatDate(val),
           },
           {
-            name: 'usage',
-            label: this.$t('access.usage'),
-            field: 'usage',
+            name: 'totalSwipes',
+            label: this.$t('access.totalSwipes'),
+            field: 'totalSwipes',
             sortable: true,
           },
         ];
-      } else {
+      } else if (this.deviceChoice === 'interlocks') {
         columns = [
-          { name: 'id', label: 'ID', field: 'id', sortable: true },
-          { name: 'name', label: 'Name', field: 'name', sortable: true },
           {
-            name: 'ipAddress',
-            label: 'IP',
-            field: 'ipAddress',
+            name: 'id',
+            label: this.$t('tableHeading.id'),
+            field: 'id',
+            sortable: true,
+          },
+          {
+            name: 'name',
+            label: this.$t('tableHeading.name'),
+            field: 'name',
             sortable: true,
           },
           {
             name: 'lastSeen',
-            label: 'Last Seen',
+            label: this.$t('access.lastSeen'),
             field: 'lastSeen',
             sortable: true,
             format: (val) => this.formatDate(val),
           },
           {
-            name: 'usage',
-            label: 'Logged Time',
-            field: 'usage',
+            name: 'totalTime',
+            label: this.$t('access.totalTime'),
+            field: 'totalTimeSeconds',
             sortable: true,
+            format: (val) => this.humanizeDurationOfSeconds(val),
           },
         ];
       }

@@ -14,12 +14,12 @@
         narrow-indicator
         class="bg-accent text-white"
       >
-        <q-tab name="profile" :label="$t('menuLink.profile')" />
+        <q-tab name="manageDevice" :label="$t('menuLink.manageDevice')" />
         <q-tab name="stats" :label="$t('adminTools.stats')" />
       </q-tabs>
       <q-separator />
       <q-tab-panels v-model="tab" animated>
-        <q-tab-panel name="profile" class="q-px-lg q-py-lg">
+        <q-tab-panel name="manageDevice" class="q-px-lg q-py-lg">
           <q-card-section>
             <q-form ref="formRef">
               <div class="column q-gutter-md q-px-sm">
@@ -59,8 +59,7 @@
                   v-model="device.ipAddress"
                   outlined
                   :label="$t('form.ipAddress')"
-                  :debounce="debounceLength"
-                  @update:model-value="saveChange('ipAddress')"
+                  disable
                 >
                   <template v-slot:append>
                     <saved-notification
@@ -166,7 +165,7 @@
         <q-tab-panel name="stats">
           <div class="row flex content-start justify-center">
             <q-table
-              :rows="device.stats"
+              :rows="device.userStats"
               :columns="columnI18n"
               row-key="key"
               :filter="filter"
@@ -209,6 +208,7 @@
 import icons from '@icons';
 import { mapGetters, mapActions } from 'vuex';
 import formMixin from '@mixins/formMixin';
+import formatMixin from '@mixins/formatMixin';
 import SavedNotification from '@components/SavedNotification.vue';
 
 export default {
@@ -216,7 +216,7 @@ export default {
   components: {
     SavedNotification,
   },
-  mixins: [formMixin],
+  mixins: [formMixin, formatMixin],
   props: {
     deviceId: {
       type: String,
@@ -230,7 +230,7 @@ export default {
   },
   data() {
     return {
-      tab: 'profile',
+      tab: 'manageDevice',
       removeLoading: false,
       loading: false,
       errorLoading: false,
@@ -410,43 +410,57 @@ export default {
       if (this.deviceType === 'doors') {
         columns = [
           {
-            name: 'user',
-            label: this.$t('access.user'),
+            name: 'name',
+            label: this.$t('digitalId.fullName'),
+            field: 'full_name',
+            sortable: true,
+          },
+          {
+            name: 'screenName',
+            label: this.$t('tableHeading.screenName'),
             field: 'screen_name',
             sortable: true,
           },
           {
-            name: 'record',
-            label: this.$t('access.swipes'),
-            field: 'records',
+            name: 'totalSwipes',
+            label: this.$t('access.totalSwipes'),
+            field: 'total_swipes',
             sortable: true,
           },
           {
             name: 'lastSeen',
             label: this.$t('access.lastSwipe'),
-            field: 'lastSeen',
+            field: 'last_swipe',
             sortable: true,
+            format: (val) => this.formatDate(val),
           },
         ];
-      } else {
+      } else if (this.deviceType === 'interlocks') {
         columns = [
           {
-            name: 'user',
-            label: 'User',
+            name: 'name',
+            label: this.$t('digitalId.fullName'),
+            field: 'full_name',
+            sortable: true,
+          },
+          {
+            name: 'screenName',
+            label: this.$t('tableHeading.screenName'),
             field: 'screen_name',
             sortable: true,
           },
           {
-            name: 'record',
-            label: 'Records',
-            field: 'records',
+            name: 'totalSwipes',
+            label: this.$t('access.totalSwipes'),
+            field: 'total_swipes',
             sortable: true,
           },
           {
-            name: 'onTime',
-            label: 'Minutes Logged',
-            field: 'onTime',
+            name: 'totalTime',
+            label: this.$t('access.totalTime'),
+            field: 'total_seconds',
             sortable: true,
+            format: (val) => this.humanizeDurationOfSeconds(val),
           },
         ];
       }

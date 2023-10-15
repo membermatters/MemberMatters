@@ -13,7 +13,8 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from django.db.models import F, Count, Sum, ExpressionWrapper, FloatField, Count, Max
+from django.db.models import F, Count, Sum, Value, CharField, Count, Max
+from django.db.models.functions import Concat
 from datetime import timedelta
 import humanize
 from django.db import connection
@@ -161,13 +162,24 @@ class Doors(APIView):
         doors = models.Doors.objects.all()
 
         def get_door(door):
+            logs = models.DoorLog.objects.filter(door_id=door.id)
+
             # Query to get the statistics
             stats = (
-                models.DoorLog.objects.filter(door_id=door.id)
-                .annotate(screen_name=F("user__profile__screen_name"))
-                .values("door_id", "user_id", "screen_name")
-                .annotate(records=Count("user_id"), lastSeen=Max("date"))
-                .order_by("-records")
+                logs.select_related("user__profile")
+                .values("door_id")
+                .annotate(
+                    screen_name=F("user__profile__screen_name"),
+                    full_name=Concat(
+                        F("user__profile__first_name"),
+                        Value(" "),
+                        F("user__profile__last_name"),
+                        output_field=CharField(),
+                    ),
+                    total_swipes=Count("door_id"),
+                    last_swipe=Max("date"),
+                )
+                .order_by("-total_swipes")
             )
 
             return {
@@ -184,8 +196,8 @@ class Doors(APIView):
                 "postDiscordOnSwipe": door.post_to_discord,
                 "exemptFromSignin": door.exempt_signin,
                 "hiddenToMembers": door.hidden,
-                "usage": models.DoorLog.objects.filter(door_id=door.id).count(),
-                "stats": stats,
+                "totalSwipes": logs.count(),
+                "userStats": stats,
             }
 
         return Response(map(get_door, doors))
@@ -231,52 +243,32 @@ class Interlocks(APIView):
         interlocks = models.Interlock.objects.all()
 
         def get_interlock(interlock):
-            # Calculate onTime using Django's ORM
-            on_time_seconds = (
-                InterlockLog.objects.filter(interlock_id=interlock.id)
-                .annotate(
-                    on_time_seconds=Sum(
-                        (F("last_heartbeat") - F("first_heartbeat")) * 86400,
-                        output_field=FloatField(),
-                    ),
-                )
-                .values("on_time_seconds")
-                .first()
-            )
+            # Calculate total on time
+            logs = InterlockLog.objects.filter(interlock_id=interlock.id)
+            total_time = logs.aggregate(total_time=Sum("total_time")).get("total_time")
+            total_time_seconds = total_time.total_seconds()
 
-            on_time = 0
-            if on_time_seconds and on_time_seconds["on_time_seconds"] is not None:
-                on_time = humanize.precisedelta(
-                    round(on_time_seconds["on_time_seconds"]),
-                    suppress=[
-                        "months",
-                        "days",
-                        "seconds",
-                        "milliseconds",
-                        "microseconds",
-                    ],
-                )
-
-            # Retrieve stats using Django's ORM
+            # Retrieve stats
             stats = (
-                InterlockLog.objects.filter(interlock_id=interlock.id)
-                .values(
-                    "interlock_id",
-                    "user_id",
-                    "user__profile__screen_name",  # Assuming the related_name of the user's profile is 'profile'
-                )
+                logs.select_related("user_started__profile")
+                .values("interlock_id")
                 .annotate(
-                    records=Count("first_heartbeat"),
-                    on_time_minutes=ExpressionWrapper(
-                        Sum((F("last_heartbeat") - F("first_heartbeat")) * 1440),
-                        output_field=FloatField(),
+                    screen_name=F("user_started__profile__screen_name"),
+                    full_name=Concat(
+                        F("user_started__profile__first_name"),
+                        Value(" "),
+                        F("user_started__profile__last_name"),
+                        output_field=CharField(),
                     ),
+                    total_swipes=Count("total_time"),
+                    total_seconds=Sum("total_time"),
                 )
-                .order_by("-on_time_minutes")
+                .order_by("-total_seconds", "-total_swipes")
             )
 
             return {
                 "id": interlock.id,
+                "authorised": interlock.authorised,
                 "name": interlock.name,
                 "description": interlock.description,
                 "ipAddress": interlock.ip_address,
@@ -287,8 +279,8 @@ class Interlocks(APIView):
                 "playThemeOnSwipe": interlock.play_theme,
                 "exemptFromSignin": interlock.exempt_signin,
                 "hiddenToMembers": interlock.hidden,
-                "usage": on_time,
-                "stats": list(stats),
+                "totalTimeSeconds": total_time_seconds,
+                "userStats": list(stats),
             }
 
         return Response(map(get_interlock, interlocks))
@@ -678,14 +670,22 @@ class MemberLogs(APIView):
                 }
             )
 
-        for interlock_log in InterlockLog.objects.filter(user=user)[:1000]:
+        for interlock_log in InterlockLog.objects.filter(user_started=user)[:1000]:
+            status = None
+
+            if not interlock_log.success:
+                status = -1
+            else:
+                status = 1 if interlock_log.date_ended else 0
+
             interlock_logs.append(
                 {
-                    "dateOn": interlock_log.first_heartbeat,
-                    "dateOff": interlock_log.last_heartbeat,
-                    "interlock": interlock_log.interlock.name,
-                    "sessionComplete": interlock_log.session_complete,
-                    "userOff": interlock_log.user_off.name,
+                    "interlockName": interlock_log.interlock.name,
+                    "dateStarted": interlock_log.date_started,
+                    "totalTime": interlock_log.total_time,
+                    "totalCost": interlock_log.total_cost,
+                    "status": status,
+                    "userEnded": interlock_log.user_ended.get_full_name(),
                 }
             )
 
