@@ -53,7 +53,7 @@ class AccessControlledDevice(models.Model):
     name = models.CharField("Name", max_length=30, unique=True)
     description = models.CharField("Description/Location", max_length=100)
     ip_address = models.GenericIPAddressField(
-        "IP Address of device", unique=True, null=True, blank=True
+        "IP Address of device", null=True, blank=True
     )
     serial_number = models.CharField(
         "Serial Number", max_length=50, unique=True, null=True, blank=True

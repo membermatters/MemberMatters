@@ -40,6 +40,7 @@ export default {
   data() {
     return {
       tab: 'doors',
+      interval: null,
     };
   },
   computed: {
@@ -48,6 +49,14 @@ export default {
   beforeMount() {
     this.getDoors();
     this.getInterlocks();
+
+    this.interval = setInterval(() => {
+      this.getDoors();
+      this.getInterlocks();
+    }, 30 * 1000);
+  },
+  beforeUnmount() {
+    clearInterval(this.interval);
   },
   methods: {
     ...mapActions('adminTools', ['getInterlocks', 'getDoors']),

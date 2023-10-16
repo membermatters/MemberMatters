@@ -231,6 +231,7 @@ export default {
   data() {
     return {
       tab: 'manageDevice',
+      interval: null,
       removeLoading: false,
       loading: false,
       errorLoading: false,
@@ -270,14 +271,16 @@ export default {
     };
   },
   mounted() {
-    this.getDoors().then(() => {
-      this.getInterlocks().then(() => {
-        if (this.currentDevice === false)
-          this.$router.push({ name: 'Error404' });
+    Promise.allSettled([this.getDoors(), this.getInterlocks()]).then(() => {
+      if (this.currentDevice === false) this.$router.push({ name: 'Error404' });
 
-        this.initForm();
-      });
+      this.initForm();
     });
+
+    this.interval = setInterval(() => {
+      this.getDoors();
+      this.getInterlocks();
+    }, 30 * 1000);
   },
   methods: {
     ...mapActions('adminTools', ['getDoors', 'getInterlocks']),
