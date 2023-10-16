@@ -262,10 +262,7 @@ class Interlock(AccessControlledDevice):
         return InterlockLog.objects.filter(interlock=self, date_ended=None).all()
 
     def session_start(self, user):
-        active_sessions = self.get_active_sessions()
-        for session in active_sessions:
-            session.session_end(user)
-
+        self.session_end_all(reason="new_session")
         return InterlockLog.objects.create(interlock=self, user_started=user)
 
     def session_rejected(self, user, reason):
@@ -278,6 +275,11 @@ class Interlock(AccessControlledDevice):
         )
         session.session_end(user, skip_cost=True)
         return session
+
+    def session_end_all(self, reason="timeout"):
+        active_sessions = self.get_active_sessions()
+        for session in active_sessions:
+            session.session_end(None)
 
     def log_access(self, user, type="activated"):
         logger.debug("Logging access for {}".format(self.name))
@@ -353,7 +355,7 @@ class InterlockLog(models.Model):
                 self.total_time.total_seconds() / 3600 * self.interlock.cost_per_hour
             )
         if self.interlock.cost_per_kwh:
-            total_cost += self.total_kwh * self.interlock.cost_per_kwh
+            total_cost += (self.total_kwh or 0) * (self.interlock.cost_per_kwh or 0)
 
         return round(total_cost)
 
