@@ -14,18 +14,22 @@ from .serializers import *
 
 class SwipesList(APIView):
     """
-    get: This method returns the 50 most recent swipes on each door and interlock.
+    get: This method returns the 300 most recent swipes for both doors and interlocks.
     """
 
     permission_classes = (permissions.IsAuthenticated,)
 
-    # TODO: refactor this into two separate API requests for each resource so it's more RESTful
-
     def get(self, request):
-        recent_doors = DoorLog.objects.all().order_by("date")[::-1][:300]
-        recent_interlocks = InterlockLog.objects.all().order_by("last_heartbeat")[::-1][
-            :300
-        ]
+        recent_doors = (
+            DoorLog.objects.all()
+            .select_related("user__profile")
+            .order_by("date")[::-1][:300]
+        )
+        recent_interlocks = (
+            InterlockLog.objects.all()
+            .select_related("user_started__profile", "user_ended__profile")
+            .order_by("date_updated")[::-1][:300]
+        )
 
         doors = []
         interlocks = []
@@ -40,19 +44,19 @@ class SwipesList(APIView):
             )
 
         for interlock in recent_interlocks:
-            user_off = None
+            user_ended = None
 
-            if interlock.user_off:
-                user_off = interlock.user_off.profile.get_full_name()
+            if interlock.user_ended:
+                user_ended = interlock.user_ended.profile.get_full_name()
 
             interlocks.append(
                 {
                     "name": interlock.interlock.name,
-                    "sessionStart": interlock.first_heartbeat,
-                    "sessionEnd": interlock.last_heartbeat,
-                    "sessionComplete": interlock.session_complete,
-                    "userOn": interlock.user.profile.get_full_name(),
-                    "userOff": user_off,
+                    "sessionStart": interlock.date_started,
+                    "sessionEnd": interlock.date_ended,
+                    "sessionComplete": True if interlock.date_ended else False,
+                    "userOn": interlock.user_started.profile.get_full_name(),
+                    "userOff": user_ended,
                 }
             )
 
@@ -65,8 +69,6 @@ class Lastseen(APIView):
     """
     get: This method returns when each user was last seen (ie when they last swiped).
     """
-
-    # TODO: refactor this so it utilises DRF more
 
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Profile.objects.filter(state="active").order_by("-last_seen")

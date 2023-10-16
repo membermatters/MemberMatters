@@ -286,6 +286,7 @@ class InterlockConsumer(AccessDeviceConsumer):
                                 or self.device.exempt_signin is True
                                 or config.ENABLE_PORTAL_SITE_SIGN_IN is False
                             ):
+                                # TODO: check they have enough memberbucks balance
                                 self.device.log_access(profile.user, type="activated")
                                 self.session = self.device.session_start(profile.user)
                                 self.send_json(
