@@ -3,7 +3,7 @@
     <!-- <q-card class="q-dialog-plugin"> -->
     <q-card
       class="q-dialog-plugin"
-      style="max-width: 1500px; width: 800px; height: 650px"
+      style="max-width: 800px; width: 100%; height: 650px"
     >
       <!-- <h3>
       {{ device.name }}
@@ -12,7 +12,7 @@
         v-model="tab"
         align="justify"
         narrow-indicator
-        class="bg-accent text-white"
+        class="bg-primary text-white"
       >
         <q-tab name="manageDevice" :label="$t('menuLink.manageDevice')" />
         <q-tab name="stats" :label="$t('adminTools.stats')" />
@@ -145,17 +145,50 @@
                 </div>
 
                 <div class="row">
-                  <q-space />
                   <q-btn
-                    :label="$t(`${deviceType}.remove`)"
+                    :disable="rebootLoading"
+                    :loading="rebootLoading"
+                    class="q-mr-sm"
+                    size="sm"
+                    color="accent"
+                    @click.stop="rebootDevice()"
+                  >
+                    <q-icon :name="icons.reboot" />
+                    <q-tooltip>
+                      {{ $t('device.reboot') }}
+                    </q-tooltip>
+                  </q-btn>
+
+                  <q-btn
+                    :disable="syncLoading"
+                    :loading="syncLoading"
+                    class="q-mr-sm"
+                    size="sm"
+                    color="accent"
+                    @click.stop="syncDevice()"
+                  >
+                    <q-icon :name="icons.sync" />
+                    <q-tooltip>
+                      {{ $t('device.sync') }}
+                    </q-tooltip>
+                  </q-btn>
+
+                  <q-btn
                     type="reset"
-                    color="primary"
-                    flat
-                    class="q-ml-sm"
+                    class="q-mr-sm"
+                    size="sm"
+                    color="negative"
                     :loading="removeLoading"
                     :disabled="removeLoading"
                     @click="removeDevice"
-                  />
+                  >
+                    <q-icon :name="icons.delete" />
+                    <q-tooltip>
+                      {{ $t(`${deviceType}.remove`) }}
+                    </q-tooltip>
+                  </q-btn>
+
+                  <q-space />
                 </div>
               </div>
             </q-form>
@@ -196,8 +229,21 @@
       </q-tab-panels>
 
       <q-card-actions align="right" class="row absolute-bottom">
-        <q-btn color="primary" label="Previous" @click="onPreviousClick" />
-        <q-btn color="primary" label="Next" @click="onNextClick" />
+        <div class="q-pr-sm">
+          {{ device.name }}
+        </div>
+        <q-btn
+          color="primary"
+          label="Previous"
+          @click="onPreviousClick"
+          :disable="deviceCount < 2"
+        />
+        <q-btn
+          color="primary"
+          label="Next"
+          @click="onNextClick"
+          :disable="deviceCount < 2"
+        />
         <q-btn color="primary" label="Close" @click="onOKClick" />
       </q-card-actions>
     </q-card>
@@ -233,6 +279,8 @@ export default {
       tab: 'manageDevice',
       interval: null,
       removeLoading: false,
+      syncLoading: false,
+      rebootLoading: false,
       loading: false,
       errorLoading: false,
       updateInterval: null,
@@ -267,7 +315,7 @@ export default {
         usage: null,
         stats: [],
       },
-      deviceIndex: 1, //TODO: get the actual index of the opened device
+      deviceIndex: 1,
     };
   },
   mounted() {
@@ -281,11 +329,61 @@ export default {
       this.getDoors();
       this.getInterlocks();
     }, 30 * 1000);
+
+    // find the device index from the devices lise
+    if (this.deviceType === 'doors') {
+      this.deviceIndex = this.doors.findIndex(
+        (item) => String(item.id) === this.deviceId
+      );
+    } else {
+      this.deviceIndex = this.interlocks.findIndex(
+        (item) => String(item.id) === this.deviceId
+      );
+    }
   },
   methods: {
     ...mapActions('adminTools', ['getDoors', 'getInterlocks']),
     initForm() {
       this.device = this.currentDevice;
+    },
+
+    rebootDevice() {
+      this.rebootLoading = true;
+      this.$axios
+        .post(`/api/access/${this.deviceType}/${this.deviceId}/reboot/`)
+        .then(() => {
+          this.$q.notify({
+            message: this.$t('device.rebooted'),
+          });
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('device.requestFailed'),
+          });
+        })
+        .finally(() => {
+          this.rebootLoading = false;
+        });
+    },
+    syncDevice() {
+      this.syncLoading = true;
+      this.$axios
+        .post(`/api/access/${this.deviceType}/${this.deviceId}/sync/`)
+        .then(() => {
+          this.$q.notify({
+            message: this.$t('device.synced'),
+          });
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('device.requestFailed'),
+          });
+        })
+        .finally(() => {
+          this.syncLoading = false;
+        });
     },
     removeDevice() {
       this.$q
@@ -408,6 +506,12 @@ export default {
   },
   computed: {
     ...mapGetters('adminTools', ['doors', 'interlocks']),
+    deviceCount() {
+      if (this.deviceType === 'doors') {
+        return this.doors.length;
+      }
+      return this.interlocks.length;
+    },
     columnI18n() {
       let columns = [];
       if (this.deviceType === 'doors') {

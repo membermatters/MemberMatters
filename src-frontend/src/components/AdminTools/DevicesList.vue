@@ -75,32 +75,6 @@
               </template>
 
               <q-btn
-                :loading="deviceLoading[props.row.id]?.reboot"
-                class="q-mr-sm"
-                size="sm"
-                color="accent"
-                @click.stop="rebootDevice(props.row.id)"
-              >
-                <q-icon :name="icons.reboot" />
-                <q-tooltip>
-                  {{ $t('device.reboot') }}
-                </q-tooltip>
-              </q-btn>
-
-              <q-btn
-                :loading="deviceLoading[props.row.id]?.sync"
-                class="q-mr-sm"
-                size="sm"
-                color="accent"
-                @click.stop="syncDevice(props.row.id)"
-              >
-                <q-icon :name="icons.sync" />
-                <q-tooltip>
-                  {{ $t('device.sync') }}
-                </q-tooltip>
-              </q-btn>
-
-              <q-btn
                 size="sm"
                 color="accent"
                 @click.stop="manageDevice(props.row.id)"
@@ -136,31 +110,6 @@
               </q-tooltip>
             </q-btn>
           </template>
-          <q-btn
-            :loading="deviceLoading[props.row.id]?.reboot"
-            class="q-mr-sm"
-            size="sm"
-            color="accent"
-            @click.stop="rebootDevice(props.row.id)"
-          >
-            <q-icon :name="icons.reboot" />
-            <q-tooltip>
-              {{ $t('device.reboot') }}
-            </q-tooltip>
-          </q-btn>
-
-          <q-btn
-            :loading="deviceLoading[props.row.id]?.sync"
-            class="q-mr-sm"
-            size="sm"
-            color="accent"
-            @click.stop="syncDevice(props.row.id)"
-          >
-            <q-icon :name="icons.sync" />
-            <q-tooltip>
-              {{ $t('device.sync') }}
-            </q-tooltip>
-          </q-btn>
 
           <q-btn
             size="sm"
@@ -289,55 +238,6 @@ export default {
     manageDevice(deviceId) {
       this.$emit('openDevice', deviceId, this.deviceChoice);
     },
-    rebootDevice(deviceId) {
-      if (this.deviceLoading[deviceId])
-        this.deviceLoading[deviceId].reboot = true;
-      else this.deviceLoading[deviceId] = { reboot: true, bump: false };
-
-      this.$axios
-        .post(`/api/access/${this.deviceChoice}/${deviceId}/reboot/`)
-        .then(() => {
-          this.$q.notify({
-            message: this.$t('device.rebooted'),
-          });
-        })
-        .catch(() => {
-          this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('device.failedRequest'),
-          });
-        })
-        .finally(() => {
-          this.deviceLoading[deviceId].reboot = false;
-        });
-    },
-    syncDevice(deviceId) {
-      if (this.deviceLoading[deviceId])
-        this.deviceLoading[deviceId].sync = true;
-      else
-        this.deviceLoading[deviceId] = {
-          reboot: false,
-          bump: false,
-          sync: false,
-        };
-
-      this.$axios
-        .post(`/api/access/${this.deviceChoice}/${deviceId}/sync/`)
-        .then(() => {
-          this.$q.notify({
-            message: this.$t('device.synced'),
-          });
-        })
-        .catch(() => {
-          this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('device.failedRequest'),
-          });
-        })
-        .finally(() => {
-          this.deviceLoading[deviceId].sync = false;
-        });
-    },
     bumpDoor(doorId) {
       if (this.deviceLoading[doorId]) this.deviceLoading[doorId].bump = true;
       else this.deviceLoading[doorId] = { bump: true, reboot: false };
@@ -352,7 +252,7 @@ export default {
         .catch(() => {
           this.$q.dialog({
             title: this.$t('error.error'),
-            message: this.$t('device.failedRequest'),
+            message: this.$t('device.requestFailed'),
           });
         })
         .finally(() => {
