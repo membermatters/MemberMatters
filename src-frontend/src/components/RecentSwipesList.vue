@@ -212,7 +212,7 @@ export default {
             sessionStart: humanReadableStart,
             userOff:
               value.userOff === null
-                ? this.$t('recentSwipes.timedOut')
+                ? this.$t('recentSwipes.system')
                 : value.userOff,
             sessionEnd: value.sessionComplete
               ? humanReadableEnd

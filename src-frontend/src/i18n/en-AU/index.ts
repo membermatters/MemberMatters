@@ -182,10 +182,8 @@ export default {
     unauthorised: 'Unauthorised',
     door: 'Door',
     doors: 'Doors',
-    noDoors: 'There are no doors in the system.',
     interlock: 'Interlock',
     interlocks: 'Interlocks',
-    noInterlocks: 'There are no interlocks in the system.',
     defaultAccess: 'Members have access by default',
     maintenanceLockout: 'Maintenance lockout is enabled',
     playTheme: 'Play theme on swipe',
@@ -205,7 +203,7 @@ export default {
     pageDescription:
       'Here is a list of the last 300 swipes from doors and interlocks.',
     inProgress: 'In Progress',
-    timedOut: 'TIMED OUT',
+    system: 'SYSTEM',
   },
   reportIssue: {
     pageDescription: 'Report an issue',
