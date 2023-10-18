@@ -18,7 +18,7 @@ class AccessSystemStatus(APIView):
     get: This method returns the current status of the access system.
     """
 
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (HasExternalAccessControlAPIKey | permissions.IsAdminUser,)
 
     def get(self, request):
         statusObject = {
