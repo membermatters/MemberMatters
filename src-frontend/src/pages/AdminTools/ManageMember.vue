@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column flex justify-start items-center">
+  <q-page class="column q-tabs">
     <manage-member
       v-if="currentMember"
       :members="members"

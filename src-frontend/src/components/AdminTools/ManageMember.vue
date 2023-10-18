@@ -1,5 +1,5 @@
 <template>
-  <div class="column">
+  <div class="">
     <h3 class="q-mt-none q-mb-md">
       {{ profileForm.firstName }} {{ profileForm.lastName }} ({{
         profileForm.screenName
@@ -10,7 +10,12 @@
       style="background-color: transparent"
       :class="{ 'q-pb-lg': $q.screen.xs }"
     >
-      <q-tabs v-model="tab" align="center" dense>
+      <q-tabs
+        v-model="tab"
+        align="justify"
+        narrow-indicator
+        class="bg-primary text-white"
+      >
         <q-tab name="profile" :label="$t('menuLink.profile')" />
         <q-tab name="access" :label="$t('adminTools.access')" />
         <q-tab name="billing" :label="$t('adminTools.billing')" />
@@ -857,140 +862,153 @@
         </q-tab-panel>
 
         <q-tab-panel name="billing">
-          <div class="text-h6">
-            {{ $t('adminTools.subscriptionInfo') }}
+          <div class="row flex content-start items-start">
+            <div class="q-pr-lg">
+              <div class="text-h6">
+                {{ $t('adminTools.subscriptionInfo') }}
+              </div>
+
+              <q-list
+                v-if="billing?.subscription"
+                bordered
+                padding
+                class="rounded-borders"
+                style="max-width: 300px"
+              >
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{ billing.subscription.status }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`adminTools.subscriptionStatus`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{ formatDate(billing.subscription.billingCycleAnchor) }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`adminTools.billingCycleAnchor`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{ formatDate(billing.subscription.startDate) }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`adminTools.startDate`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{ formatDate(billing.subscription.currentPeriodEnd) }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`adminTools.currentPeriodEnd`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{ formatDate(billing.subscription.cancelAt) }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`adminTools.cancelAt`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{ billing.subscription.cancelAtPeriodEnd }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`adminTools.cancelAtPeriodEnd`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+
+              <div v-else>
+                {{ $t(`adminTools.noSubscription`) }}
+              </div>
+            </div>
+
+            <div>
+              <div class="text-h6">
+                {{ $t('adminTools.billingInfo') }}
+              </div>
+
+              <q-list
+                bordered
+                padding
+                class="rounded-borders"
+                style="max-width: 300px"
+              >
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      <div v-if="billing?.memberbucks.lastPurchase">
+                        {{ this.formatWhen(billing?.memberbucks.lastPurchase) }}
+                        <q-tooltip :delay="500">
+                          {{
+                            this.formatDate(billing?.memberbucks.lastPurchase)
+                          }}
+                        </q-tooltip>
+                      </div>
+                      <div v-else>
+                        {{ $t('error.noValue') }}
+                      </div>
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`memberbucks.lastPurchase`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{
+                        billing?.memberbucks.stripe_card_expiry ||
+                        $t('error.noValue')
+                      }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`memberbucks.cardExpiry`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{
+                        billing?.memberbucks.stripe_card_last_digits ||
+                        $t('error.noValue')
+                      }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`memberbucks.last4`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </div>
           </div>
-
-          <q-list
-            v-if="billing?.subscription"
-            bordered
-            padding
-            class="rounded-borders"
-          >
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{ billing.subscription.status }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`adminTools.subscriptionStatus`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{ formatDate(billing.subscription.billingCycleAnchor) }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`adminTools.billingCycleAnchor`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{ formatDate(billing.subscription.startDate) }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`adminTools.startDate`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{ formatDate(billing.subscription.currentPeriodEnd) }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`adminTools.currentPeriodEnd`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{ formatDate(billing.subscription.cancelAt) }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`adminTools.cancelAt`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{ billing.subscription.cancelAtPeriodEnd }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`adminTools.cancelAtPeriodEnd`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-
-          <div v-else>
-            {{ $t(`adminTools.noSubscription`) }}
-          </div>
-
-          <br />
-          <div class="text-h6">
-            {{ $t('adminTools.billingInfo') }}
-          </div>
-
-          <q-list bordered padding class="rounded-borders">
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  <div v-if="billing?.memberbucks.lastPurchase">
-                    {{ this.formatWhen(billing?.memberbucks.lastPurchase) }}
-                    <q-tooltip :delay="500">
-                      {{ this.formatDate(billing?.memberbucks.lastPurchase) }}
-                    </q-tooltip>
-                  </div>
-                  <div v-else>
-                    {{ $t('error.noValue') }}
-                  </div>
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`memberbucks.lastPurchase`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{
-                    billing?.memberbucks.stripe_card_expiry ||
-                    $t('error.noValue')
-                  }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`memberbucks.cardExpiry`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{
-                    billing?.memberbucks.stripe_card_last_digits ||
-                    $t('error.noValue')
-                  }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`memberbucks.last4`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
 
           <br />
           <div class="text-h6">
