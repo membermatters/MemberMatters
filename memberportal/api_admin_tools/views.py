@@ -246,7 +246,7 @@ class Interlocks(APIView):
             # Calculate total on time
             logs = InterlockLog.objects.filter(interlock_id=interlock.id)
             total_time = logs.aggregate(total_time=Sum("total_time")).get("total_time")
-            total_time_seconds = total_time.total_seconds()
+            total_time_seconds = total_time.total_seconds() if total_time else 0
 
             # Retrieve stats
             stats = (
