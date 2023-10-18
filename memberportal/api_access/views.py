@@ -153,6 +153,7 @@ class SyncInterlock(APIView):
 
     def post(self, request, interlock_id):
         interlock = Interlock.objects.get(pk=interlock_id)
+        interlock.log_force_sync()
 
         return Response({"success": interlock.sync()})
 
@@ -166,6 +167,7 @@ class RebootInterlock(APIView):
 
     def post(self, request, interlock_id):
         interlock = Interlock.objects.get(pk=interlock_id)
+        interlock.log_force_rebooted()
 
         return Response({"success": interlock.reboot()})
 
@@ -179,6 +181,7 @@ class SyncDoor(APIView):
 
     def post(self, request, door_id):
         door = Doors.objects.get(pk=door_id)
+        door.log_force_sync()
 
         return Response({"success": door.sync(request=request)})
 
@@ -192,6 +195,7 @@ class RebootDoor(APIView):
 
     def post(self, request, door_id):
         door = Doors.objects.get(pk=door_id)
+        door.log_force_rebooted()
 
         return Response({"success": door.reboot(request=request)})
 
@@ -208,7 +212,9 @@ class BumpDoor(APIView):
         # BUT we still need to check if the API is enabled or it's a user making the request
         if config.ENABLE_DOOR_BUMP_API or request.user.is_authenticated:
             door = Doors.objects.get(pk=door_id)
-            return Response({"success": door.bump()})
+            bumped = door.bump()
+            door.log_force_bump()
+            return Response({"success": bumped})
         else:
             return Response(
                 {"success": False, "error": "This API is disabled in the config."},

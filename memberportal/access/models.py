@@ -90,6 +90,59 @@ class AccessControlledDevice(models.Model):
     def log_access(self, member_id, success=True):
         pass
 
+    def log_event(self, description=None, event_type=None, data=None):
+        if self.type == "door":
+            log_event(
+                description=description, event_type=event_type, data=data, door=self
+            )
+            return True
+        elif self.type == "interlock":
+            log_event(
+                description=description,
+                event_type=event_type,
+                data=data,
+                interlock=self,
+            )
+            return True
+        elif self.type == "memberbucks":
+            log_event(
+                description=description,
+                event_type=event_type,
+                data=data,
+                memberbucks_device=self,
+            )
+            return True
+
+    def log_connected(self):
+        self.log_event(
+            description=f"Device connected.",
+        )
+
+    def log_disconnected(self):
+        self.log_event(
+            description=f"Device disconnected.",
+        )
+
+    def log_authenticated(self):
+        self.log_event(
+            description=f"Device authenticated.",
+        )
+
+    def log_force_rebooted(self):
+        self.log_event(
+            description=f"Device manually rebooted.",
+        )
+
+    def log_force_sync(self):
+        self.log_event(
+            description=f"Device manually synced.",
+        )
+
+    def log_force_bump(self):
+        self.log_event(
+            description=f"Device manually bumped.",
+        )
+
     def sync(self, request=None):
         if self.type != "door":
             logger.debug(

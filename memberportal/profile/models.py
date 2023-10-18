@@ -15,6 +15,7 @@ from django.conf import settings
 from constance import config
 from api_general.models import SiteSession
 from api_admin_tools.models import MemberTier, PaymentPlan
+from access.models import Doors, Interlock, MemberbucksDevice
 import json
 import uuid
 import logging
@@ -32,8 +33,9 @@ LOG_TYPES = (
     ("memberbucks", "Memberbucks related event"),
     ("spacebucks", "Spacebucks related event"),
     ("profile", "Member profile was edited or updated"),
-    ("interlock", "Interlock related event"),
-    ("door", "Door related event"),
+    ("interlock", "Interlock device related event"),
+    ("door", "Door device related event"),
+    ("memberbucksdevice", "Memberbucks device related event"),
     ("email", "An email was sent or attempted to be sent"),
     ("admin", "An admin performed an action"),
     ("error", "An event or action caused an error"),
@@ -47,6 +49,27 @@ class Log(models.Model):
     description = models.CharField("Description of action/event", max_length=500)
     data = models.TextField("Extra data for debugging action/event")
     date = models.DateTimeField(auto_now_add=True)
+    door = models.ForeignKey(
+        Doors,
+        on_delete=models.CASCADE,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    interlock = models.ForeignKey(
+        Interlock,
+        on_delete=models.CASCADE,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    memberbucks_device = models.ForeignKey(
+        MemberbucksDevice,
+        on_delete=models.CASCADE,
+        null=True,
+        default=None,
+        blank=True,
+    )
 
 
 class UserEventLog(Log):
@@ -57,8 +80,17 @@ class EventLog(Log):
     pass
 
 
-def log_event(description, event_type, data=""):
-    EventLog(description=description, logtype=event_type, data=data).save()
+def log_event(
+    description, event_type, data="", door=None, interlock=None, memberbucks_device=None
+):
+    EventLog(
+        description=description,
+        logtype=event_type,
+        data=data,
+        door=door,
+        interlock=interlock,
+        memberbucks_device=memberbucks_device,
+    ).save()
 
 
 class UserManager(BaseUserManager):

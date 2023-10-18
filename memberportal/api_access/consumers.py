@@ -10,7 +10,7 @@ from access.models import (
     MemberbucksDevice,
     AccessControlledDeviceAPIKey,
 )
-from profile.models import Profile
+from profile.models import Profile, log_event
 from constance import config
 
 logger = logging.getLogger("app")
@@ -47,6 +47,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
         )
         self.device = device_object
         self.device.checkin()
+        self.device.log_connected()
 
         # Set the channels group name and add the device to the group
         self.device_group_name = self.device.serial_number
@@ -75,6 +76,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
     def disconnect(self, close_code):
         logger.info("Device disconnected!")
         logger.info("Device was connected for %s", self.last_seen - self.connected_at)
+        self.device.log_disconnected()
         async_to_sync(self.channel_layer.group_discard)(
             self.device_group_name, self.channel_name
         )
@@ -106,6 +108,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
                     )
                     self.authorised = True
                     self.send_json({"authorised": True})
+                    self.device.log_authenticated()
                     self.sync_users({})  # sync the cards down
                     self.update_device_locked_out()
 
