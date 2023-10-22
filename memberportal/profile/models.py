@@ -47,7 +47,9 @@ class Log(models.Model):
         "Type of action/event", choices=LOG_TYPES, max_length=30, default="generic"
     )
     description = models.CharField("Description of action/event", max_length=500)
-    data = models.TextField("Extra data for debugging action/event")
+    data = models.TextField(
+        "Extra data for debugging action/event", blank=True, null=True
+    )
     date = models.DateTimeField(auto_now_add=True)
     door = models.ForeignKey(
         "access.Doors",
