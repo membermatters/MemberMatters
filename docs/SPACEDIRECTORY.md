@@ -51,7 +51,7 @@ curl -X POST -H 'Authorization: Token <response from above>' \
 
 ### Adding Sensor Data
 
-[Sensors](https://spaceapi.io/docs/#schema-key-sensors) are a really cool part of the SpaceAPI schema, as it allows you to publish all kinds of things from how many drinks are still in teh fridge through to environment readings such as temperature, windspeed, and humidity.
+[Sensors](https://spaceapi.io/docs/#schema-key-sensors) are a really cool part of the SpaceAPI schema, as it allows you to publish all kinds of things from how many drinks are still in the fridge through to environment readings such as temperature, windspeed, and humidity.
 
 By default, MemberMatters exposes the total number of active members and how many have "signed in" to the space, however you can add your own sensors as long as they conform to the appropriate type.
 

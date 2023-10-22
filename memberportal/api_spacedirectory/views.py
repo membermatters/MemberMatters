@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import status, permissions
+from rest_framework_api_key.permissions import HasAPIKey
 from rest_framework.views import APIView
 from constance import config
 from .models import SpaceAPI, SpaceAPISensor, SpaceAPISensorProperties
@@ -121,7 +122,7 @@ class SpaceDirectoryStatus(APIView):
 class SpaceDirectoryUpdate(APIView):
     """Allows authenticated users to update the SpaceAPI information"""
 
-    permissions_classes = permissions.IsAuthenticated
+    permissions_classes = permissions.IsAuthenticated | HasAPIKey
 
     def post(self, request):
         # Get the current state of the space
@@ -182,7 +183,6 @@ class SpaceDirectoryUpdate(APIView):
 
                     current_sensor.save()
                 except Exception as e:
-                    print(e)
                     new_sensor = SpaceAPISensor()
                     new_sensor.sensor_type = sensor["type"]
                     new_sensor.name = sensor["name"]
