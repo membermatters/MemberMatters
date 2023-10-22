@@ -90,7 +90,7 @@ def log_event(
 ):
     EventLog(
         description=description,
-        logtype=event_type,
+        logtype="generic" if event_type is None else event_type,
         data=data,
         door=door,
         interlock=interlock,

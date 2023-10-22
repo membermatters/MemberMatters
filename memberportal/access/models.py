@@ -90,16 +90,14 @@ class AccessControlledDevice(models.Model):
     def log_access(self, member_id, success=True):
         pass
 
-    def log_event(self, description=None, event_type=None, data=None):
+    def log_event(self, description=None, data=None):
         if self.type == "door":
-            log_event(
-                description=description, event_type=event_type, data=data, door=self
-            )
+            log_event(description=description, event_type="door", data=data, door=self)
             return True
         elif self.type == "interlock":
             log_event(
                 description=description,
-                event_type=event_type,
+                event_type="interlock",
                 data=data,
                 interlock=self,
             )
@@ -107,7 +105,7 @@ class AccessControlledDevice(models.Model):
         elif self.type == "memberbucks":
             log_event(
                 description=description,
-                event_type=event_type,
+                event_type="memberbucksdevice",
                 data=data,
                 memberbucks_device=self,
             )
