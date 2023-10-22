@@ -158,7 +158,7 @@ You cannot currently enable specific events, you either get "all or nothing".
   * "TRELLO_ID_LIST" - [Deprecated]
 
 ### Space Directory
-  * "ENABLE_SPACE_DIRECTORY" - enable a space directory compliant API. The various configuration options in this section should be self explannatory.
+  * "ENABLE_SPACE_DIRECTORY" - enable a [space directory compliant API](https://spaceapi.io). The various configuration options in this section should be self explanatory, however there is also an [API Endpoint](/docs/SPACEDIRECTORY) to update certain fields.
 
 ### Theme Swipe Integration
   * "THEME_SWIPE_URL" - a URL to hit on each door/interlock swipe that can trigger a theme song played over your intercom system, or something else.
