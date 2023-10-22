@@ -4,7 +4,6 @@ from datetime import timedelta, datetime
 import pytz
 import os
 from django.utils.timezone import make_aware
-from django.template.loader import render_to_string
 from django.contrib.auth.models import (
     BaseUserManager,
     AbstractBaseUser,
@@ -14,8 +13,7 @@ from django.core.validators import RegexValidator
 from django.conf import settings
 from constance import config
 from api_general.models import SiteSession
-from api_admin_tools.models import MemberTier, PaymentPlan
-from access.models import Doors, Interlock, MemberbucksDevice
+from api_admin_tools.models import PaymentPlan
 import json
 import uuid
 import logging
@@ -50,21 +48,21 @@ class Log(models.Model):
     data = models.TextField("Extra data for debugging action/event")
     date = models.DateTimeField(auto_now_add=True)
     door = models.ForeignKey(
-        Doors,
+        "access.Doors",
         on_delete=models.CASCADE,
         null=True,
         default=None,
         blank=True,
     )
     interlock = models.ForeignKey(
-        Interlock,
+        "access.Interlock",
         on_delete=models.CASCADE,
         null=True,
         default=None,
         blank=True,
     )
     memberbucks_device = models.ForeignKey(
-        MemberbucksDevice,
+        "access.MemberbucksDevice",
         on_delete=models.CASCADE,
         null=True,
         default=None,
