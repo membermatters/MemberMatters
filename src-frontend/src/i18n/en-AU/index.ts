@@ -37,7 +37,7 @@ export default {
     billing: 'Billing Method',
     profile: 'Profile',
     checkAccess: 'Access Permissions',
-    memberbucks: 'Memberbucks',
+    memberbucks: 'Spacebucks',
     membershipPlan: 'Membership Plan',
 
     Error404: 'Page Not Found',
@@ -437,7 +437,7 @@ export default {
     lastSeen: 'Last Seen',
     billing: 'Billing',
     memberState: 'Member State',
-    memberbucksTransactions: 'Memberbucks Transactions',
+    memberbucksTransactions: 'Spacebucks Transactions',
     subscriptionInfo: 'Subscription Info',
     subscriptionStatus: 'Stripe Subscription Status',
     billingInfo: 'Billing Info',

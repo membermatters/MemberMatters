@@ -177,7 +177,7 @@ CONSTANCE_CONFIG = {
         "[]",
         "A JSON list of strings (URLs) to project sites like wikis, GitHub, etc.",
     ),
-    "ENABLE_MEMBERBUCKS": (False, "Enable the memberbucks functionality."),
+    "ENABLE_MEMBERBUCKS": (False, "Enable the spacebucks / memberbucks functionality."),
     "MEMBERBUCKS_MAX_TOPUP": ("50", "The maximum topup allowed in dollars."),
     "MEMBERBUCKS_CURRENCY": (
         "aud",
