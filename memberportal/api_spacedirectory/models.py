@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.conf import settings
 
@@ -7,6 +8,10 @@ class SpaceAPI(models.Model):
     space_is_open = models.BooleanField(default=False)
     space_message = models.CharField(max_length=255, blank=True, null=True)
     status_last_change = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        if SpaceAPI.objects.exists() and not self.pk:
+            raise ValidationError("You can only have one SpaceAPI Setting")
 
     def __str__(self):
         open_text = "CLOSED"
