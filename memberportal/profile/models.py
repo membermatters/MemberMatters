@@ -77,9 +77,20 @@ class Log(models.Model):
 class UserEventLog(Log):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.description}"
+
 
 class EventLog(Log):
-    pass
+    def __str__(self):
+        if self.door:
+            return f"{self.door.name} {self.logtype} log - {self.description}"
+        elif self.interlock:
+            return f"{self.interlock.name} {self.logtype} log - {self.description}"
+        elif self.memberbucks_device:
+            return f"{self.memberbucks_device.name} {self.logtype} log - {self.description}"
+        else:
+            return f"{self.logtype} log - {self.description}"
 
 
 def log_event(
@@ -164,7 +175,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def __str__(self):
-        return self.email
+        return f"{self.get_full_name()} ({self.profile.screen_name}) - {self.email}"
 
     def get_short_name(self):
         return self.profile.get_short_name()
@@ -380,6 +391,9 @@ class Profile(models.Model):
         default=None, blank=True, null=True, editable=False
     )
 
+    def __str__(self):
+        return str(self.user)
+
     def generate_digital_id_token(self):
         self.digital_id_token = uuid.uuid4()
         self.digital_id_token_expire = make_aware(
@@ -477,9 +491,6 @@ class Profile(models.Model):
 
     def get_logs(self):
         return UserEventLog.objects.filter(user=self.user)
-
-    def __str__(self):
-        return str(self.user)
 
     def get_full_name(self):
         return self.first_name + " " + self.last_name

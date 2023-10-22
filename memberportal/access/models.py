@@ -375,6 +375,9 @@ class DoorLog(models.Model):
     date = models.DateTimeField(default=timezone.now)
     success = models.BooleanField(default=True)
 
+    def __str__(self):
+        return f"{self.user.get_full_name()} ({self.user.profile.screen_name}) swiped at {self.door.name} {'successfully' if self.success else 'unsuccessfully'} at {self.date.date()}"
+
 
 class InterlockLog(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
@@ -397,6 +400,9 @@ class InterlockLog(models.Model):
     total_time = models.DurationField(default=timedelta(0))
     total_kwh = models.FloatField(default=None, blank=True, null=True)
     total_cost = models.FloatField(default=None, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user_started.get_full_name()} ({self.user_started.profile.screen_name}) swiped at {self.interlock.name} {'successfully' if self.success else 'unsuccessfully'} for {self.total_time.total_seconds()/60} mins at {self.date_started.date()}"
 
     def calculate_cost(self):
         total_cost = self.interlock.cost_per_session

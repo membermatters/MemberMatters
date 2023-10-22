@@ -15,9 +15,9 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(UserEventLog)
 class UserEventLogAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields = ("date",)
 
 
 @admin.register(EventLog)
 class EventLogAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields = ("date",)

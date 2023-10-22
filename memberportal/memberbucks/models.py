@@ -33,6 +33,9 @@ class MemberBucks(models.Model):
     date = models.DateTimeField(auto_now_add=True, blank=True)
     logging_info = models.TextField("Detailed logging info from stripe.", blank=True)
 
+    def __str__(self):
+        return f"{self.user.get_full_name()} {'debited' if self.amount > 0 else 'credited'} ${abs(self.amount)} for {self.description} on {self.date.date()}"
+
     def save(self, *args, **kwargs):
         super(MemberBucks, self).save(*args, **kwargs)
         balance = MemberBucks.objects.filter(user=self.user).aggregate(Sum("amount"))[
