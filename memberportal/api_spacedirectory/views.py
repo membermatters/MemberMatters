@@ -122,7 +122,7 @@ class SpaceDirectoryStatus(APIView):
 class SpaceDirectoryUpdate(APIView):
     """Allows authenticated users to update the SpaceAPI information"""
 
-    permissions_classes = permissions.IsAuthenticated | HasAPIKey
+    permission_classes = (permissions.IsAdminUser | HasAPIKey,)
 
     def post(self, request):
         # Get the current state of the space

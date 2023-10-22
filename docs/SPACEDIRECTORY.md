@@ -40,11 +40,7 @@ Let's say you're opening the space and you want to ensure that everyone knows it
 You can do this with the following command:
 
 ```bash
-curl -X POST -d 'username=<myuser>&password=<mypass>' \
-    'https://<your_membermatters_installation/api/token' # Use the output of this command for the next one
-
-
-curl -X POST -H 'Authorization: Token <response from above>' \
+curl -X POST -H 'Authorization: Api-Key <Your API KEY>' \
     -d '{"is_open": true, "message": "Open Night TONIGHT! All Welcome between 1800hrs and 2300hrs"}' \
     https://<your_membermatters_installation>/api/spacedirectory/update
 ```
