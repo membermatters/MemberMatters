@@ -43,7 +43,9 @@ LOG_TYPES = (
 
 class Log(models.Model):
     id = models.AutoField(primary_key=True)
-    logtype = models.CharField("Type of action/event", choices=LOG_TYPES, max_length=30)
+    logtype = models.CharField(
+        "Type of action/event", choices=LOG_TYPES, max_length=30, default="generic"
+    )
     description = models.CharField("Description of action/event", max_length=500)
     data = models.TextField("Extra data for debugging action/event")
     date = models.DateTimeField(auto_now_add=True)
@@ -79,7 +81,12 @@ class EventLog(Log):
 
 
 def log_event(
-    description, event_type, data="", door=None, interlock=None, memberbucks_device=None
+    description,
+    event_type="generic",
+    data="",
+    door=None,
+    interlock=None,
+    memberbucks_device=None,
 ):
     EventLog(
         description=description,
