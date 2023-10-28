@@ -146,6 +146,34 @@
 
                 <div class="row">
                   <q-btn
+                    :disable="unlockLoading"
+                    :loading="unlockLoading"
+                    class="q-mr-sm"
+                    size="sm"
+                    color="accent"
+                    @click.stop="unlockDevice()"
+                  >
+                    <q-icon :name="icons.unlock" />
+                    <q-tooltip>
+                      {{ $t('device.unlock') }}
+                    </q-tooltip>
+                  </q-btn>
+
+                  <q-btn
+                    :disable="lockLoading"
+                    :loading="lockLoading"
+                    class="q-mr-sm"
+                    size="sm"
+                    color="accent"
+                    @click.stop="lockDevice()"
+                  >
+                    <q-icon :name="icons.lock" />
+                    <q-tooltip>
+                      {{ $t('device.lock') }}
+                    </q-tooltip>
+                  </q-btn>
+
+                  <q-btn
                     :disable="rebootLoading"
                     :loading="rebootLoading"
                     class="q-mr-sm"
@@ -281,6 +309,8 @@ export default {
       removeLoading: false,
       syncLoading: false,
       rebootLoading: false,
+      lockLoading: false,
+      unlockLoading: false,
       loading: false,
       errorLoading: false,
       updateInterval: null,
@@ -346,7 +376,44 @@ export default {
     initForm() {
       this.device = this.currentDevice;
     },
-
+    unlockDevice() {
+      this.unlockLoading = true;
+      this.$axios
+        .post(`/api/access/${this.deviceType}/${this.deviceId}/unlock/`)
+        .then(() => {
+          this.$q.notify({
+            message: this.$t('device.unlocked'),
+          });
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('device.requestFailed'),
+          });
+        })
+        .finally(() => {
+          this.unlockLoading = false;
+        });
+    },
+    lockDevice() {
+      this.lockLoading = true;
+      this.$axios
+        .post(`/api/access/${this.deviceType}/${this.deviceId}/lock/`)
+        .then(() => {
+          this.$q.notify({
+            message: this.$t('device.locked'),
+          });
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('device.requestFailed'),
+          });
+        })
+        .finally(() => {
+          this.lockLoading = false;
+        });
+    },
     rebootDevice() {
       this.rebootLoading = true;
       this.$axios

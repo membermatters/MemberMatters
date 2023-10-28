@@ -460,9 +460,13 @@ export default {
   device: {
     sync: 'Sync Device',
     reboot: 'Reboot Device',
+    lock: 'Lock Device',
+    unlock: 'Unlock Device',
     synced: 'Sent sync request',
     bumped: 'Sent bump request',
     rebooted: 'Sent reboot request',
+    locked: 'Sent lock request',
+    unlocked: 'Sent unlock request',
     requestFailed: 'Failed to send request to device',
   },
   paymentPlans: {

@@ -71,4 +71,6 @@ export default {
   accessCard: 'mdi-card-account-details',
   doorOpen: 'mdi-door-open',
   interlock: 'mdi-tools',
+  lock: 'mdi-lock-outline',
+  unlock: 'mdi-lock-open-variant-outline',
 };

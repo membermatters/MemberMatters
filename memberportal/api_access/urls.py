@@ -57,4 +57,24 @@ urlpatterns = [
         views.BumpDoor.as_view(),
         name="BumpDoor",
     ),
+    path(
+        "api/access/doors/<int:door_id>/lock/",
+        views.LockDevice.as_view(),
+        name="LockDoor",
+    ),
+    path(
+        "api/access/doors/<int:door_id>/unlock/",
+        views.UnlockDevice.as_view(),
+        name="UnlockDoor",
+    ),
+    path(
+        "api/access/interlocks/<int:interlock_id>/lock/",
+        views.LockDevice.as_view(),
+        name="LockInterlock",
+    ),
+    path(
+        "api/access/interlocks/<int:interlock_id>/unlock/",
+        views.UnlockDevice.as_view(),
+        name="UnlockInterlock",
+    ),
 ]

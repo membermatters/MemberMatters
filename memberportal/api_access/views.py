@@ -220,3 +220,55 @@ class BumpDoor(APIView):
                 {"success": False, "error": "This API is disabled in the config."},
                 status=status.HTTP_403_FORBIDDEN,
             )
+
+
+class LockDevice(APIView):
+    """
+    post: This method will 'lock' the specified device. Note this MAY be called externally with an API key.
+    """
+
+    permission_classes = (HasExternalAccessControlAPIKey | permissions.IsAdminUser,)
+
+    def post(self, request, door_id=None, interlock_id=None):
+        # at this point the credentials been authorised by the permissions classes above
+        # BUT we still need to check if the API is enabled or it's a user making the request
+        if config.ENABLE_DOOR_BUMP_API or request.user.is_authenticated:
+            device = (
+                Doors.objects.get(pk=door_id)
+                if door_id
+                else Interlock.objects.get(pk=interlock_id)
+            )
+            locked = device.lock(request)
+            device.log_force_lock()
+            return Response({"success": locked})
+        else:
+            return Response(
+                {"success": False, "error": "This API is disabled in the config."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+
+class UnlockDevice(APIView):
+    """
+    post: This method will 'unlock' the specified device. Note this MAY be called externally with an API key.
+    """
+
+    permission_classes = (HasExternalAccessControlAPIKey | permissions.IsAdminUser,)
+
+    def post(self, request, door_id=None, interlock_id=None):
+        # at this point the credentials been authorised by the permissions classes above
+        # BUT we still need to check if the API is enabled or it's a user making the request
+        if config.ENABLE_DOOR_BUMP_API or request.user.is_authenticated:
+            device = (
+                Doors.objects.get(pk=door_id)
+                if door_id
+                else Interlock.objects.get(pk=interlock_id)
+            )
+            unlocked = device.unlock(request)
+            device.log_force_unlock()
+            return Response({"success": unlocked})
+        else:
+            return Response(
+                {"success": False, "error": "This API is disabled in the config."},
+                status=status.HTTP_403_FORBIDDEN,
+            )

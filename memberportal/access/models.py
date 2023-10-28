@@ -141,58 +141,72 @@ class AccessControlledDevice(models.Model):
             description=f"Device manually bumped.",
         )
 
+    def log_force_lock(self):
+        self.log_event(
+            description=f"Device manually locked.",
+        )
+
+    def log_force_unlock(self):
+        self.log_event(
+            description=f"Device manually unlocked.",
+        )
+
     def sync(self, request=None):
-        if self.type != "door":
-            logger.debug(
-                "Cannot sync device that is not a door (for {})!".format(self.name)
-            )
-            return True
+        logger.info("Sending device sync to channels for {}".format(self.serial_number))
 
-        if self.serial_number:
-            logger.info(
-                "Sending device sync to channels for {}".format(self.serial_number)
-            )
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            self.serial_number, {"type": "sync_users"}
+        )
 
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                self.serial_number, {"type": "sync_users"}
+        if request:
+            request.user.log_event(
+                f"Sent a sync request to the {self.name} {self._meta.verbose_name}.",
+                "admin",
             )
 
-            if request:
-                request.user.log_event(
-                    f"Sent a sync request to the {self.name} {self._meta.verbose_name}.",
-                    "admin",
-                )
+        return True
 
-            return True
+    def lock(self, request=None):
+        logger.info(f"Sending device lock to channels for {self.name}")
 
-        else:
-            logger.error(
-                "Cannot sync device without websocket support (for {})!".format(
-                    self.name
-                )
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            self.serial_number, {"type": "device_lock"}
+        )
+
+        if request:
+            request.user.log_event(
+                f"Sent a lock request to the {self.name} {self._meta.verbose_name}.",
+                "admin",
+            )
+
+    def unlock(self, request=None):
+        logger.info(f"Sending device unlock to channels for {self.name}")
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            self.serial_number, {"type": "device_unlock"}
+        )
+
+        if request:
+            request.user.log_event(
+                f"Sent an unlock request to the {self.name} {self._meta.verbose_name}.",
+                "admin",
             )
 
     def reboot(self, request=None):
-        if self.serial_number:
-            logger.info(f"Sending door reboot to channels for {self.name}")
+        logger.info(f"Sending door reboot to channels for {self.name}")
 
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                self.serial_number, {"type": "device_reboot"}
-            )
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            self.serial_number, {"type": "device_reboot"}
+        )
 
-            if request:
-                request.user.log_event(
-                    f"Sent a reboot request to the {self.name} {self._meta.verbose_name}.",
-                    "admin",
-                )
-
-        else:
-            logger.error(
-                "Cannot reboot device without websocket support (for {})!".format(
-                    self.name
-                )
+        if request:
+            request.user.log_event(
+                f"Sent a reboot request to the {self.name} {self._meta.verbose_name}.",
+                "admin",
             )
 
     def get_tags(self):

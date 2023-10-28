@@ -198,6 +198,16 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
         logger.info("Rebooting device for " + self.device.serial_number)
         self.send_json({"command": "reboot"})
 
+    def device_lock(self, event=None):
+        # Handles the "device_lock" event when it's sent to us.
+        logger.info("Locking device for " + self.device.serial_number)
+        self.send_json({"command": "lock"})
+
+    def device_unlock(self, event=None):
+        # Handles the "device_unlock" event when it's sent to us.
+        logger.info("Unlocking device for " + self.device.serial_number)
+        self.send_json({"command": "unlock"})
+
     def update_device_locked_out(self, event=None):
         self.check_authorised()
 
