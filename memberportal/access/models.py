@@ -435,13 +435,15 @@ class InterlockLog(models.Model):
         self.date_ended = timezone.now()
         self.save()
 
-        if skip_cost:
+        if skip_cost or self.total_time.total_seconds() < 10:
+            self.total_cost = 0
+            self.save()
             return True
 
         else:
             minutes = round(self.total_time.total_seconds() / 60)
             description = f"For using {self.interlock.name} for {minutes} minutes."
-            transaction = MemberBucks.objects.create(
+            MemberBucks.objects.create(
                 user=self.user_started,
                 amount=(self.total_cost / 100) * -1,
                 transaction_type="interlock",
