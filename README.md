@@ -84,4 +84,5 @@ Feel free to add your organisation to this list (via a pull request) if you're a
 
 * [Brisbane Makerspace](https://brisbanemaker.space) (October 2021) - A community workshop for makers in Brisbane, with a focus on high quality tools.
 * [HSBNE Inc](https://hsbne.org) (January 2020) - A hackerspace based in Brisbane, QLD.
+* [Make Monmouth](https://www.makemonmouth.co.uk/) (November 2023) - A community makerspace based in Monmouth, Wales, UK
 * [SparkCC](https://www.sparkcc.org) (September 2021) - A community of makers on the NSW Central Coast
