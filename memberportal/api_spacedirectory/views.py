@@ -39,6 +39,18 @@ class SpaceDirectoryStatus(APIView):
                 },
                 "projects": json.loads(config.SPACE_DIRECTORY_PROJECTS),
                 "issue_report_channels": ["email"],
+                "state": {
+                    "open": False,
+                    "icon": {
+                        "open": config.SPACE_DIRECTORY_ICON_OPEN,
+                        "closed": config.SPACE_DIRECTORY_ICON_CLOSED,
+                    },
+                },
+                "location": {
+                    "address": config.SPACE_DIRECTORY_LOCATION_ADDRESS,
+                    "lat": config.SPACE_DIRECTORY_LOCATION_LAT,
+                    "lon": config.SPACE_DIRECTORY_LOCATION_LON,
+                },
             }
 
             try:
@@ -104,7 +116,7 @@ class SpaceDirectoryStatus(APIView):
                     "message": spaceapi_data.space_message,
                     "lastchange": spaceapi_data.status_last_change.timestamp(),
                 }
-                spaceapi["icon"] = {
+                spaceapi["state"]["icon"] = {
                     "open": config.SPACE_DIRECTORY_ICON_OPEN,
                     "closed": config.SPACE_DIRECTORY_ICON_CLOSED,
                 }
@@ -120,29 +132,10 @@ class SpaceDirectoryStatus(APIView):
                     "lon": config.SPACE_DIRECTORY_LOCATION_LON,
                 }
 
-                # Return the JSON document
-                return Response(spaceapi)
             except SpaceAPI.DoesNotExist:
-                spaceapi = {
-                    "space": config.SITE_OWNER,
-                    "logo": config.SITE_LOGO,
-                    "url": config.MAIN_SITE_URL,
-                    "state": "closed",
-                    "contact": {
-                        "email": config.SPACE_DIRECTORY_CONTACT_EMAIL,
-                        "twitter": config.SPACE_DIRECTORY_CONTACT_TWITTER,
-                        "phone": config.SPACE_DIRECTORY_CONTACT_PHONE,
-                        "facebook": config.SPACE_DIRECTORY_CONTACT_FACEBOOK,
-                    },
-                    "spacefed": {
-                        "spacenet": config.SPACE_DIRECTORY_FED_SPACENET,
-                        "spacesaml": config.SPACE_DIRECTORY_FED_SPACESAML,
-                        "spacephone": config.SPACE_DIRECTORY_FED_SPACEPHONE,
-                    },
-                    "projects": json.loads(config.SPACE_DIRECTORY_PROJECTS),
-                    "issue_report_channels": ["email"],
-                }
-                return Response(spaceapi)
+                spaceapi["open"] = "false"
+
+            return Response(spaceapi)
 
 
 class SpaceDirectoryUpdate(APIView):
