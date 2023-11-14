@@ -145,7 +145,7 @@
           <div class="row justify-start q-mt-md">
             <q-space />
             <q-btn
-              :href="features.signup.contactPageUrl"
+              :href="features.signup.postInductionUrl"
               target="_blank"
               color="primary"
               :label="$tc('button.contactUs')"

@@ -48,7 +48,7 @@ class GetConfig(APIView):
             "signup": {
                 "inductionLink": config.INDUCTION_ENROL_LINK,
                 "requireAccessCard": config.REQUIRE_ACCESS_CARD,
-                "contactPageUrl": config.CONTACT_PAGE_URL,
+                "postInductionUrl": config.POST_INDUCTION_URL,
                 "collectVehicleRegistrationPlate": config.COLLECT_VEHICLE_REGISTRATION_PLATE,
             },
             "enableWebcams": config.ENABLE_WEBCAMS,
@@ -703,7 +703,7 @@ class Register(APIView):
                 "induction we will go over the basic safety and operational "
                 f"aspects of {config.SITE_OWNER}. To book in, click the link below."
             )
-            link = config.INDUCTION_URL
+            link = config.POST_INDUCTION_URL
             btn_text = "Register for Induction"
 
             new_user.email_link(subject, title, message, link, btn_text)
