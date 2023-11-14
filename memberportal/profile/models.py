@@ -193,7 +193,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         "Is the user a admin member?"
         return self.admin
 
-    def log_event(self, description, event_type, data=""):
+    def log_event(self, description: str, event_type, data=""):
         UserEventLog(
             description=description, logtype=event_type, user=self, data=data
         ).save()
@@ -207,7 +207,9 @@ class User(AbstractBaseUser, PermissionsMixin):
             template_name=template_name,
         )
 
-    def email_link(self, subject, title, message, link, btn_text):
+    def email_link(
+        self, subject: str, title: str, message: str, link: str, btn_text: str
+    ):
         template_vars = {
             "title": title,
             "message": message,
@@ -221,11 +223,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             template_name="email_with_button.html",
         )
 
-    def email_notification(self, subject, message):
+    def email_notification(self, subject: str, message: str):
         template_vars = {"title": subject, "message": message}
         return self.__send_email(subject, template_vars=template_vars)
 
-    def email_password_reset(self, link):
+    def email_password_reset(self, link: str):
         template_vars = {"link": link}
 
         return self.__send_email(
@@ -403,7 +405,7 @@ class Profile(models.Model):
 
         return self.digital_id_token
 
-    def validate_digital_id_token(self, token):
+    def validate_digital_id_token(self, token: str):
         if make_aware(
             datetime.now()
         ) < self.digital_id_token_expire and self.digital_id_token == uuid.UUID(token):
@@ -473,7 +475,7 @@ class Profile(models.Model):
         self.state = "accountonly"
         self.save()
 
-    def email_profile_to(self, to_email):
+    def email_profile_to(self, to_email: str):
         message = (
             f"{self.get_full_name()} has just signed up on the portal."
             f"Their email is {self.user.email}."

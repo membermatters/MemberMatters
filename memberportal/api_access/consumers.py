@@ -10,8 +10,11 @@ from access.models import (
     MemberbucksDevice,
     AccessControlledDeviceAPIKey,
 )
-from profile.models import Profile, log_event
+from memberbucks.models import MemberBucks
+from profile.models import Profile, User
 from constance import config
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 logger = logging.getLogger("app")
 
@@ -86,7 +89,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
         Receive message from WebSocket.
         """
         try:
-            logger.info(
+            logger.debug(
                 f"Got message from {self.device.type} ({self.device.serial_number}): {json.dumps(content)}",
             )
             self.last_seen = datetime.datetime.now()
@@ -411,10 +414,156 @@ class MemberbucksConsumer(AccessDeviceConsumer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
-        self.DeviceClass = MemberbucksConsumer
+        self.DeviceClass = MemberbucksDevice
 
     def handle_other_packet(self, content):
+        if content.get("command") == "balance":
+            card_id = content.get("card_id")
+
+            if card_id is None:
+                self.send_json(
+                    {
+                        "command": "balance",
+                        "reason": "invalid_card_id",
+                        "success": False,
+                    }
+                )
+                return True
+
+            try:
+                profile = Profile.objects.get(rfid=card_id)
+                self.send_json(
+                    {
+                        "command": "balance",
+                        "balance": int(profile.memberbucks_balance * 100),
+                    }
+                )
+                return True
+
+            except ObjectDoesNotExist:
+                self.send_json(
+                    {
+                        "command": "balance",
+                        "reason": "invalid_card_id",
+                        "success": False,
+                    }
+                )
+                return True
+
         if content.get("command") == "debit":
-            pass  # TODO: implement
+            card_id = content.get("card_id")
+            amount = int(content.get("amount") or 0)
+            description = content.get("description", f"{self.device.name} purchase.")
+
+            if card_id is None:
+                self.send_json(
+                    {
+                        "command": "debit",
+                        "reason": "invalid_card_id",
+                        "success": False,
+                    }
+                )
+                return True
+
+            # stops us accidentally crediting an account if it's negative
+            if amount <= 0:
+                self.send_json(
+                    {
+                        "command": "debit",
+                        "reason": "invalid_amount",
+                        "success": False,
+                    }
+                )
+                return True
+
+            try:
+                profile = Profile.objects.get(rfid=card_id)
+
+            except ObjectDoesNotExist:
+                self.send_json(
+                    {
+                        "command": "debit",
+                        "reason": "invalid_card_id",
+                        "success": False,
+                    }
+                )
+                return True
+
+            if profile.memberbucks_balance >= amount:
+                time_dif = (
+                    timezone.now() - profile.last_memberbucks_purchase
+                ).total_seconds()
+
+                if time_dif > 5:
+                    transaction = MemberBucks()
+                    transaction.amount = amount * -1.0
+                    transaction.user = profile.user
+                    transaction.description = description
+                    transaction.transaction_type = "card"
+                    transaction.save()
+
+                    profile.last_memberbucks_purchase = timezone.now()
+                    profile.save()
+                    profile.refresh_from_db()
+
+                    subject = (
+                        f"You just made a ${amount} {config.MEMBERBUCKS_NAME} purchase."
+                    )
+                    message = (
+                        f"Description: {transaction.description}. Balance Remaining: "
+                    )
+                    f"${profile.memberbucks_balance}. If this wasn't you, or you believe there "
+                    f"has been an error, please let us know."
+
+                    User.objects.get(profile=profile).email_notification(
+                        subject, message
+                    )
+
+                    profile.user.log_event(
+                        f"Debited ${amount} from {config.MEMBERBUCKS_NAME} account.",
+                        "memberbucks",
+                    )
+
+                    self.send_json(
+                        {
+                            "command": "debit",
+                            "balance": int(profile.memberbucks_balance * 100),
+                        }
+                    )
+                    return True
+
+                else:
+                    self.send_json(
+                        {
+                            "command": "rate_limited",
+                        }
+                    )
+
+            else:
+                profile.user.log_event(
+                    f"Not enough funds to debit ${amount} from {config.MEMBERBUCKS_NAME} account by {self.device.name}.",
+                    "memberbucks",
+                )
+
+                subject = (
+                    f"Failed to make a ${amount} {config.MEMBERBUCKS_NAME} purchase."
+                )
+                message = f"We just tried to debit ${amount} from your {config.MEMBERBUCKS_NAME} balance but were not "
+                f"successful. You currently have ${profile.memberbucks_balance}. If this wasn't you, please let us know "
+                f"immediately."
+
+                User.objects.get(profile=profile).email_notification(subject, message)
+
+                self.send_json(
+                    {
+                        "command": "debit_declined",
+                        "reason": "insufficient_funds",
+                        "balance": int(profile.memberbucks_balance * 100),
+                    }
+                )
+                return True
+
+        if content.get("command") == "credit":
+            return False  # TODO: implement
         else:
             return False
