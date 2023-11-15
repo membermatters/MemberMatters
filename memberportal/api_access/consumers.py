@@ -528,6 +528,7 @@ class MemberbucksConsumer(AccessDeviceConsumer):
                         {
                             "command": "debit",
                             "balance": int(profile.memberbucks_balance * 100),
+                            "success": True,
                         }
                     )
                     return True

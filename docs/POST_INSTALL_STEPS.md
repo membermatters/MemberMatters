@@ -118,7 +118,7 @@ You cannot currently enable specific events, you either get "all or nothing".
 ### URLs
   * "SITE_URL" - publicly accessible URL this instance of MM is available on.
   * "MAIN_SITE_URL" - the main website of the organisation.
-  * "INDUCTION_URL" - used in the email sent to new members so they can signup for inductions.
+  * "POST_INDUCTION_URL" - where to send members after they've completed the online induction (typically used to book appointment to collect swipe card).
 
 ### Memberbucks
   * "MEMBERBUCKS_MAX_TOPUP" - a hard limit on the maxmimum amount a member can add in one go to their MemberBucks account.
