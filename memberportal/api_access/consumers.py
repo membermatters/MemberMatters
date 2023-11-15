@@ -557,7 +557,8 @@ class MemberbucksConsumer(AccessDeviceConsumer):
 
                 self.send_json(
                     {
-                        "command": "debit_declined",
+                        "command": "debit",
+                        "success": False,
                         "reason": "insufficient_funds",
                         "balance": int(profile.memberbucks_balance * 100),
                     }
