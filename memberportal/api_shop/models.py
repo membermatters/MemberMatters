@@ -26,6 +26,7 @@ class Product(models.Model):
     buy_price = models.DecimalField(max_digits=6, decimal_places=2)
     sell_price = models.DecimalField(max_digits=6, decimal_places=2)
     memberbucks_only = models.BooleanField(default=True)
+    qty_in_stock = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{{ self.name }} - {{ self.description }} - {{ self.sell_price }}"
