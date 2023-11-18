@@ -22,9 +22,13 @@ class Supplier(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+    buy_price = models.DecimalField(max_digits=6, decimal_places=2)
+    sell_price = models.DecimalField(max_digits=6, decimal_places=2)
+    memberbucks_only = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{{ self.name }} - {{ self.description }}"
+        return f"{{ self.name }} - {{ self.description }} - {{ self.sell_price }}"
 
 
 class Transaction(models.Model):
