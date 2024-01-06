@@ -5,6 +5,56 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v3.5.0] - 2024-01-06
+
+### Removed
+
+- Some unused Django constance settings
+- Logged in route guard from webcams page so it's properly public
+- All old interlock code from the http api days
+
+### Added
+
+- Moodle support / integration for onboarding induction as part of signup flow
+- Proper api key support for various api endpoints with djangorestframework-api-key
+- Auto commission new `AccessControlledDevice`s
+- Manual device sync, reboot, bump buttons
+- Support for websocket interlocks
+- Support for vending machine debits via websocket
+- Dynamic SpaceAPI endpoint based on new models (thanks @proffalken)
+- More detailed email logging
+- More detailed access system logging
+- Device level loggins for connections, disconnections and authentications etc.
+- Member is cancelling email notifications / logging
+- Support for Google Analytics GA4 tags / google tag manager
+- First subscribed date
+- Auto refresh on devices page
+
+### Changed
+
+- Overhauled / refactored email system to be more reliable/reusable
+- Member signing back up copy makes more sense
+- Disconnect websockets if any packet received before auth packet
+- Refactored swipe stats to use Django ORM rather than raw queries
+- Optimised some queries to make some pages load faster
+- All tab-based UIs to be more consistent
+- Update MM users
+
+### Fixed
+
+- Some duplicated/strange translation strings
+- Spaceapi constance fields updated to use floats for location lat/lng (thanks @proffalken)
+- Card last 4 digits not showing on manage member screen
+- Edge case that allowed some people to complete signup without subscription
+- Order of logs displayed on admin pages to start with most recent
+- A bug when members last seen is empty
+- Member created date not visible in Django admin
+- Various display bugs in manage member screen
+- Some admin pages not showing useful names for entities
+- Stripe webhook returning error if user has access to an interlock without a serial number
+- Canvas not syncing due to another API change
+- Fixed 404 in docs (thanks @plex3r)
+
 ## [v3.4.1] - 2023-09-01
 
 ### Added
