@@ -43,14 +43,10 @@ CONSTANCE_CONFIG = {
         "The publicly accessible URL of your MemberMatters instance.",
     ),
     "MAIN_SITE_URL": ("https://membermatters.org", "The URL of your main website."),
-    "CONTACT_PAGE_URL": (
-        "https://membermatters.org",
-        "The URL of your contact page (displayed during signup if "
-        "REQUIRE_ACCESS_CARD == False).",
-    ),
-    "INDUCTION_URL": (
+    "POST_INDUCTION_URL": (
         "https://eventbrite.com.au",
-        "The URL members should visit to book in for a site induction.",
+        "The URL members should visit to book in for a site induction after finishing the online induction."
+        " (displayed during signup if REQUIRE_ACCESS_CARD == False)",
     ),
     # Logo and favicon
     "SITE_LOGO": (
@@ -77,11 +73,6 @@ CONSTANCE_CONFIG = {
     "MEMBERBUCKS_NAME": (
         "Memberbucks",
         "You can customise the name of the built in currency.",
-    ),
-    "GROUP_NAME": ("Group", "You can customise what we call a group."),
-    "ADMIN_NAME": (
-        "Administrators",
-        "You can specify a different name for your admin group like executive or management committee.",
     ),
     "WEBCAM_PAGE_URLS": (
         """[["Example", "https://brisbanemaker.space/wp-content/uploads/2021/10/BMS-Logo-ONLY.png"]]""",
@@ -159,8 +150,8 @@ CONSTANCE_CONFIG = {
         "123 Setme St",
         "Sets the snail mail address.",
     ),
-    "SPACE_DIRECTORY_LOCATION_LAT": (0, "Sets the latitude."),
-    "SPACE_DIRECTORY_LOCATION_LON": (0, "Sets the longitude."),
+    "SPACE_DIRECTORY_LOCATION_LAT": (0.0, "Sets the latitude."),
+    "SPACE_DIRECTORY_LOCATION_LON": (0.0, "Sets the longitude."),
     "SPACE_DIRECTORY_FED_SPACENET": (False, "Sets support for spacenet."),
     "SPACE_DIRECTORY_FED_SPACESAML": (False, "Sets support for spacesaml."),
     "SPACE_DIRECTORY_FED_SPACEPHONE": (False, "Sets support for spacephone."),
@@ -182,7 +173,7 @@ CONSTANCE_CONFIG = {
         "[]",
         "A JSON list of strings (URLs) to project sites like wikis, GitHub, etc.",
     ),
-    "ENABLE_MEMBERBUCKS": (False, "Enable the memberbucks functionality."),
+    "ENABLE_MEMBERBUCKS": (False, "Enable the spacebucks / memberbucks functionality."),
     "MEMBERBUCKS_MAX_TOPUP": ("50", "The maximum topup allowed in dollars."),
     "MEMBERBUCKS_CURRENCY": (
         "aud",
@@ -190,7 +181,7 @@ CONSTANCE_CONFIG = {
     ),
     "ENABLE_THEME_SWIPE": (
         False,
-        "Enable playing a member's theme song on a swipe.",
+        "Enable playing a member's theme song on a card swipe.",
     ),
     "THEME_SWIPE_URL": (
         "http://10.0.1.50/playmp3.php?nickname={}",
@@ -200,13 +191,9 @@ CONSTANCE_CONFIG = {
         False,
         "Enable an API endpoint that 'bumps' (temporarily unlocks) a door for third party integration.",
     ),
-    "DOOR_BUMP_API_KEY": (
-        "",
-        "The API key used to authenticate requests to the door bump API endpoint. MUST be set or the endpoint is automatically disabled. Check docs for usage.",
-    ),
     "ENABLE_DISCORD_INTEGRATION": (
         False,
-        "Enable playing a member's theme song on a swipe.",
+        "Enable posting a notification to the discord channel on a card swipe.",
     ),
     "DISCORD_DOOR_WEBHOOK": (
         "https://discordapp.com/api/webhooks/<token>",
@@ -224,9 +211,9 @@ CONSTANCE_CONFIG = {
         "",
         "Secret key for the discourse SSO protocol (if enabled).",
     ),
-    "GOOGLE_ANALYTICS_PROPERTY_ID": (
+    "GOOGLE_ANALYTICS_MEASUREMENT_ID": (
         "",
-        "Place you google analytics property ID here to enable Google analytics integration.",
+        "Enter your measurement ID to enable Google analytics. Only the new GA4 measurement IDs are supported. It should look something like G-XXXXXXXXXX.",
     ),
     "API_SECRET_KEY": (
         "PLEASE_CHANGE_ME",
@@ -245,17 +232,37 @@ CONSTANCE_CONFIG = {
         "The API key used to send email with Postmark.",
     ),
     # Induction
-    "CANVAS_INDUCTION_ENABLED": (
+    "MOODLE_INDUCTION_ENABLED": (
         True,
-        "Whether induction is performed via the Canvas platform or not",
+        "Whether induction is performed via the Moodle platform or not. This setting overrides the Canvas settings below. If both are enabled, Moodle will be used.",
+    ),
+    "MOODLE_API_BASE_URL": (
+        "PLEASE_CHANGE_ME",
+        "The base URL for your Moodle instance without trailing slash (ie https://learn.example.com).",
+    ),
+    "MOODLE_API_TOKEN": (
+        "PLEASE_CHANGE_ME",
+        "Moodle API token.",
+    ),
+    "MOODLE_INDUCTION_COURSE_ID": (
+        "",
+        "Moodle course id for the induction.",
+    ),
+    "CANVAS_INDUCTION_ENABLED": (
+        False,
+        "Whether induction is performed via the Canvas platform or not. This setting is overriden by the Moodle settings above. If both are enabled, Moodle will be used.",
+    ),
+    "CANVAS_API_TOKEN": (
+        "PLEASE_CHANGE_ME",
+        "Canvas API token.",
+    ),
+    "CANVAS_INDUCTION_COURSE_ID": (
+        "",
+        "Canvas course id for the induction.",
     ),
     "INDUCTION_ENROL_LINK": (
         "",
         "The link that a member can use to enrol into an induction.",
-    ),
-    "INDUCTION_COURSE_ID": (
-        "",
-        "Canvas course id for the induction.",
     ),
     "MAX_INDUCTION_DAYS": (
         180,
@@ -272,10 +279,6 @@ CONSTANCE_CONFIG = {
     "COLLECT_VEHICLE_REGISTRATION_PLATE": (
         False,
         "Display a field that collects the member's vehicle registration plate on signup & in the profile page.",
-    ),
-    "CANVAS_API_TOKEN": (
-        "PLEASE_CHANGE_ME",
-        "Canvas API token.",
     ),
     "ENABLE_PROXY_VOTING": (False, "Enables the proxy voting management feature."),
     "ENABLE_WEBCAMS": (
@@ -332,7 +335,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SITE_NAME",
                 "SITE_OWNER",
                 "SITE_LOCALE_CURRENCY",
-                "GOOGLE_ANALYTICS_PROPERTY_ID",
+                "GOOGLE_ANALYTICS_MEASUREMENT_ID",
                 "API_SECRET_KEY",
                 "SITE_BANNER",
             ),
@@ -351,6 +354,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "ENABLE_THEME_SWIPE",
                 "ENABLE_PORTAL_SITE_SIGN_IN",
                 "ENABLE_PORTAL_MEMBERS_ON_SITE",
+                "ENABLE_DOOR_BUMP_API",
             ),
         ),
         (
@@ -364,7 +368,6 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             "Signup",
             (
                 "INDUCTION_ENROL_LINK",
-                "INDUCTION_COURSE_ID",
                 "MAX_INDUCTION_DAYS",
                 "MIN_INDUCTION_SCORE",
                 "REQUIRE_ACCESS_CARD",
@@ -372,10 +375,20 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ),
         ),
         (
+            "Moodle (LMS) Integration",
+            (
+                "MOODLE_INDUCTION_ENABLED",
+                "MOODLE_API_TOKEN",
+                "MOODLE_API_BASE_URL",
+                "MOODLE_INDUCTION_COURSE_ID",
+            ),
+        ),
+        (
             "Canvas (LMS) Integration",
             (
-                "CANVAS_API_TOKEN",
                 "CANVAS_INDUCTION_ENABLED",
+                "CANVAS_API_TOKEN",
+                "CANVAS_INDUCTION_COURSE_ID",
             ),
         ),
         ("Postmark (EMAIL) Integration", ("POSTMARK_API_KEY",)),
@@ -420,7 +433,6 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ),
         ),
         ("Theme Swipe Integration", ("THEME_SWIPE_URL",)),
-        ("Door Bump API", ("ENABLE_DOOR_BUMP_API", "DOOR_BUMP_API_KEY")),
         (
             "Contact Information",
             (
@@ -434,7 +446,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             "Discourse SSO Protocol",
             ("DISCOURSE_SSO_PROTOCOL_SECRET_KEY",),
         ),
-        ("URLs", ("SITE_URL", "MAIN_SITE_URL", "CONTACT_PAGE_URL", "INDUCTION_URL")),
+        ("URLs", ("SITE_URL", "MAIN_SITE_URL", "POST_INDUCTION_URL")),
         ("Memberbucks", ("MEMBERBUCKS_MAX_TOPUP",)),
         (
             "Images",
@@ -445,8 +457,6 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             "Group Localisation",
             (
                 "MEMBERBUCKS_NAME",
-                "GROUP_NAME",
-                "ADMIN_NAME",
                 "WEBCAM_PAGE_URLS",
                 "HOME_PAGE_CARDS",
                 "WELCOME_EMAIL_CARDS",

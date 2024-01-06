@@ -16,6 +16,10 @@ class MemberBucks(models.Model):
             "card",
             "Membership Card",
         ),  # used to track debits from vending machines / debit endpoints
+        (
+            "interlock",
+            "Interlock Cost",
+        ),  # used to track automatic debits from interlock sessions
         ("other", "Other"),
     )
 
@@ -28,6 +32,9 @@ class MemberBucks(models.Model):
     description = models.CharField("Description of Transaction", max_length=100)
     date = models.DateTimeField(auto_now_add=True, blank=True)
     logging_info = models.TextField("Detailed logging info from stripe.", blank=True)
+
+    def __str__(self):
+        return f"{self.user.get_full_name()} {'debited' if self.amount > 0 else 'credited'} ${abs(self.amount)} for {self.description} on {self.date.date()}"
 
     def save(self, *args, **kwargs):
         super(MemberBucks, self).save(*args, **kwargs)

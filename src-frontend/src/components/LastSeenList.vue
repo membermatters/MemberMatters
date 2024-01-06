@@ -82,8 +82,9 @@ export default {
         return {
           id: value.id,
           user: value.user,
-          date: this.formatDateSimple(value.date),
-          never: value.never,
+          date: value.never
+            ? this.$t('never')
+            : this.formatDateSimple(value.date),
         };
       });
     },

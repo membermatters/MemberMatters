@@ -127,8 +127,22 @@ export default {
             const { analyticsId } = result.data;
 
             if (analyticsId) {
-              ga('create', analyticsId, 'auto');
-              ga('send', 'pageview');
+              const scriptId = 'gtag-script';
+              if (!document.getElementById(scriptId)) {
+                const script = document.createElement('script');
+                script.id = scriptId;
+                script.async = true;
+                script.src = `https://www.googletagmanager.com/gtag/js?id=${analyticsId}`;
+                document.head.insertBefore(script, document.head.firstChild);
+
+                window.dataLayer = window.dataLayer || [];
+                window.gtag = function () {
+                  dataLayer.push(arguments);
+                };
+
+                gtag('js', new Date());
+                gtag('config', analyticsId);
+              }
             }
 
             resolve();

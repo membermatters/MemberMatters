@@ -16,11 +16,7 @@
                   ),
                   intervalCount: minPrice.intervalAmount,
                   interval: $tc(
-                    `paymentPlans.${
-                      minPrice.intervalAmount > 1
-                        ? 'intervalPlurals'
-                        : 'interval'
-                    }.${minPrice.interval.toLowerCase()}`
+                    `paymentPlans.interval.${minPrice.interval.toLowerCase()}`
                   ),
                 }),
               })

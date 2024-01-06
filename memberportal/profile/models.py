@@ -4,7 +4,6 @@ from datetime import timedelta, datetime
 import pytz
 import os
 from django.utils.timezone import make_aware
-from django.template.loader import render_to_string
 from django.contrib.auth.models import (
     BaseUserManager,
     AbstractBaseUser,
@@ -14,11 +13,11 @@ from django.core.validators import RegexValidator
 from django.conf import settings
 from constance import config
 from api_general.models import SiteSession
-from api_admin_tools.models import MemberTier, PaymentPlan
+from api_admin_tools.models import PaymentPlan
 import json
 import uuid
 import logging
-from services.emails import send_single_email
+from services.emails import send_single_email, send_email_to_admin
 from services import sms
 
 logger = logging.getLogger("app")
@@ -31,34 +30,85 @@ LOG_TYPES = (
     ("stripe", "Stripe related event"),
     ("memberbucks", "Memberbucks related event"),
     ("spacebucks", "Spacebucks related event"),
-    ("profile", "Member profile edited"),
-    ("interlock", "Interlock related event"),
-    ("door", "Door related event"),
-    ("email", "Email send event"),
-    ("admin", "Generic admin event"),
-    ("error", "Some event that causes an error"),
+    ("profile", "Member profile was edited or updated"),
+    ("interlock", "Interlock device related event"),
+    ("door", "Door device related event"),
+    ("memberbucksdevice", "Memberbucks device related event"),
+    ("email", "An email was sent or attempted to be sent"),
+    ("admin", "An admin performed an action"),
+    ("error", "An event or action caused an error"),
     ("xero", "Generic xero log entry"),
 )
 
 
 class Log(models.Model):
     id = models.AutoField(primary_key=True)
-    logtype = models.CharField("Type of action/event", choices=LOG_TYPES, max_length=30)
+    logtype = models.CharField(
+        "Type of action/event", choices=LOG_TYPES, max_length=30, default="generic"
+    )
     description = models.CharField("Description of action/event", max_length=500)
-    data = models.TextField("Extra data for debugging action/event")
+    data = models.TextField(
+        "Extra data for debugging action/event", blank=True, null=True
+    )
     date = models.DateTimeField(auto_now_add=True)
+    door = models.ForeignKey(
+        "access.Doors",
+        on_delete=models.CASCADE,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    interlock = models.ForeignKey(
+        "access.Interlock",
+        on_delete=models.CASCADE,
+        null=True,
+        default=None,
+        blank=True,
+    )
+    memberbucks_device = models.ForeignKey(
+        "access.MemberbucksDevice",
+        on_delete=models.CASCADE,
+        null=True,
+        default=None,
+        blank=True,
+    )
 
 
 class UserEventLog(Log):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.description}"
+
 
 class EventLog(Log):
-    pass
+    def __str__(self):
+        if self.door:
+            return f"{self.door.name} {self.logtype} log - {self.description}"
+        elif self.interlock:
+            return f"{self.interlock.name} {self.logtype} log - {self.description}"
+        elif self.memberbucks_device:
+            return f"{self.memberbucks_device.name} {self.logtype} log - {self.description}"
+        else:
+            return f"{self.logtype} log - {self.description}"
 
 
-def log_event(description, event_type, data=""):
-    EventLog(description=description, logtype=event_type, data=data).save()
+def log_event(
+    description,
+    event_type="generic",
+    data="",
+    door=None,
+    interlock=None,
+    memberbucks_device=None,
+):
+    EventLog(
+        description=description,
+        logtype="generic" if event_type is None else event_type,
+        data=data,
+        door=door,
+        interlock=interlock,
+        memberbucks_device=memberbucks_device,
+    ).save()
 
 
 class UserManager(BaseUserManager):
@@ -125,10 +175,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def __str__(self):
-        return self.email
+        return f"{self.get_full_name()} ({self.profile.screen_name}) - {self.email}"
 
     def get_short_name(self):
-        return self.profile.first_name
+        return self.profile.get_short_name()
+
+    def get_full_name(self):
+        return self.profile.get_full_name()
 
     @property
     def is_staff(self):
@@ -140,49 +193,62 @@ class User(AbstractBaseUser, PermissionsMixin):
         "Is the user a admin member?"
         return self.admin
 
-    def log_event(description, event_type, data=""):
+    def log_event(self, description: str, event_type, data=""):
         UserEventLog(
-            description=description, logtype=event_type, user=user, data=data
+            description=description, logtype=event_type, user=self, data=data
         ).save()
 
-    def __send_email(self, subject, body):
-        return send_single_email(self, self.email, subject, subject, body)
-
-    def email_notification(self, subject, title, preheader, message):
-        email_vars = {"preheader": preheader, "title": title, "message": message}
-        email_string = render_to_string(
-            "email_without_button.html", {"email": email_vars, "config": config}
+    def __send_email(self, subject, template_vars, template_name=None):
+        return send_single_email(
+            to_email=self.email,
+            subject=subject,
+            template_vars=template_vars,
+            user=self,
+            template_name=template_name,
         )
 
-        if self.__send_email(subject, email_string):
-            return True
-
-    def email_password_reset(self, link):
-        email_vars = {"link": link}
-        email_string = render_to_string(
-            "email_password_reset.html", {"email": email_vars, "config": config}
-        )
-
-        if self.__send_email(f"Reset your {config.SITE_OWNER} password", email_string):
-            return True
-
-    def email_link(self, subject, title, preheader, message, link, btn_text):
-        email_vars = {
-            "preheader": preheader,
+    def email_link(
+        self, subject: str, title: str, message: str, link: str, btn_text: str
+    ):
+        template_vars = {
             "title": title,
             "message": message,
             "link": link,
             "btn_text": btn_text,
         }
-        email_string = render_to_string(
-            "email_with_button.html",
-            {"email": email_vars, "config": config, "config": config},
+
+        return self.__send_email(
+            subject=subject,
+            template_vars=template_vars,
+            template_name="email_with_button.html",
         )
 
-        if self.__send_email(subject, email_string):
-            return True
+    def email_notification(self, subject: str, message: str):
+        template_vars = {"title": subject, "message": message}
+        return self.__send_email(subject, template_vars=template_vars)
 
-        return False
+    def email_password_reset(self, link: str):
+        template_vars = {"link": link}
+
+        return self.__send_email(
+            f"Reset your {config.SITE_OWNER} password",
+            template_vars,
+            template_name="email_password_reset.html",
+        )
+
+    def email_membership_application(self):
+        subject = "Your membership application has been submitted"
+        message = "Thanks for submitting your membership application! Your membership application has been submitted and you are now a 'member applicant'. Your membership will be officially accepted shortly, but we have granted site access immediately. You will receive an email confirming that your access card has been enabled. If for some reason your membership is rejected within this period, you will receive an email with further information."
+
+        self.email_notification(subject, message)
+
+        subject = f"A new person just became a member applicant: {self.profile.get_full_name()}"
+        message = f"{self.profile.get_full_name()} just completed all steps required to sign up and is now a member applicant. Their site access has been enabled and membership will automatically be accepted within 7 days without objection."
+        template_vars = {"message": message}
+
+        return send_email_to_admin(
+            subject, template_vars=template_vars, reply_to=self.email, user=self
+        )
 
     def email_welcome(self):
         cards = (
@@ -192,38 +258,30 @@ class User(AbstractBaseUser, PermissionsMixin):
         )
         cards = json.loads(cards)
 
-        email_string = render_to_string(
-            "email_welcome.html", {"config": config, "cards": cards}
-        )
+        subject = f"Welcome to {config.SITE_OWNER}"
+        template_vars = {"title": subject, "cards": cards}
 
-        if self.__send_email(f"Welcome to {config.SITE_OWNER}", email_string):
+        if self.__send_email(
+            subject=subject,
+            template_vars=template_vars,
+            template_name="email_welcome.html",
+        ):
             return "Successfully sent welcome email to user. ✉"
 
         return False
 
     def email_disable_member(self):
-        if self.email_notification(
-            f"{self.profile.first_name}, your {config.SITE_OWNER} site access has been disabled.",
-            "Your access has been disabled.",
+        return self.email_notification(
             f"Your {config.SITE_OWNER} site access has been disabled.",
-            f"Your access to {config.SITE_OWNER} has been disabled. This could be due to overdue membership fees, a"
-            " ban being issued or your membership ending. If this is because of a ban, you are not allowed back on "
-            "site until your ban has ended and your membership has been reactivated.",
-        ):
-            return True
-
-        return False
+            f"Your access to {config.SITE_OWNER} has been disabled. This could be due to many reasons, but is "
+            f"usually due to a failed membership payment. If this is unexpected, please let us know.",
+        )
 
     def email_enable_member(self):
-        if self.email_notification(
-            f"{self.profile.first_name}, your {config.SITE_OWNER} site access has been enabled.",
-            "Your access has been enabled.",
-            f"Your {config.SITE_OWNER} site access has been enabled.",
-            f"Great news! Your access to {config.SITE_OWNER} has been enabled.",
-        ):
-            return True
+        message = f"Great news {self.profile.first_name}, your {config.SITE_OWNER} site access has been enabled."
+        subject = f"Your {config.SITE_OWNER} site access has been enabled."
 
-        return False
+        return self.email_notification(subject, message)
 
     def reset_password(self):
         self.log_event("Password reset requested", "profile")
@@ -235,9 +293,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         )
 
         return True
-
-
-from access.models import Doors, Interlock
 
 
 class Profile(models.Model):
@@ -334,6 +389,12 @@ class Profile(models.Model):
     subscription_status = models.CharField(
         max_length=10, default="inactive", choices=SUBSCRIPTION_STATES
     )
+    subscription_first_created = models.DateTimeField(
+        default=None, blank=True, null=True, editable=False
+    )
+
+    def __str__(self):
+        return str(self.user)
 
     def generate_digital_id_token(self):
         self.digital_id_token = uuid.uuid4()
@@ -344,7 +405,7 @@ class Profile(models.Model):
 
         return self.digital_id_token
 
-    def validate_digital_id_token(self, token):
+    def validate_digital_id_token(self, token: str):
         if make_aware(
             datetime.now()
         ) < self.digital_id_token_expire and self.digital_id_token == uuid.UUID(token):
@@ -362,13 +423,17 @@ class Profile(models.Model):
 
     def deactivate(self, request=None):
         if request:
+            request.user.log_event(
+                f"{request.user.profile.get_full_name()} deactivated member ({self.get_full_name()}).",
+                "admin",
+            )
             self.user.log_event(
-                request.user.profile.get_full_name() + " deactivated member",
-                "profile",
+                f"{request.user.profile.get_full_name()} deactivated member.",
+                "admin",
             )
         else:
             self.user.log_event(
-                "system deactivated member",
+                f"system deactivated member ({self.get_full_name()}).",
                 "profile",
             )
 
@@ -382,13 +447,17 @@ class Profile(models.Model):
 
     def activate(self, request=None):
         if request:
+            request.user.log_event(
+                f"{request.user.profile.get_full_name()} activated member ({self.get_full_name()}).",
+                "admin",
+            )
             self.user.log_event(
-                request.user.profile.get_full_name() + " activated member",
-                "profile",
+                f"{request.user.profile.get_full_name()} activated member.",
+                "admin",
             )
         else:
             self.user.log_event(
-                "system activated member",
+                f"system activated member ({self.get_full_name()})",
                 "profile",
             )
 
@@ -406,26 +475,24 @@ class Profile(models.Model):
         self.state = "accountonly"
         self.save()
 
-    def email_profile_to(self, to_email):
+    def email_profile_to(self, to_email: str):
         message = (
             f"{self.get_full_name()} has just signed up on the portal."
             f"Their email is {self.user.email}."
         )
-        email_vars = {"preheader": "", "title": "New member signup", "message": message}
-        email_string = render_to_string(
-            "email_without_button.html", {"email": email_vars, "config": config}
-        )
+        template_vars = {"title": "New member signup", "message": message}
         subject = "A new member signed up! ({})".format(self.get_full_name())
 
         return send_single_email(
-            self.user, to_email, subject=subject, title=subject, message=email_string
+            to_email,
+            subject,
+            template_vars=template_vars,
+            user=self.user,
+            reply_to=self.user.email,
         )
 
     def get_logs(self):
         return UserEventLog.objects.filter(user=self.user)
-
-    def __str__(self):
-        return str(self.user)
 
     def get_full_name(self):
         return self.first_name + " " + self.last_name
@@ -501,6 +568,8 @@ class Profile(models.Model):
 
         user_active = self.state == "active"
 
+        from access.models import Doors, Interlock
+
         for door in Doors.objects.all():
             if door.hidden:
                 continue
@@ -540,7 +609,10 @@ class Profile(models.Model):
         if config.MAX_INDUCTION_DAYS > 0 and (
             last_inducted is None or last_inducted < furthest_previous_date
         ):
-            if config.CANVAS_INDUCTION_ENABLED is True:
+            if (
+                config.CANVAS_INDUCTION_ENABLED is True
+                or config.MOODLE_INDUCTION_ENABLED is True
+            ):
                 required_steps.append("induction")
 
         # check if they have an RFID card assigned

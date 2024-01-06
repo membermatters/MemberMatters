@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     "api_billing",
     "corsheaders",
     "rest_framework",
+    "rest_framework_api_key",
     "django_celery_results",
     "django_celery_beat",
 ]
@@ -142,7 +143,7 @@ else:
 if "MM_USE_POSTGRES" in os.environ:
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.postgresql",
+            "ENGINE": "django_prometheus.db.backends.postgresql",
             "NAME": os.environ.get("POSTGRES_DB", "membermatters"),
             "USER": os.environ.get("POSTGRES_USER", "membermatters"),
             "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "membermatters"),
@@ -158,7 +159,7 @@ elif "MMDB_SECRET" in os.environ:
     database_config = json.loads(os.environ["MMDB_SECRET"])
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.mysql",
+            "ENGINE": "django_prometheus.db.backends.mysql",
             "NAME": database_config.get("dbname"),
             "USER": database_config.get("username"),
             "PASSWORD": database_config.get("password"),
@@ -169,7 +170,7 @@ elif "MMDB_SECRET" in os.environ:
 else:
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.sqlite3",
+            "ENGINE": "django_prometheus.db.backends.sqlite3",
             "NAME": os.environ.get("MM_DB_LOCATION", "/usr/src/data/db.sqlite3"),
         }
     }
@@ -199,8 +200,12 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,
     "formatters": {
-        "console": {"format": "%(asctime)s %(name)s %(levelname)-8s %(message)s"},
-        "file": {"format": "%(asctime)s %(name)s %(levelname)-8s %(message)s"},
+        "console": {
+            "format": "%(asctime)s %(name)s %(filename)s:%(lineno)s  %(levelname)-8s %(message)s"
+        },
+        "file": {
+            "format": "%(asctime)s %(name)s %(filename)s:%(lineno)s  %(levelname)-8s %(message)s"
+        },
     },
     "handlers": {
         "console": {

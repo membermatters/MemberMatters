@@ -6,7 +6,7 @@
       </q-item-label>
 
       <div class="q-pa-md" v-if="!doors.length">
-        {{ $t('access.noDoors') }}
+        {{ $t('doors.nodata') }}
       </div>
 
       <div
@@ -48,7 +48,7 @@
       </q-item-label>
 
       <q-item-label class="q-pa-md" v-if="!interlocks.length">
-        {{ $t('access.noInterlocks') }}
+        {{ $t('interlocks.nodata') }}
       </q-item-label>
 
       <div

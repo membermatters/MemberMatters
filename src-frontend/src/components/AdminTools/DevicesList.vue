@@ -55,34 +55,25 @@
 
             <q-separator />
 
-            <q-item class="q-mt-sm row justify-center">
+            <q-item
+              v-if="props.row.authorised"
+              class="q-mt-sm row justify-center"
+            >
               <template v-if="deviceChoice === 'doors'">
                 <q-btn
-                  :loading="deviceLoading[props.row.id]?.unlock"
+                  :loading="deviceLoading[props.row.id]?.bump"
                   class="q-mr-sm"
                   size="sm"
                   color="accent"
-                  @click.stop="unlockDoor(props.row.id)"
+                  @click.stop="bumpDoor(props.row.id)"
                 >
-                  <q-icon :name="icons.unlock" />
+                  <q-icon :name="icons.bump" />
                   <q-tooltip>
-                    {{ $t('button.unlockDoor') }}
+                    {{ $t('doors.bump') }}
                   </q-tooltip>
                 </q-btn>
               </template>
 
-              <q-btn
-                :loading="deviceLoading[props.row.id]?.reboot"
-                class="q-mr-sm"
-                size="sm"
-                color="accent"
-                @click.stop="rebootDevice(props.row.id)"
-              >
-                <q-icon :name="icons.reboot" />
-                <q-tooltip>
-                  {{ $t('button.rebootDevice') }}
-                </q-tooltip>
-              </q-btn>
               <q-btn
                 size="sm"
                 color="accent"
@@ -107,30 +98,18 @@
         <q-td auto-width>
           <template v-if="deviceChoice === 'doors'">
             <q-btn
-              :loading="deviceLoading[props.row.id]?.unlock"
+              :loading="deviceLoading[props.row.id]?.bump"
               class="q-mr-sm"
               size="sm"
               color="accent"
-              @click.stop="unlockDoor(props.row.id)"
+              @click.stop="bumpDoor(props.row.id)"
             >
-              <q-icon :name="icons.unlock" />
+              <q-icon :name="icons.bump" />
               <q-tooltip>
-                {{ $t('button.unlockDoor') }}
+                {{ $t('doors.bump') }}
               </q-tooltip>
             </q-btn>
           </template>
-          <q-btn
-            :loading="deviceLoading[props.row.id]?.reboot"
-            class="q-mr-sm"
-            size="sm"
-            color="accent"
-            @click.stop="rebootDevice(props.row.id)"
-          >
-            <q-icon :name="icons.reboot" />
-            <q-tooltip>
-              {{ $t('button.rebootDevice') }}
-            </q-tooltip>
-          </q-btn>
 
           <q-btn
             size="sm"
@@ -169,7 +148,7 @@ export default {
       filter: '',
       pagination: {
         sortBy: 'lastSeen',
-        descending: true,
+        descending: false,
         rowsPerPage: this.$q.screen.xs ? 3 : 10,
       },
       deviceLoading: {},
@@ -181,7 +160,7 @@ export default {
         newRows.forEach((row) => {
           this.deviceLoading[row.id] = {
             reboot: false,
-            unlock: false,
+            bump: false,
           };
         });
       },
@@ -199,11 +178,10 @@ export default {
             field: 'id',
             sortable: true,
           },
-          { name: 'name', label: 'Name', field: 'name', sortable: true },
           {
-            name: 'ipAddress',
-            label: 'IP',
-            field: 'ipAddress',
+            name: 'name',
+            label: this.$t('form.name'),
+            field: 'name',
             sortable: true,
           },
           {
@@ -214,34 +192,39 @@ export default {
             format: (val) => this.formatDate(val),
           },
           {
-            name: 'usage',
-            label: this.$t('access.usage'),
-            field: 'usage',
+            name: 'totalSwipes',
+            label: this.$t('access.totalSwipes'),
+            field: 'totalSwipes',
             sortable: true,
           },
         ];
-      } else {
+      } else if (this.deviceChoice === 'interlocks') {
         columns = [
-          { name: 'id', label: 'ID', field: 'id', sortable: true },
-          { name: 'name', label: 'Name', field: 'name', sortable: true },
           {
-            name: 'ipAddress',
-            label: 'IP',
-            field: 'ipAddress',
+            name: 'id',
+            label: this.$t('tableHeading.id'),
+            field: 'id',
+            sortable: true,
+          },
+          {
+            name: 'name',
+            label: this.$t('tableHeading.name'),
+            field: 'name',
             sortable: true,
           },
           {
             name: 'lastSeen',
-            label: 'Last Seen',
+            label: this.$t('access.lastSeen'),
             field: 'lastSeen',
             sortable: true,
             format: (val) => this.formatDate(val),
           },
           {
-            name: 'usage',
-            label: 'Logged Time',
-            field: 'usage',
+            name: 'totalTime',
+            label: this.$t('access.totalTime'),
+            field: 'totalTimeSeconds',
             sortable: true,
+            format: (val) => this.humanizeDurationOfSeconds(val),
           },
         ];
       }
@@ -255,42 +238,25 @@ export default {
     manageDevice(deviceId) {
       this.$emit('openDevice', deviceId, this.deviceChoice);
     },
-    rebootDevice(deviceId) {
-      if (this.deviceLoading[deviceId])
-        this.deviceLoading[deviceId].reboot = true;
-      else this.deviceLoading[deviceId] = { reboot: true, unlock: false };
+    bumpDoor(doorId) {
+      if (this.deviceLoading[doorId]) this.deviceLoading[doorId].bump = true;
+      else this.deviceLoading[doorId] = { bump: true, reboot: false };
 
       this.$axios
-        .post(`/api/access/${this.deviceChoice}/${deviceId}/reboot/`)
-        .catch(() => {
-          this.$q.dialog({
-            title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
-          });
-        })
-        .finally(() => {
-          this.deviceLoading[deviceId].reboot = false;
-        });
-    },
-    unlockDoor(doorId) {
-      if (this.deviceLoading[doorId]) this.deviceLoading[doorId].unlock = true;
-      else this.deviceLoading[doorId] = { unlock: true, reboot: false };
-
-      this.$axios
-        .post(`/api/access/doors/${doorId}/unlock/`)
+        .post(`/api/access/doors/${doorId}/bump/`)
         .then(() => {
           this.$q.notify({
-            message: this.$t('doors.unlocked'),
+            message: this.$t('device.bumped'),
           });
         })
         .catch(() => {
           this.$q.dialog({
             title: this.$t('error.error'),
-            message: this.$t('error.requestFailed'),
+            message: this.$t('device.requestFailed'),
           });
         })
         .finally(() => {
-          this.deviceLoading[doorId].unlock = false;
+          this.deviceLoading[doorId].bump = false;
         });
     },
   },

@@ -126,6 +126,12 @@ module.exports = configure(async function (ctx) {
       open: false, // opens browser window automatically
       proxy: {
         // proxy requests when running dev server
+        '/api/ws/access': {
+          target: 'ws://127.0.0.1:8000',
+          ws: true,
+          changeOrigin: false,
+          rewrite: (path) => path.replace(/^\/api/, ''),
+        },
         '/api': {
           target: 'http://127.0.0.1:8000',
           changeOrigin: false,
@@ -162,7 +168,7 @@ module.exports = configure(async function (ctx) {
         // directives: [],
       },
       // Quasar plugins
-      plugins: ['Dialog', 'LoadingBar', 'Cookies'],
+      plugins: ['Dialog', 'LoadingBar', 'Cookies', 'Notify'],
 
       // animations: 'all', // --- includes all animations
       // https://v2.quasar.dev/options/animations

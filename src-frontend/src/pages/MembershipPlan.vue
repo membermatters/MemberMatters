@@ -22,7 +22,7 @@
 
         <div v-if="cancelSuccess" class="row q-mb-md">
           <q-banner class="bg-success text-white">
-            <div class="text-h5">{{ $tc('success') }}</div>
+            <div class="text-h5">{{ $tc('actionSuccess') }}</div>
             <p>{{ $tc('paymentPlans.cancelSuccessDescription') }}</p>
           </q-banner>
         </div>

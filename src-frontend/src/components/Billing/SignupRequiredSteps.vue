@@ -17,9 +17,13 @@
               {{ $t('signup.completeInductionDescription') }}
             </p>
 
-            <p>
+            <p
+              v-if="
+                features.signup.inductionLink.includes('canvas.instructure.com')
+              "
+            >
               <b>
-                {{ $t('signup.emailWarning', { email: profile.email }) }}
+                {{ $t('signup.canvasEmailWarning', { email: profile.email }) }}
               </b>
             </p>
           </div>
@@ -27,13 +31,29 @@
           <template v-if="!inductionComplete">
             <div>
               <p>
-                <a :href="features.signup.inductionLink" target="_blank">
+                <a
+                  v-if="
+                    features.signup.inductionLink.includes(
+                      'canvas.instructure.com'
+                    )
+                  "
+                  :href="features.signup.inductionLink"
+                  target="_blank"
+                >
                   <img
                     class="q-pa-sm rounded-borders"
                     style="max-height: 70px; border: 1px solid"
                     src="@assets/img/canvas.png"
                   />
                 </a>
+
+                <q-btn
+                  v-else
+                  :href="features.signup.inductionLink"
+                  target="_blank"
+                  color="primary"
+                  :label="$tc('signup.startInduction')"
+                />
               </p>
               <p>
                 {{ $t('signup.waitingCompletion') }} <br />
@@ -125,7 +145,7 @@
           <div class="row justify-start q-mt-md">
             <q-space />
             <q-btn
-              :href="features.signup.contactPageUrl"
+              :href="features.signup.postInductionUrl"
               target="_blank"
               color="primary"
               :label="$tc('button.contactUs')"

@@ -1,14 +1,21 @@
 <template>
-  <div class="column">
+  <div class="">
     <h3 class="q-mt-none q-mb-md">
-      {{ profileForm.firstName }} {{ profileForm.lastName }}
+      {{ profileForm.firstName }} {{ profileForm.lastName }} ({{
+        profileForm.screenName
+      }})
     </h3>
     <q-card
       class="q-mb-none"
       style="background-color: transparent"
       :class="{ 'q-pb-lg': $q.screen.xs }"
     >
-      <q-tabs v-model="tab" align="justify" narrow-indicator>
+      <q-tabs
+        v-model="tab"
+        align="justify"
+        narrow-indicator
+        class="bg-primary text-white"
+      >
         <q-tab name="profile" :label="$t('menuLink.profile')" />
         <q-tab name="access" :label="$t('adminTools.access')" />
         <q-tab name="billing" :label="$t('adminTools.billing')" />
@@ -287,18 +294,6 @@
                   </q-item-section>
                 </q-item>
 
-                <q-item key="admin">
-                  <q-item-section>
-                    <q-item-label
-                      >{{ formatBooleanYesNo(selectedMember.admin) }}
-                    </q-item-label>
-
-                    <q-item-label caption>
-                      {{ $t(`form.admin`) }}
-                    </q-item-label>
-                  </q-item-section>
-                </q-item>
-
                 <q-item v-for="item in ['id']" :key="item">
                   <q-item-section>
                     <q-item-label
@@ -325,13 +320,11 @@
                   <q-item-section>
                     <q-item-label lines="1">
                       {{
-                        selectedMember.memberBucks.balance
-                          ? $n(
-                              selectedMember.memberBucks.balance,
-                              'currency',
-                              siteLocaleCurrency
-                            )
-                          : $t('error.noValue')
+                        $n(
+                          selectedMember.memberBucks.balance || 0,
+                          'currency',
+                          siteLocaleCurrency
+                        )
                       }}
                     </q-item-label>
                     <q-item-label caption>
@@ -344,7 +337,7 @@
                     <q-item-label lines="1">
                       {{
                         selectedMember.memberBucks.lastPurchase
-                          ? selectedMember.memberBucks.lastPurchase
+                          ? formatDate(selectedMember.memberBucks.lastPurchase)
                           : $t('error.noValue')
                       }}
                     </q-item-label>
@@ -373,14 +366,16 @@
                       <template v-if="item === 'registrationDate'">
                         {{
                           selectedMember[item]
-                            ? selectedMember[item]
+                            ? formatDate(selectedMember[item])
                             : $t('error.noValue')
                         }}
                       </template>
                       <template v-else>
                         {{
                           selectedMember[item as keyof MemberProfile]
-                            ? selectedMember[item as keyof MemberProfile]
+                            ? formatDate(
+                                selectedMember[item as keyof MemberProfile]
+                              )
                             : $t('error.noValue')
                         }}
                       </template>
@@ -396,14 +391,17 @@
         </q-tab-panel>
 
         <q-tab-panel name="access">
-          <p class="text-center q-mb-none q-mt-sm">
+          <p class="q-mb-none q-mt-sm">
             {{ $t('adminTools.accessDescription') }}
           </p>
+
+          <br />
+
           <access-list :member-id="selectedMemberFiltered.id" />
         </q-tab-panel>
 
         <q-tab-panel name="log">
-          <div class="text-h6">
+          <div class="text-h6 q-pb-sm">
             {{ $t('adminTools.userEvents') }}
           </div>
 
@@ -424,10 +422,9 @@
               },
               {
                 name: 'date',
-                label: 'When',
+                label: 'Date',
                 field: 'date',
                 sortable: true,
-                format: (val) => formatWhen(val),
               },
             ]"
             row-key="id"
@@ -468,9 +465,65 @@
                 </template>
               </q-input>
             </template>
+
+            <template v-slot:item="props">
+              <div
+                class="q-pa-sm col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
+              >
+                <q-card class="q-py-sm">
+                  <q-list dense>
+                    <q-item
+                      v-for="col in props.cols.filter(
+                        (col) => col.name !== 'desc'
+                      )"
+                      :key="col.name"
+                    >
+                      <q-item-section>
+                        <q-item-label>{{ col.label }}</q-item-label>
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-item-label caption>
+                          <template v-if="col.name === 'date'">
+                            <div>
+                              {{ this.formatWhen(col.value) }}
+                              <q-tooltip :delay="500">
+                                {{ this.formatDate(col.value) }}
+                              </q-tooltip>
+                            </div>
+                          </template>
+
+                          <template v-else>
+                            {{ col.value }}
+                          </template>
+                        </q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-card>
+              </div>
+            </template>
+
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                  <template v-if="col.name === 'date'">
+                    <div>
+                      {{ this.formatWhen(col.value) }}
+                      <q-tooltip :delay="500">
+                        {{ this.formatDate(col.value) }}
+                      </q-tooltip>
+                    </div>
+                  </template>
+
+                  <template v-else>
+                    {{ col.value }}
+                  </template>
+                </q-td>
+              </q-tr>
+            </template>
           </q-table>
 
-          <div class="text-h6 subheading">
+          <div class="text-h6 q-pb-sm subheading">
             {{ $t('adminTools.userDoorLogs') }}
           </div>
 
@@ -479,22 +532,21 @@
             :columns="[
               {
                 name: 'door',
-                label: 'Door',
+                label: 'Door Name',
                 field: 'door',
                 sortable: true,
               },
               {
                 name: 'success',
-                label: 'Successful Swipe',
+                label: 'Swipe Status',
                 field: 'success',
                 sortable: true,
               },
               {
                 name: 'date',
-                label: 'When',
+                label: 'Date',
                 field: 'date',
                 sortable: true,
-                format: (val) => formatWhen(val),
               },
             ]"
             row-key="id"
@@ -535,9 +587,81 @@
                 </template>
               </q-input>
             </template>
+
+            <template v-slot:item="props">
+              <div
+                class="q-pa-sm col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
+              >
+                <q-card class="q-py-sm">
+                  <q-list dense>
+                    <q-item
+                      v-for="col in props.cols.filter(
+                        (col) => col.name !== 'desc'
+                      )"
+                      :key="col.name"
+                    >
+                      <q-item-section>
+                        <q-item-label>{{ col.label }}</q-item-label>
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-item-label caption>
+                          <template v-if="col.name === 'date'">
+                            <div>
+                              {{ this.formatWhen(col.value) }}
+                              <q-tooltip :delay="500">
+                                {{ this.formatDate(col.value) }}
+                              </q-tooltip>
+                            </div>
+                          </template>
+
+                          <template v-else-if="col.name === 'success'">
+                            <div
+                              :class="
+                                col.value ? 'text-positive' : 'text-negative'
+                              "
+                            >
+                              {{ $t(col.value ? 'success' : 'rejected') }}
+                            </div>
+                          </template>
+
+                          <template v-else>
+                            {{ col.value }}
+                          </template>
+                        </q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-card>
+              </div>
+            </template>
+
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                  <template v-if="col.name === 'date'">
+                    <div>
+                      {{ this.formatWhen(col.value) }}
+                      <q-tooltip :delay="500">
+                        {{ this.formatDate(col.value) }}
+                      </q-tooltip>
+                    </div>
+                  </template>
+
+                  <template v-else-if="col.name === 'success'">
+                    <div :class="col.value ? 'text-positive' : 'text-negative'">
+                      {{ $t(col.value ? 'success' : 'rejected') }}
+                    </div>
+                  </template>
+
+                  <template v-else>
+                    {{ col.value }}
+                  </template>
+                </q-td>
+              </q-tr>
+            </template>
           </q-table>
 
-          <div class="text-h6 subheading">
+          <div class="text-h6 q-pb-sm subheading">
             {{ $t('adminTools.userInterlockLogs') }}
           </div>
 
@@ -547,39 +671,49 @@
               {
                 name: 'interlock',
                 label: 'Interlock',
-                field: 'interlock',
+                field: 'interlockName',
                 sortable: true,
               },
               {
-                name: 'dateOn',
-                label: 'Session Start',
-                field: 'dateOn',
-                sortable: true,
-                format: (val) => formatWhen(val),
-              },
-              {
-                name: 'dateOff',
-                label: 'Session End',
-                field: 'dateOff',
-                sortable: true,
-                format: (val) => formatWhen(val),
-              },
-              {
-                name: 'sessionComplete',
-                label: 'Session Complete',
-                field: 'sessionComplete',
+                name: 'dateStarted',
+                label: 'Date',
+                field: 'dateStarted',
                 sortable: true,
               },
               {
-                name: 'userOff',
-                label: 'User Swiped Off',
-                field: 'userOff',
+                name: 'totalTime',
+                label: 'Total Time',
+                field: 'totalTime',
+                sortable: true,
+                sort: sortByFloat,
+              },
+              {
+                name: 'totalCost',
+                label: 'Total Cost',
+                field: 'totalCost',
+                sortable: true,
+                sort: sortByFloat,
+                format: (val) => $n(val || 0, 'currency', siteLocaleCurrency),
+              },
+              {
+                name: 'userEnded',
+                label: 'Swiped Off By',
+                field: 'userEnded',
+                sortable: true,
+              },
+              {
+                name: 'status',
+                label: 'Status',
+                field: 'status',
                 sortable: true,
               },
             ]"
             row-key="id"
             :filter="doorFilter"
-            v-model:pagination="pagination"
+            :pagination="{
+              ...pagination,
+              sortBy: 'dateStarted',
+            }"
             :loading="loading"
             :grid="$q.screen.xs"
           >
@@ -615,144 +749,266 @@
                 </template>
               </q-input>
             </template>
+
+            <template v-slot:item="props">
+              <div
+                class="q-pa-sm col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition"
+              >
+                <q-card class="q-py-sm">
+                  <q-list dense>
+                    <q-item
+                      v-for="col in props.cols.filter(
+                        (col) => col.name !== 'desc'
+                      )"
+                      :key="col.name"
+                    >
+                      <q-item-section>
+                        <q-item-label>{{ col.label }}</q-item-label>
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-item-label caption>
+                          <template v-if="col.name === 'dateStarted'">
+                            <div>
+                              {{ this.formatWhen(col.value) }}
+                              <q-tooltip :delay="500">
+                                {{ this.formatDate(col.value) }}
+                              </q-tooltip>
+                            </div>
+                          </template>
+
+                          <template v-else-if="col.name === 'totalTime'">
+                            <div v-if="col.value > 1">
+                              {{ this.humanizeDurationOfSeconds(col.value) }}
+                              <q-tooltip :delay="500">
+                                {{
+                                  this.humanizeDurationOfSecondsPrecise(
+                                    col.value
+                                  )
+                                }}
+                              </q-tooltip>
+                            </div>
+                            <div v-else></div>
+                          </template>
+
+                          <template v-else-if="col.name === 'status'">
+                            <div class="text-negative" v-if="col.value === -1">
+                              {{ $t('rejected') }}
+                            </div>
+                            <div
+                              class="text-positive"
+                              v-else-if="col.value === 1"
+                            >
+                              {{ $t('interlocks.finished') }}
+                            </div>
+                            <div class="text-warning" v-else>
+                              {{ $t('interlocks.inProgress') }}
+                              <q-spinner-dots></q-spinner-dots>
+                            </div>
+                          </template>
+
+                          <template v-else>
+                            {{ col.value }}
+                          </template>
+                        </q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-card>
+              </div>
+            </template>
+
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                  <template v-if="col.name === 'dateStarted'">
+                    <div>
+                      {{ this.formatWhen(col.value) }}
+                      <q-tooltip :delay="500">
+                        {{ this.formatDate(col.value) }}
+                      </q-tooltip>
+                    </div>
+                  </template>
+
+                  <template v-else-if="col.name === 'totalTime'">
+                    <div v-if="col.value > 1">
+                      {{ this.humanizeDurationOfSeconds(col.value) }}
+                      <q-tooltip :delay="500">
+                        {{ this.humanizeDurationOfSecondsPrecise(col.value) }}
+                      </q-tooltip>
+                    </div>
+                    <div v-else></div>
+                  </template>
+
+                  <template v-else-if="col.name === 'status'">
+                    <div class="text-negative" v-if="col.value === -1">
+                      {{ $t('rejected') }}
+                    </div>
+                    <div class="text-positive" v-else-if="col.value === 1">
+                      {{ $t('interlocks.finished') }}
+                    </div>
+                    <div class="text-warning" v-else>
+                      {{ $t('interlocks.inProgress') }}
+                      <q-spinner-dots></q-spinner-dots>
+                    </div>
+                  </template>
+
+                  <template v-else>
+                    {{ col.value }}
+                  </template>
+                </q-td>
+              </q-tr>
+            </template>
           </q-table>
         </q-tab-panel>
 
         <q-tab-panel name="billing">
-          <div class="text-h6">
-            {{ $t('adminTools.subscriptionInfo') }}
+          <div class="row flex content-start items-start">
+            <div class="q-pr-lg">
+              <div class="text-h6">
+                {{ $t('adminTools.subscriptionInfo') }}
+              </div>
+
+              <q-list
+                v-if="billing?.subscription"
+                bordered
+                padding
+                class="rounded-borders"
+                style="max-width: 300px"
+              >
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{ billing.subscription.status }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`adminTools.subscriptionStatus`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{ formatDate(billing.subscription.billingCycleAnchor) }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`adminTools.billingCycleAnchor`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{ formatDate(billing.subscription.startDate) }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`adminTools.startDate`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{ formatDate(billing.subscription.currentPeriodEnd) }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`adminTools.currentPeriodEnd`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{ formatDate(billing.subscription.cancelAt) }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`adminTools.cancelAt`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{ billing.subscription.cancelAtPeriodEnd }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`adminTools.cancelAtPeriodEnd`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+
+              <div v-else>
+                {{ $t(`adminTools.noSubscription`) }}
+              </div>
+            </div>
+
+            <div>
+              <div class="text-h6">
+                {{ $t('adminTools.billingInfo') }}
+              </div>
+
+              <q-list
+                bordered
+                padding
+                class="rounded-borders"
+                style="max-width: 300px"
+              >
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      <div v-if="billing?.memberbucks.lastPurchase">
+                        {{ this.formatWhen(billing?.memberbucks.lastPurchase) }}
+                        <q-tooltip :delay="500">
+                          {{
+                            this.formatDate(billing?.memberbucks.lastPurchase)
+                          }}
+                        </q-tooltip>
+                      </div>
+                      <div v-else>
+                        {{ $t('error.noValue') }}
+                      </div>
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`memberbucks.lastPurchase`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{
+                        billing?.memberbucks.stripe_card_expiry ||
+                        $t('error.noValue')
+                      }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`memberbucks.cardExpiry`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label lines="1">
+                      {{
+                        billing?.memberbucks.stripe_card_last_digits ||
+                        $t('error.noValue')
+                      }}
+                    </q-item-label>
+                    <q-item-label caption>
+                      {{ $t(`memberbucks.last4`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </div>
           </div>
-
-          <q-list
-            v-if="billing?.subscription"
-            bordered
-            padding
-            class="rounded-borders"
-          >
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{ billing.subscription.status }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`adminTools.subscriptionStatus`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{
-                    formatDateSimple(billing.subscription.billingCycleAnchor)
-                  }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`adminTools.billingCycleAnchor`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{ formatDateSimple(billing.subscription.startDate) }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`adminTools.startDate`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{ formatDateSimple(billing.subscription.currentPeriodEnd) }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`adminTools.currentPeriodEnd`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{ formatDateSimple(billing.subscription.cancelAt) }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`adminTools.cancelAt`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{ billing.subscription.cancelAtPeriodEnd }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`adminTools.cancelAtPeriodEnd`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-
-          <div v-else>
-            {{ $t(`adminTools.noSubscription`) }}
-          </div>
-
-          <br />
-          <div class="text-h6">
-            {{ $t('adminTools.billingInfo') }}
-          </div>
-
-          <q-list bordered padding class="rounded-borders">
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{
-                    billing?.memberbucks.lastPurchase
-                      ? formatWhen(billing.memberbucks.lastPurchase)
-                      : $t('error.noValue')
-                  }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`memberbucks.lastPurchase`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{
-                    billing?.memberbucks.stripe_card_expiry
-                      ? billing.memberbucks.stripe_card_expiry
-                      : $t('error.noValue')
-                  }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`memberbucks.cardExpiry`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item>
-              <q-item-section>
-                <q-item-label lines="1">
-                  {{
-                    billing?.memberbucks.stripe_card_last_digits
-                      ? formatWhen(billing.memberbucks.lastPurchase)
-                      : $t('error.noValue')
-                  }}
-                </q-item-label>
-                <q-item-label caption>
-                  {{ $t(`memberbucks.last4`) }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
 
           <br />
           <div class="text-h6">
@@ -861,6 +1117,8 @@ import {
   MemberStateStrings,
 } from 'types/member';
 import { defineComponent } from 'vue';
+import { humanizeDurationOfSeconds } from 'src/mixins/formatMixin';
+import { format } from 'path';
 
 export default defineComponent({
   name: 'ManageMember',
@@ -922,7 +1180,7 @@ export default defineComponent({
       pagination: {
         sortBy: 'date',
         descending: true,
-        rowsPerPage: this.$q.screen.xs ? 3 : 12,
+        rowsPerPage: this.$q.screen.xs ? 3 : 5,
       },
     };
   },
@@ -979,7 +1237,7 @@ export default defineComponent({
         .post(`/api/admin/members/${this.member.id}/sendwelcome/`)
         .then(() => {
           this.$q.dialog({
-            title: this.$t('success'),
+            title: this.$t('actionSuccess'),
             message: this.$t('adminTools.sendWelcomeEmailSuccess'),
           });
         })

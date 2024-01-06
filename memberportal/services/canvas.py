@@ -12,7 +12,7 @@ class Canvas:
     def _get(self, url):
         r = requests.get(
             self.base_url + url,
-            headers={"Authorization": "Bearer " + self.api_token},
+            headers={"Authorization": f"Bearer {self.api_token}"},
         )
 
         return r.json()
@@ -20,7 +20,7 @@ class Canvas:
     def _query_graph(self, query):
         response = requests.post(
             self.graphql_url,
-            headers={"Authorization": "Bearer " + self.api_token},
+            headers={"Authorization": f"Bearer {self.api_token}"},
             data=query,
         )
 
@@ -33,9 +33,9 @@ class Canvas:
         :return:
         """
         query = {
-            "query": "query MyQuery {course(id: "
+            "query": 'query MyQuery {course(id: "'
             + str(course_id)
-            + ") {enrollmentsConnection {nodes {user {email}grades {finalScore}}}}}",
+            + '") {enrollmentsConnection {nodes {user {email}grades {finalScore}}}}}',
         }
         return self._query_graph(query)
 

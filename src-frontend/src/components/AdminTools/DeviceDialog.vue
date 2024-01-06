@@ -3,7 +3,7 @@
     <!-- <q-card class="q-dialog-plugin"> -->
     <q-card
       class="q-dialog-plugin"
-      style="max-width: 1500px; width: 800px; height: 650px"
+      style="max-width: 800px; width: 100%; height: 650px"
     >
       <!-- <h3>
       {{ device.name }}
@@ -12,14 +12,14 @@
         v-model="tab"
         align="justify"
         narrow-indicator
-        class="bg-accent text-white"
+        class="bg-primary text-white"
       >
-        <q-tab name="profile" :label="$t('menuLink.profile')" />
+        <q-tab name="manageDevice" :label="$t('menuLink.manageDevice')" />
         <q-tab name="stats" :label="$t('adminTools.stats')" />
       </q-tabs>
       <q-separator />
       <q-tab-panels v-model="tab" animated>
-        <q-tab-panel name="profile" class="q-px-lg q-py-lg">
+        <q-tab-panel name="manageDevice" class="q-px-lg q-py-lg">
           <q-card-section>
             <q-form ref="formRef">
               <div class="column q-gutter-md q-px-sm">
@@ -59,8 +59,7 @@
                   v-model="device.ipAddress"
                   outlined
                   :label="$t('form.ipAddress')"
-                  :debounce="debounceLength"
-                  @update:model-value="saveChange('ipAddress')"
+                  disable
                 >
                   <template v-slot:append>
                     <saved-notification
@@ -146,17 +145,78 @@
                 </div>
 
                 <div class="row">
-                  <q-space />
                   <q-btn
-                    :label="$t(`${deviceType}.remove`)"
+                    :disable="unlockLoading"
+                    :loading="unlockLoading"
+                    class="q-mr-sm"
+                    size="sm"
+                    color="accent"
+                    @click.stop="unlockDevice()"
+                  >
+                    <q-icon :name="icons.unlock" />
+                    <q-tooltip>
+                      {{ $t('device.unlock') }}
+                    </q-tooltip>
+                  </q-btn>
+
+                  <q-btn
+                    :disable="lockLoading"
+                    :loading="lockLoading"
+                    class="q-mr-sm"
+                    size="sm"
+                    color="accent"
+                    @click.stop="lockDevice()"
+                  >
+                    <q-icon :name="icons.lock" />
+                    <q-tooltip>
+                      {{ $t('device.lock') }}
+                    </q-tooltip>
+                  </q-btn>
+
+                  <q-btn
+                    :disable="rebootLoading"
+                    :loading="rebootLoading"
+                    class="q-mr-sm"
+                    size="sm"
+                    color="accent"
+                    @click.stop="rebootDevice()"
+                  >
+                    <q-icon :name="icons.reboot" />
+                    <q-tooltip>
+                      {{ $t('device.reboot') }}
+                    </q-tooltip>
+                  </q-btn>
+
+                  <q-btn
+                    :disable="syncLoading"
+                    :loading="syncLoading"
+                    class="q-mr-sm"
+                    size="sm"
+                    color="accent"
+                    @click.stop="syncDevice()"
+                  >
+                    <q-icon :name="icons.sync" />
+                    <q-tooltip>
+                      {{ $t('device.sync') }}
+                    </q-tooltip>
+                  </q-btn>
+
+                  <q-btn
                     type="reset"
-                    color="primary"
-                    flat
-                    class="q-ml-sm"
+                    class="q-mr-sm"
+                    size="sm"
+                    color="negative"
                     :loading="removeLoading"
                     :disabled="removeLoading"
                     @click="removeDevice"
-                  />
+                  >
+                    <q-icon :name="icons.delete" />
+                    <q-tooltip>
+                      {{ $t(`${deviceType}.remove`) }}
+                    </q-tooltip>
+                  </q-btn>
+
+                  <q-space />
                 </div>
               </div>
             </q-form>
@@ -166,7 +226,7 @@
         <q-tab-panel name="stats">
           <div class="row flex content-start justify-center">
             <q-table
-              :rows="device.stats"
+              :rows="device.userStats"
               :columns="columnI18n"
               row-key="key"
               :filter="filter"
@@ -197,8 +257,21 @@
       </q-tab-panels>
 
       <q-card-actions align="right" class="row absolute-bottom">
-        <q-btn color="primary" label="Previous" @click="onPreviousClick" />
-        <q-btn color="primary" label="Next" @click="onNextClick" />
+        <div class="q-pr-sm">
+          {{ device.name }}
+        </div>
+        <q-btn
+          color="primary"
+          label="Previous"
+          @click="onPreviousClick"
+          :disable="deviceCount < 2"
+        />
+        <q-btn
+          color="primary"
+          label="Next"
+          @click="onNextClick"
+          :disable="deviceCount < 2"
+        />
         <q-btn color="primary" label="Close" @click="onOKClick" />
       </q-card-actions>
     </q-card>
@@ -209,6 +282,7 @@
 import icons from '@icons';
 import { mapGetters, mapActions } from 'vuex';
 import formMixin from '@mixins/formMixin';
+import formatMixin from '@mixins/formatMixin';
 import SavedNotification from '@components/SavedNotification.vue';
 
 export default {
@@ -216,7 +290,7 @@ export default {
   components: {
     SavedNotification,
   },
-  mixins: [formMixin],
+  mixins: [formMixin, formatMixin],
   props: {
     deviceId: {
       type: String,
@@ -230,8 +304,13 @@ export default {
   },
   data() {
     return {
-      tab: 'profile',
+      tab: 'manageDevice',
+      interval: null,
       removeLoading: false,
+      syncLoading: false,
+      rebootLoading: false,
+      lockLoading: false,
+      unlockLoading: false,
       loading: false,
       errorLoading: false,
       updateInterval: null,
@@ -266,23 +345,112 @@ export default {
         usage: null,
         stats: [],
       },
-      deviceIndex: 1, //TODO: get the actual index of the opened device
+      deviceIndex: 1,
     };
   },
   mounted() {
-    this.getDoors().then(() => {
-      this.getInterlocks().then(() => {
-        if (this.currentDevice === false)
-          this.$router.push({ name: 'Error404' });
+    Promise.allSettled([this.getDoors(), this.getInterlocks()]).then(() => {
+      if (this.currentDevice === false) this.$router.push({ name: 'Error404' });
 
-        this.initForm();
-      });
+      this.initForm();
     });
+
+    this.interval = setInterval(() => {
+      this.getDoors();
+      this.getInterlocks();
+    }, 30 * 1000);
+
+    // find the device index from the devices lise
+    if (this.deviceType === 'doors') {
+      this.deviceIndex = this.doors.findIndex(
+        (item) => String(item.id) === this.deviceId
+      );
+    } else {
+      this.deviceIndex = this.interlocks.findIndex(
+        (item) => String(item.id) === this.deviceId
+      );
+    }
   },
   methods: {
     ...mapActions('adminTools', ['getDoors', 'getInterlocks']),
     initForm() {
       this.device = this.currentDevice;
+    },
+    unlockDevice() {
+      this.unlockLoading = true;
+      this.$axios
+        .post(`/api/access/${this.deviceType}/${this.deviceId}/unlock/`)
+        .then(() => {
+          this.$q.notify({
+            message: this.$t('device.unlocked'),
+          });
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('device.requestFailed'),
+          });
+        })
+        .finally(() => {
+          this.unlockLoading = false;
+        });
+    },
+    lockDevice() {
+      this.lockLoading = true;
+      this.$axios
+        .post(`/api/access/${this.deviceType}/${this.deviceId}/lock/`)
+        .then(() => {
+          this.$q.notify({
+            message: this.$t('device.locked'),
+          });
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('device.requestFailed'),
+          });
+        })
+        .finally(() => {
+          this.lockLoading = false;
+        });
+    },
+    rebootDevice() {
+      this.rebootLoading = true;
+      this.$axios
+        .post(`/api/access/${this.deviceType}/${this.deviceId}/reboot/`)
+        .then(() => {
+          this.$q.notify({
+            message: this.$t('device.rebooted'),
+          });
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('device.requestFailed'),
+          });
+        })
+        .finally(() => {
+          this.rebootLoading = false;
+        });
+    },
+    syncDevice() {
+      this.syncLoading = true;
+      this.$axios
+        .post(`/api/access/${this.deviceType}/${this.deviceId}/sync/`)
+        .then(() => {
+          this.$q.notify({
+            message: this.$t('device.synced'),
+          });
+        })
+        .catch(() => {
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('device.requestFailed'),
+          });
+        })
+        .finally(() => {
+          this.syncLoading = false;
+        });
     },
     removeDevice() {
       this.$q
@@ -405,48 +573,68 @@ export default {
   },
   computed: {
     ...mapGetters('adminTools', ['doors', 'interlocks']),
+    deviceCount() {
+      if (this.deviceType === 'doors') {
+        return this.doors.length;
+      }
+      return this.interlocks.length;
+    },
     columnI18n() {
       let columns = [];
       if (this.deviceType === 'doors') {
         columns = [
           {
-            name: 'user',
-            label: this.$t('access.user'),
+            name: 'name',
+            label: this.$t('digitalId.fullName'),
+            field: 'full_name',
+            sortable: true,
+          },
+          {
+            name: 'screenName',
+            label: this.$t('tableHeading.screenName'),
             field: 'screen_name',
             sortable: true,
           },
           {
-            name: 'record',
-            label: this.$t('access.swipes'),
-            field: 'records',
+            name: 'totalSwipes',
+            label: this.$t('access.totalSwipes'),
+            field: 'total_swipes',
             sortable: true,
           },
           {
             name: 'lastSeen',
             label: this.$t('access.lastSwipe'),
-            field: 'lastSeen',
+            field: 'last_swipe',
             sortable: true,
+            format: (val) => this.formatDate(val),
           },
         ];
-      } else {
+      } else if (this.deviceType === 'interlocks') {
         columns = [
           {
-            name: 'user',
-            label: 'User',
+            name: 'name',
+            label: this.$t('digitalId.fullName'),
+            field: 'full_name',
+            sortable: true,
+          },
+          {
+            name: 'screenName',
+            label: this.$t('tableHeading.screenName'),
             field: 'screen_name',
             sortable: true,
           },
           {
-            name: 'record',
-            label: 'Records',
-            field: 'records',
+            name: 'totalSwipes',
+            label: this.$t('access.totalSwipes'),
+            field: 'total_swipes',
             sortable: true,
           },
           {
-            name: 'onTime',
-            label: 'Minutes Logged',
-            field: 'onTime',
+            name: 'totalTime',
+            label: this.$t('access.totalTime'),
+            field: 'total_seconds',
             sortable: true,
+            format: (val) => this.humanizeDurationOfSeconds(val),
           },
         ];
       }

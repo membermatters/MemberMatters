@@ -11,9 +11,7 @@
                 amount: $n(plan.cost / 100, 'currency', siteLocaleCurrency),
                 intervalCount: plan.intervalAmount,
                 interval: $tc(
-                  `paymentPlans.${
-                    plan.intervalAmount > 1 ? 'intervalPlurals' : 'interval'
-                  }.${plan.interval.toLowerCase()}`
+                  `paymentPlans.interval.${plan.interval.toLowerCase()}`
                 ),
               })
             }}

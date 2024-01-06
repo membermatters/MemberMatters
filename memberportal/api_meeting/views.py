@@ -131,12 +131,23 @@ class Proxies(APIView):
                 f"{request.user.profile.get_full_name()} just assigned you as a proxy"
             )
             message = f"{request.user.profile.get_full_name()} just assigned you as a proxy for the {meeting.get_type()} meeting on {localtime(meeting.date)}."
-            send_single_email(request.user, proxy_user.email, subject, subject, message)
+            send_single_email(
+                to_email=proxy_user.email,
+                subject=subject,
+                template_vars={
+                    "title": subject,
+                    "message": message,
+                },
+                user=request.user,
+            )
 
             subject = f"{proxy_user.profile.get_full_name()} is confirmed as your proxy for the {meeting.get_type()} meeting"
             message = f"{proxy_user.profile.get_full_name()} is confirmed as your proxy for the {meeting.get_type()} meeting on {localtime(meeting.date)}. You can manage this proxy from the member portal."
             send_single_email(
-                request.user, request.user.email, subject, subject, message
+                to_email=request.user.email,
+                subject=subject,
+                template_vars={"title": subject, "message": message},
+                user=request.user,
             )
 
             return Response({"success": True})
@@ -154,13 +165,25 @@ class Proxies(APIView):
             )
             message = f"{request.user.profile.get_full_name()} just removed you as a proxy for the {proxy.meeting.get_type()} meeting on {localtime(proxy.meeting.date)}."
             send_single_email(
-                request.user, proxy.proxy_user.email, subject, subject, message
+                to_email=proxy.proxy_user.email,
+                subject=subject,
+                template_vars={
+                    "title": subject,
+                    "message": message,
+                },
+                user=request.user,
             )
 
             subject = f"{proxy.proxy_user.profile.get_full_name()} is no longer your proxy for the {proxy.meeting.get_type()} meeting"
             message = f"{proxy.proxy_user.profile.get_full_name()} is no longer your proxy for the {proxy.meeting.get_type()} meeting on {localtime(proxy.meeting.date)}. You can manage this proxy from the member portal."
             send_single_email(
-                request.user, request.user.email, subject, subject, message
+                to_email=request.user.email,
+                subject=subject,
+                template_vars={
+                    "title": subject,
+                    "message": message,
+                },
+                user=request.user,
             )
             return Response()
         else:

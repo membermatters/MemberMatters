@@ -7,7 +7,7 @@ The frontend can be built into a normal SPA web app, a semi native iOS and Andro
 
 > **Note**
 >
-> These commands should be run from within the `MemberMatters/frontend` folder!
+> These commands should be run from within the `MemberMatters/src-frontend` folder!
 
 # Getting Started
 

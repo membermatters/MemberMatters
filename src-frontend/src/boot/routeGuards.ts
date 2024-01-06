@@ -14,6 +14,7 @@ export default boot(({ router, store }) => {
     if (
       store.getters['profile/profile']?.memberStatus === 'Needs Induction' &&
       to.name !== 'membershipPlan' &&
+      to.name !== 'webcams' &&
       store.getters['config/features']?.enableMembershipPayments &&
       to.meta.admin !== true
     ) {
@@ -25,7 +26,7 @@ export default boot(({ router, store }) => {
     }
 
     // Check if the user must be logged in to access the route
-    if (to.meta.loggedIn === true) {
+    if (to.meta.loggedIn === true && to.name !== 'webcams') {
       if (store.getters['profile/loggedIn'] === true) return next();
       else {
         return next({
@@ -49,6 +50,7 @@ export default boot(({ router, store }) => {
     // check if the user must be a member
     if (
       to.meta.memberOnly &&
+      to.name !== 'webcams' &&
       store.getters['profile/profile'].memberStatus !== 'Active'
     )
       return next({ name: 'Error403MemberOnly' });

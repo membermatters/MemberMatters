@@ -48,7 +48,7 @@ class GetConfig(APIView):
             "signup": {
                 "inductionLink": config.INDUCTION_ENROL_LINK,
                 "requireAccessCard": config.REQUIRE_ACCESS_CARD,
-                "contactPageUrl": config.CONTACT_PAGE_URL,
+                "postInductionUrl": config.POST_INDUCTION_URL,
                 "collectVehicleRegistrationPlate": config.COLLECT_VEHICLE_REGISTRATION_PLATE,
             },
             "enableWebcams": config.ENABLE_WEBCAMS,
@@ -111,7 +111,7 @@ class GetConfig(APIView):
             "webcamLinks": webcam_links,
             "keys": keys,
             "features": features,
-            "analyticsId": config.GOOGLE_ANALYTICS_PROPERTY_ID,
+            "analyticsId": config.GOOGLE_ANALYTICS_MEASUREMENT_ID,
             "sentryDSN": config.SENTRY_DSN_FRONTEND,
         }
 
@@ -223,7 +223,6 @@ class Login(APIView):
                 url = f"{config.SITE_URL}/profile/email/{new_token.verification_token}/verify/"
                 new_token.user.email_link(
                     "Action Required: Verify Email",
-                    "Verify Email",
                     "Verify Email",
                     "Please verify your email address to activate your account.",
                     url,
@@ -566,6 +565,12 @@ class SiteSignIn(APIView):
         SiteSession.objects.create(user=request.user, guests=guests)
         post_kiosk_swipe_to_discord(request.user.profile.get_full_name(), True)
 
+        for door in request.user.profile.doors.all():
+            door.sync()
+
+        for interlock in request.user.profile.interlocks.all():
+            interlock.sync()
+
         return Response()
 
 
@@ -575,11 +580,20 @@ class SiteSignOut(APIView):
     """
 
     def put(self, request):
-        session = SiteSession.objects.filter(user=request.user).order_by(
-            "-signin_date"
-        )[0]
-        session.signout()
+        sessions = (
+            SiteSession.objects.filter(user=request.user)
+            .filter(signout_date__isnull=True)
+            .all()
+        )
+        for session in sessions:
+            session.signout()
         post_kiosk_swipe_to_discord(request.user.profile.get_full_name(), False)
+
+        for door in request.user.profile.doors.all():
+            door.sync()
+
+        for interlock in request.user.profile.interlocks.all():
+            interlock.sync()
 
         return Response()
 
@@ -673,7 +687,6 @@ class Register(APIView):
         verification_token.user.email_link(
             "Action Required: Verify Email",
             "Verify Email",
-            "Verify Email",
             "Please verify your email address to activate your account.",
             url,
             "Verify Now",
@@ -682,18 +695,18 @@ class Register(APIView):
         profile.email_profile_to(config.EMAIL_ADMIN)
 
         if not config.ENABLE_STRIPE_MEMBERSHIP_PAYMENTS:
-            new_user.email_link(
-                f"Action Required: {config.SITE_OWNER} New Member Signup",
-                "Next Step: Register for an Induction",
-                "Important. Please read this email for details on how to "
-                "register for an induction.",
+            subject = f"Action Required: {config.SITE_OWNER} New Member Signup"
+            title = "Next Step: Register for an Induction"
+            message = (
                 f"Hi {profile.first_name}, thanks for signing up! The next step to becoming a fully "
                 "fledged member is to book in for an induction. During this "
                 "induction we will go over the basic safety and operational "
-                f"aspects of {config.SITE_OWNER}. To book in, click the link below.",
-                f"{config.INDUCTION_URL}",
-                "Register for Induction",
+                f"aspects of {config.SITE_OWNER}. To book in, click the link below."
             )
+            link = config.POST_INDUCTION_URL
+            btn_text = "Register for Induction"
+
+            new_user.email_link(subject, title, message, link, btn_text)
 
         try:
             if config.MAILCHIMP_API_KEY:
@@ -777,7 +790,6 @@ class VerifyEmail(APIView):
             url = f"{config.SITE_URL}/profile/email/{new_token.verification_token}/verify/"
             new_token.user.email_link(
                 "Action Required: Verify Email",
-                "Verify Email",
                 "Verify Email",
                 "Please verify your email address to activate your account.",
                 url,

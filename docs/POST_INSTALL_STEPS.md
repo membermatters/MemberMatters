@@ -69,7 +69,7 @@ However, as noted below, currencies will use a hardcoded value set by a configur
 ### General
   * "SITE_NAME" - Name of the website.
   * "SITE_OWNER" - Name of the organisation running this website.
-  * "GOOGLE_ANALYTICS_PROPERTY_ID" - Enter your Google Analytics Tracking ID to enable Google Analytics Tracking.
+  * "GOOGLE_ANALYTICS_MEASUREMENT_ID" - Enter your measurement ID to enable Google analytics. Only the new GA4 measurement IDs are supported. It should look something like G-XXXXXXXXXX.
   * "API_SECRET_KEY" - Secret key used to authenticate some requests from access control devices.
 
 ### Signup
@@ -118,7 +118,7 @@ You cannot currently enable specific events, you either get "all or nothing".
 ### URLs
   * "SITE_URL" - publicly accessible URL this instance of MM is available on.
   * "MAIN_SITE_URL" - the main website of the organisation.
-  * "INDUCTION_URL" - used in the email sent to new members so they can signup for inductions.
+  * "POST_INDUCTION_URL" - where to send members after they've completed the online induction (typically used to book appointment to collect swipe card).
 
 ### Memberbucks
   * "MEMBERBUCKS_MAX_TOPUP" - a hard limit on the maxmimum amount a member can add in one go to their MemberBucks account.
@@ -158,7 +158,7 @@ You cannot currently enable specific events, you either get "all or nothing".
   * "TRELLO_ID_LIST" - [Deprecated]
 
 ### Space Directory
-  * "ENABLE_SPACE_DIRECTORY" - enable a space directory compliant API. The various configuration options in this section should be self explannatory.
+  * "ENABLE_SPACE_DIRECTORY" - enable a [space directory compliant API](https://spaceapi.io). The various configuration options in this section should be self explanatory, however there is also an [API Endpoint](/docs/SPACEDIRECTORY) to update certain fields.
 
 ### Theme Swipe Integration
   * "THEME_SWIPE_URL" - a URL to hit on each door/interlock swipe that can trigger a theme song played over your intercom system, or something else.

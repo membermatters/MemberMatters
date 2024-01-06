@@ -35,7 +35,7 @@ directory. This installs and configures the pre commit hooks automatically. Afte
 when you try to commit a file (for example, with `git commit -m "update thing"`).
 
 ### Vue.js JavaScript frontend 
-Please see the [readme](frontend/README.md) file inside the `frontend` folder. This folder contains all of the source
+Please see the [readme](src-frontend/README.md) file inside the `src-frontend` folder. This folder contains all of the source
 code and other assets needed by the frontend.
 
 ### Django Python backend
@@ -84,4 +84,5 @@ Feel free to add your organisation to this list (via a pull request) if you're a
 
 * [Brisbane Makerspace](https://brisbanemaker.space) (October 2021) - A community workshop for makers in Brisbane, with a focus on high quality tools.
 * [HSBNE Inc](https://hsbne.org) (January 2020) - A hackerspace based in Brisbane, QLD.
+* [Make Monmouth](https://www.makemonmouth.co.uk/) (November 2023) - A community makerspace based in Monmouth, Wales, UK
 * [SparkCC](https://www.sparkcc.org) (September 2021) - A community of makers on the NSW Central Coast
