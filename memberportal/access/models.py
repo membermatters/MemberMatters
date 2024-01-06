@@ -154,60 +154,64 @@ class AccessControlledDevice(models.Model):
     def sync(self, request=None):
         logger.info("Sending device sync to channels for {}".format(self.serial_number))
 
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            self.serial_number, {"type": "sync_users"}
-        )
-
-        if request:
-            request.user.log_event(
-                f"Sent a sync request to the {self.name} {self._meta.verbose_name}.",
-                "admin",
+        if self.serial_number:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                self.serial_number, {"type": "sync_users"}
             )
+
+            if request:
+                request.user.log_event(
+                    f"Sent a sync request to the {self.name} {self._meta.verbose_name}.",
+                    "admin",
+                )
 
         return True
 
     def lock(self, request=None):
         logger.info(f"Sending device lock to channels for {self.name}")
 
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            self.serial_number, {"type": "device_lock"}
-        )
-
-        if request:
-            request.user.log_event(
-                f"Sent a lock request to the {self.name} {self._meta.verbose_name}.",
-                "admin",
+        if self.serial_number:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                self.serial_number, {"type": "device_lock"}
             )
+
+            if request:
+                request.user.log_event(
+                    f"Sent a lock request to the {self.name} {self._meta.verbose_name}.",
+                    "admin",
+                )
 
     def unlock(self, request=None):
         logger.info(f"Sending device unlock to channels for {self.name}")
 
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            self.serial_number, {"type": "device_unlock"}
-        )
-
-        if request:
-            request.user.log_event(
-                f"Sent an unlock request to the {self.name} {self._meta.verbose_name}.",
-                "admin",
+        if self.serial_number:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                self.serial_number, {"type": "device_unlock"}
             )
+
+            if request:
+                request.user.log_event(
+                    f"Sent an unlock request to the {self.name} {self._meta.verbose_name}.",
+                    "admin",
+                )
 
     def reboot(self, request=None):
         logger.info(f"Sending door reboot to channels for {self.name}")
 
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            self.serial_number, {"type": "device_reboot"}
-        )
-
-        if request:
-            request.user.log_event(
-                f"Sent a reboot request to the {self.name} {self._meta.verbose_name}.",
-                "admin",
+        if self.serial_number:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                self.serial_number, {"type": "device_reboot"}
             )
+
+            if request:
+                request.user.log_event(
+                    f"Sent a reboot request to the {self.name} {self._meta.verbose_name}.",
+                    "admin",
+                )
 
     def get_tags(self):
         # Find profiles that are active and have an RFID tag assigned to them
@@ -243,7 +247,7 @@ class AccessControlledDevice(models.Model):
 
 
 class MemberbucksDevice(AccessControlledDevice):
-    all_members = False
+    all_members = True
     type = "memberbucks"
 
 
