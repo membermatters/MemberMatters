@@ -398,6 +398,7 @@ class CheckInductionStatus(APIView):
                 canvas_api = Canvas()
             except OperationalError as error:
                 capture_exception(error)
+                logger.error(error)
                 return Response({"success": False, "score": 0})
 
             score = (
@@ -419,6 +420,7 @@ class CheckInductionStatus(APIView):
 
         except Exception as e:
             capture_exception(e)
+            logger.error(e)
             return Response({"success": False, "score": 0, "error": str(e)})
 
 
