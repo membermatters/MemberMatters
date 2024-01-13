@@ -39,83 +39,102 @@ class SpaceDirectoryStatus(APIView):
                 },
                 "projects": json.loads(config.SPACE_DIRECTORY_PROJECTS),
                 "issue_report_channels": ["email"],
+                "state": {
+                    "open": False,
+                    "icon": {
+                        "open": config.SPACE_DIRECTORY_ICON_OPEN,
+                        "closed": config.SPACE_DIRECTORY_ICON_CLOSED,
+                    },
+                },
+                "location": {
+                    "address": config.SPACE_DIRECTORY_LOCATION_ADDRESS,
+                    "lat": config.SPACE_DIRECTORY_LOCATION_LAT,
+                    "lon": config.SPACE_DIRECTORY_LOCATION_LON,
+                },
             }
 
-            # Get the default data
-            spaceapi_data = SpaceAPI.objects.get()
+            try:
+                # Get the default data
+                spaceapi_data = SpaceAPI.objects.get()
 
-            # Get a list of all the sensors
-            spaceapi_sensors = SpaceAPISensor.objects.all()
+                # Get a list of all the sensors
+                spaceapi_sensors = SpaceAPISensor.objects.all()
 
-            # Create an empty dict to add the sensor data to
-            sensor_data = {}
+                # Create an empty dict to add the sensor data to
+                sensor_data = {}
 
-            # Iterate over the sensors and update the dict as appropriate
-            for sensor in spaceapi_sensors:
-                sensor_details = {}
-                # Do we already have a sensor of this type? If not, create it now
-                if sensor.sensor_type not in sensor_data:
-                    sensor_data[sensor.sensor_type] = []
+                # Iterate over the sensors and update the dict as appropriate
+                for sensor in spaceapi_sensors:
+                    sensor_details = {}
+                    # Do we already have a sensor of this type? If not, create it now
+                    if sensor.sensor_type not in sensor_data:
+                        sensor_data[sensor.sensor_type] = []
 
-                ## Setup the basic details
-                sensor_details = {
-                    "name": sensor.name,
-                    "description": sensor.description,
-                    "location": sensor.location,
+                    ## Setup the basic details
+                    sensor_details = {
+                        "name": sensor.name,
+                        "description": sensor.description,
+                        "location": sensor.location,
+                    }
+
+                    ### Do we have properties? If so, let's add them
+                    if len(sensor.properties.all()) > 0:
+                        sensor_details["properties"] = {}
+                        for prop in sensor.properties.all():
+                            properties = {
+                                prop.name: {"value": prop.value, "unit": prop.unit}
+                            }
+                            sensor_details["properties"].update(properties)
+                    else:
+                        sensor_details.update(
+                            {"value": sensor.value, "unit": sensor.unit}
+                        )
+
+                    sensor_data[sensor.sensor_type].append(sensor_details)
+
+                ## Add the user count and members on site count to the sensors
+                spaceapi_user_count = (
+                    Profile.objects.all().filter(state="active").count()
+                )
+                spaceapi_members_on_site = SiteSession.objects.filter(
+                    signout_date=None
+                ).order_by("-signin_date")
+
+                sensor_data["total_member_count"] = {"value": spaceapi_user_count}
+
+                sensor_data["people_now_present"] = {
+                    "value": spaceapi_members_on_site.count()
                 }
 
-                ### Do we have properties? If so, let's add them
-                if len(sensor.properties.all()) > 0:
-                    sensor_details["properties"] = {}
-                    for prop in sensor.properties.all():
-                        properties = {
-                            prop.name: {"value": prop.value, "unit": prop.unit}
-                        }
-                        sensor_details["properties"].update(properties)
-                else:
-                    sensor_details.update({"value": sensor.value, "unit": sensor.unit})
+                # Is the camera array empty? If not, add them
+                if not config.SPACE_DIRECTORY_CAMS:
+                    spaceapi["cameras"] = config.SPACE_DIRECTORY_CAMS
 
-                sensor_data[sensor.sensor_type].append(sensor_details)
+                # Set the STATE part of the schema, the icons, and the schema version
+                spaceapi["state"] = {
+                    "open": spaceapi_data.space_is_open,
+                    "message": spaceapi_data.space_message,
+                    "lastchange": spaceapi_data.status_last_change.timestamp(),
+                }
+                spaceapi["state"]["icon"] = {
+                    "open": config.SPACE_DIRECTORY_ICON_OPEN,
+                    "closed": config.SPACE_DIRECTORY_ICON_CLOSED,
+                }
+                spaceapi["api_compatibility"] = ["0.14"]
 
-            ## Add the user count and members on site count to the sensors
-            spaceapi_user_count = Profile.objects.all().filter(state="active").count()
-            spaceapi_members_on_site = SiteSession.objects.filter(
-                signout_date=None
-            ).order_by("-signin_date")
+                ## Add the sensor data to the main body of the schema
+                spaceapi["sensors"] = sensor_data
 
-            sensor_data["total_member_count"] = {"value": spaceapi_user_count}
+                ## Add the location data based on the values in Constance
+                spaceapi["location"] = {
+                    "address": config.SPACE_DIRECTORY_LOCATION_ADDRESS,
+                    "lat": config.SPACE_DIRECTORY_LOCATION_LAT,
+                    "lon": config.SPACE_DIRECTORY_LOCATION_LON,
+                }
 
-            sensor_data["people_now_present"] = {
-                "value": spaceapi_members_on_site.count()
-            }
+            except SpaceAPI.DoesNotExist:
+                spaceapi["open"] = "false"
 
-            # Is the camera array empty? If not, add them
-            if not config.SPACE_DIRECTORY_CAMS:
-                spaceapi["cameras"] = config.SPACE_DIRECTORY_CAMS
-
-            # Set the STATE part of the schema, the icons, and the schema version
-            spaceapi["state"] = {
-                "open": spaceapi_data.space_is_open,
-                "message": spaceapi_data.space_message,
-                "lastchange": spaceapi_data.status_last_change.timestamp(),
-            }
-            spaceapi["icon"] = {
-                "open": config.SPACE_DIRECTORY_ICON_OPEN,
-                "closed": config.SPACE_DIRECTORY_ICON_CLOSED,
-            }
-            spaceapi["api_compatibility"] = ["0.14"]
-
-            ## Add the sensor data to the main body of the schema
-            spaceapi["sensors"] = sensor_data
-
-            ## Add the location data based on the values in Constance
-            spaceapi["location"] = {
-                "address": config.SPACE_DIRECTORY_LOCATION_ADDRESS,
-                "lat": config.SPACE_DIRECTORY_LOCATION_LAT,
-                "lon": config.SPACE_DIRECTORY_LOCATION_LON,
-            }
-
-            # Return the JSON document
             return Response(spaceapi)
 
 
