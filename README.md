@@ -74,6 +74,10 @@ See the [screenshots](screenshots) folder for more screenshots.
 # Developers Information
 
 ## Getting Started
+[![Build Docker Image (Prod)](https://github.com/membermatters/MemberMatters/actions/workflows/build_docker.yml/badge.svg?branch=main)](https://github.com/membermatters/MemberMatters/actions/workflows/build_docker.yml)
+
+[![Build Docker Image (Dev Branch)](https://github.com/membermatters/MemberMatters/actions/workflows/build_docker.dev.yml/badge.svg)](https://github.com/membermatters/MemberMatters/actions/workflows/build_docker.dev.yml)
+
 
 ### Pre-Commit Hooks
 

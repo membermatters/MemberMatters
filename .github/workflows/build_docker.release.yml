@@ -1,4 +1,4 @@
-name: Build Docker Image (Prod Release)
+name: Build Docker Image (On Prod Release)
 
 on:
   push:
