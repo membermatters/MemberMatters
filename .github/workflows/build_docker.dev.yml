@@ -1,4 +1,4 @@
-name: Build Docker Image (DEV Branch)
+name: Build Docker Image (On Dev Push)
 
 on:
   push:
