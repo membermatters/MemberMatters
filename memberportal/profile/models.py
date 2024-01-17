@@ -25,19 +25,19 @@ logger = logging.getLogger("app")
 utc = pytz.UTC
 
 LOG_TYPES = (
-    ("generic", "Generic log entry"),
-    ("usage", "Generic usage access"),
-    ("stripe", "Stripe related event"),
-    ("memberbucks", "Memberbucks related event"),
-    ("spacebucks", "Spacebucks related event"),
-    ("profile", "Member profile was edited or updated"),
-    ("interlock", "Interlock device related event"),
-    ("door", "Door device related event"),
-    ("memberbucksdevice", "Memberbucks device related event"),
-    ("email", "An email was sent or attempted to be sent"),
-    ("admin", "An admin performed an action"),
-    ("error", "An event or action caused an error"),
-    ("xero", "Generic xero log entry"),
+    ("generic", "Generic Event"),
+    ("stripe", "Stripe Event"),
+    ("memberbucks", "Memberbucks Updated"),
+    ("spacebucks", "Spacebucks Updated"),  # the old internal name for memberbucks
+    ("profile", "Member Profile Updated"),
+    ("interlock", "Interlock Event"),
+    ("door", "Door Event"),
+    ("memberbucksdevice", "Memberbucks Event"),
+    ("email", "Email Sent"),
+    ("sms", "SMS Sent"),
+    ("admin", "Admin Action"),
+    ("error", "Unhandled Error"),
+    ("xero", "Xero Event"),
 )
 
 
