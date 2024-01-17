@@ -12,7 +12,7 @@ def send_single_email(
     to_email: object,
     subject: object,
     template_vars: object,
-    template_name,
+    template_name=None,
     reply_to=None,
     user: object | None = None,
 ) -> object:
