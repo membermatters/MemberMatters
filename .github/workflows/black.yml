@@ -3,7 +3,7 @@ name: Python Linter (Black)
 on: [push, pull_request]
 
 jobs:
-  lint:
+  lint-backend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

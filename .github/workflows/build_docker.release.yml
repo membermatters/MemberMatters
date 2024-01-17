@@ -1,12 +1,13 @@
-name: Build Docker Image (DEV Branch)
+name: Build Docker Image (Prod Release)
 
 on:
   push:
-    branches:
-      - "dev"
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "!v[0-9]+.[0-9]+.[0-9]+-*"
 
 jobs:
-  build-docker-dev:
+  build-docker-release:
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
@@ -18,11 +19,11 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and Push
+      - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v3
         with:
           file: docker/Dockerfile
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: true
-          tags: membermatters/membermatters:dev,membermatters/membermatters:${{github.sha}}
+          tags: membermatters/membermatters:latest,membermatters/membermatters:${{github.ref_name}}
