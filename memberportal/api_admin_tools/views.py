@@ -5,6 +5,7 @@ from .models import MemberTier, PaymentPlan
 from memberbucks.models import MemberBucks
 from constance import config
 from services.emails import send_email_to_admin
+from services import sms
 import json
 import stripe
 from sentry_sdk import capture_message
@@ -16,7 +17,6 @@ from rest_framework.views import APIView
 from django.db.models import F, Count, Sum, Value, CharField, Count, Max
 from django.db.models.functions import Concat
 from datetime import timedelta
-import humanize
 from django.db import connection
 from django.db.utils import OperationalError
 from sentry_sdk import capture_exception
@@ -334,6 +334,47 @@ class MemberWelcomeEmail(APIView):
     def post(self, request, member_id):
         member = User.objects.get(id=member_id)
         member.email_welcome()
+
+        return Response()
+
+
+class MemberSendSms(APIView):
+    """
+    post: This method sends a custom sms alert to the specified member.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def post(self, request, member_id):
+        member = User.objects.get(id=member_id)
+        sms_body = request.data["smsBody"]
+
+        if not config.SMS_ENABLE:
+            return Response(
+                {"success": False, "message": "SMS functionality not enabled."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        if not member.profile.phone:
+            return Response(
+                {"success": False, "message": "Member does not have a phone number."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # check if the sms body exists, is at least 1 character, and isn't more than 320 characters
+        if not sms_body or len(sms_body) < 1 or len(sms_body) > 320:
+            return Response(
+                {"success": False, "message": "SMS body is invalid."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        sms_message = sms.SMS()
+        sms_message.send_custom_notification(
+            to_number=member.profile.phone,
+            message=sms_body,
+            portal_user_sender=request.user,
+            portal_user_recipient=member,
+        )
 
         return Response()
 

@@ -62,7 +62,7 @@
               style="min-width: 170px"
               class="q-mr-sm q-mb-sm"
               color="primary"
-              :label="$t('menuLink.adminTools')"
+              :label="$t('adminTools.title')"
             >
               <q-list>
                 <q-item v-close-popup clickable @click="sendWelcomeEmail">
@@ -98,6 +98,19 @@
                     <q-item-label
                       >{{ $t('adminTools.optInEmailExport') }}
                     </q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <!-- Open the send sms modal -->
+                <q-item
+                  v-if="features.sms.enable"
+                  :disable="profileForm.phone"
+                  v-close-popup
+                  clickable
+                  @click="openSmsModal"
+                >
+                  <q-item-section>
+                    <q-item-label>{{ $t('adminTools.sendSms') }} </q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
@@ -1100,6 +1113,91 @@
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
+    <q-dialog v-model="smsModalIsOpen">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">
+            {{
+              $t('adminTools.sendSmsModalTitle', {
+                name: `${profileForm.firstName} ${profileForm.lastName}`,
+              })
+            }}
+          </div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input
+            v-model="smsBody"
+            autofocus
+            :maxlength="320"
+            counter
+            type="textarea"
+            :placeholder="$t('adminTools.smsContentPlaceholder')"
+            outlined
+            :debounce="debounceLength"
+            :label="$t('adminTools.smsContentTitle')"
+            :rules="[
+              (val) => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
+            ]"
+          >
+          </q-input>
+        </q-card-section>
+
+        <q-card-section>
+          <div class="text-h6">
+            {{
+              $t('adminTools.sendSmsModalPreviewTitle', {
+                name: `${profileForm.firstName} ${profileForm.lastName}`,
+              })
+            }}
+          </div>
+          <div class="text-body">
+            {{
+              $t('adminTools.smsCostEstimate', {
+                cost: smsCost,
+              })
+            }}
+          </div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <div class="q-pa-md row justify-center">
+            <div style="width: 100%; max-width: 400px">
+              <q-chat-message
+                :text="[
+                  (smsBody.length
+                    ? $t('adminTools.smsOneWayBody', { message: smsBody })
+                    : $t('adminTools.smsOneWayBody', {
+                        message: $t('adminTools.smsContentPlaceholder'),
+                      })) +
+                    ' ' +
+                    features.sms.footer,
+                ]"
+                sent
+                :name="features.sms.senderId"
+              />
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn
+            flat
+            :label="$t('button.cancel')"
+            :disable="smsSendLoading"
+            @click="resetSmsModal"
+          />
+          <q-btn
+            color="primary"
+            :label="$t('button.send')"
+            :loading="smsSendLoading"
+            :disable="smsSendLoading"
+            type="submit"
+            @click="submitSmsModal"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -1117,8 +1215,6 @@ import {
   MemberStateStrings,
 } from 'types/member';
 import { defineComponent } from 'vue';
-import { humanizeDurationOfSeconds } from 'src/mixins/formatMixin';
-import { format } from 'path';
 
 export default defineComponent({
   name: 'ManageMember',
@@ -1182,6 +1278,9 @@ export default defineComponent({
         descending: true,
         rowsPerPage: this.$q.screen.xs ? 3 : 5,
       },
+      smsSendLoading: false,
+      smsModalIsOpen: false,
+      smsBody: '',
     };
   },
   beforeMount() {
@@ -1356,6 +1455,42 @@ export default defineComponent({
           });
         });
     },
+    openSmsModal() {
+      this.smsModalIsOpen = true;
+    },
+    resetSmsModal() {
+      this.smsModalIsOpen = false;
+      this.smsBody = '';
+      this.smsSendLoading = false;
+    },
+    submitSmsModal() {
+      this.smsSendLoading = true;
+      this.$axios
+        .post(`/api/admin/members/${this.member.id}/sendsms/`, {
+          smsBody: this.$t('adminTools.smsOneWayBody', {
+            message: this.smsBody,
+          }),
+        })
+        .then(() => {
+          this.resetSmsModal();
+          this.$q.notify({
+            message: this.$t('adminTools.sendSmsSuccess', {
+              name: `${this.profileForm.firstName} ${this.profileForm.lastName}`,
+            }),
+            type: 'positive',
+          });
+        })
+        .catch(() => {
+          this.smsSendLoading = false;
+          this.$q.dialog({
+            title: this.$t('error.error'),
+            message: this.$t('adminTools.sendSmsFail', {
+              name: `${this.profileForm.firstName} ${this.profileForm.lastName}`,
+            }),
+          });
+        });
+      return;
+    },
   },
   computed: {
     ...mapGetters('config', ['siteLocaleCurrency', 'features']),
@@ -1376,6 +1511,11 @@ export default defineComponent({
     },
     icons() {
       return icons;
+    },
+    smsCost() {
+      const smsContainsUnicode = /[^\u0000-\u00ff]/.test(this.smsBody);
+      const charsPerSms = smsContainsUnicode ? 70 : 160;
+      return Math.ceil(this.smsBody.length / charsPerSms);
     },
   },
 });

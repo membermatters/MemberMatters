@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v3.6.0] - 2024-01-17
+
+### Added
+
+- SMS logging
+- Send SMS notification to member feature
+
+### Changed
+
+- Some of the Django log_types options to be more brief/consistent
+- Some of the GHA workflows to be more consistent
+- The main readme to be more up to date/accurate
+
+### Fixed
+
+- #232 email sending bug (thanks @snoopen)
+- Email template rendering bug with footer (thanks @snoopen)
+
 ## [v3.5.0] - 2024-01-06
 
 ### Removed

@@ -16,7 +16,6 @@ export default {
     managePlan: 'Manage Payment Plan',
     verifyEmail: 'Verify your email to continue',
 
-    adminTools: 'Admin Tools',
     meetings: 'Meetings',
     members: 'Members',
     manageMember: 'Manage Member',
@@ -106,6 +105,7 @@ export default {
   },
   button: {
     submit: 'Submit',
+    send: 'Send',
     ok: 'Ok',
     reset: 'Reset',
     cancel: 'Cancel',
@@ -393,6 +393,7 @@ export default {
     'to date.',
   progress: 'Progress: {percent}%',
   adminTools: {
+    title: 'Admin Tools',
     optOutEmailExport: 'Opt out of email export',
     optInEmailExport: 'Opt in to email export',
     emailAddresses: 'Copy Email List',
@@ -410,6 +411,16 @@ export default {
     enableAccess: 'Enable Access',
     disableAccess: 'Disable Access',
     sendWelcomeEmail: 'Send welcome email',
+    sendSms: 'Send SMS to member',
+    sendSmsModalTitle: 'Send {name} a one-way sms alert.',
+    sendSmsModalPreviewTitle: 'Preview your sms to {name}.',
+    sendSmsSuccess: 'Successfully sent sms to {name}.',
+    sendSmsFail: 'Failed to send sms to {name}.',
+    smsCostEstimate:
+      'This will use approximately {cost} sms message(s) to send.',
+    smsContentTitle: 'SMS Content',
+    smsContentPlaceholder: 'This is an important notification.',
+    smsOneWayBody: '{message} No reply.',
     manageMember: 'Manage Member',
     makeMember: 'Make Member',
     makeMemberSuccess: 'Successfully made into member and sent welcome email.',

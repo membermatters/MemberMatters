@@ -55,6 +55,11 @@ class GetConfig(APIView):
             "siteBanner": config.SITE_BANNER,
             "enableSiteSignIn": config.ENABLE_PORTAL_SITE_SIGN_IN,
             "enableMembersOnSite": config.ENABLE_PORTAL_MEMBERS_ON_SITE,
+            "sms": {
+                "enable": config.SMS_ENABLE,
+                "senderId": config.SMS_SENDER_ID,
+                "footer": config.SMS_FOOTER,
+            },
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}
