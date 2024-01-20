@@ -6,6 +6,7 @@ export default {
     rootIndex: 'Dashboard',
     dashboard: 'Dashboard',
     webcams: 'Webcams',
+    adminTools: 'Admin Tools',
     login: 'Login',
     resetPassword: 'Reset Password',
     logout: 'Logout',
