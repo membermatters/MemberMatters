@@ -213,8 +213,7 @@ export default defineComponent({
         if (this.$q.platform.is.electron && !link.kiosk) displayLink = false;
         if (
           link.admin &&
-          this.profile.permissions &&
-          !this.profile.permissions.admin
+          this.profile?.permissions?.staff
         ) {
           displayLink = false;
         }

@@ -167,7 +167,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     password_reset_key = models.UUIDField(default=None, blank=True, null=True)
     password_reset_expire = models.DateTimeField(default=None, blank=True, null=True)
     staff = models.BooleanField(default=False)  # an admin user for the portal
-    admin = models.BooleanField(default=False)  # a superuser
+    admin = models.BooleanField(default=False)  # a portal superuser
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []  # Email & Password are required by default.
@@ -521,7 +521,6 @@ class Profile(models.Model):
         return {
             "id": self.user.id,
             "admin": self.user.is_staff,
-            "superuser": self.user.is_admin,
             "email": self.user.email,
             "excludeFromEmailExport": self.exclude_from_email_export,
             "registrationDate": self.created.strftime("%m/%d/%Y, %H:%M:%S"),

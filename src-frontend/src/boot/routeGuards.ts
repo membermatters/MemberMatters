@@ -40,7 +40,7 @@ export default boot(({ router, store }) => {
 
     // Check if the user must be an admin to access the route
     if (to.meta.admin === true) {
-      if (store.getters['profile/profile'].permissions.admin === true)
+      if (store.getters['profile/profile'].permissions.staff === true)
         return next();
       else {
         return next({ name: 'Error403' });
