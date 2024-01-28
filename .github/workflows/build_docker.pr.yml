@@ -19,6 +19,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
       - name: Build and push pr image
         id: docker_build
         uses: docker/build-push-action@v3
@@ -26,4 +30,4 @@ jobs:
           file: docker/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: membermatters/membermatters:pr-${{github.ref_name}}
+          tags: membermatters/membermatters:untrusted-pr-${{ steps.extract_branch.outputs.branch }}
