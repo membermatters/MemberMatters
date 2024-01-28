@@ -18,10 +18,11 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build Docker Image
+      - name: Build and push pr image
         id: docker_build
         uses: docker/build-push-action@v3
         with:
           file: docker/Dockerfile
           platforms: linux/amd64
-          push: false
+          push: true
+          tags: membermatters/membermatters:pr-${{github.ref_name}}
