@@ -29,7 +29,7 @@ class CustomScopeClaims(ScopeClaims):
     def scope_membershipinfo(self):
         groups = []
         state = self.user.profile.state
-        subscription_state = self.user.profile.subscription_state
+        subscription_state = self.user.profile.subscription_status
         subscriptionActive = subscription_state in ["active", "cancelling"]
         firstSubscribed = self.user.profile.subscription_first_created
         firstSubscribed = firstSubscribed.isoformat() if firstSubscribed else None
