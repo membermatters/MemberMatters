@@ -9,6 +9,8 @@ on:
 jobs:
   build-docker-pr:
     runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.extract_branch.outputs.branch }}
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -45,5 +47,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Created image with name `membermatters/membermatters:untrusted-pr-${{ steps.extract_branch.outputs.branch }}`.'
+              body: 'Created image with name `membermatters/membermatters:untrusted-pr-${{ needs.build-docker-pr.outputs.branch }}`.'
             })
