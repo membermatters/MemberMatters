@@ -394,14 +394,14 @@ class ProfileDetail(generics.GenericAPIView):
                         "expiry": p.stripe_card_expiry,
                     },
                 },
-                "membershipPlan": p.membership_plan.get_object()
-                if p.membership_plan
-                else None,
-                "membershipTier": p.membership_plan.member_tier.get_object()
-                if p.membership_plan
-                else None
-                if p.membership_plan
-                else None,
+                "membershipPlan": (
+                    p.membership_plan.get_object() if p.membership_plan else None
+                ),
+                "membershipTier": (
+                    p.membership_plan.member_tier.get_object()
+                    if p.membership_plan
+                    else None if p.membership_plan else None
+                ),
                 "subscriptionState": p.subscription_status,
             },
             "permissions": {"staff": user.is_staff},
