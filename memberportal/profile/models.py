@@ -296,13 +296,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Profile(models.Model):
-    def path_and_rename(self, filename):
-        ext = filename.split(".")[-1]
-        # set filename as random string
-        filename = f"profile_pics/{str(uuid.uuid4())}.{ext}"
-        # return the new path to the file
-        return os.path.join(filename)
-
     STATES = (
         ("noob", "Needs Induction"),
         ("active", "Active"),
