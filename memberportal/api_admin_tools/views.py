@@ -726,9 +726,11 @@ class MemberLogs(APIView):
                     "totalTime": interlock_log.total_time,
                     "totalCost": (interlock_log.total_cost or 0) / 100,
                     "status": status,
-                    "userEnded": interlock_log.user_ended.get_full_name()
-                    if interlock_log.user_ended
-                    else None,
+                    "userEnded": (
+                        interlock_log.user_ended.get_full_name()
+                        if interlock_log.user_ended
+                        else None
+                    ),
                 }
             )
 

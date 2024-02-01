@@ -538,19 +538,23 @@ class Profile(models.Model):
             "rfid": self.rfid,
             "memberBucks": {
                 "balance": self.memberbucks_balance,
-                "lastPurchase": self.last_memberbucks_purchase.strftime(
-                    "%m/%d/%Y, %H:%M:%S"
-                )
-                if self.last_memberbucks_purchase
-                else None,
+                "lastPurchase": (
+                    self.last_memberbucks_purchase.strftime("%m/%d/%Y, %H:%M:%S")
+                    if self.last_memberbucks_purchase
+                    else None
+                ),
             },
             "updateProfileRequired": self.must_update_profile,
-            "lastSeen": self.last_seen.strftime("%m/%d/%Y, %H:%M:%S")
-            if self.last_seen
-            else None,
-            "lastInduction": self.last_induction.strftime("%m/%d/%Y, %H:%M:%S")
-            if self.last_induction
-            else None,
+            "lastSeen": (
+                self.last_seen.strftime("%m/%d/%Y, %H:%M:%S")
+                if self.last_seen
+                else None
+            ),
+            "lastInduction": (
+                self.last_induction.strftime("%m/%d/%Y, %H:%M:%S")
+                if self.last_induction
+                else None
+            ),
             "stripe": {
                 "cardExpiry": self.stripe_card_expiry,
                 "last4": self.stripe_card_last_digits,
