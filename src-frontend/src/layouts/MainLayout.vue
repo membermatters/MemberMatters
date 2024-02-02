@@ -211,11 +211,7 @@ export default defineComponent({
         if (link.memberOnly && this.profile.memberStatus !== 'Active')
           displayLink = false;
         if (this.$q.platform.is.electron && !link.kiosk) displayLink = false;
-        if (
-          link.admin &&
-          this.profile.permissions &&
-          !this.profile.permissions.admin
-        ) {
+        if (link.admin && !this.profile?.permissions?.staff) {
           displayLink = false;
         }
 

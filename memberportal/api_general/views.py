@@ -394,17 +394,17 @@ class ProfileDetail(generics.GenericAPIView):
                         "expiry": p.stripe_card_expiry,
                     },
                 },
-                "membershipPlan": p.membership_plan.get_object()
-                if p.membership_plan
-                else None,
-                "membershipTier": p.membership_plan.member_tier.get_object()
-                if p.membership_plan
-                else None
-                if p.membership_plan
-                else None,
+                "membershipPlan": (
+                    p.membership_plan.get_object() if p.membership_plan else None
+                ),
+                "membershipTier": (
+                    p.membership_plan.member_tier.get_object()
+                    if p.membership_plan
+                    else None if p.membership_plan else None
+                ),
                 "subscriptionState": p.subscription_status,
             },
-            "permissions": {"admin": user.is_admin},
+            "permissions": {"staff": user.is_staff},
         }
 
         return Response(response)
@@ -491,7 +491,7 @@ class Kiosks(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request):
-        if not request.user.is_authenticated and not request.user.is_admin:
+        if not request.user.is_authenticated and not request.user.is_staff:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         kiosks = Kiosk.objects.all()
@@ -520,7 +520,7 @@ class Kiosks(APIView):
                     "HTTP_X_REAL_IP", request.META.get("REMOTE_ADDR")
                 )
                 kiosk.checkin()
-                if not request.user.is_authenticated and not request.user.is_admin:
+                if not request.user.is_authenticated and not request.user.is_staff:
                     return Response(status=status.HTTP_403_FORBIDDEN)
             else:
                 kiosk = Kiosk.objects.get(kiosk_id=body.get("kioskId"))
@@ -533,23 +533,22 @@ class Kiosks(APIView):
                 play_theme=False,
             )
 
-        if request.user.is_authenticated:
-            if request.user.is_admin:
-                if body.get("playTheme"):
-                    kiosk.play_theme = body.get("playTheme")
+        if request.user.is_authenticated and request.user.is_staff:
+            if body.get("playTheme"):
+                kiosk.play_theme = body.get("playTheme")
 
-                if body.get("name"):
-                    kiosk.name = body.get("name")
+            if body.get("name"):
+                kiosk.name = body.get("name")
 
-                if body.get("authorised") is not None and request.user.is_admin:
-                    kiosk.authorised = body.get("authorised")
+            if body.get("authorised") is not None:
+                kiosk.authorised = body.get("authorised")
 
         kiosk.save()
 
         return Response()
 
     def delete(self, request, id):
-        if not request.user.is_authenticated and not request.user.is_admin:
+        if not request.user.is_authenticated and not request.user.is_staff:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         kiosk = Kiosk.objects.get(id=id)

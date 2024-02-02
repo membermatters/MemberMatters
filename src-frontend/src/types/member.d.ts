@@ -21,7 +21,6 @@ export enum MemberSubscriptionState {
 interface MemberProfile {
   id: number;
   admin: boolean;
-  superuser: boolean;
   email: string;
   excludeFromEmailExport: boolean;
   registrationDate: string;

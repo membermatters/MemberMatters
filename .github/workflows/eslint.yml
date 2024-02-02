@@ -1,5 +1,5 @@
 name: JavaScript Linter (eslint)
-on: [push, pull_request]
+on: [pull_request]
 jobs:
   lint-frontend:
     runs-on: ubuntu-latest

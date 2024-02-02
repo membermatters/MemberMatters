@@ -167,7 +167,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     password_reset_key = models.UUIDField(default=None, blank=True, null=True)
     password_reset_expire = models.DateTimeField(default=None, blank=True, null=True)
     staff = models.BooleanField(default=False)  # an admin user for the portal
-    admin = models.BooleanField(default=False)  # a superuser
+    admin = models.BooleanField(default=False)  # a portal superuser
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []  # Email & Password are required by default.
@@ -296,13 +296,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Profile(models.Model):
-    def path_and_rename(self, filename):
-        ext = filename.split(".")[-1]
-        # set filename as random string
-        filename = f"profile_pics/{str(uuid.uuid4())}.{ext}"
-        # return the new path to the file
-        return os.path.join(filename)
-
     STATES = (
         ("noob", "Needs Induction"),
         ("active", "Active"),
@@ -521,7 +514,6 @@ class Profile(models.Model):
         return {
             "id": self.user.id,
             "admin": self.user.is_staff,
-            "superuser": self.user.is_admin,
             "email": self.user.email,
             "excludeFromEmailExport": self.exclude_from_email_export,
             "registrationDate": self.created.strftime("%m/%d/%Y, %H:%M:%S"),
@@ -538,19 +530,23 @@ class Profile(models.Model):
             "rfid": self.rfid,
             "memberBucks": {
                 "balance": self.memberbucks_balance,
-                "lastPurchase": self.last_memberbucks_purchase.strftime(
-                    "%m/%d/%Y, %H:%M:%S"
-                )
-                if self.last_memberbucks_purchase
-                else None,
+                "lastPurchase": (
+                    self.last_memberbucks_purchase.strftime("%m/%d/%Y, %H:%M:%S")
+                    if self.last_memberbucks_purchase
+                    else None
+                ),
             },
             "updateProfileRequired": self.must_update_profile,
-            "lastSeen": self.last_seen.strftime("%m/%d/%Y, %H:%M:%S")
-            if self.last_seen
-            else None,
-            "lastInduction": self.last_induction.strftime("%m/%d/%Y, %H:%M:%S")
-            if self.last_induction
-            else None,
+            "lastSeen": (
+                self.last_seen.strftime("%m/%d/%Y, %H:%M:%S")
+                if self.last_seen
+                else None
+            ),
+            "lastInduction": (
+                self.last_induction.strftime("%m/%d/%Y, %H:%M:%S")
+                if self.last_induction
+                else None
+            ),
             "stripe": {
                 "cardExpiry": self.stripe_card_expiry,
                 "last4": self.stripe_card_last_digits,
