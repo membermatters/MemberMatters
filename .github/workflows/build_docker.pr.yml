@@ -2,12 +2,15 @@ name: Build Docker Image (On PR)
 
 on:
   pull_request:
+    types: [opened, synchronize]
     branches:
       - "dev"
 
 jobs:
   build-docker-pr:
     runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.extract_branch.outputs.branch }}
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -18,10 +21,31 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build Docker Image
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" | tr / - >> $GITHUB_OUTPUT
+        id: extract_branch
+      - name: Build and push pr image
         id: docker_build
         uses: docker/build-push-action@v3
         with:
           file: docker/Dockerfile
           platforms: linux/amd64
-          push: false
+          push: true
+          tags: membermatters/membermatters:untrusted-pr-${{ steps.extract_branch.outputs.branch }}
+    
+  comment_docker_image:
+    needs: build-docker-pr
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment name of docker image
+        id: comment_docker_image
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Created image with name `membermatters/membermatters:untrusted-pr-${{ needs.build-docker-pr.outputs.branch }}`.'
+            })

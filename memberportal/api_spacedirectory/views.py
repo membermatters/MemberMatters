@@ -103,7 +103,7 @@ class SpaceDirectoryStatus(APIView):
                 "open": config.SPACE_DIRECTORY_ICON_OPEN,
                 "closed": config.SPACE_DIRECTORY_ICON_CLOSED,
             }
-            spaceapi["api_compatibility"] = ["0.14"]
+            spaceapi["api_compatibility"] = ["14"]
 
             ## Add the sensor data to the main body of the schema
             spaceapi["sensors"] = sensor_data

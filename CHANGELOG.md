@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v3.6.2] - 2024-02-02
+
+### Fixed
+
+- SpaceAPI return type for version number (thanks @rechner)
+
+### Added
+
+- New OIDC scope called `membershipinfo` and extra claims
+- New GitHub Actions for checks and docker build on every PR
+
+### Changed
+
+- Cleaned up some old code/models
+- Tidied up redundant staff/admin attributes
+
 ## [v3.6.1] - 2024-01-20
 
 ### Fixed
@@ -543,11 +559,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - First run detection and fixture loading.
 - Added a handful of missing translation definitions.
 - Corner/border formatting with credit card component.
-- https://github.com/membermatters/MemberMatters/issues/90
-- https://github.com/membermatters/MemberMatters/issues/91
-- https://github.com/membermatters/MemberMatters/issues/92
-- https://github.com/membermatters/MemberMatters/issues/93
-- https://github.com/membermatters/MemberMatters/issues/101
+- <https://github.com/membermatters/MemberMatters/issues/90>
+- <https://github.com/membermatters/MemberMatters/issues/91>
+- <https://github.com/membermatters/MemberMatters/issues/92>
+- <https://github.com/membermatters/MemberMatters/issues/93>
+- <https://github.com/membermatters/MemberMatters/issues/101>
 
 ## Versions prior to v2.1.0 don't have changelog entries
 
