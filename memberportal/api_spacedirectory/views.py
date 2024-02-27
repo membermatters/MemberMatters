@@ -60,7 +60,7 @@ class SpaceDirectoryStatus(APIView):
                 ## Setup the basic details
                 sensor_details = {
                     "name": sensor.name,
-                    "description": sensor.description,
+                    "description": sensor.description or "",
                     "location": sensor.location,
                 }
 
@@ -83,11 +83,11 @@ class SpaceDirectoryStatus(APIView):
                 signout_date=None
             ).order_by("-signin_date")
 
-            sensor_data["total_member_count"] = {"value": spaceapi_user_count}
+            sensor_data["total_member_count"] = [{"value": spaceapi_user_count}]
 
-            sensor_data["people_now_present"] = {
-                "value": spaceapi_members_on_site.count()
-            }
+            sensor_data["people_now_present"] = [
+                {"value": spaceapi_members_on_site.count()}
+            ]
 
             # Is the camera array empty? If not, add them
             if not config.SPACE_DIRECTORY_CAMS:
