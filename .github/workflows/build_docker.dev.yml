@@ -1,6 +1,7 @@
 name: Build Docker Image (On Dev Push)
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - "dev"
