@@ -19,7 +19,7 @@ from . import mdns
 import logging
 from .constance_config import CONSTANCE_CONFIG_FIELDSETS, CONSTANCE_CONFIG
 
-logger = logging.getLogger("app")
+logger = logging.getLogger("settings.py")
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -227,9 +227,44 @@ LOGGING = {
             "level": "WARNING",
             "propagate": False,
         },
-        "app": {
+        "access": {
             "handlers": ["console", "file"],
-            "level": "DEBUG",
+            "level": os.environ.get("MM_LOG_LEVEL_ACCESS", "INFO"),
+            "propagate": False,
+        },
+        "billing": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_BILLING", "INFO"),
+            "propagate": False,
+        },
+        "general": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_GENERAL", "INFO"),
+            "propagate": False,
+        },
+        "settings.py": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_SETTINGS", "INFO"),
+            "propagate": False,
+        },
+        "profile": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_PROFILE", "INFO"),
+            "propagate": False,
+        },
+        "discord": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_DISCORD", "INFO"),
+            "propagate": False,
+        },
+        "emails": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_EMAILS", "INFO"),
+            "propagate": False,
+        },
+        "sms": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_SMS", "INFO"),
             "propagate": False,
         },
         "daphne": {"handlers": ["console", "file"], "level": "WARNING"},

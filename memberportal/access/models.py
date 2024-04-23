@@ -16,7 +16,7 @@ from rest_framework_api_key.permissions import BaseHasAPIKey, AbstractAPIKey
 from constance import config
 import hashlib
 
-logger = logging.getLogger("app")
+logger = logging.getLogger("access")
 User = auth.get_user_model()
 utc = pytz.UTC
 

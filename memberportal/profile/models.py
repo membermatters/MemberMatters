@@ -20,7 +20,7 @@ import logging
 from services.emails import send_single_email, send_email_to_admin
 from services import sms
 
-logger = logging.getLogger("app")
+logger = logging.getLogger("profile")
 
 utc = pytz.UTC
 

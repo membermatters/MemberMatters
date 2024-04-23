@@ -22,7 +22,7 @@ from urllib.parse import parse_qs, urlencode
 import hmac
 import hashlib
 
-logger = logging.getLogger("app")
+logger = logging.getLogger("general")
 
 
 class GetConfig(APIView):

@@ -3,7 +3,7 @@ from django.conf import settings
 from constance import config
 import logging
 
-logger = logging.getLogger("app")
+logger = logging.getLogger("discord")
 
 
 def post_door_swipe_to_discord(name, door, status):

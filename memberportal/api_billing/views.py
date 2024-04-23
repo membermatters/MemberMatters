@@ -21,7 +21,7 @@ from django.db.utils import OperationalError
 from sentry_sdk import capture_exception
 from django.utils import timezone
 
-logger = logging.getLogger("app")
+logger = logging.getLogger("billing")
 
 
 class StripeAPIView(APIView):

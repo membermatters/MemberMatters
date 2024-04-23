@@ -16,7 +16,7 @@ from constance import config
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
-logger = logging.getLogger("app")
+logger = logging.getLogger("access")
 
 
 class AccessDeviceConsumer(JsonWebsocketConsumer):
@@ -96,7 +96,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
             self.device.checkin()
 
             if content.get("command") == "authenticate":
-                logger.info(
+                logger.debug(
                     "Received an authorisation packet from " + self.device.serial_number
                 )
 
@@ -118,7 +118,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
                     if self.device.type == "interlock":
                         self.device.session_end_all("new_connection")
                 else:
-                    logger.debug(
+                    logger.warn(
                         "Authorisation failed from " + self.device.serial_number
                     )
                     self.authorised = False
