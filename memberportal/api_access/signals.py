@@ -20,6 +20,7 @@ def save_or_create_access_controlled_device(sender, instance, created, **kwargs)
 
     all_members_changed = False
     maintenance_lockout_changed = False
+    signin_exempt_changed = False
     device = None
     if instance.type == "door":
         device = Doors.objects.get(pk=instance.id)
@@ -32,6 +33,7 @@ def save_or_create_access_controlled_device(sender, instance, created, **kwargs)
     if not created:
         all_members_changed = instance.all_members != device.all_members
         maintenance_lockout_changed = instance.locked_out != device.locked_out
+        signin_exempt_changed = instance.exempt_signin != device.exempt_signin
 
     # if the device has all_members set, and it is new or all_members has changed, reset permissions for it
     if instance.all_members is True and (created or all_members_changed):
@@ -68,6 +70,9 @@ def save_or_create_access_controlled_device(sender, instance, created, **kwargs)
         async_to_sync(channel_layer.group_send)(
             device.serial_number, {"type": "update_device_locked_out"}
         )
+
+    if signin_exempt_changed:
+        device.sync()
 
     # update the door object on the websocket consumer
     channel_layer = get_channel_layer()
