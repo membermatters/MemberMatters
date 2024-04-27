@@ -14,9 +14,16 @@ from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
 from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 
+## Databases
+from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
 
+## DJANGO
+from opentelemetry.instrumentation.django import DjangoInstrumentor
+
+# INTERNAL URLS
 from django.conf.urls import url
 from django.core.asgi import get_asgi_application
+
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "membermatters.settings")
 django_asgi_app = get_asgi_application()
@@ -49,6 +56,12 @@ trace.get_tracer_provider().add_span_processor(span_processor)
 logger_provider = LoggerProvider(resource=resource)
 otlp_logs_exporter = OTLPLogExporter(endpoint="http://localhost:4318/v1/logs")
 logger_provider.add_log_record_processor(BatchLogRecordProcessor(otlp_logs_exporter))
+
+#### Database
+Psycopg2Instrumentor().instrument(enable_commenter=True, commenter_options={})
+
+#### Django
+DjangoInstrumentor().instrument(is_sql_commentor_enabled=True)
 
 application = ProtocolTypeRouter(
     {
