@@ -38,8 +38,9 @@ server {
 5. Enable your new configuration file by running this command `sudo ln -s /etc/nginx/sites-available/portal.example.com /etc/nginx/sites-enabled/`.
 6. Check the configuration that you added is valid by running this command, there should be no errors: `sudo nginx -t`.
 7. Restart nginx to apply your new changes with `sudo systemctl restart nginx`.
-8. Note that this process does not include a configuration for HTTPS. We recommend that you use the Let's Encrypt Certbot tool as it will automatically modify your configuration to enable HTTPS and manage certificates for you. [Click here](https://certbot.eff.org/instructions) Select "Nginx" and your OS and then follow the instructions to install certbot on your system. Once installed, run certbot as per that link and follow the prompts to enable HTTPS for your system.
-9. Check that you can access your instance of MemberMatters via HTTPS at the URL that you configured.
+8. Configure your firewall to allow Nginx.  For servers running UFW - Uncomplicated Firewall, the following command will work after Nginx is installed: `sudo ufw allow "Nginx Full"`
+9. Note that this process does not include a configuration for HTTPS. We recommend that you use the Let's Encrypt Certbot tool as it will automatically modify your configuration to enable HTTPS and manage certificates for you. [Click here](https://certbot.eff.org/instructions) Select "Nginx" and your OS and then follow the instructions to install certbot on your system. Once installed, run certbot as per that link and follow the prompts to enable HTTPS for your system.
+10. Check that you can access your instance of MemberMatters via HTTPS at the URL that you configured.
 
 ## Customisation
 The primary way to customise MemberMatters is via the database settings. Once your instance is up and running,
