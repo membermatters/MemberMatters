@@ -8,22 +8,24 @@ Currently, a valid Postmark API key is required for MemberMatters to function co
 MemberMatters is designed to run behind some form of reverse proxy, or at the minimum, an SSL terminating CDN like Cloudflare (not recommended). You *should not ever* run MemberMatters in production without some form of HTTPS. The recommended way is with an nginx reverse proxy as explained below. Unfortunately, reverse proxy configurations are highly dependant on your specific environment, so only general guidance can be given. Please consult your favourite search engine if you have any trouble and only open a GitHub issue if you think you've found a bug or way to improve this documentation.
 
 ### Setting up an nginx reverse proxy on Ubuntu
+Note that the any updated DNS records for your server will need to have propagated prior to certificate being issued. 
+From your Docker command line do the following:
 1. You should first install nginx. On Ubuntu, you can install nginx with `sudo apt install nginx`.
 2. Configure your nginx instance to proxy traffic through to the MemberMatters docker container on port `8000`.
-3. A sample configuration file is included below, but you should configure this to your needs. You should create this file at `/etc/nginx/sites-available/example.com`, where `example.com` is the name of our domain.
+3. A sample configuration file is included below, but you should configure this to your needs. You should create this file at `/etc/nginx/sites-available/portal.example.com`, where `portal.example.com` is the name of our domain.
 ```
 server {
   server_name example.com;
 
 	location / {
 		proxy_set_header Host              $host;
-        proxy_set_header X-Real-IP         $remote_addr;
-        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Host  $host;
-        proxy_set_header X-Forwarded-Port  $server_port;
-        proxy_set_header Upgrade           $http_upgrade;
-        proxy_set_header Connection        "upgrade";
+		proxy_set_header X-Real-IP         $remote_addr;
+		proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header X-Forwarded-Host  $host;
+		proxy_set_header X-Forwarded-Port  $server_port;
+        	proxy_set_header Upgrade           $http_upgrade;
+        	proxy_set_header Connection        "upgrade";
         
 		proxy_redirect off;
 		proxy_pass http://localhost:8000;
@@ -32,11 +34,12 @@ server {
   listen [::]:80 default_server;
 }
 ```
-4. Enable your new configuration file by running this command `sudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/`.
-5. Check the configuration that you added is valid by running this command, there should be no errors: `sudo nginx -t`.
-6. Restart nginx to apply your new changes with `sudo systemctl restart nginx`.
-7. Note that this process does not include a configuration for HTTPS. We recommend that you use the Let's Encrypt Certbot tool as it will automatically modify your configuration to enable HTTPS and manage certificates for you. [Click here](https://certbot.eff.org/lets-encrypt/ubuntufocal-nginx) and follow the instructions to install certbot on your system. Once installed, run certbot as per that link and follow the prompts to enable HTTPS for your system.
-8. Check that you can access your instance of MemberMatters via HTTPS at the URL that you configured.
+4. Disable the default configuration: `sudo rm /etc/nginx/sites-enabled/default`.
+5. Enable your new configuration file by running this command `sudo ln -s /etc/nginx/sites-available/portal.example.com /etc/nginx/sites-enabled/`.
+6. Check the configuration that you added is valid by running this command, there should be no errors: `sudo nginx -t`.
+7. Restart nginx to apply your new changes with `sudo systemctl restart nginx`.
+8. Note that this process does not include a configuration for HTTPS. We recommend that you use the Let's Encrypt Certbot tool as it will automatically modify your configuration to enable HTTPS and manage certificates for you. [Click here](https://certbot.eff.org/instructions) Select "Nginx" and your OS and then follow the instructions to install certbot on your system. Once installed, run certbot as per that link and follow the prompts to enable HTTPS for your system.
+9. Check that you can access your instance of MemberMatters via HTTPS at the URL that you configured.
 
 ## Customisation
 The primary way to customise MemberMatters is via the database settings. Once your instance is up and running,
