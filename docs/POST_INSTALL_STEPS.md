@@ -1,11 +1,11 @@
 # Post Installation Steps
-Once you have completed the [getting started](/docs/GETTING_STARTED.md) instructions, you should complete the following steps to setup and customise your instance of MemberMatters.
+Once you have completed the [Getting Started](/docs/GETTING_STARTED.md) instructions, you should complete the following steps to setup and customise your instance of MemberMatters.
 
 ## Important Notice
 Currently, a valid Postmark API key is required for MemberMatters to function correctly. Emails are sent on various tasks like sign ups, MemberBucks actions etc. You will receive errors if you try to use these functions without a correctly configured Postmark API key. They have a free trial (100 emails/mth) which should be more than enough for testing, however we recommend upgrading to a paid tier before use in production.
 
 ## Logs
-The default settings for the Django logs are configured in the Docker container in the file /usr/src/app/memberportal/membermatters/settings.py (if you installed as suggested by the Getting Started guide). The distributed settings.py places the logs in /usr/src/logs/django.log.  If you run into problems this is a good first place to look.
+The default settings for the Django logs are configured in the Docker container in the file /usr/src/app/memberportal/membermatters/settings.py (if you installed as suggested by the  [Getting Started](/docs/GETTING_STARTED.md) instructions). The distributed settings.py places the logs in /usr/src/logs/django.log.  If you run into problems this is a good first place to look.
 
 ## Set up a reverse proxy
 MemberMatters is designed to run behind some form of reverse proxy, or at the minimum, an SSL terminating CDN like Cloudflare (not recommended). You *should not ever* run MemberMatters in production without some form of HTTPS. The recommended way is with an nginx reverse proxy as explained below. Unfortunately, reverse proxy configurations are highly dependant on your specific environment, so only general guidance can be given. Please consult your favourite search engine if you have any trouble and only open a GitHub issue if you think you've found a bug or way to improve this documentation.
