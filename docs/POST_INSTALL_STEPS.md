@@ -9,7 +9,7 @@ MemberMatters is designed to run behind some form of reverse proxy, or at the mi
 
 ### Setting up an nginx reverse proxy on Ubuntu
 Note that the any updated DNS records for your server will need to have propagated prior to certificate being issued. 
-From your Docker command line do the following:
+From your Docker host command line do the following:
 1. You should first install nginx. On Ubuntu, you can install nginx with `sudo apt install nginx`.
 2. Configure your nginx instance to proxy traffic through to the MemberMatters docker container on port `8000`.
 3. A sample configuration file is included below, but you should configure this to your needs. You should create this file at `/etc/nginx/sites-available/portal.example.com`, where `portal.example.com` is the name of our domain.
