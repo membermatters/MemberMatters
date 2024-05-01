@@ -4,6 +4,8 @@ Once you have completed the [Getting Started](/docs/GETTING_STARTED.md) instruct
 ## Important Notice
 Currently, a valid Postmark API key is required for MemberMatters to function correctly. Emails are sent on various tasks like sign ups, MemberBucks actions etc. You will receive errors if you try to use these functions without a correctly configured Postmark API key. They have a free trial (100 emails/mth) which should be more than enough for testing, however we recommend upgrading to a paid tier before use in production.
 
+While your Postmark account is in "test mode" you can only send emails to the same domain as your Member Matters domain.  Errors caused by Postmark misconfiguration can present themselves as "Sorry, we're having trouble performing that action. Please try again later." or other ambiguous messages.  Check the Django logs (see below) for more details.
+
 ## Logs
 The default settings for the Django logs are configured in the Docker *container* in the file /usr/src/app/memberportal/membermatters/settings.py (if you installed as suggested by the  [Getting Started](/docs/GETTING_STARTED.md) instructions). The distributed settings.py places the logs in /usr/src/logs/django.log.  If you run into problems this is a good first place to look.
 
