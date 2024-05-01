@@ -5,14 +5,14 @@ Once you have completed the [Getting Started](/docs/GETTING_STARTED.md) instruct
 Currently, a valid Postmark API key is required for MemberMatters to function correctly. Emails are sent on various tasks like sign ups, MemberBucks actions etc. You will receive errors if you try to use these functions without a correctly configured Postmark API key. They have a free trial (100 emails/mth) which should be more than enough for testing, however we recommend upgrading to a paid tier before use in production.
 
 ## Logs
-The default settings for the Django logs are configured in the Docker container in the file /usr/src/app/memberportal/membermatters/settings.py (if you installed as suggested by the  [Getting Started](/docs/GETTING_STARTED.md) instructions). The distributed settings.py places the logs in /usr/src/logs/django.log.  If you run into problems this is a good first place to look.
+The default settings for the Django logs are configured in the Docker *container* in the file /usr/src/app/memberportal/membermatters/settings.py (if you installed as suggested by the  [Getting Started](/docs/GETTING_STARTED.md) instructions). The distributed settings.py places the logs in /usr/src/logs/django.log.  If you run into problems this is a good first place to look.
 
 ## Set up a reverse proxy
 MemberMatters is designed to run behind some form of reverse proxy, or at the minimum, an SSL terminating CDN like Cloudflare (not recommended). You *should not ever* run MemberMatters in production without some form of HTTPS. The recommended way is with an nginx reverse proxy as explained below. Unfortunately, reverse proxy configurations are highly dependant on your specific environment, so only general guidance can be given. Please consult your favourite search engine if you have any trouble and only open a GitHub issue if you think you've found a bug or way to improve this documentation.
 
 ### Setting up an nginx reverse proxy on Ubuntu
 Note that the any updated DNS records for your server will need to have propagated prior to certificate being issued. 
-From your Docker host command line do the following:
+From your Docker *host* command line do the following:
 1. You should first install nginx. On Ubuntu, you can install nginx with `sudo apt install nginx`.
 2. Configure your nginx instance to proxy traffic through to the MemberMatters docker container on port `8000`.
 3. A sample configuration file is included below, but you should configure this to your needs. You should create this file at `/etc/nginx/sites-available/portal.example.com`, where `portal.example.com` is the name of our domain.
