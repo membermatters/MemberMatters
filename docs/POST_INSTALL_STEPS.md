@@ -1,10 +1,14 @@
 # Post Installation Steps
 Once you have completed the [Getting Started](/docs/GETTING_STARTED.md) instructions, you should complete the following steps to setup and customise your instance of MemberMatters.
 
-## Important Notice
-Currently, a valid Postmark API key is required for MemberMatters to function correctly. Emails are sent on various tasks like sign ups, MemberBucks actions etc. You will receive errors if you try to use these functions without a correctly configured Postmark API key. They have a free trial (100 emails/mth) which should be more than enough for testing, however we recommend upgrading to a paid tier before use in production.
+## Postmark
+The first step is to set up a [Postmark](https://www.postmarkapp.com) account to enable the sending of emails.  Postmark has a free trial (100 emails/mth) which should be more than enough for testing, however we recommend upgrading to a paid tier before use in production.
 
-While your Postmark account is in "test mode" you can only send emails to the same domain as your Member Matters domain.  Errors caused by Postmark misconfiguration or "test mode" can present themselves as "Sorry, we're having trouble performing that action. Please try again later." or other ambiguous messages.  Check the Django logs (see below) for more details.
+Currently, a valid Postmark API token is required for MemberMatters to function correctly. Emails are sent on various tasks like sign ups, MemberBucks actions etc. You will receive errors if you try to use these functions without a correctly configured Postmark API key. 
+
+Initially when Postmark account is created in "test mode" you can only send emails to the same domain as your Member Matters domain. This domain limitation may create problems if your test account emails use a different domain.  You can add the ability to send from a specific domain to an arbitrary domains by adding a domain "sender signature" in the Postmark account.  Errors in Member Matters caused by Postmark misconfiguration can present themselves as "Sorry, we're having trouble performing that action. Please try again later." or other ambiguous messages.  Check the [Django logs](#logs) for more details on the cause of an error.
+
+Aftert creating the [Postmark](https://www.postmarkapp.com) account see the section [Postmark (Email) Integration](#postmark-email-integration) to set the Postmark "Server API token" in the Member Matters configuration.
 
 ## Logs
 The default settings for the Django logs are configured in the Docker *container* in the file /usr/src/app/memberportal/membermatters/settings.py (if you installed as suggested by the  [Getting Started](/docs/GETTING_STARTED.md) instructions). The distributed settings.py places the logs in /usr/src/logs/django.log.  If you run into problems this is a good first place to look.
@@ -96,7 +100,7 @@ However, as noted below, currencies will use a hardcoded value set by a configur
   * "CANVAS_API_TOKEN" - the API token for the Canvas LMS integration.
 
 ### Postmark (Email) Integration
-* "POSTMARK_API_KEY" - the API token for the Postmark integration. NOTE: required for basic MemberMatters functionality.
+* "POSTMARK_API_KEY" - the "Server API token" from your [Postmark](#postmark) account. NOTE: required for basic MemberMatters functionality.
 
 ### Twilio (SMS) Integration
 * `SMS_ENABLE` - Enables sending of SMS messages on some events. See below for a current list of events.
