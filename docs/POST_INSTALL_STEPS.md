@@ -11,7 +11,7 @@ Initially when Postmark account is created in "test mode" you can only send emai
 Aftert creating the [Postmark](https://www.postmarkapp.com) account see the section [Postmark (Email) Integration](#postmark-email-integration) to set the Postmark "Server API token" in the Member Matters configuration.
 
 ## Logs
-The default settings for the Django logs are configured in the Docker *container* in the file /usr/src/app/memberportal/membermatters/settings.py (if you installed as suggested by the  [Getting Started](/docs/GETTING_STARTED.md) instructions). The distributed settings.py places the logs in /usr/src/logs/django.log.  If you run into problems this is a good first place to look.
+The default settings for the Django logs are configured in the Docker *container* in the file /usr/src/app/memberportal/membermatters/settings.py (if you installed as suggested by the  [Getting Started](/docs/GETTING_STARTED.md) instructions). The distributed settings.py places the logs in /usr/src/logs/django.log.  If you run into problems these logs are a good first place to look.
 
 Logs are also available via the command `docker logs membermatters` from the Docker *host*.
 
