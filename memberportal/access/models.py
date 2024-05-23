@@ -15,6 +15,7 @@ from asgiref.sync import async_to_sync
 from rest_framework_api_key.permissions import BaseHasAPIKey, AbstractAPIKey
 from constance import config
 import hashlib
+from django.core.validators import URLValidator
 
 logger = logging.getLogger("access")
 User = auth.get_user_model()
@@ -61,13 +62,14 @@ class AccessControlledDevice(models.Model):
     last_seen = models.DateTimeField(null=True, blank=True)
     all_members = models.BooleanField("Members have access by default", default=False)
     locked_out = models.BooleanField("Maintenance lockout enabled", default=False)
-    play_theme = models.BooleanField("Play theme on door swipe", default=False)
-    post_to_discord = models.BooleanField("Post to discord on door swipe", default=True)
+    play_theme = models.BooleanField("Play theme on successful swipe", default=False)
+    post_to_discord = models.BooleanField("Post to discord on swipe", default=True)
     exempt_signin = models.BooleanField(
         "Exempt this device from requiring a sign in", default=False
     )
     report_online_status = models.BooleanField(
-        "Report the online status of this device.", default=True
+        "Report the online status of this device and fail the uptime check if it's offline.",
+        default=True,
     )
     hidden = models.BooleanField(
         "Hidden from members in their access permissions screen", default=False
@@ -250,6 +252,20 @@ class MemberbucksDevice(AccessControlledDevice):
     all_members = True
     type = "memberbucks"
 
+    class Meta:
+        verbose_name = "Memberbucks Device"
+        verbose_name_plural = "Memberbucks Devices"
+
+    supports_debits = models.BooleanField(
+        "Supports the MM simple debits API.", default=False
+    )
+    supports_credits = models.BooleanField(
+        "Supports the MM simple credits API.", default=False
+    )
+    supports_products = models.BooleanField(
+        "Supports the MM products API.", default=False
+    )
+
 
 class Doors(AccessControlledDevice):
     type = "door"
@@ -394,7 +410,7 @@ class DoorLog(models.Model):
     success = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.user.get_full_name()} ({self.user.profile.screen_name}) swiped at {self.door.name} {'successfully' if self.success else 'unsuccessfully'} at {self.date.date()}"
+        return f"{self.user.get_full_name()} ({self.user.profile.screen_name}) swiped at {self.door.name} {'successfully' if self.success else 'unsuccessfully'} on {self.date.date()}"
 
 
 class InterlockLog(models.Model):
@@ -420,7 +436,7 @@ class InterlockLog(models.Model):
     total_cost = models.FloatField(default=None, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.user_started.get_full_name()} ({self.user_started.profile.screen_name}) swiped at {self.interlock.name} {'successfully' if self.success else 'unsuccessfully'} for {self.total_time.total_seconds()/60} mins at {self.date_started.date()}"
+        return f"{self.user_started.get_full_name()} ({self.user_started.profile.screen_name}) swiped at {self.interlock.name} {'successfully' if self.success else 'unsuccessfully'} for {round(self.total_time.total_seconds()/60)} mins at {self.date_started.date()}"
 
     def calculate_cost(self):
         total_cost = self.interlock.cost_per_session

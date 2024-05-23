@@ -9,12 +9,14 @@ from access.models import (
     InterlockLog,
     MemberbucksDevice,
     AccessControlledDeviceAPIKey,
+    AccessControlledDevice,
 )
 from memberbucks.models import MemberBucks
 from profile.models import Profile, User
 from constance import config
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
+import inspect
 
 logger = logging.getLogger("access")
 
@@ -24,13 +26,13 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
-        self.device = None
-        self.DeviceClass = None
-        self.device_group_name = None
-        self.authorised = False
-        self.ping_count = 0
-        self.connected_at = None
-        self.last_seen = None
+        self.device: AccessControlledDevice | None = None
+        self.DeviceClass: MemberbucksDevice | Doors | Interlock | None = None
+        self.device_group_name: str | None = None
+        self.authorised: bool = False
+        self.ping_count: int = 0
+        self.connected_at: datetime.datetime | None = None
+        self.last_seen: datetime.datetime | None = None
 
     def connect(self):
         logger.info("Device connected!")
@@ -155,7 +157,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
             self.send_json({"command": "error"})
             raise e
 
-    def handle_other_packet(content):
+    def handle_other_packet(self, content):
         raise NotImplementedError(
             "handle_other_packet() must be implemented by subclass"
         )
@@ -460,6 +462,7 @@ class MemberbucksConsumer(AccessDeviceConsumer):
                     {
                         "command": "balance",
                         "balance": int(profile.memberbucks_balance * 100),
+                        "success": True,
                     }
                 )
                 return True
@@ -558,6 +561,7 @@ class MemberbucksConsumer(AccessDeviceConsumer):
                         {
                             "command": "debit",
                             "balance": int(profile.memberbucks_balance * 100),
+                            "amount": transaction.amount,
                             "success": True,
                         }
                     )
