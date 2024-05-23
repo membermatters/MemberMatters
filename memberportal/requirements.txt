@@ -1,6 +1,6 @@
 django~=3.2.13
 requests~=2.27.1
-stripe==2.74.0
+stripe~=9.7.0
 humanize~=4.1.0
 django-constance~=2.9.0
 django-picklefield~=3.0.1
