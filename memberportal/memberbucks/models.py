@@ -1,6 +1,8 @@
+from django.core.validators import URLValidator
 from django.db import models
 from django.conf import settings
 from django.db.models import Sum
+from django.utils import timezone
 
 
 class MemberBucks(models.Model):
@@ -51,3 +53,52 @@ class MemberBucks(models.Model):
             "description": self.description,
             "date": self.date,
         }
+
+
+class MemberbucksProduct(models.Model):
+    """A new Memberbucks product should be created for each vending machine if you want to use the stock
+    tracking or reporting features, or their external_id is different."""
+
+    id = models.AutoField(primary_key=True)
+    name = models.CharField("Name", max_length=30, unique=False)
+    description = models.CharField(
+        "Description of product", max_length=250, null=True, blank=True
+    )
+    image_url = models.TextField(
+        "Product image", null=True, blank=True, validators=[URLValidator()]
+    )
+
+    # These two are separate fields, but may be the same value.
+    # We split them for flexibility, for example, MDB reports product IDs numerically but most vending
+    # machines will use A0, A1, B0, B1, etc. on customer facing labels.
+    external_id = models.CharField("External ID", max_length=250, null=True, blank=True)
+    external_id_name = models.CharField(
+        "External ID human-readable name", max_length=250, null=True, blank=True
+    )
+
+    stock_level = models.IntegerField(
+        "Number of this product left and available to dispense.", default=0
+    )
+    price = models.IntegerField("Price in cents to be charged to the end user.")
+    cost_price = models.IntegerField(
+        "Price in cents that it costs to buy this product."
+    )  # (used for profit estimates)
+
+
+class MemberbucksProductPurchaseLog(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    product = models.ForeignKey(MemberbucksProduct, on_delete=models.CASCADE)
+    memberucks_device = models.ForeignKey(
+        "access.MemberbucksDevice", on_delete=models.CASCADE
+    )
+    date = models.DateTimeField(default=timezone.now)
+    price = models.IntegerField("Price in cents that was charged to the end user.")
+    cost_price = models.IntegerField(
+        "Price in cents that it costs to buy this product."
+    )  # (used for profit estimates)
+    success = models.BooleanField(default=True)
+
+    def __str__(self):
+        success_string = {"bought" if self.success else "tried unsuccessfully to buy"}
+        return f"{self.user.get_full_name()} ({self.user.profile.screen_name}) {success_string} a {self.product.name} at {self.date.date()}"
