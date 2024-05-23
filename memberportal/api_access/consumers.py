@@ -239,26 +239,50 @@ class DoorConsumer(AccessDeviceConsumer):
 
     def handle_other_packet(self, content):
         if content.get("command") == "log_access":
-            card_id = content.get("card_id")
-            profile = Profile.objects.get(rfid=card_id)
-            self.device.log_access(profile.user.id, success=True)
-            self.send_ack("log_access")
-            return True
+            # handle the case where the profile doesn't exist
+            try:
+                card_id = content.get("card_id")
+                profile = Profile.objects.get(rfid=card_id)
+                self.device.log_access(profile.user.id, success=True)
+                self.send_ack("log_access")
+                return True
+            except Profile.DoesNotExist:
+                self.send_ack("log_access")
+                logger.warning(
+                    f"Tried to process log_access but profile with card ID {card_id} does not exist."
+                )
+                return True
 
         elif content.get("command") == "log_access_denied":
-            card_id = content.get("card_id")
-            profile = Profile.objects.get(rfid=card_id)
-            self.device.log_access(profile.user.id, success=False)
-            self.send_ack("log_access_denied")
-            self.sync_users()
-            return True
+            # handle the case where the profile doesn't exist
+            try:
+                card_id = content.get("card_id")
+                profile = Profile.objects.get(rfid=card_id)
+                self.device.log_access(profile.user.id, success=False)
+                self.send_ack("log_access_denied")
+                self.sync_users()
+                return True
+            except Profile.DoesNotExist:
+                self.send_ack("log_access_denied")
+                logger.warning(
+                    f"Tried to process log_access_denied but profile with card ID {card_id} does not exist."
+                )
+                return True
 
         elif content.get("command") == "log_access_locked_out":
-            card_id = content.get("card_id")
-            profile = Profile.objects.get(rfid=card_id)
-            self.device.log_access(profile.user.id, success="locked_out")
-            self.send_ack("log_access_locked_out")
-            return True
+            # handle the case where the profile doesn't exist
+            try:
+                card_id = content.get("card_id")
+                profile = Profile.objects.get(rfid=card_id)
+                self.device.log_access(profile.user.id, success="locked_out")
+                self.send_ack("log_access_locked_out")
+                return True
+            except Profile.DoesNotExist:
+                self.send_ack("log_access_locked_out")
+                logger.warning(
+                    f"Tried to process log_access_locked_out but profile with card ID {card_id} does not exist."
+                )
+                return True
 
         else:
             return False
@@ -448,6 +472,9 @@ class MemberbucksConsumer(AccessDeviceConsumer):
                         "success": False,
                     }
                 )
+                logger.warning(
+                    f"Tried to process balance but profile with card ID {card_id} does not exist."
+                )
                 return True
 
         if content.get("command") == "debit":
@@ -486,6 +513,9 @@ class MemberbucksConsumer(AccessDeviceConsumer):
                         "reason": "invalid_card_id",
                         "success": False,
                     }
+                )
+                logger.warning(
+                    f"Tried to process debit but profile with card ID {card_id} does not exist."
                 )
                 return True
 
