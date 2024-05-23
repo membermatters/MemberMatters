@@ -16,7 +16,6 @@ from profile.models import Profile, User
 from constance import config
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
-import inspect
 
 logger = logging.getLogger("access")
 
@@ -480,26 +479,27 @@ class MemberbucksConsumer(AccessDeviceConsumer):
                 )
                 return True
 
-        if content.get("command") == "debit":
+        if content.get("command") == "debit" or content.get("command") == "credit":
             card_id = content.get("card_id")
             amount = int(content.get("amount") or 0)
             description = content.get("description", f"{self.device.name} purchase.")
+            command = content.get("command")
 
             if card_id is None:
                 self.send_json(
                     {
-                        "command": "debit",
+                        "command": command,
                         "reason": "invalid_card_id",
                         "success": False,
                     }
                 )
                 return True
 
-            # stops us accidentally crediting an account if it's negative
+            # stops us accidentally accepting a negative value
             if amount <= 0:
                 self.send_json(
                     {
-                        "command": "debit",
+                        "command": command,
                         "reason": "invalid_amount",
                         "success": False,
                     }
@@ -512,69 +512,19 @@ class MemberbucksConsumer(AccessDeviceConsumer):
             except ObjectDoesNotExist:
                 self.send_json(
                     {
-                        "command": "debit",
+                        "command": command,
                         "reason": "invalid_card_id",
                         "success": False,
                     }
                 )
                 logger.warning(
-                    f"Tried to process debit but profile with card ID {card_id} does not exist."
+                    f"Tried to process {command} because profile with card ID {card_id} does not exist."
                 )
                 return True
 
-            if profile.memberbucks_balance >= amount:
-                time_dif = (
-                    timezone.now() - profile.last_memberbucks_purchase
-                ).total_seconds()
+            if command == "debit" and profile.memberbucks_balance < amount:
+                # TODO: auto top up feature
 
-                if time_dif > 5:
-                    transaction = MemberBucks()
-                    transaction.amount = amount * -1.0
-                    transaction.user = profile.user
-                    transaction.description = description
-                    transaction.transaction_type = "card"
-                    transaction.save()
-
-                    profile.last_memberbucks_purchase = timezone.now()
-                    profile.save()
-                    profile.refresh_from_db()
-
-                    subject = (
-                        f"You just made a ${amount} {config.MEMBERBUCKS_NAME} purchase."
-                    )
-                    message = (
-                        f"Description: {transaction.description}. Balance Remaining: "
-                    )
-                    f"${profile.memberbucks_balance}. If this wasn't you, or you believe there "
-                    f"has been an error, please let us know."
-
-                    User.objects.get(profile=profile).email_notification(
-                        subject, message
-                    )
-
-                    profile.user.log_event(
-                        f"Debited ${amount} from {config.MEMBERBUCKS_NAME} account.",
-                        "memberbucks",
-                    )
-
-                    self.send_json(
-                        {
-                            "command": "debit",
-                            "balance": int(profile.memberbucks_balance * 100),
-                            "amount": transaction.amount,
-                            "success": True,
-                        }
-                    )
-                    return True
-
-                else:
-                    self.send_json(
-                        {
-                            "command": "rate_limited",
-                        }
-                    )
-
-            else:
                 profile.user.log_event(
                     f"Not enough funds to debit ${amount} from {config.MEMBERBUCKS_NAME} account by {self.device.name}.",
                     "memberbucks",
@@ -599,7 +549,54 @@ class MemberbucksConsumer(AccessDeviceConsumer):
                 )
                 return True
 
-        if content.get("command") == "credit":
-            return False  # TODO: implement
+            time_dif = (
+                timezone.now() - profile.last_memberbucks_purchase
+            ).total_seconds()
+
+            # We have a hard rate limit of one transaction every 3 seconds at most
+            if time_dif > 3:
+                amount = float(amount) if command == "credit" else float(amount * -1)
+                transaction = MemberBucks()
+                transaction.amount = amount
+                transaction.user = profile.user
+                transaction.description = description
+                transaction.transaction_type = "card"
+                transaction.save()
+
+                profile.last_memberbucks_purchase = timezone.now()
+                profile.save()
+                profile.refresh_from_db()
+
+                subject = (
+                    f"You just made a ${amount} {config.MEMBERBUCKS_NAME} purchase."
+                )
+                message = f"Description: {transaction.description}. Balance Remaining: "
+                f"${profile.memberbucks_balance}. If this wasn't you, or you believe there "
+                f"has been an error, please let us know."
+
+                User.objects.get(profile=profile).email_notification(subject, message)
+
+                profile.user.log_event(
+                    f"{command}ed ${amount} from {config.MEMBERBUCKS_NAME} account.",
+                    "memberbucks",
+                )
+
+                self.send_json(
+                    {
+                        "command": command,
+                        "balance": int(profile.memberbucks_balance * 100),
+                        "amount": int(transaction.amount * 100),
+                        "success": True,
+                    }
+                )
+                return True
+
+            else:
+                self.send_json(
+                    {
+                        "command": "rate_limited",
+                    }
+                )
+
         else:
             return False
