@@ -40,7 +40,9 @@
         <q-card class="q-py-sm">
           <q-list dense>
             <q-item
-              v-for="col in props.cols.filter((col) => col.name !== 'desc')"
+              v-for="col in props.cols.filter(
+                (col) => col.name !== 'desc' && col.name !== 'id'
+              )"
               :key="col.name"
             >
               <q-item-section>
@@ -48,7 +50,15 @@
               </q-item-section>
               <q-item-section side>
                 <q-item-label caption>
-                  {{ col.value }}
+                  <div
+                    class="text-warning"
+                    v-if="col.name === 'lastSeen' && props.row.offline"
+                  >
+                    {{ col.value }}
+                  </div>
+                  <div v-else>
+                    {{ col.value }}
+                  </div>
                 </q-item-label>
               </q-item-section>
             </q-item>
@@ -59,6 +69,7 @@
               <template v-if="deviceChoice === 'doors'">
                 <q-btn
                   :loading="deviceLoading[props.row.id]?.bump"
+                  :disabled="props.row.offline"
                   class="q-mr-sm"
                   size="sm"
                   color="accent"
@@ -90,7 +101,15 @@
     <template v-slot:body="props">
       <q-tr :props="props">
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
-          {{ col.value }}
+          <div
+            class="text-warning"
+            v-if="col.name === 'lastSeen' && props.row.offline"
+          >
+            {{ col.value }}
+          </div>
+          <div v-else>
+            {{ col.value }}
+          </div>
         </q-td>
         <q-td auto-width>
           <template v-if="deviceChoice === 'doors'">
@@ -100,9 +119,13 @@
               size="sm"
               color="accent"
               @click.stop="bumpDoor(props.row.id)"
+              :disabled="props.row.offline"
             >
               <q-icon :name="icons.bump" />
-              <q-tooltip>
+              <q-tooltip v-if="props.row.offline">
+                {{ $t('device.offlineStatus') }}
+              </q-tooltip>
+              <q-tooltip v-else>
                 {{ $t('doors.bump') }}
               </q-tooltip>
             </q-btn>
