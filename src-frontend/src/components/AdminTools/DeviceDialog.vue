@@ -146,7 +146,7 @@
 
                 <div class="row">
                   <q-btn
-                    :disable="unlockLoading"
+                    :disable="unlockLoading || device.offline"
                     :loading="unlockLoading"
                     class="q-mr-sm"
                     size="sm"
@@ -160,7 +160,7 @@
                   </q-btn>
 
                   <q-btn
-                    :disable="lockLoading"
+                    :disable="lockLoading || device.offline"
                     :loading="lockLoading"
                     class="q-mr-sm"
                     size="sm"
@@ -174,7 +174,7 @@
                   </q-btn>
 
                   <q-btn
-                    :disable="rebootLoading"
+                    :disable="rebootLoading || device.offline"
                     :loading="rebootLoading"
                     class="q-mr-sm"
                     size="sm"
@@ -188,7 +188,7 @@
                   </q-btn>
 
                   <q-btn
-                    :disable="syncLoading"
+                    :disable="syncLoading || device.offline"
                     :loading="syncLoading"
                     class="q-mr-sm"
                     size="sm"
@@ -350,9 +350,8 @@ export default {
   },
   mounted() {
     Promise.allSettled([this.getDoors(), this.getInterlocks()]).then(() => {
-      if (this.currentDevice === false) this.$router.push({ name: 'Error404' });
-
       this.initForm();
+      if (!this.device.name) this.$router.push({ name: 'Error404' });
     });
 
     this.interval = setInterval(() => {
@@ -360,7 +359,7 @@ export default {
       this.getInterlocks();
     }, 30 * 1000);
 
-    // find the device index from the devices lise
+    // find the device index from the devices list
     if (this.deviceType === 'doors') {
       this.deviceIndex = this.doors.findIndex(
         (item) => String(item.id) === this.deviceId
@@ -374,12 +373,22 @@ export default {
   methods: {
     ...mapActions('adminTools', ['getDoors', 'getInterlocks']),
     initForm() {
-      this.device = this.currentDevice;
+      if (this.deviceType === 'doors') {
+        if (this.deviceIndex === this.doors.length) {
+          this.deviceIndex = 0;
+        }
+        this.device = this.doors[this.deviceIndex];
+      } else {
+        if (this.deviceIndex === this.interlocks.length) {
+          this.deviceIndex = 0;
+        }
+        this.device = this.interlocks[this.deviceIndex];
+      }
     },
     unlockDevice() {
       this.unlockLoading = true;
       this.$axios
-        .post(`/api/access/${this.deviceType}/${this.deviceId}/unlock/`)
+        .post(`/api/access/${this.deviceType}/${this.device.id}/unlock/`)
         .then(() => {
           this.$q.notify({
             message: this.$t('device.unlocked'),
@@ -398,7 +407,7 @@ export default {
     lockDevice() {
       this.lockLoading = true;
       this.$axios
-        .post(`/api/access/${this.deviceType}/${this.deviceId}/lock/`)
+        .post(`/api/access/${this.deviceType}/${this.device.id}/lock/`)
         .then(() => {
           this.$q.notify({
             message: this.$t('device.locked'),
@@ -417,7 +426,7 @@ export default {
     rebootDevice() {
       this.rebootLoading = true;
       this.$axios
-        .post(`/api/access/${this.deviceType}/${this.deviceId}/reboot/`)
+        .post(`/api/access/${this.deviceType}/${this.device.id}/reboot/`)
         .then(() => {
           this.$q.notify({
             message: this.$t('device.rebooted'),
@@ -436,7 +445,7 @@ export default {
     syncDevice() {
       this.syncLoading = true;
       this.$axios
-        .post(`/api/access/${this.deviceType}/${this.deviceId}/sync/`)
+        .post(`/api/access/${this.deviceType}/${this.device.id}/sync/`)
         .then(() => {
           this.$q.notify({
             message: this.$t('device.synced'),
@@ -462,7 +471,7 @@ export default {
         .onOk(() => {
           this.removeLoading = true;
           this.$axios
-            .delete(`/api/admin/${this.deviceType}/${this.deviceId}/`)
+            .delete(`/api/admin/${this.deviceType}/${this.device.id}/`)
             .then(() => {
               this.$router.push({ name: 'devices' });
             })
@@ -485,7 +494,7 @@ export default {
           if (result) {
             this.$axios
               .put(
-                `/api/admin/${this.deviceType}/${this.deviceId}/`,
+                `/api/admin/${this.deviceType}/${this.device.id}/`,
                 this.device
               )
               .then(() => {
@@ -540,18 +549,7 @@ export default {
     onNextClick() {
       let newDevice;
       this.deviceIndex = this.deviceIndex + 1;
-      if (this.deviceType === 'doors') {
-        if (this.deviceIndex === this.doors.length) {
-          this.deviceIndex = 0;
-        }
-        newDevice = this.doors[this.deviceIndex];
-      } else {
-        if (this.deviceIndex === this.interlocks.length) {
-          this.deviceIndex = 0;
-        }
-        newDevice = this.interlocks[this.deviceIndex];
-      }
-      this.device = newDevice;
+      this.initForm();
     },
     onPreviousClick() {
       let newDevice;
@@ -642,17 +640,6 @@ export default {
     },
     icons() {
       return icons;
-    },
-    currentDevice() {
-      let device;
-      if (this.deviceType === 'doors') {
-        device = this.doors.find((item) => String(item.id) === this.deviceId);
-      } else {
-        device = this.interlocks.find(
-          (item) => String(item.id) === this.deviceId
-        );
-      }
-      return device || false;
     },
   },
 };
