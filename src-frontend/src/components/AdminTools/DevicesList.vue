@@ -55,10 +55,7 @@
 
             <q-separator />
 
-            <q-item
-              v-if="props.row.authorised"
-              class="q-mt-sm row justify-center"
-            >
+            <q-item class="q-mt-sm row justify-center">
               <template v-if="deviceChoice === 'doors'">
                 <q-btn
                   :loading="deviceLoading[props.row.id]?.bump"
