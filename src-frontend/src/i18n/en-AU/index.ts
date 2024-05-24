@@ -181,6 +181,7 @@ export default {
       'Your membership is currently inactive. This may affect your access.',
     authorised: 'Authorised',
     unauthorised: 'Unauthorised',
+    maintenance: 'Maintenance Lockout',
     door: 'Door',
     doors: 'Doors',
     interlock: 'Interlock',

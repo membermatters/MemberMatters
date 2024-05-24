@@ -571,10 +571,26 @@ class Profile(models.Model):
                 continue
 
             if door in self.doors.all() and user_active:
-                doors.append({"name": door.name, "access": True, "id": door.id})
+                doors.append(
+                    {
+                        "name": door.name,
+                        "access": True,
+                        "id": door.id,
+                        "locked_out": door.locked_out,
+                        "offline": door.get_unavailable(),
+                    }
+                )
 
             else:
-                doors.append({"name": door.name, "access": False, "id": door.id})
+                doors.append(
+                    {
+                        "name": door.name,
+                        "access": False,
+                        "id": door.id,
+                        "locked_out": door.locked_out,
+                        "offline": door.get_unavailable(),
+                    }
+                )
 
         for interlock in Interlock.objects.all():
             if interlock.hidden:
@@ -582,12 +598,24 @@ class Profile(models.Model):
 
             if interlock in self.interlocks.all() and user_active:
                 interlocks.append(
-                    {"name": interlock.name, "access": True, "id": interlock.id}
+                    {
+                        "name": interlock.name,
+                        "access": True,
+                        "id": interlock.id,
+                        "locked_out": interlock.locked_out,
+                        "offline": interlock.get_unavailable(),
+                    }
                 )
 
             else:
                 interlocks.append(
-                    {"name": interlock.name, "access": False, "id": interlock.id}
+                    {
+                        "name": interlock.name,
+                        "access": False,
+                        "id": interlock.id,
+                        "locked_out": interlock.locked_out,
+                        "offline": interlock.get_unavailable(),
+                    }
                 )
 
         return {"doors": doors, "interlocks": interlocks}

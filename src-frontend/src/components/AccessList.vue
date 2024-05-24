@@ -22,7 +22,9 @@
           <q-item-section avatar top>
             <q-avatar
               :icon="icons.doorOpen"
-              :color="door.access ? 'green' : 'red'"
+              :color="
+                door.locked_out ? 'orange' : door.access ? 'green' : 'red'
+              "
               text-color="white"
             />
           </q-item-section>
@@ -31,7 +33,10 @@
             <q-item-label lines="1">
               {{ door.name }}
             </q-item-label>
-            <q-item-label v-if="door.access === true" caption>
+            <q-item-label v-if="door.locked_out === true" caption>
+              {{ $t('access.maintenance') }}
+            </q-item-label>
+            <q-item-label v-else-if="door.access === true" caption>
               {{ $t('access.authorised') }}
             </q-item-label>
             <q-item-label v-else caption>
@@ -64,7 +69,13 @@
           <q-item-section avatar top>
             <q-avatar
               :icon="icons.interlock"
-              :color="interlock.access ? 'green' : 'red'"
+              :color="
+                interlock.locked_out
+                  ? 'orange'
+                  : interlock.access
+                  ? 'green'
+                  : 'red'
+              "
               text-color="white"
             />
           </q-item-section>
@@ -73,7 +84,10 @@
             <q-item-label lines="1">
               {{ interlock.name }}
             </q-item-label>
-            <q-item-label v-if="interlock.access === true" caption>
+            <q-item-label v-if="interlock.locked_out === true" caption>
+              {{ $t('access.maintenance') }}
+            </q-item-label>
+            <q-item-label v-else-if="interlock.access === true" caption>
               {{ $t('access.authorised') }}
             </q-item-label>
             <q-item-label v-else caption>
