@@ -271,6 +271,12 @@ export default {
             format: (val) => this.formatDate(val),
           },
           {
+            name: 'totalPurchases',
+            label: this.$t('memberbucks-devices.totalPurchases'),
+            field: 'totalPurchases',
+            sortable: true,
+          },
+          {
             name: 'totalVolume',
             label: this.$t('memberbucks-devices.totalVolume'),
             field: 'totalVolume',

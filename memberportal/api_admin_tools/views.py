@@ -332,6 +332,7 @@ class MemberbucksDevices(APIView):
             purchases = MemberbucksProductPurchaseLog.objects.filter(
                 memberbucks_device_id=device.id, success=True
             )
+            total_count = purchases.count()
             total_volume = (
                 purchases.aggregate(total_volume=Sum("price")).get("total_volume") or 0
             ) / 100
@@ -348,10 +349,10 @@ class MemberbucksDevices(APIView):
                         F("user__profile__last_name"),
                         output_field=CharField(),
                     ),
-                    total_swipes=Count("price"),
+                    total_purchases=Count("price"),
                     total_volume=(Sum("price") or 0) / 100,
                 )
-                .order_by("-total_swipes", "-total_volume")
+                .order_by("-total_purchases", "-total_volume")
             )
 
             return {
@@ -367,6 +368,7 @@ class MemberbucksDevices(APIView):
                 "playThemeOnSwipe": device.play_theme,
                 "exemptFromSignin": device.exempt_signin,
                 "hiddenToMembers": device.hidden,
+                "totalPurchases": total_count,
                 "totalVolume": total_volume,
                 "userStats": list(stats),
             }

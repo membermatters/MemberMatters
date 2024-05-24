@@ -678,9 +678,9 @@ export default {
             sortable: true,
           },
           {
-            name: 'totalSwipes',
+            name: 'totalPurchases',
             label: this.$t('memberbucks-devices.totalPurchases'),
-            field: 'total_swipes',
+            field: 'total_purchases',
             sortable: true,
           },
           {
