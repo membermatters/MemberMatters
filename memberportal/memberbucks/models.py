@@ -89,7 +89,7 @@ class MemberbucksProductPurchaseLog(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     product = models.ForeignKey(MemberbucksProduct, on_delete=models.CASCADE)
-    memberucks_device = models.ForeignKey(
+    memberbucks_device = models.ForeignKey(
         "access.MemberbucksDevice", on_delete=models.CASCADE
     )
     date = models.DateTimeField(default=timezone.now)
