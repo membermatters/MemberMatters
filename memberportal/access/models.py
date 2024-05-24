@@ -256,16 +256,6 @@ class MemberbucksDevice(AccessControlledDevice):
         verbose_name = "Memberbucks Device"
         verbose_name_plural = "Memberbucks Devices"
 
-    supports_debits = models.BooleanField(
-        "Supports the MM simple debits API.", default=False
-    )
-    supports_credits = models.BooleanField(
-        "Supports the MM simple credits API.", default=False
-    )
-    supports_products = models.BooleanField(
-        "Supports the MM products API.", default=False
-    )
-
 
 class Doors(AccessControlledDevice):
     type = "door"

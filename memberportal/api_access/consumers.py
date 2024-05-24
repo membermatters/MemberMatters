@@ -11,7 +11,11 @@ from access.models import (
     AccessControlledDeviceAPIKey,
     AccessControlledDevice,
 )
-from memberbucks.models import MemberBucks
+from memberbucks.models import (
+    MemberBucks,
+    MemberbucksProductPurchaseLog,
+    MemberbucksProduct,
+)
 from profile.models import Profile, User
 from constance import config
 from django.core.exceptions import ObjectDoesNotExist
@@ -481,6 +485,7 @@ class MemberbucksConsumer(AccessDeviceConsumer):
 
         if content.get("command") == "debit" or content.get("command") == "credit":
             card_id = content.get("card_id")
+            product_external_id = content.get("product_external_id")
             amount = int(content.get("amount") or 0)
             description = content.get("description", f"{self.device.name} purchase.")
             command = content.get("command")
@@ -556,6 +561,34 @@ class MemberbucksConsumer(AccessDeviceConsumer):
             # We have a hard rate limit of one transaction every 3 seconds at most
             if time_dif > 3:
                 amount = float(amount) if command == "credit" else float(amount * -1)
+
+                if product_external_id:
+                    try:
+                        product = MemberbucksProduct.objects.get(
+                            external_id=product_external_id
+                        )
+                    except ObjectDoesNotExist:
+                        self.send_json(
+                            {
+                                "command": command,
+                                "reason": "invalid_product_external_id",
+                                "success": False,
+                            }
+                        )
+                        logger.warning(
+                            f"Tried to process {command} but product with external_id {product_external_id} does not exist."
+                        )
+                        return True
+                    purchase_log = MemberbucksProductPurchaseLog()
+                    purchase_log.product = product
+                    purchase_log.user = profile.user
+                    purchase_log.cost_price = product.cost_price
+                    purchase_log.price = amount
+                    purchase_log.memberbucks_device = self.device
+                    purchase_log.save()
+
+                    description = f"{profile.get_full_name()} ({profile.screen_name}) {product.name} purchased from {self.device.name} ({product.external_id_name}) for {amount}."
+
                 transaction = MemberBucks()
                 transaction.amount = amount
                 transaction.user = profile.user
