@@ -150,6 +150,7 @@
 <script>
 import icons from '../../icons';
 import formatMixin from 'src/mixins/formatMixin';
+import { mapGetters } from 'vuex';
 
 export default {
   props: {
@@ -188,6 +189,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters('config', ['siteLocaleCurrency']),
     columnI18n() {
       let columns = [];
       if (this.deviceChoice === 'doors') {
@@ -245,6 +247,35 @@ export default {
             field: 'totalTimeSeconds',
             sortable: true,
             format: (val) => this.humanizeDurationOfSeconds(val),
+          },
+        ];
+      } else if (this.deviceChoice === 'memberbucks-devices') {
+        columns = [
+          {
+            name: 'id',
+            label: this.$t('tableHeading.id'),
+            field: 'id',
+            sortable: true,
+          },
+          {
+            name: 'name',
+            label: this.$t('tableHeading.name'),
+            field: 'name',
+            sortable: true,
+          },
+          {
+            name: 'lastSeen',
+            label: this.$t('access.lastSeen'),
+            field: 'lastSeen',
+            sortable: true,
+            format: (val) => this.formatDate(val),
+          },
+          {
+            name: 'totalVolume',
+            label: this.$t('memberbucks-devices.totalVolume'),
+            field: 'totalVolume',
+            sortable: true,
+            format: (val) => this.$n(val, 'currency', this.siteLocaleCurrency),
           },
         ];
       }

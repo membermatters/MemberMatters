@@ -2,7 +2,11 @@ from profile.models import User, UserEventLog
 from access.models import DoorLog, InterlockLog
 from access import models
 from .models import MemberTier, PaymentPlan
-from memberbucks.models import MemberBucks
+from memberbucks.models import (
+    MemberBucks,
+    MemberbucksProduct,
+    MemberbucksProductPurchaseLog,
+)
 from constance import config
 from services.emails import send_email_to_admin
 from services import sms
@@ -307,6 +311,90 @@ class Interlocks(APIView):
     def delete(self, request, interlock_id):
         interlock = models.Interlock.objects.get(pk=interlock_id)
         interlock.delete()
+
+        return Response()
+
+
+class MemberbucksDevices(APIView):
+    """
+    get: returns a list of memberbucks devices.
+    put: update a specific memberbucks device.
+    delete: delete a specific memberbucks device.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request):
+        devices = models.MemberbucksDevice.objects.all()
+
+        def get_device(device):
+            # Calculate total transaction volume
+            purchases = MemberbucksProductPurchaseLog.objects.filter(
+                memberbucks_device_id=device.id, success=True
+            )
+            total_volume = (
+                purchases.aggregate(total_volume=Sum("price")).get("total_volume") or 0
+            ) / 100
+
+            # Retrieve stats
+            stats = (
+                purchases.select_related("user__profile")
+                .values("memberbucks_device_id")
+                .annotate(
+                    screen_name=F("user__profile__screen_name"),
+                    full_name=Concat(
+                        F("user__profile__first_name"),
+                        Value(" "),
+                        F("user__profile__last_name"),
+                        output_field=CharField(),
+                    ),
+                    total_swipes=Count("price"),
+                    total_volume=(Sum("price") or 0) / 100,
+                )
+                .order_by("-total_swipes", "-total_volume")
+            )
+
+            return {
+                "id": device.id,
+                "authorised": device.authorised,
+                "name": device.name,
+                "description": device.description,
+                "ipAddress": device.ip_address,
+                "lastSeen": device.last_seen,
+                "offline": device.get_unavailable(),
+                "defaultAccess": device.all_members,
+                "maintenanceLockout": device.locked_out,
+                "playThemeOnSwipe": device.play_theme,
+                "exemptFromSignin": device.exempt_signin,
+                "hiddenToMembers": device.hidden,
+                "totalVolume": total_volume,
+                "userStats": list(stats),
+            }
+
+        return Response(map(get_device, devices))
+
+    def put(self, request, device_id):
+        device = models.MemberbucksDevice.objects.get(pk=device_id)
+
+        data = request.data
+
+        device.name = data.get("name")
+        device.description = data.get("description")
+        device.ip_address = data.get("ipAddress")
+
+        device.all_members = data.get("defaultAccess")
+        device.locked_out = data.get("maintenanceLockout")
+        device.play_theme = data.get("playThemeOnSwipe")
+        device.exempt_signin = data.get("exemptFromSignin")
+        device.hidden = data.get("hiddenToMembers")
+
+        device.save()
+
+        return Response()
+
+    def delete(self, request, device_id):
+        device = models.MemberbucksDevice.objects.get(pk=device_id)
+        device.delete()
 
         return Response()
 

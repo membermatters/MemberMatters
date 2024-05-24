@@ -212,7 +212,7 @@
                   >
                     <q-icon :name="icons.delete" />
                     <q-tooltip>
-                      {{ $t(`${deviceType}.remove`) }}
+                      {{ $t(`device.remove`) }}
                     </q-tooltip>
                   </q-btn>
 
@@ -349,14 +349,19 @@ export default {
     };
   },
   mounted() {
-    Promise.allSettled([this.getDoors(), this.getInterlocks()]).then(() => {
+    Promise.allSettled([
+      this.getDoors(),
+      this.getInterlocks(),
+      this.getMemberbucksDevices(),
+    ]).then(() => {
       this.initForm();
-      if (!this.device.name) this.$router.push({ name: 'Error404' });
+      if (!this.device.id) this.$router.push({ name: 'Error404' });
     });
 
     this.interval = setInterval(() => {
       this.getDoors();
       this.getInterlocks();
+      this.getMemberbucksDevices();
     }, 30 * 1000);
 
     // find the device index from the devices list
@@ -364,25 +369,41 @@ export default {
       this.deviceIndex = this.doors.findIndex(
         (item) => String(item.id) === this.deviceId
       );
-    } else {
+    } else if (this.deviceType === 'interlocks') {
       this.deviceIndex = this.interlocks.findIndex(
         (item) => String(item.id) === this.deviceId
       );
+    } else if (this.deviceType === 'memberbucks-devices') {
+      this.deviceIndex = this.memberbucksDevices.findIndex(
+        (item) => String(item.id) === this.deviceId
+      );
+    } else {
+      console.error('Invalid device type: ', this.deviceType);
     }
   },
   methods: {
-    ...mapActions('adminTools', ['getDoors', 'getInterlocks']),
+    ...mapActions('adminTools', [
+      'getDoors',
+      'getInterlocks',
+      'getMemberbucksDevices',
+    ]),
+    ...mapGetters('config', ['siteLocaleCurrency']),
     initForm() {
       if (this.deviceType === 'doors') {
         if (this.deviceIndex === this.doors.length) {
           this.deviceIndex = 0;
         }
         this.device = this.doors[this.deviceIndex];
-      } else {
+      } else if (this.deviceType === 'interlocks') {
         if (this.deviceIndex === this.interlocks.length) {
           this.deviceIndex = 0;
         }
         this.device = this.interlocks[this.deviceIndex];
+      } else if (this.deviceType === 'memberbucks-devices') {
+        if (this.deviceIndex === this.memberbucksDevices.length) {
+          this.deviceIndex = 0;
+        }
+        this.device = this.memberbucksDevices[this.deviceIndex];
       }
     },
     unlockDevice() {
@@ -557,25 +578,32 @@ export default {
       if (this.deviceIndex === -1) {
         if (this.deviceType === 'doors') {
           this.deviceIndex += this.doors.length;
-        } else {
+        } else if (this.deviceType === 'interlocks') {
           this.deviceIndex += this.interlocks.length;
+        } else if (this.deviceType === 'memberbucks-devices') {
+          this.deviceIndex += this.memberbucksDevices.length;
         }
       }
       if (this.deviceType === 'doors') {
         newDevice = this.doors[this.deviceIndex];
-      } else {
+      } else if (this.deviceType === 'interlocks') {
         newDevice = this.interlocks[this.deviceIndex];
+      } else if (this.deviceType === 'memberbucks-devices') {
+        newDevice = this.memberbucksDevices[this.deviceIndex];
       }
       this.device = newDevice;
     },
   },
   computed: {
-    ...mapGetters('adminTools', ['doors', 'interlocks']),
+    ...mapGetters('adminTools', ['doors', 'interlocks', 'memberbucksDevices']),
     deviceCount() {
       if (this.deviceType === 'doors') {
         return this.doors.length;
-      }
-      return this.interlocks.length;
+      } else if (this.deviceType === 'interlocks') {
+        return this.interlocks.length;
+      } else if (this.deviceType === 'memberbucks-devices') {
+        return this.memberbucksDevices.length;
+      } else return 0;
     },
     columnI18n() {
       let columns = [];
@@ -635,7 +663,36 @@ export default {
             format: (val) => this.humanizeDurationOfSeconds(val),
           },
         ];
+      } else if (this.deviceType === 'memberbucks-devices') {
+        columns = [
+          {
+            name: 'name',
+            label: this.$t('digitalId.fullName'),
+            field: 'full_name',
+            sortable: true,
+          },
+          {
+            name: 'screenName',
+            label: this.$t('tableHeading.screenName'),
+            field: 'screen_name',
+            sortable: true,
+          },
+          {
+            name: 'totalSwipes',
+            label: this.$t('memberbucks-devices.totalPurchases'),
+            field: 'total_swipes',
+            sortable: true,
+          },
+          {
+            name: 'totalVolume',
+            label: this.$t('memberbucks-devices.totalVolume'),
+            field: 'total_volume',
+            sortable: true,
+            format: (val) => this.$n(val, 'currency', this.siteLocaleCurrency),
+          },
+        ];
       }
+
       return columns;
     },
     icons() {

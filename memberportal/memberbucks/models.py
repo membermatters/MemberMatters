@@ -59,6 +59,9 @@ class MemberbucksProduct(models.Model):
     """A new Memberbucks product should be created for each vending machine if you want to use the stock
     tracking or reporting features, or their external_id is different."""
 
+    def __str__(self):
+        return f"{self.name} ({self.external_id_name})"
+
     id = models.AutoField(primary_key=True)
     name = models.CharField("Name", max_length=30, unique=False)
     description = models.CharField(
@@ -100,5 +103,5 @@ class MemberbucksProductPurchaseLog(models.Model):
     success = models.BooleanField(default=True)
 
     def __str__(self):
-        success_string = {"bought" if self.success else "tried unsuccessfully to buy"}
+        success_string = "bought" if self.success else "tried unsuccessfully to buy"
         return f"{self.user.get_full_name()} ({self.user.profile.screen_name}) {success_string} a {self.product.name} at {self.date.date()}"
