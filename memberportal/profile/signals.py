@@ -2,7 +2,7 @@ import logging
 
 logger = logging.getLogger("profile")
 
-from django.db.models.signals import post_save
+from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.contrib import auth
 from .models import Profile
@@ -10,11 +10,13 @@ from .models import Profile
 User = auth.get_user_model()
 
 
-@receiver(post_save, sender=Profile)
-def update_profile(sender, instance, created, **kwargs):
+@receiver(pre_save, sender=Profile)
+def update_profile(sender, instance, **kwargs):
     # disable the handler during fixture loading
     if kwargs["raw"]:
         return
+
+    created = not instance.pk
 
     door_access_changed = False
     interlock_access_changed = False

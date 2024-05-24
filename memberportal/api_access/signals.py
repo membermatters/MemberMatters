@@ -2,21 +2,25 @@ import logging
 
 logger = logging.getLogger("access")
 
-from django.db.models.signals import post_save
+from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.contrib import auth
-from access.models import AccessControlledDevice, Doors, Interlock, MemberbucksDevice
+from access.models import Doors, Interlock, MemberbucksDevice
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 User = auth.get_user_model()
 
 
-@receiver(post_save, sender=AccessControlledDevice)
-def save_or_create_access_controlled_device(sender, instance, created, **kwargs):
+@receiver(pre_save, sender=Doors)
+@receiver(pre_save, sender=Interlock)
+@receiver(pre_save, sender=MemberbucksDevice)
+def save_or_create_access_controlled_device(sender, instance, **kwargs):
     # disable the handler during fixture loading
     if kwargs["raw"]:
         return
+
+    created = not instance.pk
 
     all_members_changed = False
     maintenance_lockout_changed = False
