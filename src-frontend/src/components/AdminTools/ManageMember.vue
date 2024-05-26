@@ -410,7 +410,10 @@
 
           <br />
 
-          <access-list :member-id="selectedMemberFiltered.id" />
+          <access-list
+            :member-id="selectedMemberFiltered.id"
+            :inactive-warning="selectedMemberFiltered.state === 'Inactive'"
+          />
         </q-tab-panel>
 
         <q-tab-panel name="log">

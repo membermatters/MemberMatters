@@ -492,7 +492,7 @@ class MemberAccess(APIView):
     def get(self, request, member_id):
         member = User.objects.get(id=member_id)
 
-        return Response(member.profile.get_access_permissions())
+        return Response(member.profile.get_access_permissions(ignore_user_state=True))
 
 
 class MemberWelcomeEmail(APIView):

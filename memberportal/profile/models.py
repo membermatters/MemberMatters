@@ -554,7 +554,7 @@ class Profile(models.Model):
             "subscriptionStatus": self.subscription_status,
         }
 
-    def get_access_permissions(self):
+    def get_access_permissions(self, ignore_user_state=False):
         """
         returns a dictionary of the user's access permissions
         :return:
@@ -563,6 +563,9 @@ class Profile(models.Model):
         interlocks = []
 
         user_active = self.state == "active"
+
+        if ignore_user_state:
+            user_active = True
 
         from access.models import Doors, Interlock
 

@@ -177,8 +177,7 @@ export default {
       'Your access permissions for doors and interlocks are shown below. Please ' +
       'report an issue if you believe you should have access to something that ' +
       "you don't.",
-    inactive:
-      'Your membership is currently inactive. This may affect your access.',
+    inactive: 'Membership is currently inactive. This may affect access.',
     authorised: 'Authorised',
     unauthorised: 'Unauthorised',
     maintenance: 'Maintenance Lockout',
