@@ -1,10 +1,12 @@
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
 from profile.models import User, UserEventLog
 from access.models import DoorLog, InterlockLog
 from access import models
 from .models import MemberTier, PaymentPlan
 from memberbucks.models import (
     MemberBucks,
-    MemberbucksProduct,
     MemberbucksProductPurchaseLog,
 )
 from constance import config
@@ -20,8 +22,6 @@ from rest_framework import status
 from rest_framework.views import APIView
 from django.db.models import F, Count, Sum, Value, CharField, Count, Max
 from django.db.models.functions import Concat
-from datetime import timedelta
-from django.db import connection
 from django.db.utils import OperationalError
 from sentry_sdk import capture_exception
 
@@ -111,8 +111,7 @@ class MakeMember(APIView):
             email = user.email_welcome()
 
             # mark them as "active"
-            user.profile.state = "active"
-            user.profile.save()
+            user.profile.activate()
 
             subject = f"{user.profile.get_full_name()} just got turned into a member!"
             send_email_to_admin(
@@ -208,22 +207,63 @@ class Doors(APIView):
 
     def put(self, request, door_id):
         door = models.Doors.objects.get(pk=door_id)
-
         data = request.data
+        all_members_added = False
+        all_members_removed = False
+        locked_out_changed = False
+
+        if door.all_members != data.get("defaultAccess"):
+            if data.get("defaultAccess"):
+                all_members_added = True
+            else:
+                all_members_removed = True
+
+        if door.locked_out != data.get("maintenanceLockout"):
+            locked_out_changed = True
 
         door.name = data.get("name")
         door.description = data.get("description")
         door.ip_address = data.get("ipAddress")
         door.serial_number = data.get("serialNumber")
-
         door.all_members = data.get("defaultAccess")
         door.locked_out = data.get("maintenanceLockout")
         door.play_theme = data.get("playThemeOnSwipe")
         door.post_to_discord = data.get("postDiscordOnSwipe")
         door.exempt_signin = data.get("exemptFromSignin")
         door.hidden = data.get("hiddenToMembers")
-
         door.save()
+
+        if locked_out_changed:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                door.serial_number, {"type": "update_device_locked_out"}
+            )
+
+        if all_members_added or all_members_removed:
+            members = User.objects.all()
+
+            for member in members:
+                if all_members_added:
+                    member.profile.doors.add(door)
+                else:
+                    member.profile.doors.remove(door)
+
+                member.profile.save()
+
+        if (
+            all_members_added
+            or all_members_removed
+            or locked_out_changed
+            or door.exempt_signin != data.get("exemptFromSignin")
+        ):
+            # once we're done, sync changes to the device
+            door.sync()
+
+            # update the door object on the websocket consumer
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                door.serial_number, {"type": "update_device_object"}
+            )
 
         return Response()
 
@@ -291,20 +331,61 @@ class Interlocks(APIView):
 
     def put(self, request, interlock_id):
         interlock = models.Interlock.objects.get(pk=interlock_id)
-
         data = request.data
+        all_members_added = False
+        all_members_removed = False
+        locked_out_changed = False
+
+        if interlock.all_members != data.get("defaultAccess"):
+            if data.get("defaultAccess"):
+                all_members_added = True
+            else:
+                all_members_removed = True
+
+        if interlock.locked_out != data.get("maintenanceLockout"):
+            locked_out_changed = True
 
         interlock.name = data.get("name")
         interlock.description = data.get("description")
         interlock.ip_address = data.get("ipAddress")
-
         interlock.all_members = data.get("defaultAccess")
         interlock.locked_out = data.get("maintenanceLockout")
         interlock.play_theme = data.get("playThemeOnSwipe")
         interlock.exempt_signin = data.get("exemptFromSignin")
         interlock.hidden = data.get("hiddenToMembers")
-
         interlock.save()
+
+        if locked_out_changed:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                interlock.serial_number, {"type": "update_device_locked_out"}
+            )
+
+        if all_members_added or all_members_removed:
+            members = User.objects.all()
+
+            for member in members:
+                if all_members_added:
+                    member.profile.interlocks.add(interlock)
+                else:
+                    member.profile.interlocks.remove(interlock)
+
+                member.profile.save()
+
+        if (
+            all_members_added
+            or all_members_removed
+            or locked_out_changed
+            or interlock.exempt_signin != data.get("exemptFromSignin")
+        ):
+            # once we're done, sync changes to the device
+            interlock.sync()
+
+            # update the door object on the websocket consumer
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                interlock.serial_number, {"type": "update_device_object"}
+            )
 
         return Response()
 
