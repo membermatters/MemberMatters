@@ -747,7 +747,7 @@ class Register(APIView):
         except Exception as e:
             # gracefully catch and move on
             sentry_sdk.capture_exception(e)
-            print(e)
+            logger.error(e)
             return Response()
 
         return Response()

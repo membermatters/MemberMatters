@@ -29,7 +29,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
-        self.device: AccessControlledDevice | None = None
+        self.device: MemberbucksDevice | Doors | Interlock | None = None
         self.DeviceClass: MemberbucksDevice | Doors | Interlock | None = None
         self.device_group_name: str | None = None
         self.authorised: bool = False
@@ -55,7 +55,6 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
         )
         self.device = device_object
         self.device.checkin()
-        self.device.log_connected()
 
         # Set the channels group name and add the device to the group
         self.device_group_name = self.device.serial_number
@@ -79,6 +78,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
             logger.warning(
                 f"Device ({self.device.serial_number}) is not authorised yet and has been disconnected."
             )
+            self.accept()
             self.close()
 
     def disconnect(self, close_code):
@@ -110,7 +110,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
                     raw_api_key
                 )
 
-                if api_key_is_valid:
+                if api_key_is_valid and self.device.authorised:
                     logger.info(
                         "Authorisation successful from " + self.device.serial_number
                     )
@@ -123,7 +123,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
                     if self.device.type == "interlock":
                         self.device.session_end_all("new_connection")
                 else:
-                    logger.warn(
+                    logger.debug(
                         "Authorisation failed from " + self.device.serial_number
                     )
                     self.authorised = False
@@ -132,7 +132,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
                 return
 
             elif not self.authorised:
-                logger.info("Device is not authorised!")
+                logger.debug("Device is not authorised!")
                 self.send_json({"authorised": False})
                 self.close()
                 return
@@ -232,7 +232,9 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
         )
 
     def update_device_object(self, event=None):
-        self.device = self.DeviceClass.objects.get(id=self.device.id)
+        self.device = self.DeviceClass.objects.get(
+            serial_number=self.device.serial_number
+        )
 
 
 class DoorConsumer(AccessDeviceConsumer):
@@ -298,7 +300,6 @@ class DoorConsumer(AccessDeviceConsumer):
         # Handles the "door_bump" event when it's sent to us.
 
         logger.info("Sending door bump for {}".format(self.device.serial_number))
-        print("Sending door bump for {}".format(self.device.serial_number))
         self.send_json({"command": "bump"})
 
 

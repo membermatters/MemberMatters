@@ -642,7 +642,7 @@ class StripeWebhook(StripeAPIView):
                 )
                 data = event["data"]
             except Exception as e:
-                print(e)
+                logger.error(e)
                 capture_exception(e)
                 return Response({"error": "Error validating Stripe signature."})
 
