@@ -21,7 +21,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Warning: we only accept PRs to the `dev` branch. It looks like you've created a PR to the `main` branch. Please edit this PR and select the `dev` branch as the target branch instead. If this was intentional please ignore this message.'
+              body: 'Warning: we only accept PRs to the \`dev\` branch. It looks like you've created a PR to the \`main\` branch. Please edit this PR and select the \`dev\` branch as the target branch instead. If this was intentional please ignore this message.'
             })
 
   comment_warning_internal_pr:
@@ -37,5 +37,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Warning: we only accept PRs to main from the `dev` branch. It looks like you've created a PR from a different branch. Please edit this PR and select the `dev` branch as the source branch instead. If this was intentional please ignore this message.'
+              body: 'Warning: we only accept PRs to main from the \`dev\` branch. It looks like you've created a PR from a different branch. Please edit this PR and select the \`dev\` branch as the source branch instead. If this was intentional please ignore this message.'
             })
