@@ -5,7 +5,7 @@ from access.models import (
     HasExternalAccessControlAPIKey,
 )
 from profile.models import User
-import metrics
+import api_access.metrics as metrics
 
 from rest_framework import status, permissions
 from rest_framework.response import Response

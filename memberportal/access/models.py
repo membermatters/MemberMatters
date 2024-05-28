@@ -17,7 +17,7 @@ from constance import config
 import hashlib
 from django.core.validators import URLValidator
 from django_prometheus.models import ExportModelOperationsMixin
-import metrics
+import access.metrics as metrics
 
 logger = logging.getLogger("access")
 User = auth.get_user_model()
