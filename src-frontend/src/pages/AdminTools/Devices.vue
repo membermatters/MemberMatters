@@ -13,6 +13,7 @@
       >
         <q-tab name="doors" :label="$t('access.doors')" />
         <q-tab name="interlocks" :label="$t('access.interlocks')" />
+        <q-tab name="memberbucks" :label="$t('access.memberbucksDevices')" />
       </q-tabs>
       <q-separator />
       <q-tab-panels v-model="tab" animated>
@@ -27,6 +28,13 @@
           <devices-list
             deviceChoice="interlocks"
             :tableData="interlocks"
+            @openDevice="manageDevice"
+          ></devices-list>
+        </q-tab-panel>
+        <q-tab-panel name="memberbucks" style="width: 100%">
+          <devices-list
+            deviceChoice="memberbucks-devices"
+            :tableData="memberbucksDevices"
             @openDevice="manageDevice"
           ></devices-list>
         </q-tab-panel>
@@ -50,22 +58,28 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('adminTools', ['interlocks', 'doors']),
+    ...mapGetters('adminTools', ['interlocks', 'doors', 'memberbucksDevices']),
   },
   beforeMount() {
     this.getDoors();
     this.getInterlocks();
+    this.getMemberbucksDevices();
 
     this.interval = setInterval(() => {
       this.getDoors();
       this.getInterlocks();
+      this.getMemberbucksDevices();
     }, 30 * 1000);
   },
   beforeUnmount() {
     clearInterval(this.interval);
   },
   methods: {
-    ...mapActions('adminTools', ['getInterlocks', 'getDoors']),
+    ...mapActions('adminTools', [
+      'getInterlocks',
+      'getDoors',
+      'getMemberbucksDevices',
+    ]),
     manageDevice(deviceId, deviceTypeStr) {
       this.$q
         .dialog({

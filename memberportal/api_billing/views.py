@@ -21,7 +21,7 @@ from django.db.utils import OperationalError
 from sentry_sdk import capture_exception
 from django.utils import timezone
 
-logger = logging.getLogger("app")
+logger = logging.getLogger("billing")
 
 
 class StripeAPIView(APIView):
@@ -642,7 +642,7 @@ class StripeWebhook(StripeAPIView):
                 )
                 data = event["data"]
             except Exception as e:
-                print(e)
+                logger.error(e)
                 capture_exception(e)
                 return Response({"error": "Error validating Stripe signature."})
 

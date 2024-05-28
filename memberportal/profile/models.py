@@ -20,7 +20,7 @@ import logging
 from services.emails import send_single_email, send_email_to_admin
 from services import sms
 
-logger = logging.getLogger("app")
+logger = logging.getLogger("profile")
 
 utc = pytz.UTC
 
@@ -554,7 +554,7 @@ class Profile(models.Model):
             "subscriptionStatus": self.subscription_status,
         }
 
-    def get_access_permissions(self):
+    def get_access_permissions(self, ignore_user_state=False):
         """
         returns a dictionary of the user's access permissions
         :return:
@@ -564,6 +564,9 @@ class Profile(models.Model):
 
         user_active = self.state == "active"
 
+        if ignore_user_state:
+            user_active = True
+
         from access.models import Doors, Interlock
 
         for door in Doors.objects.all():
@@ -571,10 +574,26 @@ class Profile(models.Model):
                 continue
 
             if door in self.doors.all() and user_active:
-                doors.append({"name": door.name, "access": True, "id": door.id})
+                doors.append(
+                    {
+                        "name": door.name,
+                        "access": True,
+                        "id": door.id,
+                        "locked_out": door.locked_out,
+                        "offline": door.get_unavailable(),
+                    }
+                )
 
             else:
-                doors.append({"name": door.name, "access": False, "id": door.id})
+                doors.append(
+                    {
+                        "name": door.name,
+                        "access": False,
+                        "id": door.id,
+                        "locked_out": door.locked_out,
+                        "offline": door.get_unavailable(),
+                    }
+                )
 
         for interlock in Interlock.objects.all():
             if interlock.hidden:
@@ -582,12 +601,24 @@ class Profile(models.Model):
 
             if interlock in self.interlocks.all() and user_active:
                 interlocks.append(
-                    {"name": interlock.name, "access": True, "id": interlock.id}
+                    {
+                        "name": interlock.name,
+                        "access": True,
+                        "id": interlock.id,
+                        "locked_out": interlock.locked_out,
+                        "offline": interlock.get_unavailable(),
+                    }
                 )
 
             else:
                 interlocks.append(
-                    {"name": interlock.name, "access": False, "id": interlock.id}
+                    {
+                        "name": interlock.name,
+                        "access": False,
+                        "id": interlock.id,
+                        "locked_out": interlock.locked_out,
+                        "offline": interlock.get_unavailable(),
+                    }
                 )
 
         return {"doors": doors, "interlocks": interlocks}

@@ -26,51 +26,53 @@
       row-key="id"
     >
       <template v-slot:top-left>
-        <div class="row q-pt-sm">
-          <q-btn
-            v-if="stripeEnabled"
-            color="accent"
-            :icon="icons.add"
-            :label="$t('memberbucks.addFunds')"
-            class="q-mb-sm q-mr-sm"
-            @click="addFunds()"
-          />
+        <div class="col">
+          <div class="row q-pt-sm">
+            <q-btn
+              v-if="stripeEnabled"
+              color="accent"
+              :icon="icons.add"
+              :label="$t('memberbucks.addFunds')"
+              class="q-mb-sm q-mr-sm"
+              @click="addFunds()"
+            />
 
-          <q-btn
-            color="accent"
-            :icon="icons.donate"
-            :label="$t('memberbucks.donateFunds')"
-            class="q-mb-sm q-mr-sm"
-            @click="donateFunds()"
-          />
+            <q-btn
+              color="accent"
+              :icon="icons.donate"
+              :label="$t('memberbucks.donateFunds')"
+              class="q-mb-sm q-mr-sm"
+              @click="donateFunds()"
+            />
 
-          <q-btn
-            v-if="stripeEnabled"
-            color="accent"
-            :icon="icons.billing"
-            :label="$t('memberbucks.manageBilling')"
-            class="q-mb-sm q-mr-md"
-            @click="manageBilling()"
-          />
+            <q-btn
+              v-if="stripeEnabled"
+              color="accent"
+              :icon="icons.billing"
+              :label="$t('memberbucks.manageBilling')"
+              class="q-mb-sm q-mr-md"
+              @click="manageBilling()"
+            />
 
-          <q-space />
+            <q-space />
 
-          <q-input
-            v-model="filter"
-            outlined
-            dense
-            debounce="300"
-            placeholder="Search"
-            class="q-mt-none q-pt-none"
-          >
-            <template v-slot:append>
-              <q-icon :name="icons.search" />
-            </template>
-          </q-input>
-        </div>
-        <div class="row q-pt-sm">
-          {{ $t('memberbucks.currentBalance') }}
-          {{ getBalanceDisplay }}
+            <q-input
+              v-model="filter"
+              outlined
+              dense
+              debounce="300"
+              placeholder="Search"
+              class="q-mt-none q-pt-none"
+            >
+              <template v-slot:append>
+                <q-icon :name="icons.search" />
+              </template>
+            </q-input>
+          </div>
+          <div class="row q-pt-sm">
+            {{ $t('memberbucks.currentBalance') }}
+            {{ getBalanceDisplay }}
+          </div>
         </div>
       </template>
 

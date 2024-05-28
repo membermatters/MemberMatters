@@ -1,5 +1,5 @@
 # Specify our base image
-FROM python:3.10-bullseye
+FROM python:3.12-bullseye
 LABEL maintainer="Jaimyn Mayer (github@jaimyn.dev)"
 LABEL description="Base Dockerfile for the MemberMatters software."
 
@@ -11,7 +11,7 @@ RUN mkdir -p /usr/src/app/frontend && mkdir /usr/src/logs && mkdir /usr/src/data
 RUN apt-get update -y && apt-get install -y nginx curl daphne
 
 # Install Node
-ENV NODE_VERSION=18.16.0
+ENV NODE_VERSION=22.2.0
 SHELL ["/bin/bash", "--login", "-c"]
 
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash

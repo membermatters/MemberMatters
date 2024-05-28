@@ -9,14 +9,19 @@ from access.models import (
     InterlockLog,
     MemberbucksDevice,
     AccessControlledDeviceAPIKey,
+    AccessControlledDevice,
 )
-from memberbucks.models import MemberBucks
+from memberbucks.models import (
+    MemberBucks,
+    MemberbucksProductPurchaseLog,
+    MemberbucksProduct,
+)
 from profile.models import Profile, User
 from constance import config
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
-logger = logging.getLogger("app")
+logger = logging.getLogger("access")
 
 
 class AccessDeviceConsumer(JsonWebsocketConsumer):
@@ -24,13 +29,13 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
-        self.device = None
-        self.DeviceClass = None
-        self.device_group_name = None
-        self.authorised = False
-        self.ping_count = 0
-        self.connected_at = None
-        self.last_seen = None
+        self.device: MemberbucksDevice | Doors | Interlock | None = None
+        self.DeviceClass: MemberbucksDevice | Doors | Interlock | None = None
+        self.device_group_name: str | None = None
+        self.authorised: bool = False
+        self.ping_count: int = 0
+        self.connected_at: datetime.datetime | None = None
+        self.last_seen: datetime.datetime | None = None
 
     def connect(self):
         logger.info("Device connected!")
@@ -50,7 +55,6 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
         )
         self.device = device_object
         self.device.checkin()
-        self.device.log_connected()
 
         # Set the channels group name and add the device to the group
         self.device_group_name = self.device.serial_number
@@ -74,6 +78,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
             logger.warning(
                 f"Device ({self.device.serial_number}) is not authorised yet and has been disconnected."
             )
+            self.accept()
             self.close()
 
     def disconnect(self, close_code):
@@ -96,7 +101,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
             self.device.checkin()
 
             if content.get("command") == "authenticate":
-                logger.info(
+                logger.debug(
                     "Received an authorisation packet from " + self.device.serial_number
                 )
 
@@ -105,7 +110,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
                     raw_api_key
                 )
 
-                if api_key_is_valid:
+                if api_key_is_valid and self.device.authorised:
                     logger.info(
                         "Authorisation successful from " + self.device.serial_number
                     )
@@ -127,7 +132,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
                 return
 
             elif not self.authorised:
-                logger.info("Device is not authorised!")
+                logger.debug("Device is not authorised!")
                 self.send_json({"authorised": False})
                 self.close()
                 return
@@ -155,7 +160,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
             self.send_json({"command": "error"})
             raise e
 
-    def handle_other_packet(content):
+    def handle_other_packet(self, content):
         raise NotImplementedError(
             "handle_other_packet() must be implemented by subclass"
         )
@@ -227,7 +232,9 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
         )
 
     def update_device_object(self, event=None):
-        self.device = self.DeviceClass.objects.get(id=self.device.id)
+        self.device = self.DeviceClass.objects.get(
+            serial_number=self.device.serial_number
+        )
 
 
 class DoorConsumer(AccessDeviceConsumer):
@@ -293,7 +300,6 @@ class DoorConsumer(AccessDeviceConsumer):
         # Handles the "door_bump" event when it's sent to us.
 
         logger.info("Sending door bump for {}".format(self.device.serial_number))
-        print("Sending door bump for {}".format(self.device.serial_number))
         self.send_json({"command": "bump"})
 
 
@@ -460,6 +466,7 @@ class MemberbucksConsumer(AccessDeviceConsumer):
                     {
                         "command": "balance",
                         "balance": int(profile.memberbucks_balance * 100),
+                        "success": True,
                     }
                 )
                 return True
@@ -477,26 +484,28 @@ class MemberbucksConsumer(AccessDeviceConsumer):
                 )
                 return True
 
-        if content.get("command") == "debit":
+        if content.get("command") == "debit" or content.get("command") == "credit":
             card_id = content.get("card_id")
+            product_external_id = content.get("product_external_id")
             amount = int(content.get("amount") or 0)
             description = content.get("description", f"{self.device.name} purchase.")
+            command = content.get("command")
 
             if card_id is None:
                 self.send_json(
                     {
-                        "command": "debit",
+                        "command": command,
                         "reason": "invalid_card_id",
                         "success": False,
                     }
                 )
                 return True
 
-            # stops us accidentally crediting an account if it's negative
+            # stops us accidentally accepting a negative value
             if amount <= 0:
                 self.send_json(
                     {
-                        "command": "debit",
+                        "command": command,
                         "reason": "invalid_amount",
                         "success": False,
                     }
@@ -509,68 +518,19 @@ class MemberbucksConsumer(AccessDeviceConsumer):
             except ObjectDoesNotExist:
                 self.send_json(
                     {
-                        "command": "debit",
+                        "command": command,
                         "reason": "invalid_card_id",
                         "success": False,
                     }
                 )
                 logger.warning(
-                    f"Tried to process debit but profile with card ID {card_id} does not exist."
+                    f"Tried to process {command} because profile with card ID {card_id} does not exist."
                 )
                 return True
 
-            if profile.memberbucks_balance >= amount:
-                time_dif = (
-                    timezone.now() - profile.last_memberbucks_purchase
-                ).total_seconds()
+            if command == "debit" and profile.memberbucks_balance < amount:
+                # TODO: auto top up feature
 
-                if time_dif > 5:
-                    transaction = MemberBucks()
-                    transaction.amount = amount * -1.0
-                    transaction.user = profile.user
-                    transaction.description = description
-                    transaction.transaction_type = "card"
-                    transaction.save()
-
-                    profile.last_memberbucks_purchase = timezone.now()
-                    profile.save()
-                    profile.refresh_from_db()
-
-                    subject = (
-                        f"You just made a ${amount} {config.MEMBERBUCKS_NAME} purchase."
-                    )
-                    message = (
-                        f"Description: {transaction.description}. Balance Remaining: "
-                    )
-                    f"${profile.memberbucks_balance}. If this wasn't you, or you believe there "
-                    f"has been an error, please let us know."
-
-                    User.objects.get(profile=profile).email_notification(
-                        subject, message
-                    )
-
-                    profile.user.log_event(
-                        f"Debited ${amount} from {config.MEMBERBUCKS_NAME} account.",
-                        "memberbucks",
-                    )
-
-                    self.send_json(
-                        {
-                            "command": "debit",
-                            "balance": int(profile.memberbucks_balance * 100),
-                            "success": True,
-                        }
-                    )
-                    return True
-
-                else:
-                    self.send_json(
-                        {
-                            "command": "rate_limited",
-                        }
-                    )
-
-            else:
                 profile.user.log_event(
                     f"Not enough funds to debit ${amount} from {config.MEMBERBUCKS_NAME} account by {self.device.name}.",
                     "memberbucks",
@@ -595,7 +555,82 @@ class MemberbucksConsumer(AccessDeviceConsumer):
                 )
                 return True
 
-        if content.get("command") == "credit":
-            return False  # TODO: implement
+            time_dif = (
+                timezone.now() - profile.last_memberbucks_purchase
+            ).total_seconds()
+
+            # We have a hard rate limit of one transaction every 3 seconds at most
+            if time_dif > 3:
+                amount = float(amount) if command == "credit" else float(amount * -1)
+
+                if product_external_id:
+                    try:
+                        product = MemberbucksProduct.objects.get(
+                            external_id=product_external_id
+                        )
+                    except ObjectDoesNotExist:
+                        self.send_json(
+                            {
+                                "command": command,
+                                "reason": "invalid_product_external_id",
+                                "success": False,
+                            }
+                        )
+                        logger.warning(
+                            f"Tried to process {command} but product with external_id {product_external_id} does not exist."
+                        )
+                        return True
+                    purchase_log = MemberbucksProductPurchaseLog()
+                    purchase_log.product = product
+                    purchase_log.user = profile.user
+                    purchase_log.cost_price = product.cost_price
+                    purchase_log.price = amount
+                    purchase_log.memberbucks_device = self.device
+                    purchase_log.save()
+
+                    description = f"{profile.get_full_name()} ({profile.screen_name}) {product.name} purchased from {self.device.name} ({product.external_id_name}) for {amount}."
+
+                transaction = MemberBucks()
+                transaction.amount = amount
+                transaction.user = profile.user
+                transaction.description = description
+                transaction.transaction_type = "card"
+                transaction.save()
+
+                profile.last_memberbucks_purchase = timezone.now()
+                profile.save()
+                profile.refresh_from_db()
+
+                subject = (
+                    f"You just made a ${amount} {config.MEMBERBUCKS_NAME} purchase."
+                )
+                message = f"Description: {transaction.description}. Balance Remaining: "
+                f"${profile.memberbucks_balance}. If this wasn't you, or you believe there "
+                f"has been an error, please let us know."
+
+                User.objects.get(profile=profile).email_notification(subject, message)
+
+                profile.user.log_event(
+                    f"{command}ed ${amount} from {config.MEMBERBUCKS_NAME} account.",
+                    "memberbucks",
+                )
+
+                self.send_json(
+                    {
+                        "command": command,
+                        "balance": int(profile.memberbucks_balance * 100),
+                        "amount": int(transaction.amount * 100),
+                        "success": True,
+                    }
+                )
+                return True
+
+            else:
+                self.send_json(
+                    {
+                        "command": "rate_limited",
+                    }
+                )
+
         else:
             return False

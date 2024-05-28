@@ -22,7 +22,7 @@ from urllib.parse import parse_qs, urlencode
 import hmac
 import hashlib
 
-logger = logging.getLogger("app")
+logger = logging.getLogger("general")
 
 
 class GetConfig(APIView):
@@ -747,7 +747,7 @@ class Register(APIView):
         except Exception as e:
             # gracefully catch and move on
             sentry_sdk.capture_exception(e)
-            print(e)
+            logger.error(e)
             return Response()
 
         return Response()

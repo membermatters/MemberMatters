@@ -3,7 +3,6 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import duration from 'dayjs/plugin/duration';
-import { i18n } from 'boot/i18n';
 
 dayjs.extend(duration);
 dayjs.extend(utc);

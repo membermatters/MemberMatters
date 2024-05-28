@@ -53,6 +53,16 @@ urlpatterns = [
         views.Interlocks.as_view(),
         name="Interlocks",
     ),
+    path(
+        "api/admin/memberbucks-devices/",
+        views.MemberbucksDevices.as_view(),
+        name="MemberbucksDevices",
+    ),
+    path(
+        "api/admin/memberbucks-devices/<int:device_id>/",
+        views.MemberbucksDevices.as_view(),
+        name="MemberbucksDevices",
+    ),
     path("api/admin/tiers/", views.MemberTiers.as_view(), name="ManageMemberTiers"),
     path(
         "api/admin/tiers/<int:tier_id>/",
