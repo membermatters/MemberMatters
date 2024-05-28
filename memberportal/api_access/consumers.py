@@ -322,7 +322,7 @@ class InterlockConsumer(AccessDeviceConsumer):
                 profile.update_last_seen()
                 if profile.state == "active":
                     if self.device.locked_out:
-                        reason = "maintenance_lock_out"
+                        reason = "locked_out"
 
                     else:
                         allowed_interlocks = profile.interlocks.all()
@@ -335,7 +335,9 @@ class InterlockConsumer(AccessDeviceConsumer):
                                 or config.ENABLE_PORTAL_SITE_SIGN_IN is False
                             ):
                                 # TODO: check they have enough memberbucks balance
-                                self.device.log_access(profile.user, type="activated")
+                                self.device.log_access(
+                                    profile.user, log_type="activated"
+                                )
                                 self.session = self.device.session_start(profile.user)
                                 self.send_json(
                                     {

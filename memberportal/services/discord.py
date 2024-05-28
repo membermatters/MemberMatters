@@ -33,7 +33,7 @@ def post_door_swipe_to_discord(name, door, status):
                 }
             )
 
-        elif status == "maintenance_lock_out":
+        elif status == "locked_out":
             json_message["embeds"].append(
                 {
                     "description": ":x: {} tried to access the {} but it is currently under a "
@@ -106,7 +106,7 @@ def post_interlock_swipe_to_discord(name, interlock, type, time=None):
                 }
             )
 
-        elif type == "maintenance_lock_out":
+        elif type == "locked_out":
             json_message["embeds"].append(
                 {
                     "description": "{} tried to access the {} but it is currently under a "

@@ -320,17 +320,28 @@ class Doors(ExportModelOperationsMixin("door"), AccessControlledDevice):
         logger.debug("Logging access for {}".format(self.name))
 
         user_object = User.objects.get(pk=member_id)
-        door_log = DoorLog.objects.create(user=user_object, door=self, success=success)
+        door_log = DoorLog.objects.create(
+            user=user_object, door=self, success=success is True
+        )
         profile = user_object.profile
         profile.last_seen = timezone.now()
         profile.save()
 
-        if success == True:
+        if success is True:
             metrics.device_access_successes_total.labels(
                 **self.get_metrics_labels()
             ).inc()
             if self.post_to_discord:
                 post_door_swipe_to_discord(profile.get_full_name(), self.name, success)
+
+        elif success == "locked_out":
+            metrics.device_access_failures_total.labels(
+                **self.get_metrics_labels()
+            ).inc()
+            post_door_swipe_to_discord(profile.get_full_name(), self.name, "locked_out")
+
+            sms_message = sms.SMS()
+            sms_message.send_locked_out_swipe_alert(profile.phone)
 
         elif not success:
             metrics.device_access_failures_total.labels(
@@ -342,17 +353,6 @@ class Doors(ExportModelOperationsMixin("door"), AccessControlledDevice):
                 )
             sms_message = sms.SMS()
             sms_message.send_inactive_swipe_alert(profile.phone)
-
-        elif success == "locked out":
-            metrics.device_access_failures_total.labels(
-                **self.get_metrics_labels()
-            ).inc()
-            post_door_swipe_to_discord(
-                profile.get_full_name(), self.name, "maintenance_lock_out"
-            )
-
-            sms_message = sms.SMS()
-            sms_message.send_locked_out_swipe_alert(profile.phone)
 
         return door_log
 
@@ -389,7 +389,7 @@ class Interlock(ExportModelOperationsMixin("interlock"), AccessControlledDevice)
         for session in active_sessions:
             session.session_end(None)
 
-    def log_access(self, user, type="activated"):
+    def log_access(self, user, log_type="activated"):
         logger.debug("Logging access for {}".format(self.name))
 
         profile = user.profile
@@ -398,42 +398,42 @@ class Interlock(ExportModelOperationsMixin("interlock"), AccessControlledDevice)
 
         if self.post_to_discord:
             post_interlock_swipe_to_discord(
-                profile.get_full_name(), self.name, type=type
+                profile.get_full_name(), self.name, type=log_type
             )
 
-        if type == "activated":
+        if log_type == "activated":
             metrics.device_interlock_session_activations_total.labels(
                 **self.get_metrics_labels()
             ).inc()
             return True
 
-        elif type == "left_on":
+        elif log_type == "left_on":
             metrics.device_interlock_sessions_left_on_total.labels(
                 **self.get_metrics_labels()
             ).inc()
             return True
 
-        elif type == "deactivated":
+        elif log_type == "deactivated":
             metrics.device_interlock_sessions_deactivated_total.labels(
                 **self.get_metrics_labels()
             ).inc()
             return True
 
-        elif type == "rejected":
+        elif log_type == "rejected":
             sms_message = sms.SMS()
             sms_message.send_inactive_swipe_alert(profile.phone)
 
-        elif type == "maintenance_lock_out":
+        elif log_type == "locked_out":
             sms_message = sms.SMS()
             sms_message.send_locked_out_swipe_alert(profile.phone)
 
-        elif type == "not_signed_in":
+        elif log_type == "not_signed_in":
             pass
 
         metrics.device_interlock_sessions_rejected_total.labels(
             **self.get_metrics_labels()
         ).inc()
-        self.session_rejected(user, reason=type)
+        self.session_rejected(user, reason=log_type)
         return True
 
 
