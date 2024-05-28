@@ -84,6 +84,7 @@ class AccessControlledDevice(
         return {
             "type": self.type,
             "id": self.id,
+            "name": self.name,
         }
 
     def checkin(self):
