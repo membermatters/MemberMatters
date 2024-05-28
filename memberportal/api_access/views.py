@@ -24,6 +24,7 @@ class AccessSystemStatus(APIView):
         statusObject = {
             "doors": [],
             "interlocks": [],
+            "memberbucksDevices": [],
         }
 
         error_if_offline = request.GET.get("errorIfOffline", False)
