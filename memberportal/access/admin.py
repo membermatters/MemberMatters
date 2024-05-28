@@ -4,7 +4,7 @@ from .models import *
 
 
 @admin.register(AccessControlledDeviceAPIKey)
-class AccessControlledDeviceAPIKey(APIKeyModelAdmin):
+class AccessControlledDeviceAPIKeyAdmin(APIKeyModelAdmin):
     pass
 
 

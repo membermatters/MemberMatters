@@ -3,7 +3,6 @@ from access.models import (
     Doors,
     Interlock,
     HasExternalAccessControlAPIKey,
-    AccessControlledDeviceAPIKey,
 )
 from profile.models import User
 

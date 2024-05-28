@@ -2,7 +2,6 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta, datetime
 import pytz
-import os
 from django.utils.timezone import make_aware
 from django.contrib.auth.models import (
     BaseUserManager,
@@ -19,6 +18,8 @@ import uuid
 import logging
 from services.emails import send_single_email, send_email_to_admin
 from services import sms
+from django_prometheus.models import ExportModelOperationsMixin
+
 
 logger = logging.getLogger("profile")
 
@@ -41,7 +42,7 @@ LOG_TYPES = (
 )
 
 
-class Log(models.Model):
+class Log(ExportModelOperationsMixin("log"), models.Model):
     id = models.AutoField(primary_key=True)
     logtype = models.CharField(
         "Type of action/event", choices=LOG_TYPES, max_length=30, default="generic"
@@ -74,14 +75,14 @@ class Log(models.Model):
     )
 
 
-class UserEventLog(Log):
+class UserEventLog(ExportModelOperationsMixin("user-event-log"), Log):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.description}"
 
 
-class EventLog(Log):
+class EventLog(ExportModelOperationsMixin("event-log"), Log):
     def __str__(self):
         if self.door:
             return f"{self.door.name} {self.logtype} log - {self.description}"
@@ -156,7 +157,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(ExportModelOperationsMixin("user"), AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
         verbose_name="email address",
         max_length=255,
@@ -295,7 +296,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return True
 
 
-class Profile(models.Model):
+class Profile(ExportModelOperationsMixin("profile"), models.Model):
     STATES = (
         ("noob", "Needs Induction"),
         ("active", "Active"),

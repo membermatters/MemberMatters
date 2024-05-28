@@ -1,8 +1,9 @@
 from django.db import models
+from django_prometheus.models import ExportModelOperationsMixin
 
 
 # This is a Stripe Product
-class MemberTier(models.Model):
+class MemberTier(ExportModelOperationsMixin("kiosk"), models.Model):
     """A membership tier that a member can be billed for."""
 
     id = models.AutoField(primary_key=True)
@@ -31,7 +32,7 @@ class MemberTier(models.Model):
 
 
 # This is a Stripe Price
-class PaymentPlan(models.Model):
+class PaymentPlan(ExportModelOperationsMixin("payment-plan"), models.Model):
     """A Membership Plan that specifies how a member is billed for a member tier."""
 
     BILLING_PERIODS = [("Months", "month"), ("Weeks", "week"), ("Days", "days")]

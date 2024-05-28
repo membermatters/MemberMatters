@@ -4,11 +4,12 @@ from django.utils import timezone
 import pytz
 from django.conf import settings
 from uuid import uuid4
+from django_prometheus.models import ExportModelOperationsMixin
 
 utc = pytz.UTC
 
 
-class Kiosk(models.Model):
+class Kiosk(ExportModelOperationsMixin("kiosk"), models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField("Name", max_length=30, unique=True)
     kiosk_id = models.CharField("Kiosk Id", max_length=70, unique=True)
@@ -34,7 +35,7 @@ class Kiosk(models.Model):
         return self.name
 
 
-class SiteSession(models.Model):
+class SiteSession(ExportModelOperationsMixin("site-session"), models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     signin_date = models.DateTimeField(default=timezone.now)
@@ -49,7 +50,9 @@ class SiteSession(models.Model):
         return f"{self.user.profile.get_full_name()} - in: {self.signin_date} out: {self.signout_date}"
 
 
-class EmailVerificationToken(models.Model):
+class EmailVerificationToken(
+    ExportModelOperationsMixin("email-verification-token"), models.Model
+):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     creation_date = models.DateTimeField(default=timezone.now)

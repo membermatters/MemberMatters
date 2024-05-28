@@ -9,7 +9,6 @@ from access.models import (
     InterlockLog,
     MemberbucksDevice,
     AccessControlledDeviceAPIKey,
-    AccessControlledDevice,
 )
 from memberbucks.models import (
     MemberBucks,

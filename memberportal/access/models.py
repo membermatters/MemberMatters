@@ -16,6 +16,7 @@ from rest_framework_api_key.permissions import BaseHasAPIKey, AbstractAPIKey
 from constance import config
 import hashlib
 from django.core.validators import URLValidator
+from django_prometheus.models import ExportModelOperationsMixin
 
 logger = logging.getLogger("access")
 User = auth.get_user_model()
@@ -26,8 +27,7 @@ class AccessControlledDeviceAPIKey(AbstractAPIKey):
     class Meta:
         # Add verbose name
         verbose_name = "API Key For Access Controlled Device"
-
-    pass
+        app_label = "access"
 
 
 class HasAccessControlledDeviceAPIKey(BaseHasAPIKey):
@@ -46,7 +46,9 @@ class HasExternalAccessControlAPIKey(BaseHasAPIKey):
     model = ExternalAccessControlAPIKey
 
 
-class AccessControlledDevice(models.Model):
+class AccessControlledDevice(
+    ExportModelOperationsMixin("access-controlled-device"), models.Model
+):
     id = models.AutoField(primary_key=True)
     authorised = models.BooleanField(
         "Is this device authorised to access the system?", default=False
@@ -248,7 +250,9 @@ class AccessControlledDevice(models.Model):
         )
 
 
-class MemberbucksDevice(AccessControlledDevice):
+class MemberbucksDevice(
+    ExportModelOperationsMixin("memberbucks-device"), AccessControlledDevice
+):
     all_members = True
     type = "memberbucks"
 
@@ -257,7 +261,7 @@ class MemberbucksDevice(AccessControlledDevice):
         verbose_name_plural = "Memberbucks Devices"
 
 
-class Doors(AccessControlledDevice):
+class Doors(ExportModelOperationsMixin("door"), AccessControlledDevice):
     type = "door"
 
     class Meta:
@@ -324,7 +328,7 @@ class Doors(AccessControlledDevice):
         return door_log
 
 
-class Interlock(AccessControlledDevice):
+class Interlock(ExportModelOperationsMixin("interlock"), AccessControlledDevice):
     type = "interlock"
 
     cost_per_session = models.IntegerField(
@@ -392,7 +396,7 @@ class Interlock(AccessControlledDevice):
         return True
 
 
-class DoorLog(models.Model):
+class DoorLog(ExportModelOperationsMixin("door-log"), models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     door = models.ForeignKey(Doors, on_delete=models.CASCADE)
@@ -403,7 +407,7 @@ class DoorLog(models.Model):
         return f"{self.user.get_full_name()} ({self.user.profile.screen_name}) swiped at {self.door.name} {'successfully' if self.success else 'unsuccessfully'} on {self.date.date()}"
 
 
-class InterlockLog(models.Model):
+class InterlockLog(ExportModelOperationsMixin("interlock-log"), models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
     interlock = models.ForeignKey(Interlock, on_delete=models.CASCADE)
     user_started = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
