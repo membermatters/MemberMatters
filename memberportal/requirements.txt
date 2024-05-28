@@ -29,3 +29,4 @@ django-prometheus==2.3.1
 psycopg2-binary~=2.9.6
 django-oidc-provider~=0.8.0
 djangorestframework-api-key==2.*
+prometheus-client~=0.20.0

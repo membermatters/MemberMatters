@@ -1,10 +1,11 @@
-from django.utils import timezone
 from access.models import (
     Doors,
     Interlock,
+    MemberbucksDevice,
     HasExternalAccessControlAPIKey,
 )
 from profile.models import User
+import metrics
 
 from rest_framework import status, permissions
 from rest_framework.response import Response
@@ -27,9 +28,35 @@ class AccessSystemStatus(APIView):
 
         error_if_offline = request.GET.get("errorIfOffline", False)
         a_device_is_offline = False
+        total_count, offline_count, online_count, locked_out_count = 0, 0, 0, 0
+
+        def reset_count():
+            nonlocal total_count, offline_count, online_count, locked_out_count
+            total_count, offline_count, online_count, locked_out_count = 0, 0, 0, 0
+
+        def update_count(device_offline=False, device_locked_out=False):
+            nonlocal total_count, offline_count, online_count, locked_out_count
+            total_count += 1
+            if device_offline:
+                offline_count += 1
+            else:
+                online_count += 1
+            if device_locked_out:
+                locked_out_count += 1
+
+        def report_count(device_type: str):
+            nonlocal total_count, offline_count, online_count, locked_out_count
+            metrics.devices_total.labels(type=device_type).set(total_count)
+            metrics.devices_online_total.labels(type=device_type).set(online_count)
+            metrics.devices_offline_total.labels(type=device_type).set(offline_count)
+            metrics.devices_locked_out_total.labels(type=device_type).set(
+                locked_out_count
+            )
 
         for door in Doors.objects.all():
             offline = door.get_unavailable()
+            update_count(offline, door.locked_out)
+
             statusObject["doors"].append(
                 {
                     "id": door.id,
@@ -42,8 +69,14 @@ class AccessSystemStatus(APIView):
             if offline and door.report_online_status:
                 a_device_is_offline = True
 
+        # report door metrics
+        report_count("door")
+        reset_count()
+
         for interlock in Interlock.objects.all():
             offline = interlock.get_unavailable()
+            update_count(offline, interlock.locked_out)
+
             statusObject["interlocks"].append(
                 {
                     "id": interlock.id,
@@ -55,6 +88,30 @@ class AccessSystemStatus(APIView):
             )
             if offline and interlock.report_online_status:
                 a_device_is_offline = True
+
+        # report interlock metrics
+        report_count("interlock")
+        reset_count()
+
+        for memberbucksDevice in MemberbucksDevice.objects.all():
+            offline = memberbucksDevice.get_unavailable()
+            update_count(offline, memberbucksDevice.locked_out)
+
+            statusObject["memberbucksDevices"].append(
+                {
+                    "id": memberbucksDevice.id,
+                    "name": memberbucksDevice.name,
+                    "lastSeen": memberbucksDevice.last_seen,
+                    "lockedOut": memberbucksDevice.locked_out,
+                    "offline": offline,
+                }
+            )
+            if offline and memberbucksDevice.report_online_status:
+                a_device_is_offline = True
+
+        # report spacebucksDevices metrics
+        report_count("spacebucksDevice")
+        reset_count()
 
         if error_if_offline and a_device_is_offline:
             return Response(statusObject, status=status.HTTP_503_SERVICE_UNAVAILABLE)
