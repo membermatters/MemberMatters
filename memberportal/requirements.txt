@@ -11,7 +11,7 @@ djangorestframework~=3.15.1
 djangorestframework-simplejwt>=5.3.1
 django-csp~=3.8
 sentry-sdk==2.3.1
-mysqlclient~2.2.4
+mysqlclient~=2.2.4
 git+https://github.com/mailchimp/mailchimp-marketing-python.git
 channels~=3.0.4
 zeroconf~=0.132.2
@@ -19,7 +19,7 @@ postmarker~=1.0
 channels_redis~=3.4.0
 ics~=0.7.2
 python_http_client~=3.3.7
-pwned-passwords-django~=5.0.0
+pwned-passwords-django~=2.1
 celery~=5.4.0
 django-celery-results~=2.5.1
 django-celery-beat~=2.6.0
