@@ -330,6 +330,10 @@ CONSTANCE_CONFIG = {
         '{"inactive_swipe": "Hi! Your swipe was just declined due to inactive membership. Please contact us if you need assistance.",             "deactivated_access": "Hi! Your site access was just turned off. Please check your email and contact us if you need assistance.",             "activated_access": "Hi! Your site access was just turned on. Please make sure you stay up to date with our policies and rules by visiting our website.",             "locked_out_swipe": "Hi! Your swipe was just declined due to a temporary maintenance lockout. Please contact us if you need assistance."}',
         "The SMS messages to send when a user attempts to swipe with an inactive card.",
     ),
+    "METRICS_INTERVAL": (
+        60,
+        "The interval in seconds to calculate and store application level metrics data like member count.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -343,6 +347,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "GOOGLE_ANALYTICS_MEASUREMENT_ID",
                 "API_SECRET_KEY",
                 "SITE_BANNER",
+                "METRICS_INTERVAL",
             ),
         ),
         (
