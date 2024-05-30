@@ -69,10 +69,14 @@ class CustomScopeClaims(ScopeClaims):
         if config.VIKUNJA_TEAMS:
             try:
                 teams = json.loads(config.VIKUNJA_TEAMS)
-
-                return {
-                    "vikunja_groups": teams,
-                }
+                if self.user.profile.state == "active":
+                    return {
+                        "vikunja_groups": teams,
+                    }
+                else:
+                    return {
+                        "vikunja_groups": [],
+                    }
             except json.JSONDecodeError:
                 logger.error(
                     "VIKUNJA_TEAMS is not a valid JSON object and the Vikunja teams claim wasn't added."

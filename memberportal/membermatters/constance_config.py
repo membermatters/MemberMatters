@@ -419,7 +419,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "MEMBERBUCKS_CURRENCY",
             ),
         ),
-        ("Vikunja Integration", ("VIKUNJA_TEAMS")),
+        ("Vikunja Integration", ("VIKUNJA_TEAMS",)),
         (
             "Trello Integration",
             (
