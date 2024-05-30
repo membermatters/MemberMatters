@@ -1,3 +1,12 @@
+import json
+import logging
+from django.utils.translation import ugettext_lazy as _
+from oidc_provider.lib.claims import ScopeClaims
+from constance import config
+
+logger = logging.getLogger("oidc_provider")
+
+
 def userinfo(claims, user):
     # Populate claims dict.
     claims["name"] = user.get_full_name() or "NO_NAME"
@@ -14,16 +23,17 @@ def userinfo(claims, user):
     return claims
 
 
-from django.utils.translation import ugettext_lazy as _
-from oidc_provider.lib.claims import ScopeClaims
-
-
 class CustomScopeClaims(ScopeClaims):
     info_membershipinfo = (
         _("Membership Info"),
         _(
             "Current membership status, and other membership information like permissions/groups."
         ),
+    )
+
+    info_vikunja_teams = (
+        _("Vikunja Teams"),
+        _("Vikunja teams all members should be added to automatically."),
     )
 
     def scope_membershipinfo(self):
@@ -54,3 +64,18 @@ class CustomScopeClaims(ScopeClaims):
             "firstSubscribedDate": firstSubscribed,
             "groups": groups,
         }
+
+    def scope_vikunja_teams(self):
+        if config.VIKUNJA_TEAMS:
+            try:
+                teams = json.loads(config.VIKUNJA_TEAMS)
+
+                return {
+                    "vikunja_groups": teams,
+                }
+            except json.JSONDecodeError:
+                logger.error(
+                    "VIKUNJA_TEAMS is not a valid JSON object and the Vikunja teams claim wasn't added."
+                )
+
+        return {}

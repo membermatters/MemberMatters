@@ -120,6 +120,11 @@ CONSTANCE_CONFIG = {
         False,
         "Enable integration with stripe for membership payments.",
     ),
+    # Vikunja config
+    "VIKUNJA_TEAMS": (
+        '[{"name": "Members", "oidcID": "members", "description": "The default team for all members.", "isPublic": false}]',
+        "A JSON array of Vikunja teams to add users to when they login via SSO. Returned as an OIDC claim with the 'vikunja_teams' scope. Check Vikunja docs for syntax.",
+    ),
     # Trello config
     "ENABLE_TRELLO_INTEGRATION": (
         False,
@@ -414,6 +419,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "MEMBERBUCKS_CURRENCY",
             ),
         ),
+        ("Vikunja Integration", ("VIKUNJA_TEAMS")),
         (
             "Trello Integration",
             (
