@@ -45,8 +45,10 @@ def calculate_metrics():
         .order_by("total")
     )
     # TODO: store the last X months in the database too
-    for state in subscription_states:
-        logger.debug(f"State: {state['subscription_status']} - Total: {state['total']}")
-        metrics.subscription_count_total.labels(state=state["subscription_status"]).set(
-            state["total"]
+    for status in subscription_states:
+        logger.debug(
+            f"State: {status['subscription_status']} - Total: {status['total']}"
         )
+        metrics.subscription_count_total.labels(
+            status=status["subscription_status"]
+        ).set(status["total"])
