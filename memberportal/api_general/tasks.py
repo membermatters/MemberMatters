@@ -22,6 +22,10 @@ def setup_periodic_tasks(sender, **kwargs):
 @app.task
 def calculate_metrics():
     logger.info("Calculating metrics!")
+    metric_results = {
+        "member_count": [],
+        "subscription_count": [],
+    }
 
     # get the count of all the different member profile states
     logger.debug("Calculating member count total")
@@ -35,6 +39,9 @@ def calculate_metrics():
     for state in profile_states:
         logger.debug(f"State: {state['state']} - Total: {state['total']}")
         metrics.member_count_total.labels(state=state["state"]).set(state["total"])
+        metric_results["member_count"].append(
+            {"state": state["state"], "total": state["total"]}
+        )
 
     # get the count of all the different subscription states
     logger.debug("Calculating subscription count total")
@@ -52,3 +59,8 @@ def calculate_metrics():
         metrics.subscription_count_total.labels(
             status=status["subscription_status"]
         ).set(status["total"])
+        metric_results["subscription_count"].append(
+            {"status": status["subscription_status"], "total": status["total"]}
+        )
+
+    return metric_results

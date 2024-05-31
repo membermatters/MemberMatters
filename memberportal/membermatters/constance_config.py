@@ -331,7 +331,7 @@ CONSTANCE_CONFIG = {
         "The SMS messages to send when a user attempts to swipe with an inactive card.",
     ),
     "METRICS_INTERVAL": (
-        60,
+        300,
         "The interval in seconds to calculate and store application level metrics data like member count.",
     ),
 }
