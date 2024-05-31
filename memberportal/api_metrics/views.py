@@ -59,7 +59,9 @@ class UpdatePromMetrics(APIView):
                     continue
 
                 for state in metric.data:
-                    print(f"Setting {metric.name}:" + state)
+                    logger.debug(
+                        f"Setting {metric.name} {state['state']} to {state['total']}"
+                    )
                     prom_metric.labels(state=state["state"]).set(state["total"])
 
         return Response()

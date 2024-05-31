@@ -34,9 +34,9 @@ def calculate_metrics():
         .annotate(total=Count("state"))
         .order_by("total")
     )
-    profile_states_data = [{item["state"]: item["total"]} for item in profile_states]
+
     Metric.objects.create(
-        name=Metric.MetricName.MEMBER_COUNT_TOTAL, data=profile_states_data
+        name=Metric.MetricName.MEMBER_COUNT_TOTAL, data=profile_states
     ).full_clean()
 
     # get the count of all the different subscription states
@@ -48,7 +48,8 @@ def calculate_metrics():
         .order_by("total")
     )
     subscription_states_data = [
-        {item["subscription_status"]: item["total"]} for item in subscription_states
+        {"state": item["subscription_status"], "total": item["total"]}
+        for item in subscription_states
     ]
     Metric.objects.create(
         name=Metric.MetricName.SUBSCRIPTION_COUNT_TOTAL,
