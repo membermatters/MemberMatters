@@ -39,6 +39,8 @@ caproverOneClickApp:
       Your service is available at http://$$cap_appname.$$cap_root_domain. 
       You may need to load the data fixtures or create an admin login using the Django cli.
       You can connect to the running container and run something like `python3 manage.py loaddata fixtures/initial.json` to do this.
+      We also setup a prometheus exporter for celery at http://$$cap_appname-mm-celery-prom-exporter:9808/metrics.
+      The prometheus exporter is for celery level, not application level metrics.
   displayName: "MemberMatters"
   isOfficial: true
   description: Open source membership management platform for makerspaces and community groups.
@@ -90,7 +92,6 @@ services:
   # MemberMatters Celery Worker
   $$cap_appname-mm-celery-worker:
     image: membermatters/membermatters:$$cap_mm_version
-    # command: ["celery", "-A", "membermatters.celeryapp", "worker", "-l", "INFO"]
     restart: always
     environment:
       MM_ENV: $$cap_env
@@ -113,7 +114,6 @@ services:
   # MemberMatters Celery Beat
   $$cap_appname-mm-celery-beat:
     image: membermatters/membermatters:$$cap_mm_version
-    # command: ["celery", "-A", "membermatters.celeryapp", "beat", "-l", "INFO"]
     restart: always
     environment:
       MM_ENV: $$cap_env
@@ -130,5 +130,17 @@ services:
       - $$cap_appname-mm-redis
       - $$cap_appname-mm-postgres
       - $$cap_appname-mm-webapp
+    caproverExtra:
+      notExposeAsWebApp: true
+
+  # Celery Prometheus Exporter
+  $$cap_appname-mm-celery-prom-exporter:
+    image: danihodovic/celery-exporter
+    restart: always
+    environment:
+      CE_BROKER_URL: "redis://srv-captain--$$cap_appname-mm-redis:6379/0"
+    depends_on:
+      - $$cap_appname-mm-redis
+      - $$cap_appname-mm-celery-worker
     caproverExtra:
       notExposeAsWebApp: true
