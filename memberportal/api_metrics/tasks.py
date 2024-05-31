@@ -38,8 +38,11 @@ def calculate_metrics():
         .annotate(total=Count("state"))
         .order_by("total")
     )
+    profile_states_data = [
+        f"{item['state']}: {item['total']}" for item in profile_states
+    ]
     Metric.objects.create(
-        name=Metric.MetricName.MEMBER_COUNT_TOTAL, data=profile_states.values()
+        name=Metric.MetricName.MEMBER_COUNT_TOTAL, data=profile_states_data
     ).full_clean()
 
     # get the count of all the different subscription states
@@ -50,13 +53,14 @@ def calculate_metrics():
         .annotate(total=Count("subscription_status"))
         .order_by("total")
     )
+    subscription_states_data = [
+        f"{item['subscription_status']}: {item['total']}"
+        for item in subscription_states
+    ]
     Metric.objects.create(
         name=Metric.MetricName.SUBSCRIPTION_COUNT_TOTAL,
-        data=subscription_states.values(),
+        data=subscription_states_data,
     ).full_clean()
-
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)("api_update_prom_metrics")
 
     try:
         requests.post(config.SITE_URL + "/api/update-prom-metrics/")
