@@ -59,7 +59,7 @@ def calculate_metrics():
     async_to_sync(channel_layer.group_send)("api_update_prom_metrics")
 
     try:
-        requests.post(config.SITE_URL + "/api/metrics/update_prom_metrics/")
+        requests.post(config.SITE_URL + "/api/update-prom-metrics/")
 
     except Exception as e:
         logger.error(f"Failed to update Prometheus metrics: {e}")

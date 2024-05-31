@@ -1,6 +1,7 @@
 import logging
 import json
 
+from django.db.models import Count
 from rest_framework import permissions
 
 import api_metrics.metrics
@@ -38,11 +39,17 @@ class UpdatePromMetrics(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        # get the latest distinct metric
-        metrics = Metric.objects.order_by("creation_date").distinct("metric_name")
+        metrics = []
+
+        # get the latest metric for each type
+        for name in Metric.MetricName.values:
+            print(name)
+            metric = Metric.objects.filter(name=name).order_by("-creation_date").first()
+            if metric:
+                metrics.append(metric)
 
         for metric in metrics:
-            if metric.metric_name in [
+            if metric.name in [
                 Metric.MetricName.MEMBER_COUNT_TOTAL,
                 Metric.MetricName.SUBSCRIPTION_COUNT_TOTAL,
             ]:
@@ -53,6 +60,7 @@ class UpdatePromMetrics(APIView):
                     continue
 
                 for state in metric.data:
+                    print(f"Setting {metric.name} {state['state']} to {state['total']}")
                     prom_metric.labels(state=state["state"]).set(state["total"])
 
         return Response()
