@@ -25,10 +25,6 @@ def setup_periodic_tasks(sender, **kwargs):
 @app.task
 def calculate_metrics():
     logger.info("Calculating metrics!")
-    metric_results = {
-        "member_count": [],
-        "subscription_count": [],
-    }
 
     # get the count of all the different member profile states
     logger.debug("Calculating member count total")
@@ -68,4 +64,9 @@ def calculate_metrics():
     except Exception as e:
         logger.error(f"Failed to update Prometheus metrics: {e}")
 
-    return metric_results
+    return {
+        "member_count": Profile.objects.count(),
+        "subscription_count": Profile.objects.filter(
+            subscription_status__in=["active", "cancelling"]
+        ).count(),
+    }
