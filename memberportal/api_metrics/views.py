@@ -43,7 +43,6 @@ class UpdatePromMetrics(APIView):
 
         # get the latest metric for each type
         for name in Metric.MetricName.values:
-            print(name)
             metric = Metric.objects.filter(name=name).order_by("-creation_date").first()
             if metric:
                 metrics.append(metric)
@@ -60,7 +59,7 @@ class UpdatePromMetrics(APIView):
                     continue
 
                 for state in metric.data:
-                    print(f"Setting {metric.name} {state['state']} to {state['total']}")
+                    print(f"Setting {metric.name}:" + state)
                     prom_metric.labels(state=state["state"]).set(state["total"])
 
         return Response()
