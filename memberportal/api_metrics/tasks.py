@@ -1,12 +1,15 @@
-import api_general.metrics as metrics
+from api_metrics.models import Metric
 from profile.models import Profile
 from membermatters.celeryapp import app
 
+import requests
 from django.db.models import Count
 from constance import config
 import logging
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
-logger = logging.getLogger("celery:api_general")
+logger = logging.getLogger("celery:api_metrics")
 
 
 @app.on_after_finalize.connect
@@ -35,13 +38,9 @@ def calculate_metrics():
         .annotate(total=Count("state"))
         .order_by("total")
     )
-    # TODO: store the last X months in the database too
-    for state in profile_states:
-        logger.debug(f"State: {state['state']} - Total: {state['total']}")
-        metrics.member_count_total.labels(state=state["state"]).set(state["total"])
-        metric_results["member_count"].append(
-            {"state": state["state"], "total": state["total"]}
-        )
+    Metric.objects.create(
+        name=Metric.MetricName.MEMBER_COUNT_TOTAL, data=profile_states.values()
+    ).full_clean()
 
     # get the count of all the different subscription states
     logger.debug("Calculating subscription count total")
@@ -51,16 +50,18 @@ def calculate_metrics():
         .annotate(total=Count("subscription_status"))
         .order_by("total")
     )
-    # TODO: store the last X months in the database too
-    for status in subscription_states:
-        logger.debug(
-            f"State: {status['subscription_status']} - Total: {status['total']}"
-        )
-        metrics.subscription_count_total.labels(
-            status=status["subscription_status"]
-        ).set(status["total"])
-        metric_results["subscription_count"].append(
-            {"status": status["subscription_status"], "total": status["total"]}
-        )
+    Metric.objects.create(
+        name=Metric.MetricName.SUBSCRIPTION_COUNT_TOTAL,
+        data=subscription_states.values(),
+    ).full_clean()
+
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)("api_update_prom_metrics")
+
+    try:
+        requests.post(config.SITE_URL + "/api/metrics/update_prom_metrics/")
+
+    except Exception as e:
+        logger.error(f"Failed to update Prometheus metrics: {e}")
 
     return metric_results

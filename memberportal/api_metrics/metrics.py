@@ -9,5 +9,5 @@ member_count_total = Gauge(
 subscription_count_total = Gauge(
     "mm_subscription_count_total",
     "Number of subscriptions in the system",
-    ["status"],
+    ["state"],
 )
