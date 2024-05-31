@@ -338,6 +338,7 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Enable celery events for danihodovic/celery-exporter
 CELERY_WORKER_SEND_TASK_EVENTS = True
 CELERY_TASK_SEND_SENT_EVENT = True
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
 # Needed for testing OIDC on local development environment with ngrok (oauth requires HTTPS)
 # SITE_URL = "https://1bd0-122-148-148-138.ngrok-free.app"

@@ -1,6 +1,6 @@
 import os
 from celery import Celery
-from celery.signals import celeryd_init
+from celery.signals import worker_init
 from prometheus_client import CollectorRegistry, multiprocess, start_http_server
 import logging
 
@@ -27,8 +27,9 @@ def debug_task(self):
     print(f"Request: {self.request!r}")
 
 
-@celeryd_init.connect
+@worker_init.connect
 def celery_prom_server(sender=None, conf=None, **kwargs):
+    print("Starting CollectorRegistry() and multiprocess.MultiProcessCollector()...")
     logger.info(
         "Starting CollectorRegistry() and multiprocess.MultiProcessCollector()..."
     )
