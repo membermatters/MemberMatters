@@ -268,6 +268,31 @@ LOGGING = {
             "level": os.environ.get("MM_LOG_LEVEL_SMS", "INFO"),
             "propagate": False,
         },
+        "api_general:tasks": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_GENERAL_TASKS", "INFO"),
+            "propagate": False,
+        },
+        "celery:api_metrics": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_CELERY_METRICS", "INFO"),
+            "propagate": False,
+        },
+        "metrics": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_METRICS", "INFO"),
+            "propagate": False,
+        },
+        "celery:celeryapp": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_CELERY_APP", "INFO"),
+            "propagate": False,
+        },
+        "oidc_provider": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_OIDC_PROVIDER", "INFO"),
+            "propagate": False,
+        },
         "daphne": {"handlers": ["console", "file"], "level": "WARNING"},
     },
 }

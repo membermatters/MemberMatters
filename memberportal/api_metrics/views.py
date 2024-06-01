@@ -1,15 +1,11 @@
-import logging
-import json
-
-from django.db.models import Count
-from rest_framework import permissions
-
 import api_metrics.metrics
 from api_metrics.models import Metric
 from api_general.models import SiteSession
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import permissions
+import logging
 
 logger = logging.getLogger("metrics")
 

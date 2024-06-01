@@ -6,8 +6,6 @@ import requests
 from django.db.models import Count
 from constance import config
 import logging
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
 
 logger = logging.getLogger("celery:api_metrics")
 
@@ -28,12 +26,12 @@ def calculate_metrics():
 
     # get the count of all the different member profile states
     logger.debug("Calculating member count total")
-    profile_states = (
-        Profile.objects.all()
-        .values("state")
-        .annotate(total=Count("state"))
-        .order_by("total")
-    )
+    profile_states = []
+
+    for state in (
+        Profile.objects.values("state").annotate(count=Count("pk")).order_by("count")
+    ):
+        profile_states.append({"state": state["state"], "total": state["count"]})
 
     Metric.objects.create(
         name=Metric.MetricName.MEMBER_COUNT_TOTAL, data=profile_states
@@ -41,16 +39,15 @@ def calculate_metrics():
 
     # get the count of all the different subscription states
     logger.debug("Calculating subscription count total")
-    subscription_states = (
-        Profile.objects.all()
-        .values("subscription_status")
-        .annotate(total=Count("subscription_status"))
-        .order_by("total")
-    )
-    subscription_states_data = [
-        {"state": item["subscription_status"], "total": item["total"]}
-        for item in subscription_states
-    ]
+    subscription_states_data = []
+    for state in (
+        Profile.objects.values("subscription_status")
+        .annotate(count=Count("pk"))
+        .order_by("count")
+    ):
+        subscription_states_data.append(
+            {"state": state["subscription_status"], "total": state["count"]}
+        )
     Metric.objects.create(
         name=Metric.MetricName.SUBSCRIPTION_COUNT_TOTAL,
         data=subscription_states_data,
