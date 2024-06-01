@@ -30,3 +30,4 @@ psycopg2-binary~=2.9.9
 django-oidc-provider~=0.8.2
 djangorestframework-api-key~=3.0.0
 prometheus-client~=0.20.0
+python-dateutil~=2.9.0

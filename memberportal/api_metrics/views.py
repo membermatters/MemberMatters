@@ -46,6 +46,8 @@ class UpdatePromMetrics(APIView):
         for metric in metrics:
             if metric.name in [
                 Metric.MetricName.MEMBER_COUNT_TOTAL,
+                Metric.MetricName.MEMBER_COUNT_6_MONTHS,
+                Metric.MetricName.MEMBER_COUNT_12_MONTHS,
                 Metric.MetricName.SUBSCRIPTION_COUNT_TOTAL,
             ]:
                 prom_metric = getattr(api_metrics.metrics, metric.name)

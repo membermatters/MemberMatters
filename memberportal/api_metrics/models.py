@@ -11,6 +11,8 @@ class Metric(ExportModelOperationsMixin("metric"), models.Model):
 
     class MetricName(models.TextChoices):
         MEMBER_COUNT_TOTAL = "member_count_total", "Member Count Total"
+        MEMBER_COUNT_6_MONTHS = "member_count_6_months", "Member Count 6 Months"
+        MEMBER_COUNT_12_MONTHS = "member_count_12_months", "Member Count 12 Months"
         SUBSCRIPTION_COUNT_TOTAL = (
             "subscription_count_total",
             "Subscription Count Total",
