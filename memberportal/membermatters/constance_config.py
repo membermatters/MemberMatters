@@ -220,10 +220,6 @@ CONSTANCE_CONFIG = {
         "",
         "Enter your measurement ID to enable Google analytics. Only the new GA4 measurement IDs are supported. It should look something like G-XXXXXXXXXX.",
     ),
-    "API_SECRET_KEY": (
-        "PLEASE_CHANGE_ME",
-        "The API key used by the internal access system for device authentication.",
-    ),
     "SENTRY_DSN_FRONTEND": (
         "https://577dc95136cd402bb273d00f46c2a017@sentry.serv02.binarydigital.com.au/5/",
         "Enter a Sentry DSN to enable sentry logging of frontend errors.",
@@ -331,8 +327,8 @@ CONSTANCE_CONFIG = {
         "The SMS messages to send when a user attempts to swipe with an inactive card.",
     ),
     "METRICS_INTERVAL": (
-        300,
-        "The interval in seconds to calculate and store application level metrics data like member count.",
+        3600,
+        "The interval in seconds to calculate and store application level metrics data like member count and door swipes.",
     ),
 }
 
@@ -345,7 +341,6 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SITE_OWNER",
                 "SITE_LOCALE_CURRENCY",
                 "GOOGLE_ANALYTICS_MEASUREMENT_ID",
-                "API_SECRET_KEY",
                 "SITE_BANNER",
                 "METRICS_INTERVAL",
             ),
