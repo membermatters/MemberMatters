@@ -10,7 +10,7 @@ from access.models import (
     MemberbucksDevice,
     AccessControlledDeviceAPIKey,
 )
-from discord import post_purchase_to_discord
+from services.discord import post_purchase_to_discord
 from memberbucks.models import (
     MemberBucks,
     MemberbucksProductPurchaseLog,
