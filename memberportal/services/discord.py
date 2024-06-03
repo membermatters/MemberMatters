@@ -7,7 +7,7 @@ logger = logging.getLogger("discord")
 
 
 def post_door_swipe_to_discord(name, door, status):
-    if config.ENABLE_DISCORD_INTEGRATION:
+    if config.ENABLE_DISCORD_INTEGRATION and config.DISCORD_DOOR_WEBHOOK:
         logger.debug("Posting door swipe to Discord!")
 
         url = config.DISCORD_DOOR_WEBHOOK
@@ -61,7 +61,7 @@ def post_door_swipe_to_discord(name, door, status):
 
 
 def post_interlock_swipe_to_discord(name, interlock, type, time=None):
-    if config.ENABLE_DISCORD_INTEGRATION:
+    if config.ENABLE_DISCORD_INTEGRATION and config.DISCORD_INTERLOCK_WEBHOOK:
         logger.debug("Posting interlock swipe to Discord!")
         url = config.DISCORD_INTERLOCK_WEBHOOK
 
@@ -134,7 +134,7 @@ def post_interlock_swipe_to_discord(name, interlock, type, time=None):
 
 
 def post_kiosk_swipe_to_discord(name, sign_in):
-    if config.ENABLE_DISCORD_INTEGRATION:
+    if config.ENABLE_DISCORD_INTEGRATION and config.DISCORD_DOOR_WEBHOOK:
         logger.debug("Posting kiosk swipe to Discord!")
         url = config.DISCORD_DOOR_WEBHOOK
 
@@ -143,6 +143,31 @@ def post_kiosk_swipe_to_discord(name, sign_in):
         json_message["embeds"].append(
             {
                 "description": f":book: {name} just signed {'in' if sign_in else 'out'} at a kiosk.",
+                "color": 5025616,
+            }
+        )
+
+        try:
+            requests.post(url, json=json_message, timeout=settings.REQUEST_TIMEOUT)
+        except requests.exceptions.ReadTimeout:
+            return True
+
+    return True
+
+
+def post_purchase_to_discord(description):
+    if (
+        config.ENABLE_DISCORD_INTEGRATION
+        and config.DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK
+    ):
+        logger.debug("Posting memberbucks purchase to Discord!")
+        url = config.DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK
+
+        json_message = {"description": "", "embeds": []}
+
+        json_message["embeds"].append(
+            {
+                "description": f":coin: {description}",
                 "color": 5025616,
             }
         )

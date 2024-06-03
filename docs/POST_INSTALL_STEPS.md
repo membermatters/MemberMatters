@@ -188,6 +188,7 @@ as above (NOT recommended for security).
   * "ENABLE_DISCORD_INTEGRATION" - enable the post to Discord channel feature when an interlock or door swipe is recorded.
   * "DISCORD_DOOR_WEBHOOK" - URL for the door webhook.
   * "DISCORD_INTERLOCK_WEBHOOK" - URL for the interlock webhook.
+  * "DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK" - URL for the vending/product purchase webhook.
 
 ### Home Page and Welcome Email Cards
 

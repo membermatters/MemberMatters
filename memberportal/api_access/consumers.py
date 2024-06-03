@@ -10,6 +10,7 @@ from access.models import (
     MemberbucksDevice,
     AccessControlledDeviceAPIKey,
 )
+from discord import post_purchase_to_discord
 from memberbucks.models import (
     MemberBucks,
     MemberbucksProductPurchaseLog,
@@ -589,7 +590,11 @@ class MemberbucksConsumer(AccessDeviceConsumer):
                     purchase_log.memberbucks_device = self.device
                     purchase_log.save()
 
-                    description = f"{profile.get_full_name()} ({profile.screen_name}) {product.name} purchased from {self.device.name} ({product.external_id_name}) for {amount}."
+                    description = f"{product.name} purchased from {self.device.name} ({product.external_id_name})."
+
+                    post_purchase_to_discord(
+                        f"{profile.get_full_name()} ({profile.screen_name}) just bought something from {self.device.name}."
+                    )
 
                 transaction = MemberBucks()
                 transaction.amount = amount
@@ -624,6 +629,7 @@ class MemberbucksConsumer(AccessDeviceConsumer):
                         "success": True,
                     }
                 )
+
                 return True
 
             else:

@@ -208,6 +208,10 @@ CONSTANCE_CONFIG = {
         "https://discordapp.com/api/webhooks/<token>",
         "Discord URL to send webhook notifications to.",
     ),
+    "DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK": (
+        "https://discordapp.com/api/webhooks/<token>",
+        "Discord URL to send webhook notifications to for vending/memberbucks purchases.",
+    ),
     "ENABLE_DISCOURSE_SSO_PROTOCOL": (
         False,
         "Enable support for the discourse SSO protocol.",
