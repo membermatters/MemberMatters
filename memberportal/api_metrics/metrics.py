@@ -1,12 +1,12 @@
 import logging
-from datetime import timedelta
 from dateutil.relativedelta import relativedelta
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.utils import timezone
 from prometheus_client import Gauge
 
 from api_metrics.models import Metric
 from profile.models import Profile
+from memberbucks.models import MemberBucks
 
 logger = logging.getLogger("celery:api_metrics")
 
@@ -16,14 +16,14 @@ member_count_total = Gauge(
     ["state"],
 )
 
-member_6_months_count_total = Gauge(
-    "mm_member_6_months_count_total",
+member_count_6_months_total = Gauge(
+    "member_count_6_months_total",
     "Number of members in the system >6 months old",
     ["state"],
 )
 
-member_12_months_count_total = Gauge(
-    "mm_member_12_months_count_total",
+member_count_12_months_total = Gauge(
+    "member_count_12_months_total",
     "Number of members in the system >12 months old",
     ["state"],
 )
@@ -32,6 +32,17 @@ subscription_count_total = Gauge(
     "mm_subscription_count_total",
     "Number of subscriptions in the system",
     ["state"],
+)
+
+memberbucks_balance_total = Gauge(
+    "mm_memberbucks_balance_total",
+    "Total balance of memberbucks in the system",
+)
+
+memberbucks_transactions_total = Gauge(
+    "mm_memberbucks_transactions_total",
+    "Total balance of memberbucks transactions in the system",
+    ["type"],
 )
 
 
@@ -99,4 +110,34 @@ def calculate_subscription_count():
     Metric.objects.create(
         name=Metric.MetricName.SUBSCRIPTION_COUNT_TOTAL,
         data=subscription_states_data,
+    ).full_clean()
+
+
+def calculate_memberbucks_balance():
+    logger.debug("Calculating memberbucks balance total")
+    total_balance = Profile.objects.aggregate(Sum("memberbucks_balance"))
+    Metric.objects.create(
+        name=Metric.MetricName.MEMBERBUCKS_BALANCE_TOTAL,
+        data={"value": total_balance["memberbucks_balance__sum"]},
+    ).full_clean()
+
+
+def calculate_memberbucks_transactions():
+    # get the sum of all the different subscription states
+    logger.debug("Calculating subscription count total")
+    transaction_data = []
+    for transaction_type in (
+        MemberBucks.objects.values("transaction_type")
+        .annotate(amount=Sum("amount"))
+        .order_by("-amount")
+    ):
+        transaction_data.append(
+            {
+                "type": transaction_type["transaction_type"],
+                "total": transaction_type["amount"],
+            }
+        )
+    Metric.objects.create(
+        name=Metric.MetricName.MEMBERBUCKS_TRANSACTIONS_TOTAL,
+        data=transaction_data,
     ).full_clean()

@@ -26,6 +26,8 @@ def calculate_metrics():
     calculate_member_count_6_months()
     calculate_member_count_12_months()
     calculate_subscription_count()
+    calculate_memberbucks_balance()
+    calculate_memberbucks_transactions()
 
     try:
         requests.post(config.SITE_URL + "/api/update-prom-metrics/")

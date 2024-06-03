@@ -49,6 +49,8 @@ class UpdatePromMetrics(APIView):
                 Metric.MetricName.MEMBER_COUNT_6_MONTHS,
                 Metric.MetricName.MEMBER_COUNT_12_MONTHS,
                 Metric.MetricName.SUBSCRIPTION_COUNT_TOTAL,
+                Metric.MetricName.MEMBERBUCKS_BALANCE_TOTAL,
+                Metric.MetricName.MEMBERBUCKS_TRANSACTIONS_TOTAL,
             ]:
                 prom_metric = getattr(api_metrics.metrics, metric.name)
 
@@ -57,9 +59,22 @@ class UpdatePromMetrics(APIView):
                     continue
 
                 for state in metric.data:
-                    logger.debug(
-                        f"Setting {metric.name} {state['state']} to {state['total']}"
-                    )
-                    prom_metric.labels(state=state["state"]).set(state["total"])
+                    if metric.name in [
+                        Metric.MetricName.MEMBERBUCKS_TRANSACTIONS_TOTAL,
+                    ]:
+                        logger.debug(
+                            f"Setting {metric.name} {state['type']} to {state['total']}"
+                        )
+                        prom_metric.labels(type=state["type"]).set(state["total"])
+
+                    elif metric.name in [Metric.MetricName.MEMBERBUCKS_BALANCE_TOTAL]:
+                        logger.debug(f"Setting {metric.name} to {metric.data[state]}")
+                        prom_metric.set(metric.data[state])
+
+                    else:
+                        logger.debug(
+                            f"Setting {metric.name} {state['state']} to {state['total']}"
+                        )
+                        prom_metric.labels(state=state["state"]).set(state["total"])
 
         return Response()

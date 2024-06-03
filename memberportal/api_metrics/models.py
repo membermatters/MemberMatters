@@ -11,11 +11,22 @@ class Metric(ExportModelOperationsMixin("metric"), models.Model):
 
     class MetricName(models.TextChoices):
         MEMBER_COUNT_TOTAL = "member_count_total", "Member Count Total"
-        MEMBER_COUNT_6_MONTHS = "member_count_6_months", "Member Count 6 Months"
-        MEMBER_COUNT_12_MONTHS = "member_count_12_months", "Member Count 12 Months"
+        MEMBER_COUNT_6_MONTHS = "member_count_6_months_total", "Member Count 6 Months"
+        MEMBER_COUNT_12_MONTHS = (
+            "member_count_12_months_total",
+            "Member Count 12 Months",
+        )
         SUBSCRIPTION_COUNT_TOTAL = (
             "subscription_count_total",
             "Subscription Count Total",
+        )
+        MEMBERBUCKS_BALANCE_TOTAL = (
+            "memberbucks_balance_total",
+            "Memberbucks Balance Total",
+        )
+        MEMBERBUCKS_TRANSACTIONS_TOTAL = (
+            "memberbucks_transactions_total",
+            "Memberbucks Transactions Total",
         )
 
     id = models.AutoField(primary_key=True)
