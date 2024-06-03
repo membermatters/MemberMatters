@@ -498,6 +498,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             (
                 "DISCORD_DOOR_WEBHOOK",
                 "DISCORD_INTERLOCK_WEBHOOK",
+                "DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK",
             ),
         ),
     ]
