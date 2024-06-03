@@ -55,7 +55,7 @@ class AccessControlledDevice(
         "Is this device authorised to access the system?", default=False
     )
     name = models.CharField("Name", max_length=30, unique=True)
-    description = models.CharField("Description/Location", max_length=100)
+    description = models.CharField("Description/Location", max_length=500)
     ip_address = models.GenericIPAddressField(
         "IP Address of device", null=True, blank=True
     )
@@ -460,7 +460,7 @@ class InterlockLog(ExportModelOperationsMixin("interlock-log"), models.Model):
         related_name="user_ended",
     )
     success = models.BooleanField(default=True)
-    reason = models.CharField(max_length=100, blank=True, null=True)
+    reason = models.CharField(max_length=500, blank=True, null=True)
 
     date_started = models.DateTimeField(default=timezone.now, editable=False)
     date_updated = models.DateTimeField(default=timezone.now)

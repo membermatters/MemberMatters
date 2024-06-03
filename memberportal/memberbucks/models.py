@@ -32,7 +32,7 @@ class MemberBucks(ExportModelOperationsMixin("memberbucks"), models.Model):
     transaction_type = models.CharField(
         "Transaction Type", max_length=10, choices=TRANSACTION_TYPES
     )
-    description = models.CharField("Description of Transaction", max_length=100)
+    description = models.CharField("Description of Transaction", max_length=500)
     date = models.DateTimeField(auto_now_add=True, blank=True)
     logging_info = models.TextField("Detailed logging info from stripe.", blank=True)
 
