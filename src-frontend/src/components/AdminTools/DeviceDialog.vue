@@ -380,6 +380,7 @@ export default {
         (item) => String(item.id) === this.deviceId
       );
     } else if (this.deviceType === 'interlocks') {
+      this.disabled.sync = true;
       this.deviceIndex = this.interlocks.findIndex(
         (item) => String(item.id) === this.deviceId
       );
