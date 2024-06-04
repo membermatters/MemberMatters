@@ -47,6 +47,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
             "description": "New device that is yet to be setup.",
             "serial_number": device_id,
             "hidden": True,
+            "report_online_status": False,
         }
 
         # Get or create the device object and check it in
