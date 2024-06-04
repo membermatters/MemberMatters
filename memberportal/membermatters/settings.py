@@ -15,7 +15,6 @@ import os
 import json
 from datetime import timedelta
 from multiprocessing import Process
-from . import mdns
 import logging
 from .constance_config import CONSTANCE_CONFIG_FIELDSETS, CONSTANCE_CONFIG
 
