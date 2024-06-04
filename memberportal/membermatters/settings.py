@@ -272,9 +272,24 @@ LOGGING = {
             "level": os.environ.get("MM_LOG_LEVEL_GENERAL_TASKS", "INFO"),
             "propagate": False,
         },
+        "api_access:tasks": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_ACCESS_TASKS", "INFO"),
+            "propagate": False,
+        },
         "celery:api_metrics": {
             "handlers": ["console", "file"],
             "level": os.environ.get("MM_LOG_LEVEL_CELERY_METRICS", "INFO"),
+            "propagate": False,
+        },
+        "api_member_bucks": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_MEMBER_BUCKS", "INFO"),
+            "propagate": False,
+        },
+        "api_spacedirectory": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_SPACEDIRECTORY", "INFO"),
             "propagate": False,
         },
         "metrics": {

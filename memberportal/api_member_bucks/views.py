@@ -6,6 +6,9 @@ import stripe
 from constance import config
 from django.db.utils import OperationalError
 from sentry_sdk import capture_exception
+import logging
+
+logger = logging.getLogger("api_member_bucks")
 
 
 class StripeAPIView(APIView):
@@ -90,7 +93,8 @@ class MemberBucksAddFunds(StripeAPIView):
 
             payment_intent_id = err.payment_intent["id"]
             payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
-            print(payment_intent)
+            logger.error("Error charging card!")
+            logger.error(payment_intent)
 
             return Response("Error charging card", status=status.HTTP_400_BAD_REQUEST)
 
@@ -104,7 +108,8 @@ class MemberBucksAddFunds(StripeAPIView):
             return Response()
 
         else:
-            print(payment_intent.status)
+            logger.error("Error charging card! (unexpected payment intent status)")
+            logger.error(payment_intent.status)
             return Response("Error charging card", status=status.HTTP_400_BAD_REQUEST)
 
 
