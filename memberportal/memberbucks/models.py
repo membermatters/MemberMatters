@@ -3,9 +3,10 @@ from django.db import models
 from django.conf import settings
 from django.db.models import Sum
 from django.utils import timezone
+from django_prometheus.models import ExportModelOperationsMixin
 
 
-class MemberBucks(models.Model):
+class MemberBucks(ExportModelOperationsMixin("memberbucks"), models.Model):
     class Meta:
         verbose_name = "Memberbucks"
         verbose_name_plural = "Memberbucks"
@@ -31,12 +32,12 @@ class MemberBucks(models.Model):
     transaction_type = models.CharField(
         "Transaction Type", max_length=10, choices=TRANSACTION_TYPES
     )
-    description = models.CharField("Description of Transaction", max_length=100)
+    description = models.CharField("Description of Transaction", max_length=500)
     date = models.DateTimeField(auto_now_add=True, blank=True)
     logging_info = models.TextField("Detailed logging info from stripe.", blank=True)
 
     def __str__(self):
-        return f"{self.user.get_full_name()} {'debited' if self.amount > 0 else 'credited'} ${abs(self.amount)} for {self.description} on {self.date.date()}"
+        return f"{self.user.get_full_name()} {'debited' if self.amount < 0 else 'credited'} ${abs(self.amount)} for {self.description} on {self.date.date()}"
 
     def save(self, *args, **kwargs):
         super(MemberBucks, self).save(*args, **kwargs)
@@ -55,7 +56,9 @@ class MemberBucks(models.Model):
         }
 
 
-class MemberbucksProduct(models.Model):
+class MemberbucksProduct(
+    ExportModelOperationsMixin("memberbucks-products"), models.Model
+):
     """A new Memberbucks product should be created for each vending machine if you want to use the stock
     tracking or reporting features, or their external_id is different."""
 
@@ -88,7 +91,9 @@ class MemberbucksProduct(models.Model):
     )  # (used for profit estimates)
 
 
-class MemberbucksProductPurchaseLog(models.Model):
+class MemberbucksProductPurchaseLog(
+    ExportModelOperationsMixin("memberbucks-product-purchase-log"), models.Model
+):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     product = models.ForeignKey(MemberbucksProduct, on_delete=models.CASCADE)

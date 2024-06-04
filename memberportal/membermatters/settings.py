@@ -15,7 +15,6 @@ import os
 import json
 from datetime import timedelta
 from multiprocessing import Process
-from . import mdns
 import logging
 from .constance_config import CONSTANCE_CONFIG_FIELDSETS, CONSTANCE_CONFIG
 
@@ -68,6 +67,7 @@ INSTALLED_APPS = [
     "api_meeting",
     "api_admin_tools",
     "api_billing",
+    "api_metrics",
     "corsheaders",
     "rest_framework",
     "rest_framework_api_key",
@@ -267,6 +267,46 @@ LOGGING = {
             "level": os.environ.get("MM_LOG_LEVEL_SMS", "INFO"),
             "propagate": False,
         },
+        "api_general:tasks": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_GENERAL_TASKS", "INFO"),
+            "propagate": False,
+        },
+        "api_access:tasks": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_ACCESS_TASKS", "INFO"),
+            "propagate": False,
+        },
+        "celery:api_metrics": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_CELERY_METRICS", "INFO"),
+            "propagate": False,
+        },
+        "api_member_bucks": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_MEMBER_BUCKS", "INFO"),
+            "propagate": False,
+        },
+        "api_spacedirectory": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_SPACEDIRECTORY", "INFO"),
+            "propagate": False,
+        },
+        "metrics": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_METRICS", "INFO"),
+            "propagate": False,
+        },
+        "celery:celeryapp": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_CELERY_APP", "INFO"),
+            "propagate": False,
+        },
+        "oidc_provider": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_OIDC_PROVIDER", "INFO"),
+            "propagate": False,
+        },
         "daphne": {"handlers": ["console", "file"], "level": "WARNING"},
     },
 }
@@ -334,6 +374,11 @@ OIDC_EXTRA_SCOPE_CLAIMS = "membermatters.oidc_provider_settings.CustomScopeClaim
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Enable celery events for danihodovic/celery-exporter
+CELERY_WORKER_SEND_TASK_EVENTS = True
+CELERY_TASK_SEND_SENT_EVENT = True
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
 # Needed for testing OIDC on local development environment with ngrok (oauth requires HTTPS)
 # SITE_URL = "https://1bd0-122-148-148-138.ngrok-free.app"

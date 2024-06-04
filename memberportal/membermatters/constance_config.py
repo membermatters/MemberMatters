@@ -120,6 +120,11 @@ CONSTANCE_CONFIG = {
         False,
         "Enable integration with stripe for membership payments.",
     ),
+    # Vikunja config
+    "VIKUNJA_TEAMS": (
+        '[{"name": "Members", "oidcID": "members", "description": "The default team for all members.", "isPublic": false}]',
+        "A JSON array of Vikunja teams to add users to when they login via SSO. Returned as an OIDC claim with the 'vikunja_teams' scope. Check Vikunja docs for syntax.",
+    ),
     # Trello config
     "ENABLE_TRELLO_INTEGRATION": (
         False,
@@ -203,6 +208,10 @@ CONSTANCE_CONFIG = {
         "https://discordapp.com/api/webhooks/<token>",
         "Discord URL to send webhook notifications to.",
     ),
+    "DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK": (
+        "https://discordapp.com/api/webhooks/<token>",
+        "Discord URL to send webhook notifications to for vending/memberbucks purchases.",
+    ),
     "ENABLE_DISCOURSE_SSO_PROTOCOL": (
         False,
         "Enable support for the discourse SSO protocol.",
@@ -214,10 +223,6 @@ CONSTANCE_CONFIG = {
     "GOOGLE_ANALYTICS_MEASUREMENT_ID": (
         "",
         "Enter your measurement ID to enable Google analytics. Only the new GA4 measurement IDs are supported. It should look something like G-XXXXXXXXXX.",
-    ),
-    "API_SECRET_KEY": (
-        "PLEASE_CHANGE_ME",
-        "The API key used by the internal access system for device authentication.",
     ),
     "SENTRY_DSN_FRONTEND": (
         "https://577dc95136cd402bb273d00f46c2a017@sentry.serv02.binarydigital.com.au/5/",
@@ -325,6 +330,10 @@ CONSTANCE_CONFIG = {
         '{"inactive_swipe": "Hi! Your swipe was just declined due to inactive membership. Please contact us if you need assistance.",             "deactivated_access": "Hi! Your site access was just turned off. Please check your email and contact us if you need assistance.",             "activated_access": "Hi! Your site access was just turned on. Please make sure you stay up to date with our policies and rules by visiting our website.",             "locked_out_swipe": "Hi! Your swipe was just declined due to a temporary maintenance lockout. Please contact us if you need assistance."}',
         "The SMS messages to send when a user attempts to swipe with an inactive card.",
     ),
+    "METRICS_INTERVAL": (
+        3600,
+        "The interval in seconds to calculate and store application level metrics data like member count and door swipes.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -336,8 +345,8 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SITE_OWNER",
                 "SITE_LOCALE_CURRENCY",
                 "GOOGLE_ANALYTICS_MEASUREMENT_ID",
-                "API_SECRET_KEY",
                 "SITE_BANNER",
+                "METRICS_INTERVAL",
             ),
         ),
         (
@@ -414,6 +423,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "MEMBERBUCKS_CURRENCY",
             ),
         ),
+        ("Vikunja Integration", ("VIKUNJA_TEAMS",)),
         (
             "Trello Integration",
             (
@@ -488,6 +498,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             (
                 "DISCORD_DOOR_WEBHOOK",
                 "DISCORD_INTERLOCK_WEBHOOK",
+                "DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK",
             ),
         ),
     ]

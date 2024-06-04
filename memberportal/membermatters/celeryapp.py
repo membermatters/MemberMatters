@@ -1,6 +1,8 @@
 import os
-
 from celery import Celery
+import logging
+
+logger = logging.getLogger("celery:celeryapp")
 
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "membermatters.settings")
@@ -19,4 +21,4 @@ app.autodiscover_tasks()
 
 @app.task(bind=True)
 def debug_task(self):
-    print(f"Request: {self.request!r}")
+    logger.debug(f"Request: {self.request!r}")

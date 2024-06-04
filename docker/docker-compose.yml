@@ -71,6 +71,15 @@ services:
       - mm-celery-worker
       - mm-redis
 
+  mm-celery-prom-exporter:
+    image: danihodovic/celery-exporter
+    restart: always
+    environment:
+      CE_BROKER_URL: "redis://mm-redis:6379/0"
+    depends_on:
+      - mm-celery-worker
+      - mm-redis
+
 volumes:
   mm-postgres-volume:
     driver: local

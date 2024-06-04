@@ -1,5 +1,8 @@
 from membermatters.celeryapp import app
 import os
+import logging
+
+logger = logging.getLogger("api_access:tasks")
 
 
 @app.on_after_finalize.connect
@@ -14,4 +17,4 @@ def setup_periodic_tasks(sender, **kwargs):
 
 @app.task
 def heartbeat_logger():
-    print("Celery is alive!")
+    logger.debug("Celery is alive!")

@@ -1,8 +1,9 @@
 from django.db import models
 from django.conf import settings
+from django_prometheus.models import ExportModelOperationsMixin
 
 
-class Meeting(models.Model):
+class Meeting(ExportModelOperationsMixin("meeting"), models.Model):
     """
     Model to store meeting objects.
     """
@@ -26,7 +27,7 @@ class Meeting(models.Model):
         return f"{self.date} - {self.type} meeting"
 
 
-class ProxyVote(models.Model):
+class ProxyVote(ExportModelOperationsMixin("proxy-vote"), models.Model):
     """
     Model to store proxy votes that may be attached to a Meeting object.
     """

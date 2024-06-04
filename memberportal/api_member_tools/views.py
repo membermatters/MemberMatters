@@ -1,4 +1,5 @@
-from profile.models import User, Profile
+from access.models import DoorLog, InterlockLog
+from profile.models import Profile
 from api_meeting.models import Meeting
 from constance import config
 from services.emails import send_email_to_admin
@@ -9,7 +10,6 @@ from django.utils import timezone
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import *
 
 
 class SwipesList(APIView):

@@ -70,7 +70,6 @@ However, as noted below, currencies will use a hardcoded value set by a configur
   * "SITE_NAME" - Name of the website.
   * "SITE_OWNER" - Name of the organisation running this website.
   * "GOOGLE_ANALYTICS_MEASUREMENT_ID" - Enter your measurement ID to enable Google analytics. Only the new GA4 measurement IDs are supported. It should look something like G-XXXXXXXXXX.
-  * "API_SECRET_KEY" - Secret key used to authenticate some requests from access control devices.
 
 ### Signup
   * "INDUCTION_ENROL_LINK" - URL to enrol in the Canvas LMS induction course.
@@ -189,6 +188,7 @@ as above (NOT recommended for security).
   * "ENABLE_DISCORD_INTEGRATION" - enable the post to Discord channel feature when an interlock or door swipe is recorded.
   * "DISCORD_DOOR_WEBHOOK" - URL for the door webhook.
   * "DISCORD_INTERLOCK_WEBHOOK" - URL for the interlock webhook.
+  * "DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK" - URL for the vending/product purchase webhook.
 
 ### Home Page and Welcome Email Cards
 

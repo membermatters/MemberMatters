@@ -9,8 +9,8 @@ from access.models import (
     InterlockLog,
     MemberbucksDevice,
     AccessControlledDeviceAPIKey,
-    AccessControlledDevice,
 )
+from services.discord import post_purchase_to_discord
 from memberbucks.models import (
     MemberBucks,
     MemberbucksProductPurchaseLog,
@@ -47,6 +47,7 @@ class AccessDeviceConsumer(JsonWebsocketConsumer):
             "description": "New device that is yet to be setup.",
             "serial_number": device_id,
             "hidden": True,
+            "report_online_status": False,
         }
 
         # Get or create the device object and check it in
@@ -323,7 +324,7 @@ class InterlockConsumer(AccessDeviceConsumer):
                 profile.update_last_seen()
                 if profile.state == "active":
                     if self.device.locked_out:
-                        reason = "maintenance_lock_out"
+                        reason = "locked_out"
 
                     else:
                         allowed_interlocks = profile.interlocks.all()
@@ -336,7 +337,9 @@ class InterlockConsumer(AccessDeviceConsumer):
                                 or config.ENABLE_PORTAL_SITE_SIGN_IN is False
                             ):
                                 # TODO: check they have enough memberbucks balance
-                                self.device.log_access(profile.user, type="activated")
+                                self.device.log_access(
+                                    profile.user, log_type="activated"
+                                )
                                 self.session = self.device.session_start(profile.user)
                                 self.send_json(
                                     {
@@ -588,7 +591,11 @@ class MemberbucksConsumer(AccessDeviceConsumer):
                     purchase_log.memberbucks_device = self.device
                     purchase_log.save()
 
-                    description = f"{profile.get_full_name()} ({profile.screen_name}) {product.name} purchased from {self.device.name} ({product.external_id_name}) for {amount}."
+                    description = f"{product.name} purchased from {self.device.name} ({product.external_id_name})."
+
+                    post_purchase_to_discord(
+                        f"{profile.get_full_name()} ({profile.screen_name}) just bought something from {self.device.name}."
+                    )
 
                 transaction = MemberBucks()
                 transaction.amount = amount
@@ -623,6 +630,7 @@ class MemberbucksConsumer(AccessDeviceConsumer):
                         "success": True,
                     }
                 )
+
                 return True
 
             else:

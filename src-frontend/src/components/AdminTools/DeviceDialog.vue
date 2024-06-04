@@ -146,7 +146,9 @@
 
                 <div class="row">
                   <q-btn
-                    :disable="unlockLoading || device.offline"
+                    :disable="
+                      unlockLoading || device.offline || disabled.unlock
+                    "
                     :loading="unlockLoading"
                     class="q-mr-sm"
                     size="sm"
@@ -160,7 +162,7 @@
                   </q-btn>
 
                   <q-btn
-                    :disable="lockLoading || device.offline"
+                    :disable="lockLoading || device.offline || disabled.lock"
                     :loading="lockLoading"
                     class="q-mr-sm"
                     size="sm"
@@ -174,7 +176,9 @@
                   </q-btn>
 
                   <q-btn
-                    :disable="rebootLoading || device.offline"
+                    :disable="
+                      rebootLoading || device.offline || disabled.reboot
+                    "
                     :loading="rebootLoading"
                     class="q-mr-sm"
                     size="sm"
@@ -188,7 +192,7 @@
                   </q-btn>
 
                   <q-btn
-                    :disable="syncLoading || device.offline"
+                    :disable="syncLoading || device.offline || disabled.sync"
                     :loading="syncLoading"
                     class="q-mr-sm"
                     size="sm"
@@ -314,6 +318,12 @@ export default {
       loading: false,
       errorLoading: false,
       updateInterval: null,
+      disabled: {
+        unlock: false,
+        lock: false,
+        reboot: false,
+        sync: false,
+      },
       filter: '',
       devicePagination: {
         sortBy: 'desc',
@@ -370,10 +380,17 @@ export default {
         (item) => String(item.id) === this.deviceId
       );
     } else if (this.deviceType === 'interlocks') {
+      this.disabled.sync = true;
       this.deviceIndex = this.interlocks.findIndex(
         (item) => String(item.id) === this.deviceId
       );
     } else if (this.deviceType === 'memberbucks-devices') {
+      this.disabled = {
+        unlock: true,
+        lock: true,
+        reboot: true,
+        sync: true,
+      };
       this.deviceIndex = this.memberbucksDevices.findIndex(
         (item) => String(item.id) === this.deviceId
       );
@@ -568,7 +585,6 @@ export default {
     },
 
     onNextClick() {
-      let newDevice;
       this.deviceIndex = this.deviceIndex + 1;
       this.initForm();
     },
