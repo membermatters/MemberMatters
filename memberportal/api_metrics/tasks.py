@@ -10,12 +10,23 @@ logger = logging.getLogger("celery:api_metrics")
 
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(
-        config.METRICS_INTERVAL,
-        calculate_metrics.s(),
-        expires=60,
-        name="celery_calculate_metrics",
-    )
+    if config.METRICS_INTERVAL:
+        metrics_interval = config.METRICS_INTERVAL
+        if metrics_interval < 3600 * 24:
+            logger.warning(
+                "METRICS_INTERVAL is less than 24 hours. This is NOT recommended for production and has little benefit."
+            )
+        if metrics_interval < 60:
+            logger.warning(
+                "METRICS_INTERVAL is less than 60 seconds, setting to 60 seconds."
+            )
+            metrics_interval = 60
+        sender.add_periodic_task(
+            metrics_interval,
+            calculate_metrics.s(),
+            expires=60,
+            name="celery_calculate_metrics",
+        )
 
 
 @app.task

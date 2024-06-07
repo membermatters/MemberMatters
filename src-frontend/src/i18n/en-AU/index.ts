@@ -32,6 +32,7 @@ export default {
     reportIssue: 'Report Issue',
     proxy: 'Proxy Votes',
     recentSwipes: 'Recent Swipes',
+    stats: 'Stats & Metrics',
     lastSeen: 'Last Seen',
     membership: 'Membership',
     billing: 'Billing Method',
@@ -103,6 +104,19 @@ export default {
       'This is an open source membership portal for managing makerspaces and community ' +
       'groups. It was originally created by Jaimyn Mayer but is now used by several spaces.',
     linkText: 'on GitHub',
+  },
+  stats: {
+    title: 'Stats and Metrics',
+    internalStatsDescription:
+      'This page lists some stats and metrics collected by the member portal.',
+    disabled:
+      'This feature is currently disabled. Metrics data may not be available or up to date.',
+    member_count_total: 'Member Count',
+    member_count_6_months_total: 'Member Count (>6 Mths)',
+    member_count_12_months_total: 'Member Count (>12 Mths)',
+    subscription_count_total: 'Subscription States',
+    memberbucks_balance_total: 'Spacebucks In Circulation',
+    memberbucks_transactions_total: 'Spacebucks Transaction Volume',
   },
   button: {
     submit: 'Submit',
