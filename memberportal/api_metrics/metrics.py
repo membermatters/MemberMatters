@@ -128,7 +128,9 @@ def calculate_subscription_count():
 
 def calculate_memberbucks_balance():
     logger.debug("Calculating memberbucks balance total")
-    total_balance = Profile.objects.aggregate(Sum("memberbucks_balance"))
+    total_balance = Profile.objects.filter(memberbucks_balance__lt=1000).aggregate(
+        Sum("memberbucks_balance")
+    )
     Metric.objects.create(
         name=Metric.MetricName.MEMBERBUCKS_BALANCE_TOTAL,
         data={"value": total_balance["memberbucks_balance__sum"]},
