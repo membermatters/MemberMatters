@@ -60,6 +60,7 @@ class GetConfig(APIView):
                 "senderId": config.SMS_SENDER_ID,
                 "footer": config.SMS_FOOTER,
             },
+            "enableStatsPage": config.ENABLE_STATS_PAGE,
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}

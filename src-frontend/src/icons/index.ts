@@ -26,6 +26,7 @@ export default {
   groupMembers: 'mdi-account-multiple',
   recentSwipes: 'mdi-history',
   lastSeen: 'mdi-account-clock',
+  stats: 'mdi-chart-line',
   membership: 'mdi-account',
   profile: 'mdi-account',
   checkAccess: 'mdi-account-lock',
@@ -73,4 +74,11 @@ export default {
   interlock: 'mdi-tools',
   lock: 'mdi-lock-outline',
   unlock: 'mdi-lock-open-variant-outline',
+
+  member_count_total: 'mdi-account-multiple',
+  member_count_6_months_total: 'mdi-account-multiple',
+  member_count_12_months_total: 'mdi-account-multiple',
+  subscription_count_total: 'mdi-receipt',
+  memberbucks_balance_total: 'mdi-wallet',
+  memberbucks_transactions_total: 'mdi-wallet',
 };
