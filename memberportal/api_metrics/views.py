@@ -1,7 +1,11 @@
+from django.db.models import Max
+from django.utils import timezone
+
 import api_metrics.metrics
 from api_metrics.models import Metric
 from api_general.models import SiteSession
 
+from constance import config
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions
@@ -16,13 +20,45 @@ class Statistics(APIView):
     """
 
     def get(self, request):
+        statistics = {}
+
+        # On site members
+        on_site = {"members": [], "count": 0}
         members = SiteSession.objects.filter(signout_date=None).order_by("-signin_date")
-        member_list = []
+        on_site["count"] = members.count()
 
         for member in members:
-            member_list.append(member.user.profile.get_full_name())
+            on_site["members"].append(member.user.profile.get_full_name())
 
-        statistics = {"onSite": {"members": member_list, "count": members.count()}}
+        statistics["on_site"] = on_site
+
+        for metric_name in Metric.MetricName.values:
+            # Don't return any data from the API if the stats page isn't enabled
+            if config.ENABLE_STATS_PAGE or request.user.is_admin:
+                metric_data = []
+                one_year_before_today = timezone.now() - timezone.timedelta(
+                    days=config.STATS_MAX_DAYS
+                )
+                last_stat_per_day = (
+                    Metric.objects.filter(
+                        name=metric_name, creation_date__gte=one_year_before_today
+                    )
+                    .extra(select={"the_date": "date(creation_date)"})
+                    .values_list("the_date")
+                    .order_by("-the_date")
+                    .annotate(max_date=Max("creation_date"))
+                )
+                max_dates = [item[1] for item in last_stat_per_day]
+                metrics = Metric.objects.filter(
+                    name=metric_name, creation_date__in=max_dates
+                ).order_by("creation_date")
+                for metric in metrics:
+                    metric_data.append(
+                        {"date": metric.creation_date, "data": metric.data}
+                    )
+                statistics[metric_name] = metric_data
+            else:
+                statistics[metric_name] = []
 
         return Response(statistics)
 
