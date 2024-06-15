@@ -184,7 +184,7 @@ class MemberBucksAddCard(StripeAPIView):
 
 class MemberTiers(StripeAPIView):
     """
-    get: gets a list of all membership plans.
+    get: gets a list of all membership tiers.
     """
 
     def get(self, request):
@@ -204,7 +204,7 @@ class MemberTiers(StripeAPIView):
 
 class PaymentPlanSignup(StripeAPIView):
     """
-    post: attempts to sign the member up to a new membership plan.
+    post: attempts to sign the member up to a new payment plan.
     """
 
     def post(self, request, plan_id):
@@ -510,7 +510,7 @@ class SubscriptionInfo(StripeAPIView):
 
 class PaymentPlanResumeCancel(StripeAPIView):
     """
-    post: attempts to cancel a member's membership plan.
+    post: attempts to cancel a member's payment plan.
     """
 
     def post(self, request, resume):

@@ -1,29 +1,30 @@
+import json
+
+import stripe
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from constance import config
+from django.db.models import F, Sum, Value, CharField, Count, Max
+from django.db.models.functions import Concat
+from django.db.utils import OperationalError
+from rest_framework import permissions
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_api_key.permissions import HasAPIKey
+from sentry_sdk import capture_exception
+from sentry_sdk import capture_message
 
-from profile.models import User, UserEventLog
-from access.models import DoorLog, InterlockLog
 from access import models
-from .models import MemberTier, PaymentPlan
+from access.models import DoorLog, InterlockLog
 from memberbucks.models import (
     MemberBucks,
     MemberbucksProductPurchaseLog,
 )
-from constance import config
-from services.emails import send_email_to_admin
+from profile.models import User, UserEventLog
 from services import sms
-import json
-import stripe
-from sentry_sdk import capture_message
-from rest_framework_api_key.permissions import HasAPIKey
-from rest_framework import permissions
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
-from django.db.models import F, Count, Sum, Value, CharField, Count, Max
-from django.db.models.functions import Concat
-from django.db.utils import OperationalError
-from sentry_sdk import capture_exception
+from services.emails import send_email_to_admin
+from .models import MemberTier, PaymentPlan
 
 
 class StripeAPIView(APIView):
@@ -587,11 +588,12 @@ class MemberProfile(APIView):
         return Response()
 
 
-class ManageMemberTier(StripeAPIView):
+class ManageMembershipTier(StripeAPIView):
     """
-    get: gets a member tier.
-    put: updates a member tier.
-    delete: deletes a member tier.
+    get: gets a membership tier.
+    post: creates a new membership tier.
+    put: updates a membership tier.
+    delete: deletes a membership tier.
     """
 
     permission_classes = (permissions.IsAdminUser,)
@@ -607,7 +609,6 @@ class ManageMemberTier(StripeAPIView):
         }
 
     def get(self, request, tier_id=None):
-
         if tier_id:
             try:
                 tier = MemberTier.objects.get(pk=tier_id)
@@ -667,33 +668,56 @@ class ManageMemberTier(StripeAPIView):
         return Response()
 
 
-class ManageMemberTierPlans(StripeAPIView):
+class ManageMembershipTierPlan(StripeAPIView):
     """
-    post: creates a new member tier plan.
+    get: gets an individual or a list of payment plans.
+    post: creates a new payment plan.
+
     """
 
     permission_classes = (permissions.IsAdminUser,)
 
-    def get(self, request, tier_id):
-        plans = PaymentPlan.objects.filter(member_tier=tier_id)
-        formatted_plans = []
+    def get_plan(self, plan: PaymentPlan):
+        return {
+            "id": plan.id,
+            "name": plan.name,
+            "stripeId": plan.stripe_id,
+            "memberTier": plan.member_tier.id,
+            "visible": plan.visible,
+            "currency": plan.currency,
+            "cost": plan.cost / 100,  # convert to dollars
+            "intervalCount": plan.interval_count,
+            "interval": plan.interval,
+        }
 
-        for plan in plans:
-            formatted_plans.append(
-                {
-                    "id": plan.id,
-                    "name": plan.name,
-                    "stripeId": plan.stripe_id,
-                    "memberTier": plan.member_tier.id,
-                    "visible": plan.visible,
-                    "currency": plan.currency,
-                    "cost": plan.cost / 100,  # convert to dollars
-                    "intervalCount": plan.interval_count,
-                    "interval": plan.interval,
-                }
-            )
+    def get(self, request, plan_id=None, tier_id=None):
+        if plan_id:
+            try:
+                plan = PaymentPlan.objects.get(pk=plan_id)
+                return Response(self.get_plan(plan))
 
-        return Response(formatted_plans)
+            except PaymentPlan.DoesNotExist as e:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if tier_id:
+            try:
+                formatted_plans = []
+
+                for plan in PaymentPlan.objects.filter(member_tier=tier_id):
+                    formatted_plans.append(self.get_plan(plan))
+
+                return Response(formatted_plans)
+
+            except PaymentPlan.DoesNotExist as e:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            formatted_plans = []
+
+            for plan in PaymentPlan.objects.all():
+                formatted_plans.append(self.get_plan(plan))
+
+            return Response(formatted_plans)
 
     def post(self, request, tier_id=None):
         if tier_id is not None:
@@ -713,7 +737,7 @@ class ManageMemberTierPlans(StripeAPIView):
             product=member_tier.stripe_id,
         )
 
-        PaymentPlan.objects.create(
+        plan = PaymentPlan.objects.create(
             name=body["name"],
             stripe_id=stripe_plan.id,
             member_tier_id=body["memberTier"],
@@ -724,34 +748,7 @@ class ManageMemberTierPlans(StripeAPIView):
             interval=body["interval"],
         )
 
-        return Response()
-
-
-class ManageMemberTierPlan(StripeAPIView):
-    """
-    get: gets a member tier plan.
-    put: updates a member tier plan.
-    delete: deletes a member tier plan.
-    """
-
-    permission_classes = (permissions.IsAdminUser,)
-
-    def get(self, request, plan_id):
-        body = request.data
-
-        plan = PaymentPlan.objects.get(pk=plan_id)
-
-        formatted_plan = {
-            "id": plan.id,
-            "name": plan.name,
-            "member_tier": plan.member_tier,
-            "visible": plan.visible,
-            "cost": plan.cost,
-            "interval_count": plan.interval_count,
-            "interval": plan.interval,
-        }
-
-        return Response(formatted_plan)
+        return Response(self.get_plan(plan))
 
     def put(self, request, plan_id):
         body = request.data
@@ -763,7 +760,7 @@ class ManageMemberTierPlan(StripeAPIView):
         plan.cost = body["cost"]
         plan.save()
 
-        return Response()
+        return Response(self.get_plan(plan))
 
     def delete(self, request, plan_id):
         plan = PaymentPlan.objects.get(pk=plan_id)
