@@ -14,7 +14,7 @@ class MemberTier(ExportModelOperationsMixin("kiosk"), models.Model):
     featured = models.BooleanField("Is this plan featured?", default=False)
 
     def __str__(self):
-        return self.name
+        return f"{self.name}{' (hidden)' if not self.visible else ''}{' (featured)' if self.featured else ''} - Stripe ID: {self.stripe_id}"
 
     def get_object(self):
         plans = []
@@ -54,7 +54,7 @@ class PaymentPlan(ExportModelOperationsMixin("payment-plan"), models.Model):
     interval = models.CharField(choices=BILLING_PERIODS, max_length=10)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} {self.member_tier.name}{' (hidden)' if not self.visible else ''} - Stripe ID: {self.stripe_id}"
 
     def get_object(self):
         return {
