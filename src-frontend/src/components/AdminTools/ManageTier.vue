@@ -445,7 +445,7 @@ export default defineComponent({
         error: false,
         success: false,
         name: '',
-        memberTier: '',
+        memberTier: this.$route.params.planId.toString(),
         stripeId: '',
         visible: true,
         currency: 'aud',
