@@ -63,7 +63,7 @@ urlpatterns = [
         views.MemberbucksDevices.as_view(),
         name="MemberbucksDevices",
     ),
-    path("api/admin/tiers/", views.MemberTiers.as_view(), name="ManageMemberTiers"),
+    path("api/admin/tiers/", views.ManageMemberTier.as_view(), name="ManageMemberTier"),
     path(
         "api/admin/tiers/<int:tier_id>/",
         views.ManageMemberTier.as_view(),

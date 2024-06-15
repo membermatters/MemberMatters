@@ -587,32 +587,42 @@ class MemberProfile(APIView):
         return Response()
 
 
-class MemberTiers(StripeAPIView):
+class ManageMemberTier(StripeAPIView):
     """
-    get: gets a list of all membership plans.
-    post: creates a new membership plan.
-    put: updates a new membership plan.
-    delete: a membership plan.
+    get: gets a member tier.
+    put: updates a member tier.
+    delete: deletes a member tier.
     """
 
     permission_classes = (permissions.IsAdminUser,)
 
-    def get(self, request):
-        tiers = MemberTier.objects.all()
-        formatted_tiers = []
+    def get_tier(self, tier: MemberTier):
+        return {
+            "id": tier.id,
+            "name": tier.name,
+            "description": tier.description,
+            "visible": tier.visible,
+            "featured": tier.featured,
+            "stripeId": tier.stripe_id,
+        }
 
-        for tier in tiers:
-            formatted_tiers.append(
-                {
-                    "id": tier.id,
-                    "name": tier.name,
-                    "description": tier.description,
-                    "visible": tier.visible,
-                    "featured": tier.featured,
-                }
-            )
+    def get(self, request, tier_id=None):
 
-        return Response(formatted_tiers)
+        if tier_id:
+            try:
+                tier = MemberTier.objects.get(pk=tier_id)
+                return Response(self.get_tier(tier))
+
+            except MemberTier.DoesNotExist as e:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            formatted_tiers = []
+
+            for tier in MemberTier.objects.all():
+                formatted_tiers.append(self.get_tier(tier))
+
+            return Response(formatted_tiers)
 
     def post(self, request):
         body = request.data
@@ -629,45 +639,13 @@ class MemberTiers(StripeAPIView):
                 stripe_id=product.id,
             )
 
-            return Response()
+            return Response(self.get_tier(tier))
 
         except stripe.error.AuthenticationError:
             return Response(
                 {"success": False, "message": "error.stripeNotConfigured"},
-                status=status.HTTP_502_BAD_GATEWAY,
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-    def delete(self, request):
-        return Response()
-
-
-class ManageMemberTier(StripeAPIView):
-    """
-    get: gets a member tier.
-    put: updates a member tier.
-    delete: deletes a member tier.
-    """
-
-    permission_classes = (permissions.IsAdminUser,)
-
-    def get(self, request, tier_id):
-        body = request.data
-
-        try:
-            tier = MemberTier.objects.get(pk=tier_id)
-
-        except MemberTier.DoesNotExist as e:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        formatted_tier = {
-            "id": tier.id,
-            "name": tier.name,
-            "description": tier.description,
-            "visible": tier.visible,
-            "featured": tier.featured,
-        }
-
-        return Response(formatted_tier)
 
     def put(self, request, tier_id):
         body = request.data
@@ -680,7 +658,7 @@ class ManageMemberTier(StripeAPIView):
         tier.featured = body["featured"]
         tier.save()
 
-        return Response()
+        return Response(self.get_tier(tier))
 
     def delete(self, request, tier_id):
         tier = MemberTier.objects.get(pk=tier_id)
