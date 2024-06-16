@@ -332,8 +332,6 @@ export default defineComponent({
     },
     cardExistsHandler(value) {
       this.cardExists = value;
-      console.log('UPDATED CARD SAVED TO');
-      console.log(value);
     },
   },
 });

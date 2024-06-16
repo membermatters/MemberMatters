@@ -15,6 +15,7 @@ export default boot(({ router, store }) => {
       store.getters['profile/profile']?.memberStatus === 'Needs Induction' &&
       to.name !== 'membershipPlan' &&
       to.name !== 'webcams' &&
+      to.name !== 'billing' &&
       store.getters['config/features']?.enableMembershipPayments &&
       to.meta.admin !== true
     ) {
