@@ -1,7 +1,7 @@
 <template>
   <div
     style="
-      min-width: 200px;
+      min-width: 270px;
       border-radius: 10px;
       max-width: 500px;
       margin: 0 auto;
