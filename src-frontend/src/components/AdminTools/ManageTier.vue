@@ -426,7 +426,8 @@ export default defineComponent({
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     managePlan(evt: InputEvent, row: any) {
-      this.$router.push({ name: 'managePlan', params: { planId: row.id } });
+      // TODO: make a MM UI to manage payment plans
+      // this.$router.push({ name: 'managePlan', params: { planId: row.id } });
     },
     resetForm() {
       this.form = {

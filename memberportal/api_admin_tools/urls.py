@@ -88,4 +88,14 @@ urlpatterns = [
         views.ManageMembershipTierPlan.as_view(),
         name="ManageMembershipTierPlan",
     ),
+    path(
+        "api/admin/settings/",
+        views.ManageSettings.as_view(),
+        name="ManageSettings",
+    ),
+    path(
+        "api/admin/settings/<str:setting_key>/",
+        views.ManageSettings.as_view(),
+        name="ManageSettings",
+    ),
 ]

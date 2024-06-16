@@ -4,6 +4,7 @@ import stripe
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from constance import config
+from constance.backends.database.models import Constance as ConstanceSetting
 from django.db.models import F, Sum, Value, CharField, Count, Max
 from django.db.models.functions import Concat
 from django.db.utils import OperationalError
@@ -887,3 +888,51 @@ class MemberLogs(APIView):
         }
 
         return Response(logs)
+
+
+class ManageSettings(APIView):
+    """
+    get: This method gets a constance setting value or values.
+    put: This method updates a constance setting value.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get_setting(self, setting):
+        return {
+            "key": setting.key,
+            "value": setting.value,
+        }
+
+    def get(self, request, setting_key=None):
+        if setting_key:
+            try:
+                setting = ConstanceSetting.objects.get(key=setting_key)
+                return Response(self.get_setting(setting))
+
+            except ConstanceSetting.DoesNotExist as e:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            settings = []
+
+            for setting in ConstanceSetting.objects.all():
+                settings.append(self.get_setting(setting))
+
+            return Response(settings)
+
+    def put(self, request, setting_key=None):
+        if not setting_key:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        body = request.data
+
+        try:
+            setting = ConstanceSetting.objects.get(key=setting_key)
+            setting.value = body["value"]
+            setting.save()
+
+            return Response(self.get_setting(setting))
+
+        except ConstanceSetting.DoesNotExist as e:
+            return Response(status=status.HTTP_404_NOT_FOUND)
