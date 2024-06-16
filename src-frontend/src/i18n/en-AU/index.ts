@@ -18,7 +18,7 @@ export default {
     verifyEmail: 'Verify your email to continue',
 
     meetings: 'Meetings',
-    members: 'Members',
+    members: 'Members', // for routes
     manageMember: 'Manage Member',
     doors: 'Doors',
     manageDoor: 'Manage Door',
@@ -134,7 +134,7 @@ export default {
     loginToContinue: 'Please login to continue',
     forgottenPassword: 'Forgot your password?',
     forgottenPasswordDescription:
-      'Please enter your email address and click submit. You will ' +
+      'Please enter your email address and tap submit. You will ' +
       'receive an email with further instructions.',
     emailLabel: 'Email address',
     resetSuccess: 'Success. Check your email for further instructions.',
@@ -181,12 +181,9 @@ export default {
     authorised: 'Authorised',
     unauthorised: 'Unauthorised',
     maintenance: 'Maintenance Lockout',
-    door: 'Door',
-    doors: 'Doors',
-    interlock: 'Interlock',
-    interlocks: 'Interlocks',
-    memberbucksDevice: 'Spacebucks',
-    memberbucksDevices: 'Spacebucks',
+    door: 'Door | Doors',
+    interlock: 'Interlock | Interlocks',
+    memberbucksDevice: 'Spacebucks | Spacebucks',
     defaultAccess: 'Members have access by default',
     maintenanceLockout: 'Maintenance lockout is enabled',
     playTheme: 'Play theme on swipe',
@@ -250,7 +247,7 @@ export default {
     interval: 'Interval Period',
     vehicleRegistrationPlate: 'Vehicle Registration Plate Number',
     vehicleRegistrationNote:
-      'Please enter your vehicle registration plate(s) here if you have any. We use this to make sure only members park in our carpark.',
+      'Please enter your vehicle registration plate if you have any. Separate multiple with a space. We use this to help manage parking.',
     excludeFromEmailExport: 'Excluded from email exports',
   },
   digitalId: {
@@ -317,12 +314,12 @@ export default {
       'immediately charge your saved card ending in {savedCard}.',
     noSavedBilling:
       "Sorry, but you don't have any valid billing methods. Please add a new " +
-      'billing method by clicking the button below.',
+      'billing method by tapping the button below.',
     manageBilling: 'Billing Method',
-    selectToContinue: 'Select your billing method to continue.',
+    selectToContinue: 'Confirm your billing method',
     addCard: 'Add Card',
     addCardDescription:
-      'To add a new card please fill out the form. We do not store your credit card information (other than the last 4 digits and expiry) as our payment processor collects this for us.',
+      "Add your card below. We don't store your credit card info other than the last 4 digits and expiry. Our secure payment provider stores your card for us.",
     addCardError:
       'There was an error adding your card. Please try again later.',
     saveCard: 'Save Card',
@@ -336,7 +333,7 @@ export default {
     quickAdd: 'Quick Add',
     totalAmount: 'Total Amount',
     donateFundsDescription:
-      "Enter an amount, then click {'\"'}@:memberbucks.donateFunds{'\"'}.",
+      "Enter an amount, then tap {'\"'}@:memberbucks.donateFunds{'\"'}.",
     donateFundsSuccess: 'Successfully made payment.',
     donateFundsError:
       'There was an error confirming the payment, check your balance or try again later.',
@@ -378,8 +375,7 @@ export default {
     onSite: ' on site right now.',
     memberList: 'Members On Site',
   },
-  members: 'Members',
-  member: 'Member',
+  member: 'member | members',
   actionFailed: 'Action failed',
   actionSuccess: 'Action was successful',
   warning: 'Warning',
@@ -396,13 +392,14 @@ export default {
     'to date.',
   progress: 'Progress: {percent}%',
   adminTools: {
-    title: 'Admin Tools',
+    title: 'Tools',
     optOutEmailExport: 'Opt out of email export',
     optInEmailExport: 'Opt in to email export',
     emailAddresses: 'Copy Email List',
-    copyEmailListSuccess: 'Copied {count} Email Addresses!',
+    copyEmailListSuccess:
+      'Copied {n} Email Address! | Copied {n} Email Addresses!',
     copyEmailListSuccessDescription:
-      'Simply paste them into your email client to use them. We recommend using the BCC field to protect your members privacy. Excluded {excludedCount} members who you have opted out of email exports.',
+      'Simply paste them into your email client to use them. We recommend using the BCC field to protect your members privacy. Excluded {n} @:member who you have opted out of email exports.',
     exportCsv: 'Export CSV',
     exportOptions: 'Export Options',
     filterOptions: 'Filter',
@@ -437,13 +434,13 @@ export default {
 
     access: 'Access',
     accessDescription: "Tap an icon below to change a member's access.",
-    log: 'Log',
+    log: 'log | logs',
     userEvents: 'Event Logs',
     userDoorLogs: 'Door Swipe Logs',
     userInterlockLogs: 'Interlock Session Logs',
     stats: 'Stats',
     mainProfile: 'Main Profile',
-    otherAttributes: 'Other Attributes',
+    otherAttributes: 'Account Info',
     memberDates: 'Important Dates',
     lastInduction: 'Last Induction',
     lastUpdatedProfile: 'Last Updated Profile',
@@ -453,7 +450,18 @@ export default {
     memberState: 'Member State',
     memberbucksTransactions: 'Spacebucks Transactions',
     subscriptionInfo: 'Subscription Info',
-    subscriptionStatus: 'Stripe Subscription Status',
+    subscriptionStatus: 'Subscription Status',
+    subscriptionStatusString: {
+      active: 'Active',
+      inactive: 'Inactive',
+      cancelling: 'Cancelling',
+    },
+    memberStatusString: {
+      noob: 'New Member',
+      active: 'Active',
+      inactive: 'Inactive',
+      accountonly: 'Account Only',
+    },
     billingInfo: 'Billing Info',
     billingCycleAnchor: 'Billing Cycle Anchor',
     cancelAt: 'Cancels At',
@@ -495,21 +503,17 @@ export default {
     success: 'Successfully added a new Membership Payment Plan.',
     fail: 'Failed to add a new Membership Payment Plan.',
     select: 'Payment Plan',
-    selected: 'Selected Membership Payment Plan',
+    selected: 'Selected Payment Plan',
     confirmSelection: 'Confirm',
-    selectToContinue: 'Select a payment plan to continue.',
+    selectToContinue: 'Select a payment plan',
     noPlans: 'There are no payment plans available for this membership plan.',
     dueToday: 'Due Today: {amount}',
-    intervalDescription: '{amount} every {intervalCount} {interval}',
+    intervalDescription: '{amount} every {interval}',
     interval: {
-      day: 'day',
-      week: 'week',
-      month: 'month',
-      year: 'year',
-      days: 'days',
-      weeks: 'weeks',
-      months: 'months',
-      years: 'years',
+      day: 'day | {n} days',
+      week: 'week | {n} weeks',
+      month: 'month | {n} months',
+      year: 'year | {n} years',
     },
     signupFailed: 'Signup failed',
     signupSuccess: 'Signup success',
@@ -525,7 +529,7 @@ export default {
     resumeButton: 'Resume membership',
     cancelling: 'Your membership is about to be cancelled',
     cancellingDescription:
-      "Your membership is scheduled to be cancelled on {date}. If you'd like to resume your plan (listed above), please click below.",
+      "Your membership is scheduled to be cancelled on {date}. If you'd like to resume your plan (listed above), please tap below.",
     renewalDate: 'Renewal Date',
     signupDate: 'Signup Date',
     subscriptionInfo: 'Subscription Info',
@@ -558,7 +562,7 @@ export default {
       'time to finalise your membership.',
     submitted: 'Membership application submitted',
     submittedDescription:
-      "Your membership application has been submitted and you are now a 'member applicant'. Your membership will be officially accepted after 7 days, but we have granted site access immediately. You will receive an email confirming that your access card has been enabled. If for some reason your membership is rejected within this period, you will receive an email with further information.",
+      "Your membership application has been submitted and you are now a 'member applicant'. Your membership will be accepted soon, but we have granted site access immediately. You will receive an email confirming that your access card has been enabled. If for some reason your membership is rejected within this period, you will receive an email with further information.",
     continueToDashboard: 'Continue to dashboard',
     error: 'Error submitting membership application',
     errorDescription:
@@ -574,7 +578,7 @@ export default {
     disabledFeature:
       'WARNING: This feature is turned off. You should enable it before making any changes.',
     select: 'Membership Plan',
-    selectToContinue: 'Select a membership plan to continue.',
+    selectToContinue: 'Select a membership plan',
     noTiers: 'There are no membership plans available right now.',
     selected: 'Selected Membership Plan',
     nodata: 'There are no membership plans in the system.',
@@ -584,7 +588,7 @@ export default {
     add: 'Add a new plan',
     becomeMember: 'Become a member',
     confirm:
-      'Please confirm your selected membership plan and billing plan. By continuing you agree to pay for your selected plan using the provided credit card. Your first payment will be collected today, and future payments of {intervalDescription}.',
+      'Please confirm your selected membership plan and payment plan. By continuing you agree to pay for your selected plan using your credit card. Your first payment will be collected now, and future payments of {intervalDescription}.',
     confirmDelay:
       'Your membership application will be submitted after you complete the next steps.',
     finish: 'Pay & Continue',

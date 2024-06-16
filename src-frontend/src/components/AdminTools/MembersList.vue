@@ -256,16 +256,17 @@ export default defineComponent({
         .then(() => {
           this.$q.dialog({
             dark: true,
-            title: this.$t('adminTools.copyEmailListSuccess', {
-              count: this.displayMemberList.length,
-            }),
-            message: this.$t('adminTools.copyEmailListSuccessDescription', {
-              excludedCount:
-                this.displayMemberList.length -
+            title: this.$tc(
+              'adminTools.copyEmailListSuccess',
+              this.displayMemberList.length
+            ),
+            message: this.$tc(
+              'adminTools.copyEmailListSuccessDescription',
+              this.displayMemberList.length -
                 this.displayMemberList.filter(
                   (member: MemberProfile) => !member.excludeFromEmailExport
-                ).length,
-            }),
+                ).length
+            ),
           });
         })
         .catch(() => {

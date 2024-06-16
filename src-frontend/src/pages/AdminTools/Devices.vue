@@ -11,9 +11,9 @@
         narrow-indicator
         class="bg-primary text-white"
       >
-        <q-tab name="doors" :label="$t('access.doors')" />
-        <q-tab name="interlocks" :label="$t('access.interlocks')" />
-        <q-tab name="memberbucks" :label="$t('access.memberbucksDevices')" />
+        <q-tab name="doors" :label="$tc('access.door', 2)" />
+        <q-tab name="interlocks" :label="$tc('access.interlock', 2)" />
+        <q-tab name="memberbucks" :label="$tc('access.memberbucksDevice', 2)" />
       </q-tabs>
       <q-separator />
       <q-tab-panels v-model="tab" animated>
