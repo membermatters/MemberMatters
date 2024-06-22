@@ -899,22 +899,60 @@
                 <thead>
                   <tr>
                     <th class="text-left">
+                      {{ $t(`adminTools.membershipTier`) }}
+                    </th>
+                    <th class="text-left">
+                      {{ $t(`adminTools.billingPlan`) }}
+                    </th>
+                    <th class="text-left">
                       {{ $t(`adminTools.billingCycleAnchor`) }}
                     </th>
                     <th class="text-left">{{ $t(`adminTools.startDate`) }}</th>
                     <th class="text-left">
                       {{ $t(`adminTools.currentPeriodEnd`) }}
                     </th>
-                    <th v-if="billing.subscription.cancelAt" class="text-left">
-                      {{ $t(`adminTools.cancelAt`) }}
-                    </th>
-                    <th v-if="billing.subscription.cancelAt" class="text-left">
-                      {{ $t(`adminTools.cancelAtPeriodEnd`) }}
-                    </th>
+                    <template v-if="billing.subscription.cancelAt">
+                      <th class="text-left">
+                        {{ $t(`adminTools.cancelAt`) }}
+                      </th>
+                      <th class="text-left">
+                        {{ $t(`adminTools.cancelAtPeriodEnd`) }}
+                      </th>
+                    </template>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
+                    <td class="text-left">
+                      <router-link
+                        :to="{
+                          name: 'manageTier',
+                          params: {
+                            planId: billing.subscription.membershipPlan.id,
+                          },
+                        }"
+                        >{{
+                          billing.subscription.membershipTier.name
+                        }}</router-link
+                      >
+                    </td>
+                    <td class="text-left">
+                      {{
+                        $t('paymentPlans.intervalDescription', {
+                          currency:
+                            billing.subscription.membershipPlan.currency.toUpperCase(),
+                          amount: $n(
+                            billing.subscription.membershipPlan.cost / 100,
+                            'currency',
+                            siteLocaleCurrency
+                          ),
+                          interval: $tc(
+                            `paymentPlans.interval.${billing.subscription.membershipPlan.interval.toLowerCase()}`,
+                            billing.subscription.membershipPlan.intervalAmount
+                          ),
+                        })
+                      }}
+                    </td>
                     <td class="text-left">
                       {{ formatDate(billing.subscription.billingCycleAnchor) }}
                     </td>
@@ -924,12 +962,18 @@
                     <td class="text-left">
                       {{ formatDate(billing.subscription.currentPeriodEnd) }}
                     </td>
-                    <td v-if="billing.subscription.cancelAt" class="text-left">
-                      {{ formatDate(billing.subscription.cancelAt) }}
-                    </td>
-                    <td v-if="billing.subscription.cancelAt" class="text-left">
-                      {{ formatDate(billing.subscription.cancelAtPeriodEnd) }}
-                    </td>
+                    <template v-if="billing.subscription.cancelAt">
+                      <td class="text-left">
+                        {{ formatDate(billing.subscription.cancelAt) }}
+                      </td>
+                      <td class="text-left">
+                        {{
+                          formatBooleanYesNo(
+                            billing.subscription.cancelAtPeriodEnd
+                          )
+                        }}
+                      </td>
+                    </template>
                   </tr>
                 </tbody>
               </q-markup-table>
@@ -1643,13 +1687,13 @@ export default defineComponent({
   max-width: 100%;
 }
 
-a,
-a:visited,
-a:hover,
-a:active {
-  color: inherit;
-  text-decoration: none;
-}
+//a,
+//a:visited,
+//a:hover,
+//a:active {
+//  color: inherit;
+//  text-decoration: none;
+//}
 
 .active {
   color: green;

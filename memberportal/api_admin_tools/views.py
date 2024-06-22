@@ -801,6 +801,8 @@ class MemberBillingInfo(StripeAPIView):
                     "cancelAt": s.cancel_at,
                     "cancelAtPeriodEnd": s.cancel_at_period_end,
                     "startDate": s.start_date,
+                    "membershipTier": member.profile.membership_plan.member_tier.get_object(),
+                    "membershipPlan": member.profile.membership_plan.get_object(),
                 }
             else:
                 billing_info["subscription"] = None

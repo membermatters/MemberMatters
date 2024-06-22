@@ -8,7 +8,8 @@
       "@store/*": ["src/store/*"],
       "@mixins/*": ["src/mixins/*"],
       "@assets/*": ["src/assets/*"],
-      "types/*": ["src/types/*"]
+      "types/*": ["src/types/*"],
+      "boot/*": ["src/boot/*"],
     }
   },
   "moduleResolution": "node"

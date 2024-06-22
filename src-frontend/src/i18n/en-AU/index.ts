@@ -467,6 +467,8 @@ export default {
     cancelAt: 'Cancels At',
     cancelAtPeriodEnd: 'Cancels At Period End',
     currentPeriodEnd: 'Current Period End',
+    membershipTier: 'Membership Tier',
+    billingPlan: 'Billing Plan',
     startDate: 'Start Date',
     noSubscription: 'No subscription was found for this member.',
     noMembers: 'No members were found that match your filter or search query.',

@@ -505,6 +505,8 @@ class SubscriptionInfo(StripeAPIView):
                     "cancelAt": s.cancel_at,
                     "cancelAtPeriodEnd": s.cancel_at_period_end,
                     "startDate": s.start_date,
+                    "membershipTier": request.user.profile.membership_plan.member_tier.get_object(),
+                    "membershipPlan": request.user.profile.membership_plan.get_object(),
                 }
                 return Response({"success": True, "subscription": subscription})
 
