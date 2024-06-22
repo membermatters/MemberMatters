@@ -12,7 +12,7 @@ export default boot(({ router, store }) => {
     }
 
     if (
-      store.getters['profile/profile']?.memberStatus === 'Needs Induction' &&
+      store.getters['profile/profile']?.memberStatus === 'noob' &&
       to.name !== 'membershipPlan' &&
       to.name !== 'webcams' &&
       to.name !== 'billing' &&
@@ -52,7 +52,7 @@ export default boot(({ router, store }) => {
     if (
       to.meta.memberOnly &&
       to.name !== 'webcams' &&
-      store.getters['profile/profile'].memberStatus !== 'Active'
+      store.getters['profile/profile'].memberStatus !== 'active'
     )
       return next({ name: 'Error403MemberOnly' });
 

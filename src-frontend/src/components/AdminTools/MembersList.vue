@@ -128,7 +128,7 @@ export default defineComponent({
     return {
       members: [],
       filter: '',
-      memberState: 'Active',
+      memberState: 'active',
       loading: false,
       pagination: {
         sortBy: 'date',
@@ -156,11 +156,11 @@ export default defineComponent({
     },
     filterOptions() {
       return [
-        { label: this.$t('adminTools.all'), value: 'All' },
-        { label: this.$t('adminTools.active'), value: 'Active' },
-        { label: this.$t('adminTools.inactive'), value: 'Inactive' },
-        { label: this.$t('adminTools.new'), value: 'Needs Induction' },
-        { label: this.$t('adminTools.accountOnly'), value: 'Account Only' },
+        { label: this.$t('adminTools.all'), value: 'all' },
+        { label: this.$t('adminTools.active'), value: 'active' },
+        { label: this.$t('adminTools.inactive'), value: 'inactive' },
+        { label: this.$t('adminTools.new'), value: 'noob' },
+        { label: this.$t('adminTools.accountOnly'), value: 'accountonly' },
       ];
     },
     columns() {
