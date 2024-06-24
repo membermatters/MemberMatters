@@ -140,7 +140,7 @@ export default defineComponent({
   computed: {
     ...mapGetters('config', ['features']),
     displayMemberList() {
-      if (this.memberState === 'All') return this.members;
+      if (this.memberState === 'all') return this.members;
       return this.members.filter(
         (member: MemberProfile) => member.state === this.memberState
       );

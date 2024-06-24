@@ -9,7 +9,7 @@
       "@mixins/*": ["src/mixins/*"],
       "@assets/*": ["src/assets/*"],
       "types/*": ["src/types/*"],
-      "boot/*": ["src/boot/*"],
+      "boot/*": ["src/boot/*"]
     }
   },
   "moduleResolution": "node"
