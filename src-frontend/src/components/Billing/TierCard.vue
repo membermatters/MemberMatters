@@ -14,9 +14,9 @@
                     'currency',
                     siteLocaleCurrency
                   ),
-                  intervalCount: minPrice.intervalAmount,
                   interval: $tc(
-                    `paymentPlans.interval.${minPrice.interval.toLowerCase()}`
+                    `paymentPlans.interval.${minPrice.interval.toLowerCase()}`,
+                    minPrice.intervalAmount
                   ),
                 }),
               })

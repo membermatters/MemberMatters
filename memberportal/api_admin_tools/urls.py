@@ -63,25 +63,39 @@ urlpatterns = [
         views.MemberbucksDevices.as_view(),
         name="MemberbucksDevices",
     ),
-    path("api/admin/tiers/", views.MemberTiers.as_view(), name="ManageMemberTiers"),
+    path(
+        "api/admin/tiers/",
+        views.ManageMembershipTier.as_view(),
+        name="ManageMembershipTier",
+    ),
     path(
         "api/admin/tiers/<int:tier_id>/",
-        views.ManageMemberTier.as_view(),
-        name="ManageMemberTier",
+        views.ManageMembershipTier.as_view(),
+        name="ManageMembershipTier",
     ),
     path(
         "api/admin/tiers/<int:tier_id>/plans/",
-        views.ManageMemberTierPlans.as_view(),
-        name="GetPlans",
+        views.ManageMembershipTierPlan.as_view(),
+        name="ManageMembershipTierPlan",
     ),
     path(
         "api/admin/plans/",
-        views.ManageMemberTierPlans.as_view(),
-        name="ManagePlans",
+        views.ManageMembershipTierPlan.as_view(),
+        name="ManageMembershipTierPlan",
     ),
     path(
         "api/admin/plans/<int:plan_id>/",
-        views.ManageMemberTierPlans.as_view(),
-        name="ManagePlan",
+        views.ManageMembershipTierPlan.as_view(),
+        name="ManageMembershipTierPlan",
+    ),
+    path(
+        "api/admin/settings/",
+        views.ManageSettings.as_view(),
+        name="ManageSettings",
+    ),
+    path(
+        "api/admin/settings/<str:setting_key>/",
+        views.ManageSettings.as_view(),
+        name="ManageSettings",
     ),
 ]

@@ -208,7 +208,7 @@ export default defineComponent({
         if (!link.loggedIn) {
           if (this.loggedIn) displayLink = false;
         }
-        if (link.memberOnly && this.profile.memberStatus !== 'Active')
+        if (link.memberOnly && this.profile.memberStatus !== 'active')
           displayLink = false;
         if (this.$q.platform.is.electron && !link.kiosk) displayLink = false;
         if (link.admin && !this.profile?.permissions?.staff) {
@@ -223,7 +223,7 @@ export default defineComponent({
     if (this.loggedIn) {
       await this.getProfile();
       if (
-        this.profile.memberStatus === 'Needs Induction' &&
+        this.profile.memberStatus === 'noob' &&
         this.$route.name !== 'membershipPlan' &&
         this.features.enableMembershipPayments
       ) {

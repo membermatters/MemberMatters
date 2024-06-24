@@ -147,7 +147,7 @@
           }}
         </div>
 
-        <p v-if="step > 2" class="q-py-md">
+        <p v-if="step > 2" class="q-py-md" style="max-width: 850px">
           {{
             $t('tiers.confirm', {
               intervalDescription: $t('paymentPlans.intervalDescription', {
@@ -157,9 +157,9 @@
                   'currency',
                   siteLocaleCurrency
                 ),
-                intervalCount: selectedPlan.intervalCount,
                 interval: $tc(
-                  `paymentPlans.interval.${selectedPlan.interval.toLowerCase()}`
+                  `paymentPlans.interval.${selectedPlan.interval.toLowerCase()}`,
+                  selectedPlan.intervalCount
                 ),
               }),
             })
@@ -332,8 +332,6 @@ export default defineComponent({
     },
     cardExistsHandler(value) {
       this.cardExists = value;
-      console.log('UPDATED CARD SAVED TO');
-      console.log(value);
     },
   },
 });

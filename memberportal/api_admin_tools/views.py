@@ -1,29 +1,31 @@
+import json
+
+import stripe
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from constance import config
+from constance.backends.database.models import Constance as ConstanceSetting
+from django.db.models import F, Sum, Value, CharField, Count, Max
+from django.db.models.functions import Concat
+from django.db.utils import OperationalError
+from rest_framework import permissions
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_api_key.permissions import HasAPIKey
+from sentry_sdk import capture_exception
+from sentry_sdk import capture_message
 
-from profile.models import User, UserEventLog
-from access.models import DoorLog, InterlockLog
 from access import models
-from .models import MemberTier, PaymentPlan
+from access.models import DoorLog, InterlockLog
 from memberbucks.models import (
     MemberBucks,
     MemberbucksProductPurchaseLog,
 )
-from constance import config
-from services.emails import send_email_to_admin
+from profile.models import User, UserEventLog
 from services import sms
-import json
-import stripe
-from sentry_sdk import capture_message
-from rest_framework_api_key.permissions import HasAPIKey
-from rest_framework import permissions
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
-from django.db.models import F, Count, Sum, Value, CharField, Count, Max
-from django.db.models.functions import Concat
-from django.db.utils import OperationalError
-from sentry_sdk import capture_exception
+from services.emails import send_email_to_admin
+from .models import MemberTier, PaymentPlan
 
 
 class StripeAPIView(APIView):
@@ -587,32 +589,42 @@ class MemberProfile(APIView):
         return Response()
 
 
-class MemberTiers(StripeAPIView):
+class ManageMembershipTier(StripeAPIView):
     """
-    get: gets a list of all membership plans.
-    post: creates a new membership plan.
-    put: updates a new membership plan.
-    delete: a membership plan.
+    get: gets a membership tier.
+    post: creates a new membership tier.
+    put: updates a membership tier.
+    delete: deletes a membership tier.
     """
 
     permission_classes = (permissions.IsAdminUser,)
 
-    def get(self, request):
-        tiers = MemberTier.objects.all()
-        formatted_tiers = []
+    def get_tier(self, tier: MemberTier):
+        return {
+            "id": tier.id,
+            "name": tier.name,
+            "description": tier.description,
+            "visible": tier.visible,
+            "featured": tier.featured,
+            "stripeId": tier.stripe_id,
+        }
 
-        for tier in tiers:
-            formatted_tiers.append(
-                {
-                    "id": tier.id,
-                    "name": tier.name,
-                    "description": tier.description,
-                    "visible": tier.visible,
-                    "featured": tier.featured,
-                }
-            )
+    def get(self, request, tier_id=None):
+        if tier_id:
+            try:
+                tier = MemberTier.objects.get(pk=tier_id)
+                return Response(self.get_tier(tier))
 
-        return Response(formatted_tiers)
+            except MemberTier.DoesNotExist as e:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            formatted_tiers = []
+
+            for tier in MemberTier.objects.all():
+                formatted_tiers.append(self.get_tier(tier))
+
+            return Response(formatted_tiers)
 
     def post(self, request):
         body = request.data
@@ -629,45 +641,13 @@ class MemberTiers(StripeAPIView):
                 stripe_id=product.id,
             )
 
-            return Response()
+            return Response(self.get_tier(tier))
 
         except stripe.error.AuthenticationError:
             return Response(
                 {"success": False, "message": "error.stripeNotConfigured"},
-                status=status.HTTP_502_BAD_GATEWAY,
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-    def delete(self, request):
-        return Response()
-
-
-class ManageMemberTier(StripeAPIView):
-    """
-    get: gets a member tier.
-    put: updates a member tier.
-    delete: deletes a member tier.
-    """
-
-    permission_classes = (permissions.IsAdminUser,)
-
-    def get(self, request, tier_id):
-        body = request.data
-
-        try:
-            tier = MemberTier.objects.get(pk=tier_id)
-
-        except MemberTier.DoesNotExist as e:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        formatted_tier = {
-            "id": tier.id,
-            "name": tier.name,
-            "description": tier.description,
-            "visible": tier.visible,
-            "featured": tier.featured,
-        }
-
-        return Response(formatted_tier)
 
     def put(self, request, tier_id):
         body = request.data
@@ -680,7 +660,7 @@ class ManageMemberTier(StripeAPIView):
         tier.featured = body["featured"]
         tier.save()
 
-        return Response()
+        return Response(self.get_tier(tier))
 
     def delete(self, request, tier_id):
         tier = MemberTier.objects.get(pk=tier_id)
@@ -689,33 +669,56 @@ class ManageMemberTier(StripeAPIView):
         return Response()
 
 
-class ManageMemberTierPlans(StripeAPIView):
+class ManageMembershipTierPlan(StripeAPIView):
     """
-    post: creates a new member tier plan.
+    get: gets an individual or a list of payment plans.
+    post: creates a new payment plan.
+
     """
 
     permission_classes = (permissions.IsAdminUser,)
 
-    def get(self, request, tier_id):
-        plans = PaymentPlan.objects.filter(member_tier=tier_id)
-        formatted_plans = []
+    def get_plan(self, plan: PaymentPlan):
+        return {
+            "id": plan.id,
+            "name": plan.name,
+            "stripeId": plan.stripe_id,
+            "memberTier": plan.member_tier.id,
+            "visible": plan.visible,
+            "currency": plan.currency,
+            "cost": plan.cost / 100,  # convert to dollars
+            "intervalCount": plan.interval_count,
+            "interval": plan.interval,
+        }
 
-        for plan in plans:
-            formatted_plans.append(
-                {
-                    "id": plan.id,
-                    "name": plan.name,
-                    "stripeId": plan.stripe_id,
-                    "memberTier": plan.member_tier.id,
-                    "visible": plan.visible,
-                    "currency": plan.currency,
-                    "cost": plan.cost / 100,  # convert to dollars
-                    "intervalCount": plan.interval_count,
-                    "interval": plan.interval,
-                }
-            )
+    def get(self, request, plan_id=None, tier_id=None):
+        if plan_id:
+            try:
+                plan = PaymentPlan.objects.get(pk=plan_id)
+                return Response(self.get_plan(plan))
 
-        return Response(formatted_plans)
+            except PaymentPlan.DoesNotExist as e:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if tier_id:
+            try:
+                formatted_plans = []
+
+                for plan in PaymentPlan.objects.filter(member_tier=tier_id):
+                    formatted_plans.append(self.get_plan(plan))
+
+                return Response(formatted_plans)
+
+            except PaymentPlan.DoesNotExist as e:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            formatted_plans = []
+
+            for plan in PaymentPlan.objects.all():
+                formatted_plans.append(self.get_plan(plan))
+
+            return Response(formatted_plans)
 
     def post(self, request, tier_id=None):
         if tier_id is not None:
@@ -735,7 +738,7 @@ class ManageMemberTierPlans(StripeAPIView):
             product=member_tier.stripe_id,
         )
 
-        PaymentPlan.objects.create(
+        plan = PaymentPlan.objects.create(
             name=body["name"],
             stripe_id=stripe_plan.id,
             member_tier_id=body["memberTier"],
@@ -746,34 +749,7 @@ class ManageMemberTierPlans(StripeAPIView):
             interval=body["interval"],
         )
 
-        return Response()
-
-
-class ManageMemberTierPlan(StripeAPIView):
-    """
-    get: gets a member tier plan.
-    put: updates a member tier plan.
-    delete: deletes a member tier plan.
-    """
-
-    permission_classes = (permissions.IsAdminUser,)
-
-    def get(self, request, plan_id):
-        body = request.data
-
-        plan = PaymentPlan.objects.get(pk=plan_id)
-
-        formatted_plan = {
-            "id": plan.id,
-            "name": plan.name,
-            "member_tier": plan.member_tier,
-            "visible": plan.visible,
-            "cost": plan.cost,
-            "interval_count": plan.interval_count,
-            "interval": plan.interval,
-        }
-
-        return Response(formatted_plan)
+        return Response(self.get_plan(plan))
 
     def put(self, request, plan_id):
         body = request.data
@@ -785,7 +761,7 @@ class ManageMemberTierPlan(StripeAPIView):
         plan.cost = body["cost"]
         plan.save()
 
-        return Response()
+        return Response(self.get_plan(plan))
 
     def delete(self, request, plan_id):
         plan = PaymentPlan.objects.get(pk=plan_id)
@@ -825,6 +801,8 @@ class MemberBillingInfo(StripeAPIView):
                     "cancelAt": s.cancel_at,
                     "cancelAtPeriodEnd": s.cancel_at_period_end,
                     "startDate": s.start_date,
+                    "membershipTier": member.profile.membership_plan.member_tier.get_object(),
+                    "membershipPlan": member.profile.membership_plan.get_object(),
                 }
             else:
                 billing_info["subscription"] = None
@@ -912,3 +890,51 @@ class MemberLogs(APIView):
         }
 
         return Response(logs)
+
+
+class ManageSettings(APIView):
+    """
+    get: This method gets a constance setting value or values.
+    put: This method updates a constance setting value.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get_setting(self, setting):
+        return {
+            "key": setting.key,
+            "value": setting.value,
+        }
+
+    def get(self, request, setting_key=None):
+        if setting_key:
+            try:
+                setting = ConstanceSetting.objects.get(key=setting_key)
+                return Response(self.get_setting(setting))
+
+            except ConstanceSetting.DoesNotExist as e:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            settings = []
+
+            for setting in ConstanceSetting.objects.all():
+                settings.append(self.get_setting(setting))
+
+            return Response(settings)
+
+    def put(self, request, setting_key=None):
+        if not setting_key:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        body = request.data
+
+        try:
+            setting = ConstanceSetting.objects.get(key=setting_key)
+            setting.value = body["value"]
+            setting.save()
+
+            return Response(self.get_setting(setting))
+
+        except ConstanceSetting.DoesNotExist as e:
+            return Response(status=status.HTTP_404_NOT_FOUND)

@@ -1,4 +1,5 @@
 from asgiref.sync import sync_to_async
+from django.http import HttpRequest
 
 from profile.models import Profile
 from access.models import Doors, Interlock
@@ -184,7 +185,7 @@ class MemberBucksAddCard(StripeAPIView):
 
 class MemberTiers(StripeAPIView):
     """
-    get: gets a list of all membership plans.
+    get: gets a list of all membership tiers.
     """
 
     def get(self, request):
@@ -204,8 +205,107 @@ class MemberTiers(StripeAPIView):
 
 class PaymentPlanSignup(StripeAPIView):
     """
-    post: attempts to sign the member up to a new membership plan.
+    post: attempts to sign the member up to a new payment plan.
     """
+
+    def create_subscription(
+        self, request: HttpRequest, new_plan: PaymentPlan, attempts: int = 0
+    ):
+        attempts += 1
+
+        if attempts > 3:
+            request.user.log_event(
+                "Too many attempts while creating subscription.",
+                "stripe",
+                "",
+            )
+            return Response(
+                {
+                    "success": False,
+                    "message": None,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        try:
+            return stripe.Subscription.create(
+                customer=request.user.profile.stripe_customer_id,
+                items=[
+                    {"price": new_plan.stripe_id},
+                ],
+            )
+
+        except stripe.error.InvalidRequestError as e:
+            capture_exception(e)
+            error = e.json_body.get("error")
+
+            if (
+                error["code"] == "resource_missing"
+                and "default payment method" in error["message"]
+            ):
+                request.user.log_event(
+                    "InvalidRequestError (missing default payment method) from Stripe while creating subscription.",
+                    "stripe",
+                    error,
+                )
+
+                # try to set the default and try again
+                stripe.Customer.modify(
+                    request.user.profile.stripe_customer_id,
+                    invoice_settings={
+                        "default_payment_method": request.user.profile.stripe_payment_method_id,
+                    },
+                )
+
+                return self.create_subscription(attempts)
+
+            if (
+                error["code"] == "resource_missing"
+                and "a similar object exists in live mode" in error["message"]
+            ):
+                request.user.log_event(
+                    "InvalidRequestError (used test key with production object) from Stripe while "
+                    "creating subscription.",
+                    "stripe",
+                    error,
+                )
+
+                return Response(
+                    {
+                        "success": False,
+                        "message": error["message"],
+                    },
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+            else:
+                request.user.log_event(
+                    "InvalidRequestError from Stripe while creating subscription.",
+                    "stripe",
+                    error,
+                )
+                return Response(
+                    {
+                        "success": False,
+                        "message": None,
+                    },
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+        except Exception as e:
+            request.user.log_event(
+                "InvalidRequestError from Stripe while creating subscription.",
+                "stripe",
+                e,
+            )
+            capture_exception(e)
+            return Response(
+                {
+                    "success": False,
+                    "message": None,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
     def post(self, request, plan_id):
         current_plan = request.user.profile.membership_plan
@@ -214,104 +314,7 @@ class PaymentPlanSignup(StripeAPIView):
         if current_plan:
             return Response({"success": False}, status=status.HTTP_409_CONFLICT)
 
-        def create_subscription(attempts=0):
-            attempts += 1
-
-            if attempts > 3:
-                request.user.log_event(
-                    "Too many attempts while creating subscription.",
-                    "stripe",
-                    "",
-                )
-                return Response(
-                    {
-                        "success": False,
-                        "message": None,
-                    },
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
-
-            try:
-                return stripe.Subscription.create(
-                    customer=request.user.profile.stripe_customer_id,
-                    items=[
-                        {"price": new_plan.stripe_id},
-                    ],
-                )
-
-            except stripe.error.InvalidRequestError as e:
-                capture_exception(e)
-                error = e.json_body.get("error")
-
-                if (
-                    error["code"] == "resource_missing"
-                    and "default payment method" in error["message"]
-                ):
-                    request.user.log_event(
-                        "InvalidRequestError (missing default payment method) from Stripe while creating subscription.",
-                        "stripe",
-                        error,
-                    )
-
-                    # try to set the default and try again
-                    stripe.Customer.modify(
-                        request.user.profile.stripe_customer_id,
-                        invoice_settings={
-                            "default_payment_method": request.user.profile.stripe_payment_method_id,
-                        },
-                    )
-
-                    return create_subscription(attempts)
-
-                if (
-                    error["code"] == "resource_missing"
-                    and "a similar object exists in live mode" in error["message"]
-                ):
-                    request.user.log_event(
-                        "InvalidRequestError (used test key with production object) from Stripe while "
-                        "creating subscription.",
-                        "stripe",
-                        error,
-                    )
-
-                    return Response(
-                        {
-                            "success": False,
-                            "message": error["message"],
-                        },
-                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    )
-
-                else:
-                    request.user.log_event(
-                        "InvalidRequestError from Stripe while creating subscription.",
-                        "stripe",
-                        error,
-                    )
-                    return Response(
-                        {
-                            "success": False,
-                            "message": None,
-                        },
-                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    )
-
-            except Exception as e:
-                request.user.log_event(
-                    "InvalidRequestError from Stripe while creating subscription.",
-                    "stripe",
-                    e,
-                )
-                capture_exception(e)
-                return Response(
-                    {
-                        "success": False,
-                        "message": None,
-                    },
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
-
-        new_subscription = create_subscription()
+        new_subscription = self.create_subscription(request, new_plan)
 
         try:
             if new_subscription.status == "active":
@@ -487,7 +490,7 @@ class SubscriptionInfo(StripeAPIView):
     def get(self, request):
         current_plan = request.user.profile.membership_plan
 
-        if not current_plan:
+        if not current_plan or not request.user.profile.stripe_subscription_id:
             return Response({"success": False})
 
         else:
@@ -502,6 +505,8 @@ class SubscriptionInfo(StripeAPIView):
                     "cancelAt": s.cancel_at,
                     "cancelAtPeriodEnd": s.cancel_at_period_end,
                     "startDate": s.start_date,
+                    "membershipTier": request.user.profile.membership_plan.member_tier.get_object(),
+                    "membershipPlan": request.user.profile.membership_plan.get_object(),
                 }
                 return Response({"success": True, "subscription": subscription})
 
@@ -510,7 +515,7 @@ class SubscriptionInfo(StripeAPIView):
 
 class PaymentPlanResumeCancel(StripeAPIView):
     """
-    post: attempts to cancel a member's membership plan.
+    post: attempts to cancel a member's payment plan.
     """
 
     def post(self, request, resume):
@@ -527,14 +532,62 @@ class PaymentPlanResumeCancel(StripeAPIView):
             )
 
         else:
-            # this will modify the subscription to automatically cancel at the end of the current payment period
-            if resume:
+            if resume and not request.user.profile.stripe_subscription_id:
+                request.user.log_event(
+                    "Member tried to resume a payment plan that doesn't exist - creating it.",
+                    "stripe",
+                )
+                new_subscription = PaymentPlanSignup().create_subscription(
+                    request, current_plan
+                )
+
+                try:
+                    if new_subscription.status == "active":
+                        request.user.profile.stripe_subscription_id = (
+                            new_subscription.id
+                        )
+                        request.user.profile.subscription_status = "active"
+                        request.user.profile.save()
+
+                        request.user.log_event(
+                            "Successfully created subscription in Stripe.",
+                            "stripe",
+                            "",
+                        )
+
+                        return Response({"success": True})
+
+                    elif new_subscription.status == "incomplete":
+                        # if we got here, that means the subscription wasn't successfully created
+                        request.user.log_event(
+                            f"Failed to create subscription in Stripe with status {new_subscription.status}.",
+                            "stripe",
+                            "",
+                        )
+
+                        return Response(
+                            {"success": True, "message": "signup.subscriptionFailed"}
+                        )
+
+                    else:
+                        request.user.log_event(
+                            f"Failed to create subscription in Stripe with status {new_subscription.status}.",
+                            "stripe",
+                            "",
+                        )
+                        return Response({"success": True})
+
+                except KeyError as e:
+                    capture_exception(e)
+                    return new_subscription or e
+
+            elif resume:
                 modified_subscription = stripe.Subscription.modify(
                     request.user.profile.stripe_subscription_id,
                     cancel_at_period_end=False,
                 )
 
-                if modified_subscription.cancel_at_period_end == False:
+                if not modified_subscription.cancel_at_period_end:
                     request.user.profile.subscription_status = "active"
                     request.user.profile.save()
                     subject = f"{request.user.get_full_name()} resumed their cancelling membership plan."

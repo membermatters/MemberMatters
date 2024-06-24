@@ -14,7 +14,7 @@
     <div class="row flex content-start items-start">
       <q-list bordered padding class="rounded-borders q-ma-sm access-list">
         <q-item-label header>
-          {{ $t('access.doors') }}
+          {{ $tc('access.door', 2) }}
         </q-item-label>
 
         <div class="q-pa-md" v-if="!doors.length">
@@ -65,7 +65,7 @@
 
       <q-list bordered padding class="rounded-borders q-ma-sm access-list">
         <q-item-label header>
-          {{ $t('access.interlocks') }}
+          {{ $tc('access.interlock', 2) }}
         </q-item-label>
 
         <q-item-label class="q-pa-md" v-if="!interlocks.length">

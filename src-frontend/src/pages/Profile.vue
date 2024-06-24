@@ -3,8 +3,8 @@
     <div class="column flex content-start justify-center">
       <q-banner
         v-if="
-          profile.memberStatus !== 'Active' &&
-          profile.memberStatus !== 'Account Only'
+          profile.memberStatus !== 'active' &&
+          profile.memberStatus !== 'accountonly'
         "
         inline-actions
         rounded

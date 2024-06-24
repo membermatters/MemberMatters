@@ -9,9 +9,9 @@
               $t('paymentPlans.intervalDescription', {
                 currency: plan.currency.toUpperCase(),
                 amount: $n(plan.cost / 100, 'currency', siteLocaleCurrency),
-                intervalCount: plan.intervalAmount,
                 interval: $tc(
-                  `paymentPlans.interval.${plan.interval.toLowerCase()}`
+                  `paymentPlans.interval.${plan.interval.toLowerCase()}`,
+                  plan.intervalAmount
                 ),
               })
             }}

@@ -17,9 +17,14 @@ export function formatCsvList(list: Array<string>) {
   });
 }
 
-export function formatDate(date: Date, time = true) {
-  if (time) return dayjs(date).local().format('D MMM YYYY, h:mm a');
-  return dayjs(date).local().format('D MMM YYYY');
+export function formatDate(date: Date | number, time = true) {
+  let parsedDate = date;
+  // if it's earlier than 2000 it's clearly not been scaled to js time which is stored in milliseconds
+  if (typeof date === 'number' && date < 9439200000) {
+    parsedDate = date * 1000;
+  }
+  if (time) return dayjs(parsedDate).local().format('D MMM YYYY, h:mm a');
+  return dayjs(parsedDate).local().format('D MMM YYYY');
 }
 
 export function formatDateSimple(date: Date, time = true) {
