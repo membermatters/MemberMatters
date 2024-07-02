@@ -4,8 +4,8 @@
       <div class="column flex content-start justify-center">
         <q-banner
           v-if="
-            profile.memberStatus !== 'Active' &&
-            profile.memberStatus !== 'Account Only'
+            profile.memberStatus !== 'active' &&
+            profile.memberStatus !== 'accountonly'
           "
           inline-actions
           rounded
@@ -72,7 +72,7 @@ export default {
   async mounted() {
     await this.getProfile();
     if (
-      this.profile.memberStatus === 'Needs Induction' &&
+      this.profile.memberStatus === 'noob' &&
       this.$route.name !== 'membershipPlan' &&
       this.features.enableMembershipPayments
     ) {

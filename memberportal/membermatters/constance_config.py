@@ -323,7 +323,7 @@ CONSTANCE_CONFIG = {
         "The sender ID (either a phone number or alpha numeric sender ID you can send from).",
     ),
     "SMS_FOOTER": (
-        "From Brisbane Makerspace.",
+        "From Example Makerspace.",
         "An optional footer to append to all SMS messages (such as 'from xyz org.'",
     ),
     "SMS_MESSAGES": (

@@ -379,7 +379,7 @@ class ProfileDetail(generics.GenericAPIView):
             "lastName": p.last_name,
             "screenName": p.screen_name,
             "phone": p.phone,
-            "memberStatus": p.get_state_display(),
+            "memberStatus": p.state,
             "vehicleRegistrationPlate": p.vehicle_registration_plate,
             "lastInduction": p.last_induction,
             "lastSeen": p.last_seen,

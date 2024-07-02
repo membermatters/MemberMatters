@@ -111,6 +111,28 @@ Starting development server at http://127.0.0.1:8000/
 
 Now that the backend API is running, you can head over to the [frontend](/frontend) folder and follow those instructions to get the frontend UI running.
 
+## Stripe Webhooks
+If you want to test Stripe webhooks you can use the stripe CLI to forward webhooks to your local dev server.
+To do so, you will need to install the stripe CLI and login to your stripe account.
+Click [here](https://dashboard.stripe.com/test/webhooks/create?endpoint_location=local) for detailed instructions from 
+Stripe.
+
+Once you're set up, run the following command to forward webhooks to your local dev server:
+
+```bash
+stripe listen --skip-verify --events invoice.paid,invoice.payment_failed,customer.subscription.deleted --forward-to localhost:8080/api/billing/stripe-webhook/
+```
+
+Finally, check that you're running the frontend proxy on port 8080 and configure the signing secret in the Constance 
+settings.
+You can find the local signing secret in the command line output after running `stripe listen` above.
+It will start like this `whsec_...`
+
+You can also trigger common events like `invoice.paid` using the CLI like this:
+```bash
+stripe trigger invoice.paid
+```
+
 ## Linter
 
 As explained below, this projects uses a linter (called "Black") to fix common errors, and to enforce consistent code style/standards.

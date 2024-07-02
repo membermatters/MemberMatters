@@ -39,7 +39,10 @@
         </div>
 
         <div
-          v-if="currentPeriodEnd && subscriptionStatus !== 'cancelling'"
+          v-if="
+            this.subscriptionInfo?.currentPeriodEnd &&
+            subscriptionStatus !== 'cancelling'
+          "
           class="q-mb-md"
         >
           <div class="text-h6 q-py-md">
@@ -75,6 +78,7 @@
           color="error"
           :label="$tc('paymentPlans.cancelButton')"
         />
+        <member-bucks-manage-billing v-else-if="!cardExists" />
         <q-btn
           v-else
           :disable="disableButton"
@@ -94,10 +98,12 @@ import { mapGetters, mapActions } from 'vuex';
 import SelectTier from '@components/Billing/SelectTier.vue';
 import SelectedTier from '@components/Billing/SelectedTier.vue';
 import SignupRequiredSteps from '@components/Billing/SignupRequiredSteps.vue';
+import MemberBucksManageBilling from 'components/MemberBucksManageBilling.vue';
 
 export default defineComponent({
   name: 'MembershipTierPage',
   components: {
+    MemberBucksManageBilling,
     SelectTier,
     SelectedTier,
     SignupRequiredSteps,
@@ -125,6 +131,9 @@ export default defineComponent({
       } else {
         return false;
       }
+    },
+    cardExists() {
+      return this?.profile?.financial?.memberBucks?.savedCard?.last4;
     },
     currentTier() {
       return this.profile.financial.membershipTier;

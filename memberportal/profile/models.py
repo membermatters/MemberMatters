@@ -526,7 +526,7 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
                 "full": self.get_full_name(),
             },
             "phone": self.phone,
-            "state": self.get_state_display(),
+            "state": self.state,
             "vehicleRegistrationPlate": self.vehicle_registration_plate,
             "rfid": self.rfid,
             "memberBucks": {
