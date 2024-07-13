@@ -17,7 +17,7 @@
         {{ $t('stats.disabled') }}
       </q-banner>
 
-      <div v-if="StatisticsLoaded">
+      <template v-if="StatisticsLoaded">
         <template v-for="(value, key) in this.statistics" :key="key">
           <div v-if="key !== 'on_site'" class="col-lg-6 col-12 q-px-md q-pt-md">
             <q-card class="full-width">
@@ -39,7 +39,7 @@
             </q-card>
           </div>
         </template>
-      </div>
+      </template>
       <div v-else>
         {{ $t('stats.errorLoading') }}
       </div>
