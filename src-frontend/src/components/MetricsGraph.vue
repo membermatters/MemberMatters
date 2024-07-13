@@ -51,6 +51,7 @@ export default {
       this.metricsData.map((item) => {
         if (Array.isArray(item.data)) {
           item.data.forEach((state) => {
+            if (!state?.state && !state?.type) return;
             if (states[state?.state ?? state?.type] === undefined) {
               states[state?.state ?? state?.type] = [];
             }
