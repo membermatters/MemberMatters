@@ -79,6 +79,8 @@ class UpdateStatistics(APIView):
         api_metrics.calculate_memberbucks_balance()
         api_metrics.calculate_memberbucks_transactions()
 
+        return Response()
+
 
 class UpdatePromMetrics(APIView):
     """

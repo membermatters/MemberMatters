@@ -142,7 +142,8 @@ def calculate_memberbucks_transactions():
     logger.debug("Calculating subscription count total")
     transaction_data = []
     for transaction_type in (
-        MemberBucks.objects.values("transaction_type")
+        MemberBucks.objects.filter(amount__lt=1000)
+        .values("transaction_type")
         .annotate(amount=Sum("amount"))
         .order_by("-amount")
     ):
