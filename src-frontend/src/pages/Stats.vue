@@ -32,7 +32,7 @@
                     <div class="text-h6">{{ $t(`stats.${key}`) }}</div>
                   </div>
                   <div class="col-12 q-px-md q-pt-md">
-                    <MetricsGraph :metricsData="value" />
+                    <MetricsGraph :metricsData="value" :id="key" />
                   </div>
                 </div>
               </q-card-section>

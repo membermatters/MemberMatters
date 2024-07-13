@@ -118,6 +118,18 @@ export default {
     subscription_count_total: 'Subscription States',
     memberbucks_balance_total: 'Spacebucks In Circulation',
     memberbucks_transactions_total: 'Spacebucks Transaction Volume',
+    labels: {
+      noob: 'New Member',
+      active: 'Active Member',
+      inactive: 'Inactive Member',
+      accountonly: 'Account Only',
+      cancelling: 'Cancelling In Progress',
+      stripe: 'Stripe Topup',
+      other: 'Other Topup',
+      interlock: 'Interlock Payment',
+      card: 'Swipe Card Payment',
+      web: 'Online Payment',
+    },
   },
   button: {
     submit: 'Submit',
