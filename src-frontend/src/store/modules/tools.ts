@@ -1,5 +1,7 @@
-// import Vue from "vue";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import { api } from 'boot/axios';
+import { MetricsApi, MetricsApiSchema } from 'types/api/metrics';
 
 export default {
   namespaced: true,
@@ -12,7 +14,7 @@ export default {
     members: [],
     memberBucksTransactions: [],
     memberBucksBalance: '',
-    statistics: {},
+    statistics: {} as MetricsApi,
   },
   getters: {
     lastSeen: (state) => state.lastSeen,
@@ -155,16 +157,15 @@ export default {
     },
     getStatistics({ commit }) {
       return new Promise((resolve, reject) => {
-        api
-          .get('/api/statistics/')
-          .then((result) => {
-            commit('setStatistics', result.data);
+        api.get('/api/statistics/').then((result) => {
+          const data = MetricsApiSchema.safeParse(result.data); // Validate the response
+          if (data.success) {
+            commit('setStatistics', data.data);
             resolve();
-          })
-          .catch((error) => {
-            reject();
-            throw error;
-          });
+          } else {
+            reject(data.error);
+          }
+        });
       });
     },
   },

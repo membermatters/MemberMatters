@@ -32,6 +32,7 @@ export default {
     reportIssue: 'Report Issue',
     proxy: 'Proxy Votes',
     recentSwipes: 'Recent Swipes',
+    stats: 'Stats & Metrics',
     lastSeen: 'Last Seen',
     membership: 'Membership',
     billing: 'Billing Method',
@@ -104,6 +105,32 @@ export default {
       'groups. It was originally created by Jaimyn Mayer but is now used by several spaces.',
     linkText: 'on GitHub',
   },
+  stats: {
+    title: 'Stats and Metrics',
+    errorLoading: 'There was an error retrieving your statistics.',
+    internalStatsDescription:
+      'This page lists some stats and metrics collected by the member portal.',
+    disabled:
+      'This feature is currently disabled. Metrics data may not be available or up to date.',
+    member_count_total: 'Member Count',
+    member_count_6_months_total: 'Member Count (>6 Mths)',
+    member_count_12_months_total: 'Member Count (>12 Mths)',
+    subscription_count_total: 'Subscription States',
+    memberbucks_balance_total: 'Spacebucks In Circulation',
+    memberbucks_transactions_total: 'Spacebucks Transaction Volume',
+    labels: {
+      noob: 'New Member',
+      active: 'Active Member',
+      inactive: 'Inactive Member',
+      accountonly: 'Account Only',
+      cancelling: 'Cancelling In Progress',
+      stripe: 'Stripe Topup',
+      other: 'Other Topup',
+      interlock: 'Interlock Payment',
+      card: 'Swipe Card Payment',
+      web: 'Online Payment',
+    },
+  },
   button: {
     submit: 'Submit',
     send: 'Send',
@@ -174,9 +201,7 @@ export default {
   },
   access: {
     pageDescription:
-      'Your access permissions for doors and interlocks are shown below. Please ' +
-      'report an issue if you believe you should have access to something that ' +
-      "you don't.",
+      'Your access permissions are shown below. Let us know if this needs updating.',
     inactive: 'Membership is currently inactive. This may affect access.',
     authorised: 'Authorised',
     unauthorised: 'Unauthorised',
@@ -433,7 +458,7 @@ export default {
     sendWelcomeEmailSuccess: 'Successfully sent the welcome email.',
 
     access: 'Access',
-    accessDescription: "Tap an icon below to change a member's access.",
+    accessDescription: 'Tap an icon to change access.',
     log: 'log | logs',
     userEvents: 'Event Logs',
     userDoorLogs: 'Door Swipe Logs',

@@ -36,6 +36,7 @@
     "@stripe/stripe-js": "^1.29.0",
     "address": "^1.1.2",
     "animate.css": "^4.1.1",
+    "apexcharts": "^3.49.1",
     "axios": "^0.26.1",
     "core-js": "^3.22.2",
     "crypto-js": "^4.1.1",
@@ -56,7 +57,9 @@
     "vue-i18n": "^9.2.0-beta.35",
     "vue-router": "^4.0.14",
     "vue2-transitions": "^0.3.0",
-    "vuex": "^4.0.2"
+    "vue3-apexcharts": "^1.5.3",
+    "vuex": "^4.0.2",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@intlify/vite-plugin-vue-i18n": "^3.3.1",

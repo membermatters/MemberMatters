@@ -13,4 +13,9 @@ urlpatterns = [
         views.UpdatePromMetrics.as_view(),
         name="api_update_prom_metrics",
     ),
+    path(
+        "api/update-statistics/",
+        views.UpdateStatistics.as_view(),
+        name="api_update_statistics",
+    ),
 ]

@@ -57,7 +57,10 @@ def calculate_member_count():
         profile_states.append({"state": state["state"], "total": state["count"]})
 
     Metric.objects.create(
-        name=Metric.MetricName.MEMBER_COUNT_TOTAL, data=profile_states
+        name=Metric.MetricName.MEMBER_COUNT_TOTAL,
+        data=(
+            profile_states if len(profile_states) else [{"state": "active", "total": 0}]
+        ),
     ).full_clean()
 
 
@@ -74,7 +77,10 @@ def calculate_member_count_6_months():
         profile_states.append({"state": state["state"], "total": state["count"]})
 
     Metric.objects.create(
-        name=Metric.MetricName.MEMBER_COUNT_6_MONTHS, data=profile_states
+        name=Metric.MetricName.MEMBER_COUNT_6_MONTHS,
+        data=(
+            profile_states if len(profile_states) else [{"state": "active", "total": 0}]
+        ),
     ).full_clean()
 
 
@@ -91,7 +97,10 @@ def calculate_member_count_12_months():
         profile_states.append({"state": state["state"], "total": state["count"]})
 
     Metric.objects.create(
-        name=Metric.MetricName.MEMBER_COUNT_12_MONTHS, data=profile_states
+        name=Metric.MetricName.MEMBER_COUNT_12_MONTHS,
+        data=(
+            profile_states if len(profile_states) else [{"state": "active", "total": 0}]
+        ),
     ).full_clean()
 
 
@@ -109,13 +118,19 @@ def calculate_subscription_count():
         )
     Metric.objects.create(
         name=Metric.MetricName.SUBSCRIPTION_COUNT_TOTAL,
-        data=subscription_states_data,
+        data=(
+            subscription_states_data
+            if len(subscription_states_data)
+            else [{"state": "inactive", "total": 0}]
+        ),
     ).full_clean()
 
 
 def calculate_memberbucks_balance():
     logger.debug("Calculating memberbucks balance total")
-    total_balance = Profile.objects.aggregate(Sum("memberbucks_balance"))
+    total_balance = Profile.objects.filter(memberbucks_balance__lt=1000).aggregate(
+        Sum("memberbucks_balance")
+    )
     Metric.objects.create(
         name=Metric.MetricName.MEMBERBUCKS_BALANCE_TOTAL,
         data={"value": total_balance["memberbucks_balance__sum"]},
@@ -127,7 +142,8 @@ def calculate_memberbucks_transactions():
     logger.debug("Calculating subscription count total")
     transaction_data = []
     for transaction_type in (
-        MemberBucks.objects.values("transaction_type")
+        MemberBucks.objects.filter(amount__lt=1000)
+        .values("transaction_type")
         .annotate(amount=Sum("amount"))
         .order_by("-amount")
     ):
@@ -139,5 +155,9 @@ def calculate_memberbucks_transactions():
         )
     Metric.objects.create(
         name=Metric.MetricName.MEMBERBUCKS_TRANSACTIONS_TOTAL,
-        data=transaction_data,
+        data=(
+            transaction_data
+            if len(transaction_data)
+            else [{"type": "stripe", "total": 0.0}]
+        ),
     ).full_clean()

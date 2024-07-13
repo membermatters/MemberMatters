@@ -28,7 +28,7 @@
       <h5 class="q-ma-md">
         {{ $t('dashboard.usefulResources') }}
       </h5>
-      <div class="row">
+      <div class="row flex items-stretch justify-start">
         <dashboard-card
           v-for="card in homepageCards"
           :key="card.title"
