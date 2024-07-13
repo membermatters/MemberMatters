@@ -64,9 +64,9 @@ class Statistics(APIView):
         return Response(statistics)
 
 
-class CalculateMetrics(APIView):
+class UpdateStatistics(APIView):
     """
-    put: This method calculates and stores a new set of metrics.
+    put: This method updates and stores a new set of statistics.
     """
 
     permission_classes = (permissions.IsAdminUser | HasAPIKey,)
