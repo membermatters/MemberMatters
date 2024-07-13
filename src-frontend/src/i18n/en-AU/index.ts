@@ -107,6 +107,7 @@ export default {
   },
   stats: {
     title: 'Stats and Metrics',
+    errorLoading: 'There was an error retrieving your statistics.',
     internalStatsDescription:
       'This page lists some stats and metrics collected by the member portal.',
     disabled:

@@ -1370,11 +1370,7 @@ import icons from '../../icons';
 import formatMixin from '@mixins/formatMixin';
 import { mapGetters } from 'vuex';
 import { QForm } from 'quasar';
-import {
-  MemberBillingInfo,
-  MemberProfile,
-  MemberStateStrings,
-} from 'types/member';
+import { MemberBillingInfo, MemberProfile, MemberState } from 'types/member';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -1553,7 +1549,7 @@ export default defineComponent({
           }, 1200);
         });
     },
-    setMemberState(state: MemberStateStrings) {
+    setMemberState(state: MemberState) {
       this.stateLoading = true;
       this.$axios
         .post(`/api/admin/members/${this.member.id}/state/${state}/`)

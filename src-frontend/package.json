@@ -58,7 +58,8 @@
     "vue-router": "^4.0.14",
     "vue2-transitions": "^0.3.0",
     "vue3-apexcharts": "^1.5.3",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@intlify/vite-plugin-vue-i18n": "^3.3.1",
