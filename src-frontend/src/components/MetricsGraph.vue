@@ -18,15 +18,27 @@ export default {
       type: Array,
       default: () => [],
     },
+    id: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {};
+  },
+  mounted() {
+    setTimeout(() => {
+      const chart = ApexCharts.getChartByID('metrics-graph-' + this.id);
+      chart.hideSeries('Inactive Member');
+      chart.hideSeries('Account Only');
+      chart.hideSeries('New Member');
+    }, 0); // triggers on the next dom update
   },
   computed: {
     options() {
       return {
         chart: {
-          id: 'metrics-graph',
+          id: 'metrics-graph-' + this.id,
         },
         xaxis: {
           categories: this.metricsData.map((item) =>
@@ -66,7 +78,7 @@ export default {
       });
       return Object.keys(states).map((state) => {
         return {
-          name: state,
+          name: this.$t('stats.labels.' + state),
           data: states[state],
         };
       });
