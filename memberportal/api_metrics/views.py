@@ -1,7 +1,8 @@
-from django.db.models import Max
+from django.db.models import Max, Sum
 from django.utils import timezone
+from rest_framework_api_key.permissions import HasAPIKey
 
-import api_metrics.metrics
+import api_metrics.metrics as api_metrics
 from api_metrics.models import Metric
 from api_general.models import SiteSession
 
@@ -61,6 +62,22 @@ class Statistics(APIView):
                 statistics[metric_name] = []
 
         return Response(statistics)
+
+
+class CalculateMetrics(APIView):
+    """
+    put: This method calculates and stores a new set of metrics.
+    """
+
+    permission_classes = (permissions.IsAdminUser | HasAPIKey,)
+
+    def put(self, request):
+        api_metrics.calculate_member_count()
+        api_metrics.calculate_member_count_6_months()
+        api_metrics.calculate_member_count_12_months()
+        api_metrics.calculate_subscription_count()
+        api_metrics.calculate_memberbucks_balance()
+        api_metrics.calculate_memberbucks_transactions()
 
 
 class UpdatePromMetrics(APIView):
