@@ -410,16 +410,16 @@
         </q-tab-panel>
 
         <q-tab-panel name="access">
-          <p class="q-mb-none q-mt-sm">
-            {{ $t('adminTools.accessDescription') }}
-          </p>
+          <div class="column q-gutter-y-sm full-width">
+            <h6 class="q-mt-md q-mb-sm">
+              {{ $t('adminTools.accessDescription') }}
+            </h6>
 
-          <br />
-
-          <access-list
-            :member-id="selectedMemberFiltered.id"
-            :inactive-warning="selectedMemberFiltered.state === 'inactive'"
-          />
+            <access-list
+              :member-id="selectedMemberFiltered.id"
+              :inactive-warning="selectedMemberFiltered.state === 'inactive'"
+            />
+          </div>
         </q-tab-panel>
 
         <q-tab-panel name="log">
@@ -884,8 +884,8 @@
         </q-tab-panel>
 
         <q-tab-panel name="billing">
-          <div class="column flex content-start items-start q-gutter-lg">
-            <div class="">
+          <div class="column flex content-start items-start q-gutter-y-lg">
+            <div class="column q-gutter-y-sm full-width">
               <div class="text-h6">
                 {{ $t('adminTools.subscriptionInfo') }}
               </div>
@@ -1069,7 +1069,7 @@
               </div>
             </div>
 
-            <div>
+            <div class="column q-gutter-y-sm full-width">
               <div class="text-h6">
                 {{ $t('adminTools.billingInfo') }}
               </div>
@@ -1179,7 +1179,7 @@
               </q-list>
             </div>
 
-            <div>
+            <div class="column q-gutter-y-sm full-width">
               <div class="text-h6">
                 {{ $t('adminTools.memberbucksTransactions') }}
               </div>
