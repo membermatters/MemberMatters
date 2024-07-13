@@ -201,9 +201,7 @@ export default {
   },
   access: {
     pageDescription:
-      'Your access permissions for doors and interlocks are shown below. Please ' +
-      'report an issue if you believe you should have access to something that ' +
-      "you don't.",
+      'Your access permissions are shown below. Let us know if this needs updating.',
     inactive: 'Membership is currently inactive. This may affect access.',
     authorised: 'Authorised',
     unauthorised: 'Unauthorised',
@@ -460,7 +458,7 @@ export default {
     sendWelcomeEmailSuccess: 'Successfully sent the welcome email.',
 
     access: 'Access',
-    accessDescription: "Tap an icon below to change a member's access.",
+    accessDescription: 'Tap an icon to change access.',
     log: 'log | logs',
     userEvents: 'Event Logs',
     userDoorLogs: 'Door Swipe Logs',
