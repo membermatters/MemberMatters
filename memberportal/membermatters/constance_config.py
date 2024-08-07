@@ -464,7 +464,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             "Vikunja Integration",
             (
                 "VIKUNJA_TEAMS",
-                "VIKUNJA_URL",
+                "VIKUNJA_API_URL",
                 "VIKUNJA_API_TOKEN",
                 "VIKUNJA_DEFAULT_PROJECT_ID",
                 "VIKUNJA_DEFAULT_LABEL_ID",
