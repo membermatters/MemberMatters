@@ -193,7 +193,7 @@ class IssueDetail(APIView):
 
                 task_response = requests.request(
                     "PUT",
-                    f"{config.VIKUNJA_URL}/api/v1/projects/{vikunja_project_id}/tasks",
+                    f"{config.VIKUNJA_API_URL}/api/v1/projects/{vikunja_project_id}/tasks",
                     json=task_body,
                     headers={"Authorization": "Bearer " + config.VIKUNJA_API_TOKEN},
                 )
@@ -210,7 +210,7 @@ class IssueDetail(APIView):
 
                         label_response = requests.request(
                             "PUT",
-                            f"{config.VIKUNJA_URL}/api/v1/tasks/{task_id}/labels",
+                            f"{config.VIKUNJA_API_URL}/api/v1/tasks/{task_id}/labels",
                             json=label_body,
                             headers={
                                 "Authorization": "Bearer " + config.VIKUNJA_API_TOKEN

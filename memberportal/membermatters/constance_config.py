@@ -131,6 +131,8 @@ CONSTANCE_CONFIG = {
         False,
         "Enable the submit issue to Vikunja integration.",
     ),
+    "VIKUNJA_API_URL": ("", "Set this to your Vikunja instance public URL."),
+    "VIKUNJA_API_TOKEN": ("", "Set this to your Vikunja API token."),
     "VIKUNJA_DEFAULT_PROJECT_ID": (
         "",
         "Set this to the ID of your default project to create issues in.",
@@ -462,6 +464,8 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             "Vikunja Integration",
             (
                 "VIKUNJA_TEAMS",
+                "VIKUNJA_URL",
+                "VIKUNJA_API_TOKEN",
                 "VIKUNJA_DEFAULT_PROJECT_ID",
                 "VIKUNJA_DEFAULT_LABEL_ID",
             ),
