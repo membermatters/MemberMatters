@@ -120,15 +120,33 @@ CONSTANCE_CONFIG = {
         False,
         "Enable integration with stripe for membership payments.",
     ),
+    # ==== Report Issue Services ====
+    # Email config
+    "REPORT_ISSUE_ENABLE_EMAIL": (
+        True,
+        "Enable the submit issue to email integration.",
+    ),
     # Vikunja config
+    "REPORT_ISSUE_ENABLE_VIKUNJA": (
+        False,
+        "Enable the submit issue to Vikunja integration.",
+    ),
+    "VIKUNJA_DEFAULT_PROJECT_ID": (
+        "",
+        "Set this to the ID of your default project to create issues in.",
+    ),
+    "VIKUNJA_DEFAULT_LABEL_ID": (
+        "",
+        "[optional] Set this to the ID of your default label if you want new issues to be tagged.",
+    ),
     "VIKUNJA_TEAMS": (
         '[{"name": "Members", "oidcID": "members", "description": "The default team for all members.", "isPublic": false}]',
         "A JSON array of Vikunja teams to add users to when they login via SSO. Returned as an OIDC claim with the 'vikunja_teams' scope. Check Vikunja docs for syntax.",
     ),
     # Trello config
-    "ENABLE_TRELLO_INTEGRATION": (
+    "REPORT_ISSUE_ENABLE_TRELLO": (
         False,
-        "Enable the submit issue to trello integration. If disabled we'll send an email to EMAIL_ADMIN instead.",
+        "Enable the submit issue to trello integration.",
     ),
     "TRELLO_API_KEY": ("", "Set this to your Trello API key."),
     "TRELLO_API_TOKEN": ("", "Set this to your Trello API token."),
@@ -432,11 +450,25 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "MEMBERBUCKS_CURRENCY",
             ),
         ),
-        ("Vikunja Integration", ("VIKUNJA_TEAMS",)),
+        (
+            "Report Issue Services",
+            (
+                "REPORT_ISSUE_ENABLE_EMAIL",
+                "REPORT_ISSUE_ENABLE_VIKUNJA",
+                "REPORT_ISSUE_ENABLE_TRELLO",
+            ),
+        ),
+        (
+            "Vikunja Integration",
+            (
+                "VIKUNJA_TEAMS",
+                "VIKUNJA_DEFAULT_PROJECT_ID",
+                "VIKUNJA_DEFAULT_LABEL_ID",
+            ),
+        ),
         (
             "Trello Integration",
             (
-                "ENABLE_TRELLO_INTEGRATION",
                 "TRELLO_API_KEY",
                 "TRELLO_API_TOKEN",
                 "TRELLO_ID_LIST",

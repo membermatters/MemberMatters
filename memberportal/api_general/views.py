@@ -37,7 +37,6 @@ class GetConfig(APIView):
             "memberbucks_topup_options": json.loads(
                 config.STRIPE_MEMBERBUCKS_TOPUP_OPTIONS
             ),
-            "trelloIntegration": config.ENABLE_TRELLO_INTEGRATION,
             "enableProxyVoting": config.ENABLE_PROXY_VOTING,
             "enableStripe": config.ENABLE_STRIPE
             and len(config.STRIPE_PUBLISHABLE_KEY) > 0
