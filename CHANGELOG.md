@@ -5,6 +5,77 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [v3.7.0] - 2024-08-11
+
+### Fixed
+
+- unhandled exception when logging access for non-existent member
+- re-sync device if exempt_signin changes
+- signals to auto sync access changes to devices in realtime
+- device pages not showing bump/manage buttons on mobile
+- fixed bugs in devices modal when using next/previous buttons
+- weird spacing in the memberbucks UI
+- bug with device auth
+- bug with swipe denied due to device lockout not logging correctly
+- all print calls now use the logging framework properly
+- removed interlock sync button because it doesn't do anything for interlocks
+- membership and payment plan names show useful info in django admin interface
+- #259 adding duplicate payment plan fails
+- credit card component width issues on small screens
+- Fixed inconsistent translations/plurals and billing tab UI improvement
+- fixed billing dates appearing incorrectly
+- made member states more consistent in the UI
+- bug in member list filter dropdown
+- homepage cards showing inconsistent heights
+
+### Added
+
+- memberbucks products and a vending machine API to track product purchases and profits
+- post to discord for vending machine purchases
+- memberbucks devices to the devices page
+- Vikunja teams sync via oauth / oidc claims
+- Vikunja integration for the report issues form
+- Discord integration for the report issues form
+- a bunch of native MM metrics for things like membership count, memberbucks in circulation, etc.
+- lots of prometheus metrics have been added
+  - all db models
+  - celery tasks
+  - all django views
+  - all native MM metrics (see above)
+- warning comment about PRs that target main directly
+- per app level logging configuration (check env var definitions in settings.py)
+- tracking of total purchases to memberbucks devices
+- make offline devices more obvious and disable buttons that require them to be online
+- shows if a device currently has a maintenance lockout on the permissions page
+- admin permissions page shows warning if a member's access is inactive or device is locked out
+- API to dynamically update all constance settings using REST API
+- docs about using the local Stripe CLI for testing webhooks
+- Added support for assigning a plan manually and allowing a member to resume it
+- membership plan info to member admin page
+- ignore large (> $1k) transactions when calculating memberbucks metrics (to prevent outliers/test transactions)
+
+### Changed
+
+- documentation improvements (thanks @ergodone)
+- increased docker image python version to 3.12
+- increased docker image Node version to 22
+- updated Stripe node module version
+- refactored memberbucks APIs (including new WS commands to support vending machine products)
+- increased the length of some description fields in models for new vending machine API
+- Make report_online_status default to False for auto provisioned devices
+- refactored the two redundant member tier views
+- refactored payment plans api
+- improved member access permissions UI
+- improved manage member admin page UI
+
+### Removed
+
+- old API_SECRET_KEY constance config
+- old redundant mdns code
+- old and unsupported terraform related files
+- old and unsupported MMDB_SECRET env var
+
 ## [v3.6.3] - 2024-04-08
 
 ### Fixed

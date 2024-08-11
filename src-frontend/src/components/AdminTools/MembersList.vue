@@ -128,7 +128,7 @@ export default defineComponent({
     return {
       members: [],
       filter: '',
-      memberState: 'Active',
+      memberState: 'active',
       loading: false,
       pagination: {
         sortBy: 'date',
@@ -140,7 +140,7 @@ export default defineComponent({
   computed: {
     ...mapGetters('config', ['features']),
     displayMemberList() {
-      if (this.memberState === 'All') return this.members;
+      if (this.memberState === 'all') return this.members;
       return this.members.filter(
         (member: MemberProfile) => member.state === this.memberState
       );
@@ -156,11 +156,11 @@ export default defineComponent({
     },
     filterOptions() {
       return [
-        { label: this.$t('adminTools.all'), value: 'All' },
-        { label: this.$t('adminTools.active'), value: 'Active' },
-        { label: this.$t('adminTools.inactive'), value: 'Inactive' },
-        { label: this.$t('adminTools.new'), value: 'Needs Induction' },
-        { label: this.$t('adminTools.accountOnly'), value: 'Account Only' },
+        { label: this.$t('adminTools.all'), value: 'all' },
+        { label: this.$t('adminTools.active'), value: 'active' },
+        { label: this.$t('adminTools.inactive'), value: 'inactive' },
+        { label: this.$t('adminTools.new'), value: 'noob' },
+        { label: this.$t('adminTools.accountOnly'), value: 'accountonly' },
       ];
     },
     columns() {
@@ -233,6 +233,7 @@ export default defineComponent({
         });
     },
     exportCsv() {
+      console.log(this.displayMemberList);
       stringify(
         this.displayMemberList,
         {
@@ -256,16 +257,17 @@ export default defineComponent({
         .then(() => {
           this.$q.dialog({
             dark: true,
-            title: this.$t('adminTools.copyEmailListSuccess', {
-              count: this.displayMemberList.length,
-            }),
-            message: this.$t('adminTools.copyEmailListSuccessDescription', {
-              excludedCount:
-                this.displayMemberList.length -
+            title: this.$tc(
+              'adminTools.copyEmailListSuccess',
+              this.displayMemberList.length
+            ),
+            message: this.$tc(
+              'adminTools.copyEmailListSuccessDescription',
+              this.displayMemberList.length -
                 this.displayMemberList.filter(
                   (member: MemberProfile) => !member.excludeFromEmailExport
-                ).length,
-            }),
+                ).length
+            ),
           });
         })
         .catch(() => {

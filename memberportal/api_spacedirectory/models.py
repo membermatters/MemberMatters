@@ -1,9 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.conf import settings
+from django_prometheus.models import ExportModelOperationsMixin
 
 
-class SpaceAPI(models.Model):
+class SpaceAPI(ExportModelOperationsMixin("space-api"), models.Model):
     # The Hackspace is always closed by default to prevent people from showing up by accident.
     space_is_open = models.BooleanField(default=False)
     space_message = models.CharField(max_length=255, blank=True, null=True)
@@ -23,7 +23,7 @@ class SpaceAPI(models.Model):
 
 # Because Sensors are tied to a space, and we only have one space in the system for now
 # We have the luxury of not requiring foreign keys here!
-class SpaceAPISensor(models.Model):
+class SpaceAPISensor(ExportModelOperationsMixin("space-api-sensor"), models.Model):
     SENSOR_TYPE_CHOICES = [
         ("temperature", "Temperature"),
         ("barometer", "Barometer"),
@@ -50,7 +50,9 @@ class SpaceAPISensor(models.Model):
 
 
 # Some sensors have properties, let's track those in a separate model
-class SpaceAPISensorProperties(models.Model):
+class SpaceAPISensorProperties(
+    ExportModelOperationsMixin("space-api-sensor-properties"), models.Model
+):
     sensor_id = models.ForeignKey(
         SpaceAPISensor, related_name="properties", on_delete=models.CASCADE
     )

@@ -2,7 +2,6 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta, datetime
 import pytz
-import os
 from django.utils.timezone import make_aware
 from django.contrib.auth.models import (
     BaseUserManager,
@@ -19,8 +18,10 @@ import uuid
 import logging
 from services.emails import send_single_email, send_email_to_admin
 from services import sms
+from django_prometheus.models import ExportModelOperationsMixin
 
-logger = logging.getLogger("app")
+
+logger = logging.getLogger("profile")
 
 utc = pytz.UTC
 
@@ -41,7 +42,7 @@ LOG_TYPES = (
 )
 
 
-class Log(models.Model):
+class Log(ExportModelOperationsMixin("log"), models.Model):
     id = models.AutoField(primary_key=True)
     logtype = models.CharField(
         "Type of action/event", choices=LOG_TYPES, max_length=30, default="generic"
@@ -74,14 +75,14 @@ class Log(models.Model):
     )
 
 
-class UserEventLog(Log):
+class UserEventLog(ExportModelOperationsMixin("user-event-log"), Log):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.user.get_full_name()} - {self.description}"
 
 
-class EventLog(Log):
+class EventLog(ExportModelOperationsMixin("event-log"), Log):
     def __str__(self):
         if self.door:
             return f"{self.door.name} {self.logtype} log - {self.description}"
@@ -156,7 +157,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(ExportModelOperationsMixin("user"), AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
         verbose_name="email address",
         max_length=255,
@@ -295,7 +296,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return True
 
 
-class Profile(models.Model):
+class Profile(ExportModelOperationsMixin("profile"), models.Model):
     STATES = (
         ("noob", "Needs Induction"),
         ("active", "Active"),
@@ -525,7 +526,7 @@ class Profile(models.Model):
                 "full": self.get_full_name(),
             },
             "phone": self.phone,
-            "state": self.get_state_display(),
+            "state": self.state,
             "vehicleRegistrationPlate": self.vehicle_registration_plate,
             "rfid": self.rfid,
             "memberBucks": {
@@ -554,7 +555,7 @@ class Profile(models.Model):
             "subscriptionStatus": self.subscription_status,
         }
 
-    def get_access_permissions(self):
+    def get_access_permissions(self, ignore_user_state=False):
         """
         returns a dictionary of the user's access permissions
         :return:
@@ -564,6 +565,9 @@ class Profile(models.Model):
 
         user_active = self.state == "active"
 
+        if ignore_user_state:
+            user_active = True
+
         from access.models import Doors, Interlock
 
         for door in Doors.objects.all():
@@ -571,10 +575,26 @@ class Profile(models.Model):
                 continue
 
             if door in self.doors.all() and user_active:
-                doors.append({"name": door.name, "access": True, "id": door.id})
+                doors.append(
+                    {
+                        "name": door.name,
+                        "access": True,
+                        "id": door.id,
+                        "locked_out": door.locked_out,
+                        "offline": door.get_unavailable(),
+                    }
+                )
 
             else:
-                doors.append({"name": door.name, "access": False, "id": door.id})
+                doors.append(
+                    {
+                        "name": door.name,
+                        "access": False,
+                        "id": door.id,
+                        "locked_out": door.locked_out,
+                        "offline": door.get_unavailable(),
+                    }
+                )
 
         for interlock in Interlock.objects.all():
             if interlock.hidden:
@@ -582,12 +602,24 @@ class Profile(models.Model):
 
             if interlock in self.interlocks.all() and user_active:
                 interlocks.append(
-                    {"name": interlock.name, "access": True, "id": interlock.id}
+                    {
+                        "name": interlock.name,
+                        "access": True,
+                        "id": interlock.id,
+                        "locked_out": interlock.locked_out,
+                        "offline": interlock.get_unavailable(),
+                    }
                 )
 
             else:
                 interlocks.append(
-                    {"name": interlock.name, "access": False, "id": interlock.id}
+                    {
+                        "name": interlock.name,
+                        "access": False,
+                        "id": interlock.id,
+                        "locked_out": interlock.locked_out,
+                        "offline": interlock.get_unavailable(),
+                    }
                 )
 
         return {"doors": doors, "interlocks": interlocks}

@@ -7,6 +7,9 @@ from .models import SpaceAPI, SpaceAPISensor, SpaceAPISensorProperties
 from profile.models import Profile
 from api_general.models import SiteSession
 import json
+import logging
+
+logger = logging.getLogger("api_spacedirectory")
 
 
 class SpaceDirectoryStatus(APIView):
@@ -145,7 +148,7 @@ class SpaceDirectoryUpdate(APIView):
                     current_sensor = (
                         SpaceAPISensor.objects.all().filter(name=sensor["name"]).first()
                     )
-                    print(f"Found sensor: {current_sensor}")
+                    logger.debug(f"Found sensor: {current_sensor}")
                     if "type" in sensor:
                         current_sensor.sensor_type = sensor["type"]
                     if "value" in sensor:
@@ -165,7 +168,7 @@ class SpaceDirectoryUpdate(APIView):
                                 current_prop = SpaceAPISensorProperties.objects.filter(
                                     name=prop["name"], sensor_id=current_sensor
                                 ).get()
-                                print(f"Found property: {current_prop}")
+                                logger.debug(f"Found property: {current_prop}")
                                 if "name" in prop:
                                     current_prop.name = prop["name"]
                                 if "value" in prop:

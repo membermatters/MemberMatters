@@ -10,6 +10,7 @@ export default {
     kiosks: [],
     doors: [],
     interlocks: [],
+    memberbucksDevices: [],
     tiers: [],
   },
   getters: {
@@ -18,6 +19,7 @@ export default {
     kiosks: (state) => state.kiosks,
     doors: (state) => state.doors,
     interlocks: (state) => state.interlocks,
+    memberbucksDevices: (state) => state.memberbucksDevices,
     tiers: (state) => state.tiers,
   },
   mutations: {
@@ -35,6 +37,9 @@ export default {
     },
     setInterlocks(state, payload) {
       state.interlocks = payload;
+    },
+    setMemberbucksDevices(state, payload) {
+      state.memberbucksDevices = payload;
     },
     setTiers(state, payload) {
       state.tiers = payload;
@@ -108,6 +113,20 @@ export default {
           .get('/api/admin/interlocks/')
           .then((result) => {
             commit('setInterlocks', result.data);
+            resolve();
+          })
+          .catch((error) => {
+            reject();
+            throw error;
+          });
+      });
+    },
+    getMemberbucksDevices({ commit }) {
+      return new Promise((resolve, reject) => {
+        api
+          .get('/api/admin/memberbucks-devices/')
+          .then((result) => {
+            commit('setMemberbucksDevices', result.data);
             resolve();
           })
           .catch((error) => {

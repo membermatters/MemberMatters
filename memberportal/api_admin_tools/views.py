@@ -1,25 +1,31 @@
-from profile.models import User, UserEventLog
-from access.models import DoorLog, InterlockLog
-from access import models
-from .models import MemberTier, PaymentPlan
-from memberbucks.models import MemberBucks
-from constance import config
-from services.emails import send_email_to_admin
-from services import sms
 import json
+
 import stripe
-from sentry_sdk import capture_message
-from rest_framework_api_key.permissions import HasAPIKey
-from rest_framework import permissions
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.views import APIView
-from django.db.models import F, Count, Sum, Value, CharField, Count, Max
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from constance import config
+from constance.backends.database.models import Constance as ConstanceSetting
+from django.db.models import F, Sum, Value, CharField, Count, Max
 from django.db.models.functions import Concat
-from datetime import timedelta
-from django.db import connection
 from django.db.utils import OperationalError
+from rest_framework import permissions
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_api_key.permissions import HasAPIKey
 from sentry_sdk import capture_exception
+from sentry_sdk import capture_message
+
+from access import models
+from access.models import DoorLog, InterlockLog
+from memberbucks.models import (
+    MemberBucks,
+    MemberbucksProductPurchaseLog,
+)
+from profile.models import User, UserEventLog
+from services import sms
+from services.emails import send_email_to_admin
+from .models import MemberTier, PaymentPlan
 
 
 class StripeAPIView(APIView):
@@ -107,8 +113,7 @@ class MakeMember(APIView):
             email = user.email_welcome()
 
             # mark them as "active"
-            user.profile.state = "active"
-            user.profile.save()
+            user.profile.activate()
 
             subject = f"{user.profile.get_full_name()} just got turned into a member!"
             send_email_to_admin(
@@ -204,22 +209,63 @@ class Doors(APIView):
 
     def put(self, request, door_id):
         door = models.Doors.objects.get(pk=door_id)
-
         data = request.data
+        all_members_added = False
+        all_members_removed = False
+        locked_out_changed = False
+
+        if door.all_members != data.get("defaultAccess"):
+            if data.get("defaultAccess"):
+                all_members_added = True
+            else:
+                all_members_removed = True
+
+        if door.locked_out != data.get("maintenanceLockout"):
+            locked_out_changed = True
 
         door.name = data.get("name")
         door.description = data.get("description")
         door.ip_address = data.get("ipAddress")
         door.serial_number = data.get("serialNumber")
-
         door.all_members = data.get("defaultAccess")
         door.locked_out = data.get("maintenanceLockout")
         door.play_theme = data.get("playThemeOnSwipe")
         door.post_to_discord = data.get("postDiscordOnSwipe")
         door.exempt_signin = data.get("exemptFromSignin")
         door.hidden = data.get("hiddenToMembers")
-
         door.save()
+
+        if locked_out_changed:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                door.serial_number, {"type": "update_device_locked_out"}
+            )
+
+        if all_members_added or all_members_removed:
+            members = User.objects.all()
+
+            for member in members:
+                if all_members_added:
+                    member.profile.doors.add(door)
+                else:
+                    member.profile.doors.remove(door)
+
+                member.profile.save()
+
+        if (
+            all_members_added
+            or all_members_removed
+            or locked_out_changed
+            or door.exempt_signin != data.get("exemptFromSignin")
+        ):
+            # once we're done, sync changes to the device
+            door.sync()
+
+            # update the door object on the websocket consumer
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                door.serial_number, {"type": "update_device_object"}
+            )
 
         return Response()
 
@@ -287,26 +333,153 @@ class Interlocks(APIView):
 
     def put(self, request, interlock_id):
         interlock = models.Interlock.objects.get(pk=interlock_id)
-
         data = request.data
+        all_members_added = False
+        all_members_removed = False
+        locked_out_changed = False
+
+        if interlock.all_members != data.get("defaultAccess"):
+            if data.get("defaultAccess"):
+                all_members_added = True
+            else:
+                all_members_removed = True
+
+        if interlock.locked_out != data.get("maintenanceLockout"):
+            locked_out_changed = True
 
         interlock.name = data.get("name")
         interlock.description = data.get("description")
         interlock.ip_address = data.get("ipAddress")
-
         interlock.all_members = data.get("defaultAccess")
         interlock.locked_out = data.get("maintenanceLockout")
         interlock.play_theme = data.get("playThemeOnSwipe")
         interlock.exempt_signin = data.get("exemptFromSignin")
         interlock.hidden = data.get("hiddenToMembers")
-
         interlock.save()
+
+        if locked_out_changed:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                interlock.serial_number, {"type": "update_device_locked_out"}
+            )
+
+        if all_members_added or all_members_removed:
+            members = User.objects.all()
+
+            for member in members:
+                if all_members_added:
+                    member.profile.interlocks.add(interlock)
+                else:
+                    member.profile.interlocks.remove(interlock)
+
+                member.profile.save()
+
+        if (
+            all_members_added
+            or all_members_removed
+            or locked_out_changed
+            or interlock.exempt_signin != data.get("exemptFromSignin")
+        ):
+            # once we're done, sync changes to the device
+            interlock.sync()
+
+            # update the door object on the websocket consumer
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                interlock.serial_number, {"type": "update_device_object"}
+            )
 
         return Response()
 
     def delete(self, request, interlock_id):
         interlock = models.Interlock.objects.get(pk=interlock_id)
         interlock.delete()
+
+        return Response()
+
+
+class MemberbucksDevices(APIView):
+    """
+    get: returns a list of memberbucks devices.
+    put: update a specific memberbucks device.
+    delete: delete a specific memberbucks device.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get(self, request):
+        devices = models.MemberbucksDevice.objects.all()
+
+        def get_device(device):
+            # Calculate total transaction volume
+            purchases = MemberbucksProductPurchaseLog.objects.filter(
+                memberbucks_device_id=device.id, success=True
+            )
+            total_count = purchases.count()
+            total_volume = (
+                purchases.aggregate(total_volume=Sum("price")).get("total_volume") or 0
+            ) / 100
+
+            # Retrieve stats
+            stats = (
+                purchases.select_related("user__profile")
+                .values("memberbucks_device_id")
+                .annotate(
+                    screen_name=F("user__profile__screen_name"),
+                    full_name=Concat(
+                        F("user__profile__first_name"),
+                        Value(" "),
+                        F("user__profile__last_name"),
+                        output_field=CharField(),
+                    ),
+                    total_purchases=Count("price"),
+                    total_volume=(Sum("price") or 0) / 100,
+                )
+                .order_by("-total_purchases", "-total_volume")
+            )
+
+            return {
+                "id": device.id,
+                "authorised": device.authorised,
+                "name": device.name,
+                "description": device.description,
+                "ipAddress": device.ip_address,
+                "lastSeen": device.last_seen,
+                "offline": device.get_unavailable(),
+                "defaultAccess": device.all_members,
+                "maintenanceLockout": device.locked_out,
+                "playThemeOnSwipe": device.play_theme,
+                "exemptFromSignin": device.exempt_signin,
+                "hiddenToMembers": device.hidden,
+                "totalPurchases": total_count,
+                "totalVolume": total_volume,
+                "userStats": list(stats),
+            }
+
+        return Response(map(get_device, devices))
+
+    def put(self, request, device_id):
+        device = models.MemberbucksDevice.objects.get(pk=device_id)
+
+        data = request.data
+
+        device.name = data.get("name")
+        device.description = data.get("description")
+        device.ip_address = data.get("ipAddress")
+
+        device.all_members = data.get("defaultAccess")
+        device.locked_out = data.get("maintenanceLockout")
+        device.play_theme = data.get("playThemeOnSwipe")
+        device.exempt_signin = data.get("exemptFromSignin")
+        device.hidden = data.get("hiddenToMembers")
+
+        device.save()
+
+        return Response()
+
+    def delete(self, request, device_id):
+        device = models.MemberbucksDevice.objects.get(pk=device_id)
+        device.delete()
 
         return Response()
 
@@ -321,7 +494,7 @@ class MemberAccess(APIView):
     def get(self, request, member_id):
         member = User.objects.get(id=member_id)
 
-        return Response(member.profile.get_access_permissions())
+        return Response(member.profile.get_access_permissions(ignore_user_state=True))
 
 
 class MemberWelcomeEmail(APIView):
@@ -416,32 +589,42 @@ class MemberProfile(APIView):
         return Response()
 
 
-class MemberTiers(StripeAPIView):
+class ManageMembershipTier(StripeAPIView):
     """
-    get: gets a list of all membership plans.
-    post: creates a new membership plan.
-    put: updates a new membership plan.
-    delete: a membership plan.
+    get: gets a membership tier.
+    post: creates a new membership tier.
+    put: updates a membership tier.
+    delete: deletes a membership tier.
     """
 
     permission_classes = (permissions.IsAdminUser,)
 
-    def get(self, request):
-        tiers = MemberTier.objects.all()
-        formatted_tiers = []
+    def get_tier(self, tier: MemberTier):
+        return {
+            "id": tier.id,
+            "name": tier.name,
+            "description": tier.description,
+            "visible": tier.visible,
+            "featured": tier.featured,
+            "stripeId": tier.stripe_id,
+        }
 
-        for tier in tiers:
-            formatted_tiers.append(
-                {
-                    "id": tier.id,
-                    "name": tier.name,
-                    "description": tier.description,
-                    "visible": tier.visible,
-                    "featured": tier.featured,
-                }
-            )
+    def get(self, request, tier_id=None):
+        if tier_id:
+            try:
+                tier = MemberTier.objects.get(pk=tier_id)
+                return Response(self.get_tier(tier))
 
-        return Response(formatted_tiers)
+            except MemberTier.DoesNotExist as e:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            formatted_tiers = []
+
+            for tier in MemberTier.objects.all():
+                formatted_tiers.append(self.get_tier(tier))
+
+            return Response(formatted_tiers)
 
     def post(self, request):
         body = request.data
@@ -458,45 +641,13 @@ class MemberTiers(StripeAPIView):
                 stripe_id=product.id,
             )
 
-            return Response()
+            return Response(self.get_tier(tier))
 
         except stripe.error.AuthenticationError:
             return Response(
                 {"success": False, "message": "error.stripeNotConfigured"},
-                status=status.HTTP_502_BAD_GATEWAY,
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-    def delete(self, request):
-        return Response()
-
-
-class ManageMemberTier(StripeAPIView):
-    """
-    get: gets a member tier.
-    put: updates a member tier.
-    delete: deletes a member tier.
-    """
-
-    permission_classes = (permissions.IsAdminUser,)
-
-    def get(self, request, tier_id):
-        body = request.data
-
-        try:
-            tier = MemberTier.objects.get(pk=tier_id)
-
-        except MemberTier.DoesNotExist as e:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        formatted_tier = {
-            "id": tier.id,
-            "name": tier.name,
-            "description": tier.description,
-            "visible": tier.visible,
-            "featured": tier.featured,
-        }
-
-        return Response(formatted_tier)
 
     def put(self, request, tier_id):
         body = request.data
@@ -509,7 +660,7 @@ class ManageMemberTier(StripeAPIView):
         tier.featured = body["featured"]
         tier.save()
 
-        return Response()
+        return Response(self.get_tier(tier))
 
     def delete(self, request, tier_id):
         tier = MemberTier.objects.get(pk=tier_id)
@@ -518,33 +669,56 @@ class ManageMemberTier(StripeAPIView):
         return Response()
 
 
-class ManageMemberTierPlans(StripeAPIView):
+class ManageMembershipTierPlan(StripeAPIView):
     """
-    post: creates a new member tier plan.
+    get: gets an individual or a list of payment plans.
+    post: creates a new payment plan.
+
     """
 
     permission_classes = (permissions.IsAdminUser,)
 
-    def get(self, request, tier_id):
-        plans = PaymentPlan.objects.filter(member_tier=tier_id)
-        formatted_plans = []
+    def get_plan(self, plan: PaymentPlan):
+        return {
+            "id": plan.id,
+            "name": plan.name,
+            "stripeId": plan.stripe_id,
+            "memberTier": plan.member_tier.id,
+            "visible": plan.visible,
+            "currency": plan.currency,
+            "cost": plan.cost / 100,  # convert to dollars
+            "intervalCount": plan.interval_count,
+            "interval": plan.interval,
+        }
 
-        for plan in plans:
-            formatted_plans.append(
-                {
-                    "id": plan.id,
-                    "name": plan.name,
-                    "stripeId": plan.stripe_id,
-                    "memberTier": plan.member_tier.id,
-                    "visible": plan.visible,
-                    "currency": plan.currency,
-                    "cost": plan.cost / 100,  # convert to dollars
-                    "intervalCount": plan.interval_count,
-                    "interval": plan.interval,
-                }
-            )
+    def get(self, request, plan_id=None, tier_id=None):
+        if plan_id:
+            try:
+                plan = PaymentPlan.objects.get(pk=plan_id)
+                return Response(self.get_plan(plan))
 
-        return Response(formatted_plans)
+            except PaymentPlan.DoesNotExist as e:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if tier_id:
+            try:
+                formatted_plans = []
+
+                for plan in PaymentPlan.objects.filter(member_tier=tier_id):
+                    formatted_plans.append(self.get_plan(plan))
+
+                return Response(formatted_plans)
+
+            except PaymentPlan.DoesNotExist as e:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            formatted_plans = []
+
+            for plan in PaymentPlan.objects.all():
+                formatted_plans.append(self.get_plan(plan))
+
+            return Response(formatted_plans)
 
     def post(self, request, tier_id=None):
         if tier_id is not None:
@@ -564,7 +738,7 @@ class ManageMemberTierPlans(StripeAPIView):
             product=member_tier.stripe_id,
         )
 
-        PaymentPlan.objects.create(
+        plan = PaymentPlan.objects.create(
             name=body["name"],
             stripe_id=stripe_plan.id,
             member_tier_id=body["memberTier"],
@@ -575,34 +749,7 @@ class ManageMemberTierPlans(StripeAPIView):
             interval=body["interval"],
         )
 
-        return Response()
-
-
-class ManageMemberTierPlan(StripeAPIView):
-    """
-    get: gets a member tier plan.
-    put: updates a member tier plan.
-    delete: deletes a member tier plan.
-    """
-
-    permission_classes = (permissions.IsAdminUser,)
-
-    def get(self, request, plan_id):
-        body = request.data
-
-        plan = PaymentPlan.objects.get(pk=plan_id)
-
-        formatted_plan = {
-            "id": plan.id,
-            "name": plan.name,
-            "member_tier": plan.member_tier,
-            "visible": plan.visible,
-            "cost": plan.cost,
-            "interval_count": plan.interval_count,
-            "interval": plan.interval,
-        }
-
-        return Response(formatted_plan)
+        return Response(self.get_plan(plan))
 
     def put(self, request, plan_id):
         body = request.data
@@ -614,7 +761,7 @@ class ManageMemberTierPlan(StripeAPIView):
         plan.cost = body["cost"]
         plan.save()
 
-        return Response()
+        return Response(self.get_plan(plan))
 
     def delete(self, request, plan_id):
         plan = PaymentPlan.objects.get(pk=plan_id)
@@ -654,6 +801,8 @@ class MemberBillingInfo(StripeAPIView):
                     "cancelAt": s.cancel_at,
                     "cancelAtPeriodEnd": s.cancel_at_period_end,
                     "startDate": s.start_date,
+                    "membershipTier": member.profile.membership_plan.member_tier.get_object(),
+                    "membershipPlan": member.profile.membership_plan.get_object(),
                 }
             else:
                 billing_info["subscription"] = None
@@ -741,3 +890,51 @@ class MemberLogs(APIView):
         }
 
         return Response(logs)
+
+
+class ManageSettings(APIView):
+    """
+    get: This method gets a constance setting value or values.
+    put: This method updates a constance setting value.
+    """
+
+    permission_classes = (permissions.IsAdminUser,)
+
+    def get_setting(self, setting):
+        return {
+            "key": setting.key,
+            "value": setting.value,
+        }
+
+    def get(self, request, setting_key=None):
+        if setting_key:
+            try:
+                setting = ConstanceSetting.objects.get(key=setting_key)
+                return Response(self.get_setting(setting))
+
+            except ConstanceSetting.DoesNotExist as e:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            settings = []
+
+            for setting in ConstanceSetting.objects.all():
+                settings.append(self.get_setting(setting))
+
+            return Response(settings)
+
+    def put(self, request, setting_key=None):
+        if not setting_key:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        body = request.data
+
+        try:
+            setting = ConstanceSetting.objects.get(key=setting_key)
+            setting.value = body["value"]
+            setting.save()
+
+            return Response(self.get_setting(setting))
+
+        except ConstanceSetting.DoesNotExist as e:
+            return Response(status=status.HTTP_404_NOT_FOUND)

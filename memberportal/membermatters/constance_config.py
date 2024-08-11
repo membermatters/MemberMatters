@@ -120,10 +120,40 @@ CONSTANCE_CONFIG = {
         False,
         "Enable integration with stripe for membership payments.",
     ),
-    # Trello config
-    "ENABLE_TRELLO_INTEGRATION": (
+    # ==== Report Issue Services ====
+    # Email config
+    "REPORT_ISSUE_ENABLE_EMAIL": (
+        True,
+        "Enable the submit issue to email integration.",
+    ),
+    # Discord config
+    "REPORT_ISSUE_ENABLE_DISCORD": (
         False,
-        "Enable the submit issue to trello integration. If disabled we'll send an email to EMAIL_ADMIN instead.",
+        "Enable the submit issue to Discord integration.",
+    ),
+    # Vikunja config
+    "REPORT_ISSUE_ENABLE_VIKUNJA": (
+        False,
+        "Enable the submit issue to Vikunja integration.",
+    ),
+    "VIKUNJA_API_URL": ("", "Set this to your Vikunja instance public URL."),
+    "VIKUNJA_API_TOKEN": ("", "Set this to your Vikunja API token."),
+    "VIKUNJA_DEFAULT_PROJECT_ID": (
+        "",
+        "Set this to the ID of your default project to create issues in.",
+    ),
+    "VIKUNJA_DEFAULT_LABEL_ID": (
+        "",
+        "[optional] Set this to the ID of your default label if you want new issues to be tagged.",
+    ),
+    "VIKUNJA_TEAMS": (
+        '[{"name": "Members", "oidcID": "members", "description": "The default team for all members.", "isPublic": false}]',
+        "A JSON array of Vikunja teams to add users to when they login via SSO. Returned as an OIDC claim with the 'vikunja_teams' scope. Check Vikunja docs for syntax.",
+    ),
+    # Trello config
+    "REPORT_ISSUE_ENABLE_TRELLO": (
+        False,
+        "Enable the submit issue to trello integration.",
     ),
     "TRELLO_API_KEY": ("", "Set this to your Trello API key."),
     "TRELLO_API_TOKEN": ("", "Set this to your Trello API token."),
@@ -203,6 +233,14 @@ CONSTANCE_CONFIG = {
         "https://discordapp.com/api/webhooks/<token>",
         "Discord URL to send webhook notifications to.",
     ),
+    "DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK": (
+        "https://discordapp.com/api/webhooks/<token>",
+        "Discord URL to send webhook notifications to for vending/memberbucks purchases.",
+    ),
+    "DISCORD_REPORT_ISSUE_WEBHOOK": (
+        "https://discordapp.com/api/webhooks/<token>",
+        "Discord URL to send webhook notifications to when reporting issues.",
+    ),
     "ENABLE_DISCOURSE_SSO_PROTOCOL": (
         False,
         "Enable support for the discourse SSO protocol.",
@@ -214,10 +252,6 @@ CONSTANCE_CONFIG = {
     "GOOGLE_ANALYTICS_MEASUREMENT_ID": (
         "",
         "Enter your measurement ID to enable Google analytics. Only the new GA4 measurement IDs are supported. It should look something like G-XXXXXXXXXX.",
-    ),
-    "API_SECRET_KEY": (
-        "PLEASE_CHANGE_ME",
-        "The API key used by the internal access system for device authentication.",
     ),
     "SENTRY_DSN_FRONTEND": (
         "https://577dc95136cd402bb273d00f46c2a017@sentry.serv02.binarydigital.com.au/5/",
@@ -318,12 +352,24 @@ CONSTANCE_CONFIG = {
         "The sender ID (either a phone number or alpha numeric sender ID you can send from).",
     ),
     "SMS_FOOTER": (
-        "From Brisbane Makerspace.",
+        "From Example Makerspace.",
         "An optional footer to append to all SMS messages (such as 'from xyz org.'",
     ),
     "SMS_MESSAGES": (
         '{"inactive_swipe": "Hi! Your swipe was just declined due to inactive membership. Please contact us if you need assistance.",             "deactivated_access": "Hi! Your site access was just turned off. Please check your email and contact us if you need assistance.",             "activated_access": "Hi! Your site access was just turned on. Please make sure you stay up to date with our policies and rules by visiting our website.",             "locked_out_swipe": "Hi! Your swipe was just declined due to a temporary maintenance lockout. Please contact us if you need assistance."}',
         "The SMS messages to send when a user attempts to swipe with an inactive card.",
+    ),
+    "METRICS_INTERVAL": (
+        3600,
+        "The interval in seconds to calculate and store application level metrics data like member count and door swipes.",
+    ),
+    "ENABLE_STATS_PAGE": (
+        True,
+        "Enable the stats page that shows member counts and other metrics.",
+    ),
+    "STATS_MAX_DAYS": (
+        365,
+        "The maximum number of days to show on the stats page.",
     ),
 }
 
@@ -336,8 +382,8 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SITE_OWNER",
                 "SITE_LOCALE_CURRENCY",
                 "GOOGLE_ANALYTICS_MEASUREMENT_ID",
-                "API_SECRET_KEY",
                 "SITE_BANNER",
+                "METRICS_INTERVAL",
             ),
         ),
         (
@@ -357,6 +403,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "ENABLE_DOOR_BUMP_API",
             ),
         ),
+        ("Stats Settings", ("ENABLE_STATS_PAGE", "STATS_MAX_DAYS")),
         (
             "Sentry Error Reporting",
             (
@@ -398,6 +445,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SMS_ENABLE",
                 "TWILIO_ACCOUNT_SID",
                 "TWILIO_AUTH_TOKEN",
+                "TWILIO_AUTH_TOKEN",
                 "SMS_DEFAULT_COUNTRY_CODE",
                 "SMS_SENDER_ID",
                 "SMS_MESSAGES",
@@ -415,9 +463,27 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             ),
         ),
         (
+            "Report Issue Services",
+            (
+                "REPORT_ISSUE_ENABLE_EMAIL",
+                "REPORT_ISSUE_ENABLE_DISCORD",
+                "REPORT_ISSUE_ENABLE_VIKUNJA",
+                "REPORT_ISSUE_ENABLE_TRELLO",
+            ),
+        ),
+        (
+            "Vikunja Integration",
+            (
+                "VIKUNJA_TEAMS",
+                "VIKUNJA_API_URL",
+                "VIKUNJA_API_TOKEN",
+                "VIKUNJA_DEFAULT_PROJECT_ID",
+                "VIKUNJA_DEFAULT_LABEL_ID",
+            ),
+        ),
+        (
             "Trello Integration",
             (
-                "ENABLE_TRELLO_INTEGRATION",
                 "TRELLO_API_KEY",
                 "TRELLO_API_TOKEN",
                 "TRELLO_ID_LIST",
@@ -488,6 +554,8 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             (
                 "DISCORD_DOOR_WEBHOOK",
                 "DISCORD_INTERLOCK_WEBHOOK",
+                "DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK",
+                "DISCORD_REPORT_ISSUE_WEBHOOK",
             ),
         ),
     ]

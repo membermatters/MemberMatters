@@ -1,15 +1,19 @@
-from profile.models import User, Profile
+from access.models import DoorLog, InterlockLog
+from profile.models import Profile
 from api_meeting.models import Meeting
 from constance import config
 from services.emails import send_email_to_admin
+from services import discord
+
 from random import shuffle
 import requests
 from django.utils import timezone
-
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import *
+import logging
+
+logger = logging.getLogger("api_member_tools")
 
 
 class SwipesList(APIView):
@@ -100,7 +104,7 @@ class Lastseen(APIView):
 
 class IssueDetail(APIView):
     """
-    post: Creates a new issue by creating a trello card or emailing the management committee
+    post: Creates a new issue by creating a task card or emailing the management committee
     """
 
     permission_classes = (permissions.IsAuthenticated,)
@@ -109,64 +113,207 @@ class IssueDetail(APIView):
         body = request.data
         title = body["title"]
         description = request.user.profile.get_full_name() + ": " + body["description"]
+        vikunja_task_url = None
+        trello_card_url = None
 
         if not (title and description):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        use_trello = config.ENABLE_TRELLO_INTEGRATION
-        trello_key = config.TRELLO_API_KEY
-        trello_token = config.TRELLO_API_TOKEN
-        trello_id_list = config.TRELLO_ID_LIST
+        failed = False
 
-        if use_trello:
-            url = "https://api.trello.com/1/cards"
+        request.user.log_event(
+            "Submitted issue: " + title + " Content: " + description,
+            "generic",
+        )
 
-            querystring = {
-                "name": title,
-                "desc": description,
-                "pos": "top",
-                "idList": trello_id_list,
-                "keepFromSource": "all",
-                "key": trello_key,
-                "token": trello_token,
-            }
+        if config.REPORT_ISSUE_ENABLE_VIKUNJA and bool(
+            config.VIKUNJA_DEFAULT_PROJECT_ID
+        ):
+            vikunja_project_id = int(config.VIKUNJA_DEFAULT_PROJECT_ID)
+            vikunja_label_id = int(config.VIKUNJA_DEFAULT_LABEL_ID)
 
-            response = requests.request("POST", url, params=querystring)
+            try:
+                task_body = {
+                    "max_right": None,
+                    "id": 0,
+                    "title": title,
+                    "description": description,
+                    "done": False,
+                    "done_at": None,
+                    "priority": 0,
+                    "labels": [],
+                    "assignees": [],
+                    "due_date": None,
+                    "start_date": None,
+                    "end_date": None,
+                    "repeat_after": 0,
+                    "repeat_from_current_date": False,
+                    "repeat_mode": 0,
+                    "reminders": [],
+                    "parent_task_id": 0,
+                    "hex_color": "",
+                    "percent_done": 0,
+                    "related_tasks": {},
+                    "attachments": [],
+                    "cover_image_attachment_id": None,
+                    "identifier": "",
+                    "index": 0,
+                    "is_favorite": False,
+                    "subscription": None,
+                    "position": 64,
+                    "reactions": {},
+                    "created_by": {
+                        "max_right": None,
+                        "id": 0,
+                        "email": "",
+                        "username": "",
+                        "name": "",
+                        "exp": 0,
+                        "type": 0,
+                        "created": None,
+                        "updated": None,
+                        "settings": {
+                            "max_right": None,
+                            "name": "",
+                            "email_reminders_enabled": False,
+                            "discoverable_by_name": False,
+                            "discoverable_by_email": True,
+                            "overdue_tasks_reminders_enabled": False,
+                            "week_start": 0,
+                            "timezone": "",
+                            "language": "en",
+                            "frontend_settings": {
+                                "play_sound_when_done": False,
+                                "quick_add_magic_mode": "vikunja",
+                                "color_schema": "auto",
+                                "default_view": "first",
+                            },
+                        },
+                    },
+                    "created": "1970-01-01T00:00:00.000Z",
+                    "updated": "1970-01-01T00:00:00.000Z",
+                    "project_id": vikunja_project_id,
+                    "bucket_id": 0,
+                    "reminder_dates": None,
+                }
 
-            if response.status_code == 200:
-                request.user.log_event(
-                    "Submitted issue: " + title + " Content: " + description,
-                    "generic",
+                task_response = requests.request(
+                    "PUT",
+                    f"{config.VIKUNJA_API_URL}/api/v1/projects/{vikunja_project_id}/tasks",
+                    json=task_body,
+                    headers={"Authorization": "Bearer " + config.VIKUNJA_API_TOKEN},
                 )
 
-                return Response(
-                    {"success": True, "url": response.json()["shortUrl"]},
-                    status=status.HTTP_201_CREATED,
-                )
+                if (vikunja_label_id is not None) and (
+                    task_response.status_code == 201
+                ):
+                    task_id = "unknown"
+                    try:
+                        task_id = task_response.json()["id"]
+                        vikunja_task_url = f"{config.VIKUNJA_API_URL}/tasks/{task_id}"
+                        label_body = {
+                            "label_id": int(vikunja_label_id),
+                            "created": "1970-01-01T00:00:00.000Z",
+                        }
 
-            else:
-                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                        label_response = requests.request(
+                            "PUT",
+                            f"{config.VIKUNJA_API_URL}/api/v1/tasks/{task_id}/labels",
+                            json=label_body,
+                            headers={
+                                "Authorization": "Bearer " + config.VIKUNJA_API_TOKEN
+                            },
+                        )
 
-        # if Trello isn't configured, use email instead
+                        if label_response.status_code != 201:
+                            logger.warning(
+                                f"Failed to add label to Vikunja task {task_id}: %s",
+                                label_response.json(),
+                            )
+
+                    except Exception:
+                        logger.exception(
+                            f"Failed to add label to Vikunja task {task_id}."
+                        )
+                        pass
+
+                if task_response.status_code != 201:
+                    logger.error(
+                        "Failed to create Vikunja task: %s", task_response.json()
+                    )
+                    failed = True
+
+            except Exception:
+                # uh oh, but don't stop processing other ones
+                failed = True
+                logger.exception("Failed to create reported issue Vikunja task.")
+
+        if config.REPORT_ISSUE_ENABLE_TRELLO:
+            try:
+                trello_key = config.TRELLO_API_KEY
+                trello_token = config.TRELLO_API_TOKEN
+                trello_id_list = config.TRELLO_ID_LIST
+                trello_url = "https://api.trello.com/1/cards"
+
+                querystring = {
+                    "name": title,
+                    "desc": description,
+                    "pos": "top",
+                    "idList": trello_id_list,
+                    "keepFromSource": "all",
+                    "key": trello_key,
+                    "token": trello_token,
+                }
+
+                response = requests.request("POST", trello_url, params=querystring)
+
+                if response.status_code != 200:
+                    failed = True
+
+                trello_card_url = response.json()["shortUrl"]
+
+            except Exception:
+                # uh oh, but don't stop processing other ones
+                failed = True
+                logger.exception("Failed to create reported issue Trello card.")
+
+        # email report
+        if config.REPORT_ISSUE_ENABLE_EMAIL:
+            try:
+                subject = f"{request.user.profile.get_full_name()}: {title}"
+
+                if not send_email_to_admin(
+                    subject=subject,
+                    template_vars={
+                        "title": subject,
+                        "message": description,
+                    },
+                    user=request.user,
+                    reply_to=request.user.email,
+                ):
+                    failed = True
+
+            except Exception:
+                # uh oh, but don't stop processing other ones
+                failed = True
+                logger.exception("Failed to send reported issue email.")
+
+        # discord report
+        if config.REPORT_ISSUE_ENABLE_DISCORD:
+            username = request.user.profile.get_full_name()
+            description = body["description"]
+
+            discord.post_reported_issue_to_discord(
+                username, title, description, vikunja_task_url, trello_card_url
+            )
+
+        if failed:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
-            subject = f"{request.user.profile.get_full_name()} submitted an issue about {title}"
-
-            if send_email_to_admin(
-                subject=subject,
-                template_vars={
-                    "title": subject,
-                    "message": description,
-                },
-                user=request.user,
-                reply_to=request.user.email,
-            ):
-                return Response(
-                    {"success": True},
-                    status=status.HTTP_201_CREATED,
-                )
-
-            else:
-                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"success": True},
+                status=status.HTTP_201_CREATED,
+            )
 
 
 class MeetingList(APIView):

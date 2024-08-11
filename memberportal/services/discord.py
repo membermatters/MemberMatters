@@ -3,11 +3,11 @@ from django.conf import settings
 from constance import config
 import logging
 
-logger = logging.getLogger("app")
+logger = logging.getLogger("discord")
 
 
 def post_door_swipe_to_discord(name, door, status):
-    if config.ENABLE_DISCORD_INTEGRATION:
+    if config.ENABLE_DISCORD_INTEGRATION and config.DISCORD_DOOR_WEBHOOK:
         logger.debug("Posting door swipe to Discord!")
 
         url = config.DISCORD_DOOR_WEBHOOK
@@ -33,7 +33,7 @@ def post_door_swipe_to_discord(name, door, status):
                 }
             )
 
-        elif status == "maintenance_lock_out":
+        elif status == "locked_out":
             json_message["embeds"].append(
                 {
                     "description": ":x: {} tried to access the {} but it is currently under a "
@@ -61,7 +61,7 @@ def post_door_swipe_to_discord(name, door, status):
 
 
 def post_interlock_swipe_to_discord(name, interlock, type, time=None):
-    if config.ENABLE_DISCORD_INTEGRATION:
+    if config.ENABLE_DISCORD_INTEGRATION and config.DISCORD_INTERLOCK_WEBHOOK:
         logger.debug("Posting interlock swipe to Discord!")
         url = config.DISCORD_INTERLOCK_WEBHOOK
 
@@ -106,7 +106,7 @@ def post_interlock_swipe_to_discord(name, interlock, type, time=None):
                 }
             )
 
-        elif type == "maintenance_lock_out":
+        elif type == "locked_out":
             json_message["embeds"].append(
                 {
                     "description": "{} tried to access the {} but it is currently under a "
@@ -134,7 +134,7 @@ def post_interlock_swipe_to_discord(name, interlock, type, time=None):
 
 
 def post_kiosk_swipe_to_discord(name, sign_in):
-    if config.ENABLE_DISCORD_INTEGRATION:
+    if config.ENABLE_DISCORD_INTEGRATION and config.DISCORD_DOOR_WEBHOOK:
         logger.debug("Posting kiosk swipe to Discord!")
         url = config.DISCORD_DOOR_WEBHOOK
 
@@ -147,6 +147,67 @@ def post_kiosk_swipe_to_discord(name, sign_in):
             }
         )
 
+        try:
+            requests.post(url, json=json_message, timeout=settings.REQUEST_TIMEOUT)
+        except requests.exceptions.ReadTimeout:
+            return True
+
+    return True
+
+
+def post_purchase_to_discord(description):
+    if (
+        config.ENABLE_DISCORD_INTEGRATION
+        and config.DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK
+    ):
+        logger.debug("Posting memberbucks purchase to Discord!")
+        url = config.DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK
+
+        json_message = {"description": "", "embeds": []}
+
+        json_message["embeds"].append(
+            {
+                "description": f":coin: {description}",
+                "color": 5025616,
+            }
+        )
+
+        try:
+            requests.post(url, json=json_message, timeout=settings.REQUEST_TIMEOUT)
+        except requests.exceptions.ReadTimeout:
+            return True
+
+    return True
+
+
+def post_reported_issue_to_discord(
+    fullname, title, description, vikunja_task_url=None, trello_card_url=None
+):
+    if config.ENABLE_DISCORD_INTEGRATION and config.DISCORD_REPORT_ISSUE_WEBHOOK:
+        logger.debug("Posting reported issue to Discord!")
+
+        url = config.DISCORD_REPORT_ISSUE_WEBHOOK
+
+        if vikunja_task_url or trello_card_url:
+            description += (
+                f"\n\n[View in Vikunja]({vikunja_task_url})" if vikunja_task_url else ""
+            )
+            description += (
+                f"\n\n[View in Trello]({trello_card_url})" if trello_card_url else ""
+            )
+
+        json_message = {
+            "content": f"{fullname} just reported a new issue!",
+            "embeds": [],
+        }
+
+        json_message["embeds"].append(
+            {
+                "title": title,
+                "description": description,
+                "color": 5025616,
+            }
+        )
         try:
             requests.post(url, json=json_message, timeout=settings.REQUEST_TIMEOUT)
         except requests.exceptions.ReadTimeout:

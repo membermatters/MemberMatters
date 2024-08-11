@@ -5,7 +5,7 @@ from postmarker.core import PostmarkClient, ClientError
 import logging
 import json
 
-logger = logging.getLogger("app")
+logger = logging.getLogger("emails")
 
 
 def send_single_email(

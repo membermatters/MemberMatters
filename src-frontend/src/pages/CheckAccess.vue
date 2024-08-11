@@ -1,11 +1,11 @@
 <template>
-  <q-page class="column flex content-center justify-start">
-    <p class="text-body1 page-description q-pa-md">
+  <q-page class="column flex content-center justify-center justify-start">
+    <p class="text-body1 text-center q-pa-md">
       {{ $t('access.pageDescription') }}
     </p>
-    <div class="column flex content-start justify-center">
+    <div class="column full-width" style="max-width: 800px">
       <q-banner
-        v-if="profile.memberStatus !== 'Active'"
+        v-if="profile.memberStatus !== 'active'"
         inline-actions
         rounded
         class="bg-orange text-white q-ma-md"

@@ -15,8 +15,11 @@ from asgiref.sync import async_to_sync
 from rest_framework_api_key.permissions import BaseHasAPIKey, AbstractAPIKey
 from constance import config
 import hashlib
+from django.core.validators import URLValidator
+from django_prometheus.models import ExportModelOperationsMixin
+import access.metrics as metrics
 
-logger = logging.getLogger("app")
+logger = logging.getLogger("access")
 User = auth.get_user_model()
 utc = pytz.UTC
 
@@ -25,8 +28,7 @@ class AccessControlledDeviceAPIKey(AbstractAPIKey):
     class Meta:
         # Add verbose name
         verbose_name = "API Key For Access Controlled Device"
-
-    pass
+        app_label = "access"
 
 
 class HasAccessControlledDeviceAPIKey(BaseHasAPIKey):
@@ -45,13 +47,15 @@ class HasExternalAccessControlAPIKey(BaseHasAPIKey):
     model = ExternalAccessControlAPIKey
 
 
-class AccessControlledDevice(models.Model):
+class AccessControlledDevice(
+    ExportModelOperationsMixin("access-controlled-device"), models.Model
+):
     id = models.AutoField(primary_key=True)
     authorised = models.BooleanField(
         "Is this device authorised to access the system?", default=False
     )
     name = models.CharField("Name", max_length=30, unique=True)
-    description = models.CharField("Description/Location", max_length=100)
+    description = models.CharField("Description/Location", max_length=500)
     ip_address = models.GenericIPAddressField(
         "IP Address of device", null=True, blank=True
     )
@@ -61,21 +65,32 @@ class AccessControlledDevice(models.Model):
     last_seen = models.DateTimeField(null=True, blank=True)
     all_members = models.BooleanField("Members have access by default", default=False)
     locked_out = models.BooleanField("Maintenance lockout enabled", default=False)
-    play_theme = models.BooleanField("Play theme on door swipe", default=False)
-    post_to_discord = models.BooleanField("Post to discord on door swipe", default=True)
+    play_theme = models.BooleanField("Play theme on successful swipe", default=False)
+    post_to_discord = models.BooleanField("Post to discord on swipe", default=True)
     exempt_signin = models.BooleanField(
         "Exempt this device from requiring a sign in", default=False
     )
     report_online_status = models.BooleanField(
-        "Report the online status of this device.", default=True
+        "Report the online status of this device and fail the uptime check if it's offline.",
+        default=True,
     )
     hidden = models.BooleanField(
         "Hidden from members in their access permissions screen", default=False
     )
 
+    type = "unknown"
+
+    def get_metrics_labels(self):
+        return {
+            "type": self.type,
+            "id": self.id,
+            "name": self.name,
+        }
+
     def checkin(self):
         self.last_seen = timezone.now()
         self.save(update_fields=["last_seen"])
+        metrics.device_checkins_total.labels(**self.get_metrics_labels()).inc()
 
     def get_unavailable(self):
         if self.last_seen:
@@ -88,7 +103,7 @@ class AccessControlledDevice(models.Model):
         return self.name
 
     def log_access(self, member_id, success=True):
-        pass
+        metrics.device_access_successes_total.labels(**self.get_metrics_labels()).inc()
 
     def log_event(self, description=None, data=None):
         if self.type == "door":
@@ -115,41 +130,49 @@ class AccessControlledDevice(models.Model):
         self.log_event(
             description=f"Device connected.",
         )
+        metrics.device_connections_total.labels(**self.get_metrics_labels()).inc()
 
     def log_disconnected(self):
         self.log_event(
             description=f"Device disconnected.",
         )
+        metrics.device_disconnections_total.labels(**self.get_metrics_labels()).inc()
 
     def log_authenticated(self):
         self.log_event(
             description=f"Device authenticated.",
         )
+        metrics.device_authentications_total.labels(**self.get_metrics_labels()).inc()
 
     def log_force_rebooted(self):
         self.log_event(
             description=f"Device manually rebooted.",
         )
+        metrics.device_force_reboots_total.labels(**self.get_metrics_labels()).inc()
 
     def log_force_sync(self):
         self.log_event(
             description=f"Device manually synced.",
         )
+        metrics.device_syncs_total.labels(**self.get_metrics_labels()).inc()
 
     def log_force_bump(self):
         self.log_event(
             description=f"Device manually bumped.",
         )
+        metrics.device_force_bumps_total.labels(**self.get_metrics_labels()).inc()
 
     def log_force_lock(self):
         self.log_event(
             description=f"Device manually locked.",
         )
+        metrics.device_force_locks_total.labels(**self.get_metrics_labels()).inc()
 
     def log_force_unlock(self):
         self.log_event(
             description=f"Device manually unlocked.",
         )
+        metrics.device_force_unlocks_total.labels(**self.get_metrics_labels()).inc()
 
     def sync(self, request=None):
         logger.info("Sending device sync to channels for {}".format(self.serial_number))
@@ -246,12 +269,18 @@ class AccessControlledDevice(models.Model):
         )
 
 
-class MemberbucksDevice(AccessControlledDevice):
+class MemberbucksDevice(
+    ExportModelOperationsMixin("memberbucks-device"), AccessControlledDevice
+):
     all_members = True
     type = "memberbucks"
 
+    class Meta:
+        verbose_name = "Memberbucks Device"
+        verbose_name_plural = "Memberbucks Devices"
 
-class Doors(AccessControlledDevice):
+
+class Doors(ExportModelOperationsMixin("door"), AccessControlledDevice):
     type = "door"
 
     class Meta:
@@ -284,22 +313,40 @@ class Doors(AccessControlledDevice):
 
             return True
 
+        metrics.device_force_bumps_total.labels(**self.get_metrics_labels()).inc()
         return False
 
     def log_access(self, member_id, success=True):
         logger.debug("Logging access for {}".format(self.name))
 
         user_object = User.objects.get(pk=member_id)
-        door_log = DoorLog.objects.create(user=user_object, door=self, success=success)
+        door_log = DoorLog.objects.create(
+            user=user_object, door=self, success=success is True
+        )
         profile = user_object.profile
         profile.last_seen = timezone.now()
         profile.save()
 
-        if success == True:
+        if success is True:
+            metrics.device_access_successes_total.labels(
+                **self.get_metrics_labels()
+            ).inc()
             if self.post_to_discord:
                 post_door_swipe_to_discord(profile.get_full_name(), self.name, success)
 
-        elif success == False:
+        elif success == "locked_out":
+            metrics.device_access_failures_total.labels(
+                **self.get_metrics_labels()
+            ).inc()
+            post_door_swipe_to_discord(profile.get_full_name(), self.name, "locked_out")
+
+            sms_message = sms.SMS()
+            sms_message.send_locked_out_swipe_alert(profile.phone)
+
+        elif not success:
+            metrics.device_access_failures_total.labels(
+                **self.get_metrics_labels()
+            ).inc()
             if self.post_to_discord:
                 post_door_swipe_to_discord(
                     profile.get_full_name(), self.name, "rejected"
@@ -307,18 +354,10 @@ class Doors(AccessControlledDevice):
             sms_message = sms.SMS()
             sms_message.send_inactive_swipe_alert(profile.phone)
 
-        elif success == "locked out":
-            post_door_swipe_to_discord(
-                profile.get_full_name(), self.name, "maintenance_lock_out"
-            )
-
-            sms_message = sms.SMS()
-            sms_message.send_locked_out_swipe_alert(profile.phone)
-
         return door_log
 
 
-class Interlock(AccessControlledDevice):
+class Interlock(ExportModelOperationsMixin("interlock"), AccessControlledDevice):
     type = "interlock"
 
     cost_per_session = models.IntegerField(
@@ -350,7 +389,7 @@ class Interlock(AccessControlledDevice):
         for session in active_sessions:
             session.session_end(None)
 
-    def log_access(self, user, type="activated"):
+    def log_access(self, user, log_type="activated"):
         logger.debug("Logging access for {}".format(self.name))
 
         profile = user.profile
@@ -359,34 +398,46 @@ class Interlock(AccessControlledDevice):
 
         if self.post_to_discord:
             post_interlock_swipe_to_discord(
-                profile.get_full_name(), self.name, type=type
+                profile.get_full_name(), self.name, type=log_type
             )
 
-        if type == "activated":
+        if log_type == "activated":
+            metrics.device_interlock_session_activations_total.labels(
+                **self.get_metrics_labels()
+            ).inc()
             return True
 
-        elif type == "left_on":
+        elif log_type == "left_on":
+            metrics.device_interlock_sessions_left_on_total.labels(
+                **self.get_metrics_labels()
+            ).inc()
             return True
 
-        elif type == "deactivated":
+        elif log_type == "deactivated":
+            metrics.device_interlock_sessions_deactivated_total.labels(
+                **self.get_metrics_labels()
+            ).inc()
             return True
 
-        elif type == "rejected":
+        elif log_type == "rejected":
             sms_message = sms.SMS()
             sms_message.send_inactive_swipe_alert(profile.phone)
 
-        elif type == "maintenance_lock_out":
+        elif log_type == "locked_out":
             sms_message = sms.SMS()
             sms_message.send_locked_out_swipe_alert(profile.phone)
 
-        elif type == "not_signed_in":
+        elif log_type == "not_signed_in":
             pass
 
-        self.session_rejected(user, reason=type)
+        metrics.device_interlock_sessions_rejected_total.labels(
+            **self.get_metrics_labels()
+        ).inc()
+        self.session_rejected(user, reason=log_type)
         return True
 
 
-class DoorLog(models.Model):
+class DoorLog(ExportModelOperationsMixin("door-log"), models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     door = models.ForeignKey(Doors, on_delete=models.CASCADE)
@@ -394,10 +445,10 @@ class DoorLog(models.Model):
     success = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.user.get_full_name()} ({self.user.profile.screen_name}) swiped at {self.door.name} {'successfully' if self.success else 'unsuccessfully'} at {self.date.date()}"
+        return f"{self.user.get_full_name()} ({self.user.profile.screen_name}) swiped at {self.door.name} {'successfully' if self.success else 'unsuccessfully'} on {self.date.date()}"
 
 
-class InterlockLog(models.Model):
+class InterlockLog(ExportModelOperationsMixin("interlock-log"), models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
     interlock = models.ForeignKey(Interlock, on_delete=models.CASCADE)
     user_started = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -409,7 +460,7 @@ class InterlockLog(models.Model):
         related_name="user_ended",
     )
     success = models.BooleanField(default=True)
-    reason = models.CharField(max_length=100, blank=True, null=True)
+    reason = models.CharField(max_length=500, blank=True, null=True)
 
     date_started = models.DateTimeField(default=timezone.now, editable=False)
     date_updated = models.DateTimeField(default=timezone.now)
@@ -420,7 +471,7 @@ class InterlockLog(models.Model):
     total_cost = models.FloatField(default=None, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.user_started.get_full_name()} ({self.user_started.profile.screen_name}) swiped at {self.interlock.name} {'successfully' if self.success else 'unsuccessfully'} for {self.total_time.total_seconds()/60} mins at {self.date_started.date()}"
+        return f"{self.user_started.get_full_name()} ({self.user_started.profile.screen_name}) swiped at {self.interlock.name} {'successfully' if self.success else 'unsuccessfully'} for {round(self.total_time.total_seconds() / 60)} mins at {self.date_started.date()}"
 
     def calculate_cost(self):
         total_cost = self.interlock.cost_per_session
@@ -452,6 +503,13 @@ class InterlockLog(models.Model):
         self.user_ended = user
         self.date_ended = timezone.now()
         self.save()
+
+        metrics.device_interlock_sessions_cost_cents.labels(
+            **self.interlock.get_metrics_labels()
+        ).inc(self.total_cost)
+        metrics.device_interlock_session_duration_seconds.labels(
+            **self.interlock.get_metrics_labels()
+        ).observe(self.total_time.total_seconds())
 
         if skip_cost or self.total_time.total_seconds() < 10:
             self.total_cost = 0

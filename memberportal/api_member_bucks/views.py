@@ -1,3 +1,7 @@
+from django.db.models import Sum
+from rest_framework_api_key.permissions import HasAPIKey
+
+from profile.models import Profile
 from memberbucks.models import MemberBucks
 from rest_framework import status, permissions
 from rest_framework.response import Response
@@ -6,6 +10,9 @@ import stripe
 from constance import config
 from django.db.utils import OperationalError
 from sentry_sdk import capture_exception
+import logging
+
+logger = logging.getLogger("api_member_bucks")
 
 
 class StripeAPIView(APIView):
@@ -90,7 +97,8 @@ class MemberBucksAddFunds(StripeAPIView):
 
             payment_intent_id = err.payment_intent["id"]
             payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
-            print(payment_intent)
+            logger.error("Error charging card!")
+            logger.error(payment_intent)
 
             return Response("Error charging card", status=status.HTTP_400_BAD_REQUEST)
 
@@ -104,7 +112,8 @@ class MemberBucksAddFunds(StripeAPIView):
             return Response()
 
         else:
-            print(payment_intent.status)
+            logger.error("Error charging card! (unexpected payment intent status)")
+            logger.error(payment_intent.status)
             return Response("Error charging card", status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -134,3 +143,28 @@ class MemberBucksDonateFunds(APIView):
             ),
         )
         return Response()
+
+
+class GetMemberbucksBalanceList(APIView):
+    """
+    get: This method returns the balance for every member in the system and the total memberbucks in circulation.
+    """
+
+    permission_classes = (permissions.IsAdminUser | HasAPIKey,)
+
+    def get(self, request):
+        total_balance = Profile.objects.filter(memberbucks_balance__lt=1000).aggregate(
+            Sum("memberbucks_balance")
+        )
+        member_balances = (
+            Profile.objects.all()
+            .order_by("-memberbucks_balance")
+            .values("first_name", "last_name", "screen_name", "memberbucks_balance")
+        )
+        return Response(
+            {
+                "total_memberbucks": total_balance["memberbucks_balance__sum"],
+                "member_balances": member_balances,
+            },
+            status=status.HTTP_200_OK,
+        )

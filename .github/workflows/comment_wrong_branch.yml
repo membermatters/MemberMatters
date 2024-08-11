@@ -1,0 +1,49 @@
+name: Wrong Branch Warning
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened]
+    branches:
+      - "main"
+
+jobs:
+  comment_warning:
+    if: ${{ github.event.pull_request.base.repo.clone_url != github.event.pull_request.head.repo.clone_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment warning about the wrong branch selected for PR
+        id: comment_docker_image
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const output = `
+            Warning: we only accept PRs to the \`dev\` branch. It looks like you've created a PR to the \`main\` branch. Please edit this PR and select the \`dev\` branch as the target branch instead. If this was intentional please ignore this message.
+            `;
+          
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+  comment_warning_internal_pr:
+    if: ${{ github.event.pull_request.head.ref != 'dev' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment warning about the wrong branch selected for PR
+        id: comment_docker_image
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const output = `
+            Warning: we only accept PRs to main from the \`dev\` branch. It looks like you've created a PR from a different branch. Please edit this PR and select the \`dev\` branch as the source branch instead. If this was intentional please ignore this message.
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })

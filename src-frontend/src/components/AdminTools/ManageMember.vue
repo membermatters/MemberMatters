@@ -31,7 +31,7 @@
             :class="{ 'q-px-sm': $q.screen.xs, 'q-px-lg': !$q.screen.xs }"
           >
             <q-btn
-              v-if="selectedMember.state === 'Inactive'"
+              v-if="selectedMember.state === 'inactive'"
               class="q-mr-sm q-mb-sm"
               color="positive"
               :label="$t('adminTools.enableAccess')"
@@ -40,8 +40,8 @@
             />
             <q-btn
               v-else-if="
-                selectedMember.state === 'Needs Induction' ||
-                selectedMember.state === 'Account Only'
+                selectedMember.state === 'noob' ||
+                selectedMember.state === 'accountonly'
               "
               class="q-mr-sm q-mb-sm"
               color="primary"
@@ -59,7 +59,6 @@
             />
 
             <q-btn-dropdown
-              style="min-width: 170px"
               class="q-mr-sm q-mb-sm"
               color="primary"
               :label="$t('adminTools.title')"
@@ -110,7 +109,7 @@
                   @click="openSmsModal"
                 >
                   <q-item-section>
-                    <q-item-label>{{ $t('adminTools.sendSms') }} </q-item-label>
+                    <q-item-label>{{ $t('adminTools.sendSms') }}</q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
@@ -278,11 +277,18 @@
                   <q-item-section>
                     <q-item-label
                       :class="{
-                        inactive: selectedMember.state === 'Inactive',
-                        active: selectedMember.state === 'Active',
+                        inactive: selectedMember.state === 'inactive',
+                        active: selectedMember.state === 'active',
+                        cancelling: ['accountonly', 'noob'].includes(
+                          selectedMember.state
+                        ),
                       }"
                     >
-                      {{ selectedMember.state }}
+                      {{
+                        $t(
+                          `adminTools.memberStatusString.${selectedMember.state}`
+                        )
+                      }}
                     </q-item-label>
 
                     <q-item-label caption>
@@ -404,13 +410,16 @@
         </q-tab-panel>
 
         <q-tab-panel name="access">
-          <p class="q-mb-none q-mt-sm">
-            {{ $t('adminTools.accessDescription') }}
-          </p>
+          <div class="column q-gutter-y-sm full-width">
+            <h6 class="q-mt-md q-mb-sm">
+              {{ $t('adminTools.accessDescription') }}
+            </h6>
 
-          <br />
-
-          <access-list :member-id="selectedMemberFiltered.id" />
+            <access-list
+              :member-id="selectedMemberFiltered.id"
+              :inactive-warning="selectedMemberFiltered.state === 'inactive'"
+            />
+          </div>
         </q-tab-panel>
 
         <q-tab-panel name="log">
@@ -875,23 +884,123 @@
         </q-tab-panel>
 
         <q-tab-panel name="billing">
-          <div class="row flex content-start items-start">
-            <div class="q-pr-lg">
+          <div class="column flex content-start items-start q-gutter-y-lg">
+            <div class="column q-gutter-y-sm full-width">
               <div class="text-h6">
                 {{ $t('adminTools.subscriptionInfo') }}
               </div>
+
+              <q-markup-table
+                v-if="billing?.subscription"
+                bordered
+                padding
+                class="rounded-borders desktop-only"
+              >
+                <thead>
+                  <tr>
+                    <th class="text-left">
+                      {{ $t(`adminTools.membershipTier`) }}
+                    </th>
+                    <th class="text-left">
+                      {{ $t(`adminTools.billingPlan`) }}
+                    </th>
+                    <th class="text-left">
+                      {{ $t(`adminTools.billingCycleAnchor`) }}
+                    </th>
+                    <th class="text-left">{{ $t(`adminTools.startDate`) }}</th>
+                    <th class="text-left">
+                      {{ $t(`adminTools.currentPeriodEnd`) }}
+                    </th>
+                    <template v-if="billing.subscription.cancelAt">
+                      <th class="text-left">
+                        {{ $t(`adminTools.cancelAt`) }}
+                      </th>
+                      <th class="text-left">
+                        {{ $t(`adminTools.cancelAtPeriodEnd`) }}
+                      </th>
+                    </template>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text-left">
+                      <router-link
+                        :to="{
+                          name: 'manageTier',
+                          params: {
+                            planId: billing.subscription.membershipPlan.id,
+                          },
+                        }"
+                        >{{
+                          billing.subscription.membershipTier.name
+                        }}</router-link
+                      >
+                    </td>
+                    <td class="text-left">
+                      {{
+                        $t('paymentPlans.intervalDescription', {
+                          currency:
+                            billing.subscription.membershipPlan.currency.toUpperCase(),
+                          amount: $n(
+                            billing.subscription.membershipPlan.cost / 100,
+                            'currency',
+                            siteLocaleCurrency
+                          ),
+                          interval: $tc(
+                            `paymentPlans.interval.${billing.subscription.membershipPlan.interval.toLowerCase()}`,
+                            billing.subscription.membershipPlan.intervalAmount
+                          ),
+                        })
+                      }}
+                    </td>
+                    <td class="text-left">
+                      {{ formatDate(billing.subscription.billingCycleAnchor) }}
+                    </td>
+                    <td class="text-left">
+                      {{ formatDate(billing.subscription.startDate) }}
+                    </td>
+                    <td class="text-left">
+                      {{ formatDate(billing.subscription.currentPeriodEnd) }}
+                    </td>
+                    <template v-if="billing.subscription.cancelAt">
+                      <td class="text-left">
+                        {{ formatDate(billing.subscription.cancelAt) }}
+                      </td>
+                      <td class="text-left">
+                        {{
+                          formatBooleanYesNo(
+                            billing.subscription.cancelAtPeriodEnd
+                          )
+                        }}
+                      </td>
+                    </template>
+                  </tr>
+                </tbody>
+              </q-markup-table>
 
               <q-list
                 v-if="billing?.subscription"
                 bordered
                 padding
-                class="rounded-borders"
-                style="max-width: 300px"
+                class="rounded-borders desktop-hide"
+                style="max-width: 350px"
               >
                 <q-item>
                   <q-item-section>
-                    <q-item-label lines="1">
-                      {{ billing.subscription.status }}
+                    <q-item-label
+                      lines="1"
+                      :class="{
+                        inactive: billing.subscription.status === 'inactive',
+                        active: billing.subscription.status === 'active',
+                        cancelling:
+                          billing.subscription.status === 'cancelling',
+                      }"
+                    >
+                      {{
+                        $t(
+                          `adminTools.subscriptionStatusString.${billing.subscription.status}`
+                        )
+                      }}
                     </q-item-label>
                     <q-item-label caption>
                       {{ $t(`adminTools.subscriptionStatus`) }}
@@ -932,7 +1041,7 @@
                   </q-item-section>
                 </q-item>
 
-                <q-item>
+                <q-item v-if="billing.subscription.cancelAt">
                   <q-item-section>
                     <q-item-label lines="1">
                       {{ formatDate(billing.subscription.cancelAt) }}
@@ -943,7 +1052,7 @@
                   </q-item-section>
                 </q-item>
 
-                <q-item>
+                <q-item v-if="billing.subscription.cancelAtPeriodEnd">
                   <q-item-section>
                     <q-item-label lines="1">
                       {{ billing.subscription.cancelAtPeriodEnd }}
@@ -960,16 +1069,64 @@
               </div>
             </div>
 
-            <div>
+            <div class="column q-gutter-y-sm full-width">
               <div class="text-h6">
                 {{ $t('adminTools.billingInfo') }}
               </div>
 
+              <q-markup-table
+                v-if="billing?.subscription"
+                bordered
+                padding
+                class="rounded-borders desktop-only"
+              >
+                <thead>
+                  <tr>
+                    <th class="text-left">
+                      {{ $t(`memberbucks.lastPurchase`) }}
+                    </th>
+                    <th class="text-left">
+                      {{ $t(`memberbucks.cardExpiry`) }}
+                    </th>
+                    <th class="text-left">{{ $t(`memberbucks.last4`) }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="text-left">
+                      <div v-if="billing?.memberbucks.lastPurchase">
+                        {{ this.formatWhen(billing?.memberbucks.lastPurchase) }}
+                        <q-tooltip :delay="500">
+                          {{
+                            this.formatDate(billing?.memberbucks.lastPurchase)
+                          }}
+                        </q-tooltip>
+                      </div>
+                      <div v-else>
+                        {{ $t('error.noValue') }}
+                      </div>
+                    </td>
+                    <td class="text-left">
+                      {{
+                        billing?.memberbucks.stripe_card_expiry ||
+                        $t('error.noValue')
+                      }}
+                    </td>
+                    <td class="text-left">
+                      {{
+                        billing?.memberbucks.stripe_card_last_digits ||
+                        $t('error.noValue')
+                      }}
+                    </td>
+                  </tr>
+                </tbody>
+              </q-markup-table>
+
               <q-list
                 bordered
                 padding
-                class="rounded-borders"
-                style="max-width: 300px"
+                class="rounded-borders mobile-only"
+                style="max-width: 350px"
               >
                 <q-item>
                   <q-item-section>
@@ -1021,95 +1178,99 @@
                 </q-item>
               </q-list>
             </div>
-          </div>
 
-          <br />
-          <div class="text-h6">
-            {{ $t('adminTools.memberbucksTransactions') }}
-          </div>
-
-          <q-table
-            :rows="billing?.memberbucks.transactions"
-            :columns="[
-              {
-                name: 'description',
-                label: 'Description',
-                field: 'description',
-                sortable: true,
-              },
-              {
-                name: 'amount',
-                label: 'Amount',
-                field: 'amount',
-                sortable: true,
-              },
-              {
-                name: 'date',
-                label: 'When',
-                field: 'date',
-                sortable: true,
-                format: (val) => formatWhen(val),
-              },
-            ]"
-            row-key="id"
-            :filter="filter"
-            v-model:pagination="pagination"
-            :loading="loading"
-            :grid="$q.screen.xs"
-          >
-            <template v-slot:top-left>
-              <div class="row">
-                <q-input
-                  v-if="$q.screen.xs"
-                  v-model="filter"
-                  outlined
-                  dense
-                  debounce="300"
-                  placeholder="Search"
-                  style="margin-top: -3px"
-                >
-                  <template v-slot:append>
-                    <q-icon :name="icons.search" />
-                  </template>
-                </q-input>
+            <div class="column q-gutter-y-sm full-width">
+              <div class="text-h6">
+                {{ $t('adminTools.memberbucksTransactions') }}
               </div>
-              <div class="row">
-                {{ $t('memberbucks.currentBalance') }}
-                {{
-                  $n(
-                    billing?.memberbucks.balance || 0,
-                    'currency',
-                    siteLocaleCurrency
-                  )
-                }}
-              </div>
-            </template>
 
-            <template v-if="$q.screen.gt.xs" v-slot:top-right>
-              <q-input
-                v-model="filter"
-                outlined
-                dense
-                debounce="300"
-                placeholder="Search"
-                style="margin-top: -3px"
+              <q-table
+                :rows="billing?.memberbucks.transactions"
+                :columns="[
+                  {
+                    name: 'description',
+                    label: 'Description',
+                    field: 'description',
+                    sortable: true,
+                  },
+                  {
+                    name: 'amount',
+                    label: 'Amount',
+                    field: 'amount',
+                    sortable: true,
+                  },
+                  {
+                    name: 'date',
+                    label: 'When',
+                    field: 'date',
+                    sortable: true,
+                    format: (val) => formatWhen(val),
+                  },
+                ]"
+                row-key="id"
+                :filter="filter"
+                v-model:pagination="pagination"
+                :loading="loading"
+                :grid="$q.screen.xs"
               >
-                <template v-slot:append>
-                  <q-icon :name="icons.search" />
+                <template v-slot:top-left>
+                  <div class="row">
+                    <q-input
+                      v-if="$q.screen.xs"
+                      v-model="filter"
+                      outlined
+                      dense
+                      debounce="300"
+                      placeholder="Search"
+                      style="margin-top: -3px"
+                    >
+                      <template v-slot:append>
+                        <q-icon :name="icons.search" />
+                      </template>
+                    </q-input>
+                  </div>
+                  <div class="row">
+                    {{ $t('memberbucks.currentBalance') }}
+                    {{
+                      $n(
+                        billing?.memberbucks.balance || 0,
+                        'currency',
+                        siteLocaleCurrency
+                      )
+                    }}
+                  </div>
                 </template>
-              </q-input>
-            </template>
 
-            <template v-slot:body-cell-amount="props">
-              <q-td>
-                <div
-                  :class="{ credit: props.value > 0, debit: props.value < 0 }"
-                >
-                  ${{ props.value }}
-                </div>
-              </q-td>
-            </template>
-          </q-table>
+                <template v-if="$q.screen.gt.xs" v-slot:top-right>
+                  <q-input
+                    v-model="filter"
+                    outlined
+                    dense
+                    debounce="300"
+                    placeholder="Search"
+                    style="margin-top: -3px"
+                  >
+                    <template v-slot:append>
+                      <q-icon :name="icons.search" />
+                    </template>
+                  </q-input>
+                </template>
+
+                <template v-slot:body-cell-amount="props">
+                  <q-td>
+                    <div
+                      :class="{
+                        credit: props.value > 0,
+                        debit: props.value < 0,
+                      }"
+                    >
+                      ${{ props.value }}
+                    </div>
+                  </q-td>
+                </template>
+              </q-table>
+            </div>
+          </div>
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
@@ -1209,11 +1370,7 @@ import icons from '../../icons';
 import formatMixin from '@mixins/formatMixin';
 import { mapGetters } from 'vuex';
 import { QForm } from 'quasar';
-import {
-  MemberBillingInfo,
-  MemberProfile,
-  MemberStateStrings,
-} from 'types/member';
+import { MemberBillingInfo, MemberProfile, MemberState } from 'types/member';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -1392,7 +1549,7 @@ export default defineComponent({
           }, 1200);
         });
     },
-    setMemberState(state: MemberStateStrings) {
+    setMemberState(state: MemberState) {
       this.stateLoading = true;
       this.$axios
         .post(`/api/admin/members/${this.member.id}/state/${state}/`)
@@ -1526,13 +1683,13 @@ export default defineComponent({
   max-width: 100%;
 }
 
-a,
-a:visited,
-a:hover,
-a:active {
-  color: inherit;
-  text-decoration: none;
-}
+//a,
+//a:visited,
+//a:hover,
+//a:active {
+//  color: inherit;
+//  text-decoration: none;
+//}
 
 .active {
   color: green;
@@ -1540,6 +1697,10 @@ a:active {
 
 .inactive {
   color: red;
+}
+
+.cancelling {
+  color: orange;
 }
 
 .q-field__after,

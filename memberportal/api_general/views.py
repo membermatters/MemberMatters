@@ -22,7 +22,7 @@ from urllib.parse import parse_qs, urlencode
 import hmac
 import hashlib
 
-logger = logging.getLogger("app")
+logger = logging.getLogger("general")
 
 
 class GetConfig(APIView):
@@ -37,7 +37,6 @@ class GetConfig(APIView):
             "memberbucks_topup_options": json.loads(
                 config.STRIPE_MEMBERBUCKS_TOPUP_OPTIONS
             ),
-            "trelloIntegration": config.ENABLE_TRELLO_INTEGRATION,
             "enableProxyVoting": config.ENABLE_PROXY_VOTING,
             "enableStripe": config.ENABLE_STRIPE
             and len(config.STRIPE_PUBLISHABLE_KEY) > 0
@@ -60,6 +59,7 @@ class GetConfig(APIView):
                 "senderId": config.SMS_SENDER_ID,
                 "footer": config.SMS_FOOTER,
             },
+            "enableStatsPage": config.ENABLE_STATS_PAGE,
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}
@@ -379,7 +379,7 @@ class ProfileDetail(generics.GenericAPIView):
             "lastName": p.last_name,
             "screenName": p.screen_name,
             "phone": p.phone,
-            "memberStatus": p.get_state_display(),
+            "memberStatus": p.state,
             "vehicleRegistrationPlate": p.vehicle_registration_plate,
             "lastInduction": p.last_induction,
             "lastSeen": p.last_seen,
@@ -627,23 +627,6 @@ class LoggedIn(APIView):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
-class Statistics(APIView):
-    """
-    get: gets site statistics.
-    """
-
-    def get(self, request):
-        members = SiteSession.objects.filter(signout_date=None).order_by("-signin_date")
-        member_list = []
-
-        for member in members:
-            member_list.append(member.user.profile.get_full_name())
-
-        statistics = {"onSite": {"members": member_list, "count": members.count()}}
-
-        return Response(statistics)
-
-
 class Register(APIView):
     """
     post: registers a new member.
@@ -747,7 +730,7 @@ class Register(APIView):
         except Exception as e:
             # gracefully catch and move on
             sentry_sdk.capture_exception(e)
-            print(e)
+            logger.error(e)
             return Response()
 
         return Response()
