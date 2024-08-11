@@ -120,15 +120,40 @@ CONSTANCE_CONFIG = {
         False,
         "Enable integration with stripe for membership payments.",
     ),
+    # ==== Report Issue Services ====
+    # Email config
+    "REPORT_ISSUE_ENABLE_EMAIL": (
+        True,
+        "Enable the submit issue to email integration.",
+    ),
+    # Discord config
+    "REPORT_ISSUE_ENABLE_DISCORD": (
+        False,
+        "Enable the submit issue to Discord integration.",
+    ),
     # Vikunja config
+    "REPORT_ISSUE_ENABLE_VIKUNJA": (
+        False,
+        "Enable the submit issue to Vikunja integration.",
+    ),
+    "VIKUNJA_API_URL": ("", "Set this to your Vikunja instance public URL."),
+    "VIKUNJA_API_TOKEN": ("", "Set this to your Vikunja API token."),
+    "VIKUNJA_DEFAULT_PROJECT_ID": (
+        "",
+        "Set this to the ID of your default project to create issues in.",
+    ),
+    "VIKUNJA_DEFAULT_LABEL_ID": (
+        "",
+        "[optional] Set this to the ID of your default label if you want new issues to be tagged.",
+    ),
     "VIKUNJA_TEAMS": (
         '[{"name": "Members", "oidcID": "members", "description": "The default team for all members.", "isPublic": false}]',
         "A JSON array of Vikunja teams to add users to when they login via SSO. Returned as an OIDC claim with the 'vikunja_teams' scope. Check Vikunja docs for syntax.",
     ),
     # Trello config
-    "ENABLE_TRELLO_INTEGRATION": (
+    "REPORT_ISSUE_ENABLE_TRELLO": (
         False,
-        "Enable the submit issue to trello integration. If disabled we'll send an email to EMAIL_ADMIN instead.",
+        "Enable the submit issue to trello integration.",
     ),
     "TRELLO_API_KEY": ("", "Set this to your Trello API key."),
     "TRELLO_API_TOKEN": ("", "Set this to your Trello API token."),
@@ -211,6 +236,10 @@ CONSTANCE_CONFIG = {
     "DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK": (
         "https://discordapp.com/api/webhooks/<token>",
         "Discord URL to send webhook notifications to for vending/memberbucks purchases.",
+    ),
+    "DISCORD_REPORT_ISSUE_WEBHOOK": (
+        "https://discordapp.com/api/webhooks/<token>",
+        "Discord URL to send webhook notifications to when reporting issues.",
     ),
     "ENABLE_DISCOURSE_SSO_PROTOCOL": (
         False,
@@ -416,6 +445,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SMS_ENABLE",
                 "TWILIO_ACCOUNT_SID",
                 "TWILIO_AUTH_TOKEN",
+                "TWILIO_AUTH_TOKEN",
                 "SMS_DEFAULT_COUNTRY_CODE",
                 "SMS_SENDER_ID",
                 "SMS_MESSAGES",
@@ -432,11 +462,28 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "MEMBERBUCKS_CURRENCY",
             ),
         ),
-        ("Vikunja Integration", ("VIKUNJA_TEAMS",)),
+        (
+            "Report Issue Services",
+            (
+                "REPORT_ISSUE_ENABLE_EMAIL",
+                "REPORT_ISSUE_ENABLE_DISCORD",
+                "REPORT_ISSUE_ENABLE_VIKUNJA",
+                "REPORT_ISSUE_ENABLE_TRELLO",
+            ),
+        ),
+        (
+            "Vikunja Integration",
+            (
+                "VIKUNJA_TEAMS",
+                "VIKUNJA_API_URL",
+                "VIKUNJA_API_TOKEN",
+                "VIKUNJA_DEFAULT_PROJECT_ID",
+                "VIKUNJA_DEFAULT_LABEL_ID",
+            ),
+        ),
         (
             "Trello Integration",
             (
-                "ENABLE_TRELLO_INTEGRATION",
                 "TRELLO_API_KEY",
                 "TRELLO_API_TOKEN",
                 "TRELLO_ID_LIST",
@@ -508,6 +555,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "DISCORD_DOOR_WEBHOOK",
                 "DISCORD_INTERLOCK_WEBHOOK",
                 "DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK",
+                "DISCORD_REPORT_ISSUE_WEBHOOK",
             ),
         ),
     ]
