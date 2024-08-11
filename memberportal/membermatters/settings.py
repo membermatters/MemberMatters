@@ -278,6 +278,11 @@ LOGGING = {
             "level": os.environ.get("MM_LOG_LEVEL_SPACEDIRECTORY", "INFO"),
             "propagate": False,
         },
+        "api_member_tools": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_MEMBER_TOOLS", "INFO"),
+            "propagate": False,
+        },
         "metrics": {
             "handlers": ["console", "file"],
             "level": os.environ.get("MM_LOG_LEVEL_METRICS", "INFO"),

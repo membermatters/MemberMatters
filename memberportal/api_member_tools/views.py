@@ -3,13 +3,17 @@ from profile.models import Profile
 from api_meeting.models import Meeting
 from constance import config
 from services.emails import send_email_to_admin
+from services import discord
+
 from random import shuffle
 import requests
 from django.utils import timezone
-
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
+import logging
+
+logger = logging.getLogger("api_member_tools")
 
 
 class SwipesList(APIView):
@@ -109,6 +113,8 @@ class IssueDetail(APIView):
         body = request.data
         title = body["title"]
         description = request.user.profile.get_full_name() + ": " + body["description"]
+        vikunja_task_url = None
+        trello_card_url = None
 
         if not (title and description):
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -199,12 +205,14 @@ class IssueDetail(APIView):
                 )
 
                 if (vikunja_label_id is not None) and (
-                    task_response.status_code == 200
+                    task_response.status_code == 201
                 ):
+                    task_id = "unknown"
                     try:
-                        task_id = task_response.json["id"]
+                        task_id = task_response.json()["id"]
+                        vikunja_task_url = f"{config.VIKUNJA_API_URL}/tasks/{task_id}"
                         label_body = {
-                            "label_id": vikunja_label_id,
+                            "label_id": int(vikunja_label_id),
                             "created": "1970-01-01T00:00:00.000Z",
                         }
 
@@ -216,15 +224,29 @@ class IssueDetail(APIView):
                                 "Authorization": "Bearer " + config.VIKUNJA_API_TOKEN
                             },
                         )
+
+                        if label_response.status_code != 201:
+                            logger.warning(
+                                f"Failed to add label to Vikunja task {task_id}: %s",
+                                label_response.json(),
+                            )
+
                     except Exception:
+                        logger.exception(
+                            f"Failed to add label to Vikunja task {task_id}."
+                        )
                         pass
 
-                if task_response.status_code != 200:
+                if task_response.status_code != 201:
+                    logger.error(
+                        "Failed to create Vikunja task: %s", task_response.json()
+                    )
                     failed = True
 
             except Exception:
                 # uh oh, but don't stop processing other ones
                 failed = True
+                logger.exception("Failed to create reported issue Vikunja task.")
 
         if config.REPORT_ISSUE_ENABLE_TRELLO:
             try:
@@ -248,9 +270,12 @@ class IssueDetail(APIView):
                 if response.status_code != 200:
                     failed = True
 
+                trello_card_url = response.json()["shortUrl"]
+
             except Exception:
                 # uh oh, but don't stop processing other ones
                 failed = True
+                logger.exception("Failed to create reported issue Trello card.")
 
         # email report
         if config.REPORT_ISSUE_ENABLE_EMAIL:
@@ -271,6 +296,16 @@ class IssueDetail(APIView):
             except Exception:
                 # uh oh, but don't stop processing other ones
                 failed = True
+                logger.exception("Failed to send reported issue email.")
+
+        # discord report
+        if config.REPORT_ISSUE_ENABLE_DISCORD:
+            username = request.user.profile.get_full_name()
+            description = body["description"]
+
+            discord.post_reported_issue_to_discord(
+                username, title, description, vikunja_task_url, trello_card_url
+            )
 
         if failed:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

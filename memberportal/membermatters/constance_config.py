@@ -126,6 +126,11 @@ CONSTANCE_CONFIG = {
         True,
         "Enable the submit issue to email integration.",
     ),
+    # Discord config
+    "REPORT_ISSUE_ENABLE_DISCORD": (
+        False,
+        "Enable the submit issue to Discord integration.",
+    ),
     # Vikunja config
     "REPORT_ISSUE_ENABLE_VIKUNJA": (
         False,
@@ -231,6 +236,10 @@ CONSTANCE_CONFIG = {
     "DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK": (
         "https://discordapp.com/api/webhooks/<token>",
         "Discord URL to send webhook notifications to for vending/memberbucks purchases.",
+    ),
+    "DISCORD_REPORT_ISSUE_WEBHOOK": (
+        "https://discordapp.com/api/webhooks/<token>",
+        "Discord URL to send webhook notifications to when reporting issues.",
     ),
     "ENABLE_DISCOURSE_SSO_PROTOCOL": (
         False,
@@ -436,6 +445,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SMS_ENABLE",
                 "TWILIO_ACCOUNT_SID",
                 "TWILIO_AUTH_TOKEN",
+                "TWILIO_AUTH_TOKEN",
                 "SMS_DEFAULT_COUNTRY_CODE",
                 "SMS_SENDER_ID",
                 "SMS_MESSAGES",
@@ -456,6 +466,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             "Report Issue Services",
             (
                 "REPORT_ISSUE_ENABLE_EMAIL",
+                "REPORT_ISSUE_ENABLE_DISCORD",
                 "REPORT_ISSUE_ENABLE_VIKUNJA",
                 "REPORT_ISSUE_ENABLE_TRELLO",
             ),
@@ -544,6 +555,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "DISCORD_DOOR_WEBHOOK",
                 "DISCORD_INTERLOCK_WEBHOOK",
                 "DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK",
+                "DISCORD_REPORT_ISSUE_WEBHOOK",
             ),
         ),
     ]

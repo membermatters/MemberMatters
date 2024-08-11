@@ -178,3 +178,39 @@ def post_purchase_to_discord(description):
             return True
 
     return True
+
+
+def post_reported_issue_to_discord(
+    fullname, title, description, vikunja_task_url=None, trello_card_url=None
+):
+    if config.ENABLE_DISCORD_INTEGRATION and config.DISCORD_REPORT_ISSUE_WEBHOOK:
+        logger.debug("Posting reported issue to Discord!")
+
+        url = config.DISCORD_REPORT_ISSUE_WEBHOOK
+
+        if vikunja_task_url or trello_card_url:
+            description += (
+                f"\n\n[View in Vikunja]({vikunja_task_url})" if vikunja_task_url else ""
+            )
+            description += (
+                f"\n\n[View in Trello]({trello_card_url})" if trello_card_url else ""
+            )
+
+        json_message = {
+            "content": f"{fullname} just reported a new issue!",
+            "embeds": [],
+        }
+
+        json_message["embeds"].append(
+            {
+                "title": title,
+                "description": description,
+                "color": 5025616,
+            }
+        )
+        try:
+            requests.post(url, json=json_message, timeout=settings.REQUEST_TIMEOUT)
+        except requests.exceptions.ReadTimeout:
+            return True
+
+    return True
