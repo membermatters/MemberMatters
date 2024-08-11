@@ -1,29 +1,42 @@
 # Post Installation Steps
-Once you have completed the [getting started](/docs/GETTING_STARTED.md) instructions, you should complete the following steps to setup and customise your instance of MemberMatters.
+Once you have completed the [Getting Started](/docs/GETTING_STARTED.md) instructions, you should complete the following steps to setup and customise your instance of MemberMatters.
 
-## Important Notice
-Currently, a valid Postmark API key is required for MemberMatters to function correctly. Emails are sent on various tasks like sign ups, MemberBucks actions etc. You will receive errors if you try to use these functions without a correctly configured Postmark API key. They have a free trial (100 emails/mth) which should be more than enough for testing, however we recommend upgrading to a paid tier before use in production.
+## Postmark
+The first step is to set up a [Postmark](https://www.postmarkapp.com) account to enable the sending of emails.  Postmark has a free trial (100 emails/mth) which should be more than enough for testing, however we recommend upgrading to a paid tier before use in production.
+
+Currently, a valid Postmark API token is required for MemberMatters to function correctly. Emails are sent on various tasks like sign ups, MemberBucks actions etc. You will receive errors if you try to use these functions without a correctly configured Postmark API key. 
+
+Initially when Postmark account is created in "test mode" you can only send emails to the same domain as your Member Matters domain. This domain limitation may create problems if your test account emails use a different domain.  You can add the ability to send from a specific domain to an arbitrary domains by adding a domain "sender signature" in the Postmark account.  Errors in Member Matters caused by Postmark misconfiguration can present themselves as "Sorry, we're having trouble performing that action. Please try again later." or other ambiguous messages.  Check the [Django logs](#logs) for more details on the cause of an error.
+
+Aftert creating the [Postmark](https://www.postmarkapp.com) account see the section [Postmark (Email) Integration](#postmark-email-integration) to set the Postmark "Server API token" in the Member Matters configuration.
+
+## Logs
+The default settings for the Django logs are configured in the Docker *container* in the file /usr/src/app/memberportal/membermatters/settings.py (if you installed as suggested by the  [Getting Started](/docs/GETTING_STARTED.md) instructions). The distributed settings.py places the logs in /usr/src/logs/django.log.  If you run into problems these logs are a good first place to look.
+
+Logs are also available via the command `docker logs membermatters` from the Docker *host*.
 
 ## Set up a reverse proxy
 MemberMatters is designed to run behind some form of reverse proxy, or at the minimum, an SSL terminating CDN like Cloudflare (not recommended). You *should not ever* run MemberMatters in production without some form of HTTPS. The recommended way is with an nginx reverse proxy as explained below. Unfortunately, reverse proxy configurations are highly dependant on your specific environment, so only general guidance can be given. Please consult your favourite search engine if you have any trouble and only open a GitHub issue if you think you've found a bug or way to improve this documentation.
 
 ### Setting up an nginx reverse proxy on Ubuntu
+Note that the any updated DNS records for your server will need to have propagated prior to certificate being issued. 
+From your Docker *host* command line do the following:
 1. You should first install nginx. On Ubuntu, you can install nginx with `sudo apt install nginx`.
 2. Configure your nginx instance to proxy traffic through to the MemberMatters docker container on port `8000`.
-3. A sample configuration file is included below, but you should configure this to your needs. You should create this file at `/etc/nginx/sites-available/example.com`, where `example.com` is the name of our domain.
+3. A sample configuration file is included below, but you should configure this to your needs. You should create this file at `/etc/nginx/sites-available/portal.example.com`, where `portal.example.com` is the name of our domain.
 ```
 server {
   server_name example.com;
 
 	location / {
 		proxy_set_header Host              $host;
-        proxy_set_header X-Real-IP         $remote_addr;
-        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Host  $host;
-        proxy_set_header X-Forwarded-Port  $server_port;
-        proxy_set_header Upgrade           $http_upgrade;
-        proxy_set_header Connection        "upgrade";
+		proxy_set_header X-Real-IP         $remote_addr;
+		proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header X-Forwarded-Host  $host;
+		proxy_set_header X-Forwarded-Port  $server_port;
+        	proxy_set_header Upgrade           $http_upgrade;
+        	proxy_set_header Connection        "upgrade";
         
 		proxy_redirect off;
 		proxy_pass http://localhost:8000;
@@ -32,11 +45,13 @@ server {
   listen [::]:80 default_server;
 }
 ```
-4. Enable your new configuration file by running this command `sudo ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/`.
-5. Check the configuration that you added is valid by running this command, there should be no errors: `sudo nginx -t`.
-6. Restart nginx to apply your new changes with `sudo systemctl restart nginx`.
-7. Note that this process does not include a configuration for HTTPS. We recommend that you use the Let's Encrypt Certbot tool as it will automatically modify your configuration to enable HTTPS and manage certificates for you. [Click here](https://certbot.eff.org/lets-encrypt/ubuntufocal-nginx) and follow the instructions to install certbot on your system. Once installed, run certbot as per that link and follow the prompts to enable HTTPS for your system.
-8. Check that you can access your instance of MemberMatters via HTTPS at the URL that you configured.
+4. Disable the default configuration: `sudo rm /etc/nginx/sites-enabled/default`.
+5. Enable your new configuration file by running this command `sudo ln -s /etc/nginx/sites-available/portal.example.com /etc/nginx/sites-enabled/`.
+6. Check the configuration that you added is valid by running this command, there should be no errors: `sudo nginx -t`.
+7. Restart nginx to apply your new changes with `sudo systemctl restart nginx`.
+8. Configure your firewall to allow Nginx.  For servers running UFW - Uncomplicated Firewall, the following command will work after Nginx is installed: `sudo ufw allow "Nginx Full"`
+9. Note that this process does not include a configuration for HTTPS. We recommend that you use the Let's Encrypt Certbot tool as it will automatically modify your configuration to enable HTTPS and manage certificates for you. [Click here](https://certbot.eff.org/instructions) Select "Nginx" and your OS and then follow the instructions to install certbot on your system. Once installed, run certbot as per that link and follow the prompts to enable HTTPS for your system.
+10. Check that you can access your instance of MemberMatters via HTTPS at the URL that you configured.
 
 ## Customisation
 The primary way to customise MemberMatters is via the database settings. Once your instance is up and running,
@@ -84,7 +99,7 @@ However, as noted below, currencies will use a hardcoded value set by a configur
   * "CANVAS_API_TOKEN" - the API token for the Canvas LMS integration.
 
 ### Postmark (Email) Integration
-* "POSTMARK_API_KEY" - the API token for the Postmark integration. NOTE: required for basic MemberMatters functionality.
+* "POSTMARK_API_KEY" - the "Server API token" from your [Postmark](#postmark) account. NOTE: required for basic MemberMatters functionality.
 
 ### Twilio (SMS) Integration
 * `SMS_ENABLE` - Enables sending of SMS messages on some events. See below for a current list of events.
