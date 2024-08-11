@@ -233,6 +233,7 @@ export default defineComponent({
         });
     },
     exportCsv() {
+      console.log(this.displayMemberList);
       stringify(
         this.displayMemberList,
         {
