@@ -123,8 +123,8 @@ class IssueDetail(APIView):
         if config.REPORT_ISSUE_ENABLE_VIKUNJA and bool(
             config.VIKUNJA_DEFAULT_PROJECT_ID
         ):
-            vikunja_project_id = config.VIKUNJA_DEFAULT_PROJECT_ID
-            vikunja_label_id = config.VIKUNJA_DEFAULT_LABEL_ID
+            vikunja_project_id = int(config.VIKUNJA_DEFAULT_PROJECT_ID)
+            vikunja_label_id = int(config.VIKUNJA_DEFAULT_LABEL_ID)
 
             try:
                 task_body = {
