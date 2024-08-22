@@ -72,7 +72,11 @@ However, as noted below, currencies will use a hardcoded value set by a configur
 
 > NOTE: the `SITE_LOCALE_CURRENCY` option is what determines how the currency is displayed. This is "hardcoded" as a 
 > config option to prevent a currency/billing amount being displayed incorrectly. If your locale isn't directly 
-> supported, please open an issue or check below as your currency may already be supported under a different locale.
+> supported, please open an issue or check below as your currency may already be supported under a different locale.o
+
+> NOTE: If you want to set the *server* timezone and language, export `MM_TIME_ZONE=<your area>/<your country>` and 
+> `MM_LANGAUGE_CODE=<your-language-code>` before launching the server component.  If you do not set these variables,
+> the server logs will default to `Australia/Brisbane` as the timezone and `en-au` as the default language.
  
 #### Locale Options
 * `en-AU` - full translation available, currency format `$12.50`.
