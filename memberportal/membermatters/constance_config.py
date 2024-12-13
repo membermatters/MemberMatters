@@ -339,6 +339,26 @@ CONSTANCE_CONFIG = {
         "",
         "The auth token (not an api token) to use for the twilio integration.",
     ),
+    "ENABLE_SLACK_INTEGRATION": (
+        False,
+        "Enable posting a notification to the slack channel on a card swipe.",
+    ),
+    "SLACK_DOOR_WEBHOOK": (
+        "https://hooks.slack.com/services/T00000000/B00000000/<token>",
+        "Slack URL to send webhook notifications to.",
+    ),
+    "SLACK_INTERLOCK_WEBHOOK": (
+        "https://hooks.slack.com/services/T00000000/B00000000/<token>",
+        "Slack URL to send webhook notifications to.",
+    ),
+    "SLACK_MEMBERBUCKS_PURCHASE_WEBHOOK": (
+        "https://hooks.slack.com/services/T00000000/B00000000/<token>",
+        "Slack URL to send webhook notifications to for vending/memberbucks purchases.",
+    ),
+    "SLACK_REPORT_ISSUE_WEBHOOK": (
+        "https://hooks.slack.com/services/T00000000/B00000000/<token>",
+        "Slack URL to send webhook notifications to when reporting issues.",
+    ),
     "SMS_ENABLE": (
         False,
         "If SMS functionality should be enabled (please configure below).",
@@ -396,6 +416,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "ENABLE_MEMBERBUCKS",
                 "ENABLE_DISCOURSE_SSO_PROTOCOL",
                 "ENABLE_DISCORD_INTEGRATION",
+                "ENABLE_SLACK_INTEGRATION",
                 "ENABLE_SPACE_DIRECTORY",
                 "ENABLE_THEME_SWIPE",
                 "ENABLE_PORTAL_SITE_SIGN_IN",
@@ -556,6 +577,15 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "DISCORD_INTERLOCK_WEBHOOK",
                 "DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK",
                 "DISCORD_REPORT_ISSUE_WEBHOOK",
+            ),
+        ),
+        (
+            "Slack Integration",
+            (
+                "SLACK_DOOR_WEBHOOK",
+                "SLACK_INTERLOCK_WEBHOOK",
+                "SLACK_MEMBERBUCKS_PURCHASE_WEBHOOK",
+                "SLACK_REPORT_ISSUE_WEBHOOK",
             ),
         ),
     ]

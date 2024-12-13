@@ -243,6 +243,11 @@ LOGGING = {
             "level": os.environ.get("MM_LOG_LEVEL_DISCORD", "INFO"),
             "propagate": False,
         },
+        "slack": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_SLACK", "INFO"),
+            "propagate": False,
+        },
         "emails": {
             "handlers": ["console", "file"],
             "level": os.environ.get("MM_LOG_LEVEL_EMAILS", "INFO"),
