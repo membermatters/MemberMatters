@@ -255,7 +255,7 @@ class BumpDoor(APIView):
         # BUT we still need to check if the API is enabled or it's a user making the request
         if config.ENABLE_DOOR_BUMP_API or request.user.is_authenticated:
             door = Doors.objects.get(pk=door_id)
-            bumped = door.bump()
+            bumped = door.bump(request)
             door.log_force_bump()
             return Response({"success": bumped})
         else:

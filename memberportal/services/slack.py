@@ -14,16 +14,16 @@ def post_door_swipe_to_slack(name, door, status):
         json_message = {}
 
         if status is True:
-            json_message.append(
+            json_message.update(
                 {
-                    "text": ":unlock: {} just **successfully** swiped at {}.".format(
+                    "text": ":unlock: {} just **successfully** unlocked {}.".format(
                         name, door
                     )
                 }
             )
 
         elif status == "not_signed_in":
-            json_message.append(
+            json_message.update(
                 {
                     "text": ":x: {} swiped at {} but was rejected because they "
                     "aren't signed into site.".format(name, door)
@@ -31,7 +31,7 @@ def post_door_swipe_to_slack(name, door, status):
             )
 
         elif status == "locked_out":
-            json_message.append(
+            json_message.update(
                 {
                     "text": ":x: {} tried to access the {} but it is currently under a "
                     "maintenance lockout.".format(name, door)
@@ -39,13 +39,36 @@ def post_door_swipe_to_slack(name, door, status):
             )
 
         else:
-            json_message.append(
+            json_message.update(
                 {
-                    "text": f":x: {name} just swiped at {door} but was **rejected**. You "
+                    "text": f":x: {name} just attempted to unlock {door} but was **rejected**. You "
                     f"can check your"
                     f" access [here]({config.SITE_URL}/account/access/)."
                 }
             )
+
+        try:
+            requests.post(url, json=json_message, timeout=settings.REQUEST_TIMEOUT)
+        except requests.exceptions.ReadTimeout:
+            return True
+
+    return True
+
+def post_door_bump_to_slack(name, door):
+    if config.ENABLE_SLACK_INTEGRATION and config.SLACK_DOOR_WEBHOOK:
+        logger.debug("Posting door bump to Slack!")
+
+        url = config.SLACK_DOOR_WEBHOOK
+
+        json_message = {}
+        json_message.update(
+            {
+                "text": ":unlock: {} just bumped {}.".format(
+                    name, door
+                )
+            }
+        )
+
 
         try:
             requests.post(url, json=json_message, timeout=settings.REQUEST_TIMEOUT)
@@ -62,7 +85,7 @@ def post_interlock_swipe_to_slack(name, interlock, type, time=None):
         json_message = {}
 
         if type == "activated":
-            json_message.append(
+            json_message.update(
                 {
                     "text": ":unlock: {} just **activated** the {}.".format(
                         name, interlock
@@ -71,7 +94,7 @@ def post_interlock_swipe_to_slack(name, interlock, type, time=None):
             )
 
         elif type == "rejected":
-            json_message.append(
+            json_message.update(
                 {
                     "text": f"{name} tried to activate the {interlock} but was "
                     f"**rejected**. You can check your"
@@ -80,7 +103,7 @@ def post_interlock_swipe_to_slack(name, interlock, type, time=None):
             )
 
         elif type == "left_on":
-            json_message.append(
+            json_message.update(
                 {
                     "text": ":lock: The {} was just turned off by the access system because it timed out (last used by {}). It was on for {}.".format(
                         interlock, name, time
@@ -89,7 +112,7 @@ def post_interlock_swipe_to_slack(name, interlock, type, time=None):
             )
 
         elif type == "deactivated":
-            json_message.append(
+            json_message.update(
                 {
                     "text": ":lock: {} just **deactivated** the {}. It was on for "
                     "{}.".format(name, interlock, time)
@@ -97,7 +120,7 @@ def post_interlock_swipe_to_slack(name, interlock, type, time=None):
             )
 
         elif type == "locked_out":
-            json_message.append(
+            json_message.update(
                 {
                     "text": "{} tried to access the {} but it is currently under a "
                     "maintenance lockout".format(name, interlock)
@@ -105,7 +128,7 @@ def post_interlock_swipe_to_slack(name, interlock, type, time=None):
             )
 
         elif type == "not_signed_in":
-            json_message.append(
+            json_message.update(
                 {
                     "text": ":lock: {} swiped at {} but was rejected because they "
                     "aren't signed into site.".format(name, interlock)
@@ -123,11 +146,11 @@ def post_interlock_swipe_to_slack(name, interlock, type, time=None):
 def post_kiosk_swipe_to_slack(name, sign_in):
     if config.ENABLE_SLACK_INTEGRATION and config.SLACK_DOOR_WEBHOOK:
         logger.debug("Posting kiosk swipe to Slack!")
-        url = config.DISCORD_DOOR_WEBHOOK
+        url = config.SLACK_DOOR_WEBHOOK
 
         json_message = {}
 
-        json_message.append(
+        json_message.update(
             {
                 "text": f":book: {name} just signed {'in' if sign_in else 'out'} at a kiosk."
             }
