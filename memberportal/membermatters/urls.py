@@ -40,6 +40,7 @@ def safe_constance_get(fld: str):
 
 urlpatterns = [
     path("api/openid/", include("oidc_provider.urls", namespace="oidc_provider")),
+    path("oidc/", include("mozilla_django_oidc.urls")),
     path("", include("api_metrics.urls")),
     path("", include("api_spacedirectory.urls")),
     path("", include("api_general.urls")),

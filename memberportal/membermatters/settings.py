@@ -35,6 +35,18 @@ SESSION_COOKIE_SAMESITE = None
 CSRF_COOKIE_SAMESITE = None
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
+### mozilla-django-oidc config
+# get these from your IDP
+OIDC_RP_CLIENT_ID = os.environ.get("MM_OIDC_CLIENT_ID", None)
+OIDC_RP_CLIENT_SECRET = os.environ.get("MM_OIDC_CLIENT_SECRET", None)
+OIDC_OP_AUTHORIZATION_ENDPOINT = ""
+OIDC_OP_TOKEN_ENDPOINT = ""
+OIDC_OP_USER_ENDPOINT = ""
+# Assumes that an admin creates a user+profile for a user to be matched to by email address
+OIDC_CREATE_USER = False
+# Extend token validity window, default is 15 minutes
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 3600
+
 # this allows the frontend dev server to talk to the dev server
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -73,6 +85,12 @@ INSTALLED_APPS = [
     "rest_framework_api_key",
     "django_celery_results",
     "django_celery_beat",
+    "mozilla_django_oidc",
+]
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "mozilla_django_oidc.auth.OIDCAuthenticationBackend",
 ]
 
 MIDDLEWARE = [
@@ -88,6 +106,7 @@ MIDDLEWARE = [
     "membermatters.middleware.Sentry",
     "membermatters.middleware.ForceCsrfCookieMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
+    "mozilla_django_oidc.middleware.SessionRefresh",
 ]
 
 ROOT_URLCONF = "membermatters.urls"

@@ -22,6 +22,7 @@ import base64
 from urllib.parse import parse_qs, urlencode
 import hmac
 import hashlib
+from django.shortcuts import redirect
 
 logger = logging.getLogger("general")
 
@@ -132,6 +133,13 @@ class Login(APIView):
     """
 
     permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        if config.ENABLE_OIDC_RP:
+            return redirect("oidc_authentication_init")
+        else:
+            # OIDC is disabled
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
         body = request.data
@@ -297,6 +305,13 @@ class Logout(APIView):
 
     post: Ends the user's session and logs them out.
     """
+
+    def get(self, request):
+        if config.ENABLE_OIDC_RP:
+            return redirect("oidc_logout")
+        else:
+            # OIDC is disabled
+            return redirect(Logout.post)
 
     def post(self, request):
         logout(request)
