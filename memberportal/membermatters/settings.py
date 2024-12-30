@@ -42,6 +42,9 @@ OIDC_RP_CLIENT_SECRET = os.environ.get("MM_OIDC_CLIENT_SECRET", None)
 OIDC_OP_AUTHORIZATION_ENDPOINT = ""
 OIDC_OP_TOKEN_ENDPOINT = ""
 OIDC_OP_USER_ENDPOINT = ""
+# site customization
+# LOGIN_REDIRECT_URL = "/privileged"
+# LOGOUT_REDIRECT_URL = "/unprivileged"
 # Assumes that an admin creates a user+profile for a user to be matched to by email address
 OIDC_CREATE_USER = False
 # Extend token validity window, default is 15 minutes
