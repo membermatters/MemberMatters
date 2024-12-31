@@ -43,12 +43,14 @@ OIDC_OP_AUTHORIZATION_ENDPOINT = ""
 OIDC_OP_TOKEN_ENDPOINT = ""
 OIDC_OP_USER_ENDPOINT = ""
 # site customization
-# LOGIN_REDIRECT_URL = "/privileged"
-# LOGOUT_REDIRECT_URL = "/unprivileged"
+# LOGIN_REDIRECT_URL = "http://localhost:8080/dashboard"
+# LOGOUT_REDIRECT_URL = "http://localhost:8080/"
 # Assumes that an admin creates a user+profile for a user to be matched to by email address
-OIDC_CREATE_USER = False
+OIDC_CREATE_USER = True
 # Extend token validity window, default is 15 minutes
 OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 3600
+# any additional scopes
+OIDC_RP_SCOPES = "openid email profile"
 
 # this allows the frontend dev server to talk to the dev server
 CORS_ALLOW_ALL_ORIGINS = True
@@ -93,7 +95,8 @@ INSTALLED_APPS = [
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
-    "mozilla_django_oidc.auth.OIDCAuthenticationBackend",
+    "membermatters.oidc_client_settings.CustomOIDCAB",
+    # "mozilla_django_oidc.auth.OIDCAuthenticationBackend",
 ]
 
 MIDDLEWARE = [
@@ -323,6 +326,11 @@ LOGGING = {
         "oidc_provider": {
             "handlers": ["console", "file"],
             "level": os.environ.get("MM_LOG_LEVEL_OIDC_PROVIDER", "INFO"),
+            "propagate": False,
+        },
+        "mozilla_django_oidc": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_OIDC_CLIENT", "INFO"),
             "propagate": False,
         },
         "daphne": {"handlers": ["console", "file"], "level": "WARNING"},
