@@ -42,14 +42,11 @@ OIDC_RP_CLIENT_SECRET = os.environ.get("MM_OIDC_CLIENT_SECRET", None)
 OIDC_OP_AUTHORIZATION_ENDPOINT = ""
 OIDC_OP_TOKEN_ENDPOINT = ""
 OIDC_OP_USER_ENDPOINT = ""
-# site customization
-# LOGIN_REDIRECT_URL = "http://localhost:8080/dashboard"
-# LOGOUT_REDIRECT_URL = "http://localhost:8080/"
-# Assumes that an admin creates a user+profile for a user to be matched to by email address
+# Set the following to False if you want your MM admin to create a user & profile (matches on email address) instead of creating from the Idp
 OIDC_CREATE_USER = True
 # Extend token validity window, default is 15 minutes
 OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 3600
-# any additional scopes
+# Want the user's profile scope to populate the Membermatters profile
 OIDC_RP_SCOPES = "openid email profile"
 
 # this allows the frontend dev server to talk to the dev server
@@ -96,7 +93,6 @@ INSTALLED_APPS = [
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "membermatters.oidc_client_settings.CustomOIDCAB",
-    # "mozilla_django_oidc.auth.OIDCAuthenticationBackend",
 ]
 
 MIDDLEWARE = [

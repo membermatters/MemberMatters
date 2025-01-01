@@ -70,7 +70,7 @@
               {{ $t('error.requestFailed') }}
             </q-banner>
 
-            <p class="text-caption">
+            <p class="text-caption" v-if="!features.enableOIDC">
               {{ $t('loginCard.notAMember') }}
               <router-link
                 :to="{ name: 'register' }"
@@ -78,6 +78,14 @@
               >
                 {{ $t('loginCard.registerHere') }}
               </router-link>
+            </p>
+            <p class="text-caption" v-else>
+              <a
+                href="/oidc/authenticate"
+                :class="$q.dark.isActive ? 'text-white' : 'text-black'"
+              >
+                {{ $t('loginCard.loginOIDC') }}
+              </a>
             </p>
 
             <div class="row">
@@ -356,6 +364,22 @@ export default defineComponent({
       this.loginFailed = false;
       this.loginError = false;
       this.buttonLoading = true;
+
+      if (this.features.enableOIDC) {
+        this.$axios
+          .get('/api/login')
+          .then((response) => {
+            if (response.status === 301 || response.status === 302) {
+              window.location = response.data.redirect;
+            }
+          })
+          .catch((error) => {
+            throw error;
+          })
+          .finally(() => {
+            this.reset.loading = false;
+          });
+      }
 
       if (this.discourseSsoData) {
         this.$axios
