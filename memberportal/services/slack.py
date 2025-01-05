@@ -5,6 +5,7 @@ import logging
 
 logger = logging.getLogger("slack")
 
+
 def post_door_swipe_to_slack(name, door, status):
     if config.ENABLE_SLACK_INTEGRATION and config.SLACK_DOOR_WEBHOOK:
         logger.debug("Posting door swipe to Slack!")
@@ -54,6 +55,7 @@ def post_door_swipe_to_slack(name, door, status):
 
     return True
 
+
 def post_door_bump_to_slack(name, door):
     if config.ENABLE_SLACK_INTEGRATION and config.SLACK_DOOR_WEBHOOK:
         logger.debug("Posting door bump to Slack!")
@@ -61,14 +63,7 @@ def post_door_bump_to_slack(name, door):
         url = config.SLACK_DOOR_WEBHOOK
 
         json_message = {}
-        json_message.update(
-            {
-                "text": ":unlock: {} just bumped {}.".format(
-                    name, door
-                )
-            }
-        )
-
+        json_message.update({"text": ":unlock: {} just bumped {}.".format(name, door)})
 
         try:
             requests.post(url, json=json_message, timeout=settings.REQUEST_TIMEOUT)
@@ -76,6 +71,7 @@ def post_door_bump_to_slack(name, door):
             return True
 
     return True
+
 
 def post_interlock_swipe_to_slack(name, interlock, type, time=None):
     if config.ENABLE_SLACK_INTEGRATION and config.SLACK_INTERLOCK_WEBHOOK:
@@ -142,6 +138,7 @@ def post_interlock_swipe_to_slack(name, interlock, type, time=None):
 
     else:
         return True
+
 
 def post_kiosk_swipe_to_slack(name, sign_in):
     if config.ENABLE_SLACK_INTEGRATION and config.SLACK_DOOR_WEBHOOK:
