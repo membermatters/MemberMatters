@@ -214,3 +214,25 @@ def post_reported_issue_to_discord(
             return True
 
     return True
+
+
+def post_door_bump_to_discord(name, door):
+    if config.ENABLE_DISCORD_INTEGRATION and config.DISCORD_DOOR_WEBHOOK:
+        logger.debug("Posting door bump to Discord!")
+
+        url = config.DISCORD_DOOR_WEBHOOK
+
+        json_message = {"description": "", "embeds": []}
+        json_message["embeds"].append(
+            {
+                "description": ":unlock: {} just bumped at {}.".format(name, door),
+                "color": 5025616,
+            }
+        )
+
+        try:
+            requests.post(url, json=json_message, timeout=settings.REQUEST_TIMEOUT)
+        except requests.exceptions.ReadTimeout:
+            return True
+
+    return True
