@@ -329,7 +329,7 @@ export default {
   },
   memberbucks: {
     stripeDisabled:
-      'Endast manuella top-ups tillåts. KOntakta oss för detaljer på hur du lägger till pengar på ditt konto.',
+      'Endast manuella top-ups tillåts. Kontakta oss för detaljer på hur du lägger till pengar på ditt konto.',
     currentBalance: 'Nuvarande balans',
     lastPurchase: 'Senaste inköp',
     addFunds: 'Lägg till pengar',
