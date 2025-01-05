@@ -1,6 +1,14 @@
 import logging
-from services.discord import post_door_swipe_to_discord, post_interlock_swipe_to_discord
-from services.slack import post_door_swipe_to_slack, post_door_bump_to_slack, post_interlock_swipe_to_slack
+from services.discord import (
+    post_door_swipe_to_discord,
+    post_interlock_swipe_to_discord,
+    post_door_bump_to_discord,
+)
+from services.slack import (
+    post_door_swipe_to_slack,
+    post_door_bump_to_slack,
+    post_interlock_swipe_to_slack,
+)
 from services import sms
 from profile.models import Profile, log_event
 from memberbucks.models import MemberBucks
@@ -301,9 +309,12 @@ class Doors(ExportModelOperationsMixin("door"), AccessControlledDevice):
             )
 
             if request:
+                # notify messaging apps of bump
+                profile = request.user.profile
                 if self.post_to_slack:
-                    profile = request.user.profile
                     post_door_bump_to_slack(profile.get_full_name(), self.name)
+                if self.post_to_discord:
+                    post_door_bump_to_discord(profile.get_full_name(), self.name)
                 self.log_access(request.user.id)
                 request.user.log_event(
                     f"Bumped the {self.name} {self._meta.verbose_name}.",
@@ -317,6 +328,8 @@ class Doors(ExportModelOperationsMixin("door"), AccessControlledDevice):
                 )
                 if self.post_to_slack:
                     post_door_bump_to_slack("unknown", self.name)
+                if self.post_to_discord:
+                    post_door_bump_to_discord("unknown", self.name)
 
             return True
 
@@ -352,9 +365,13 @@ class Doors(ExportModelOperationsMixin("door"), AccessControlledDevice):
 
             # TODO replace with generic post_to_messengers
             if self.post_to_discord:
-                post_door_swipe_to_discord(profile.get_full_name(), self.name, "locked_out")
+                post_door_swipe_to_discord(
+                    profile.get_full_name(), self.name, "locked_out"
+                )
             if self.post_to_slack:
-                post_door_swipe_to_discord(profile.get_full_name(), self.name, "locked_out")
+                post_door_swipe_to_slack(
+                    profile.get_full_name(), self.name, "locked_out"
+                )
 
             sms_message = sms.SMS()
             sms_message.send_locked_out_swipe_alert(profile.phone)
@@ -366,7 +383,9 @@ class Doors(ExportModelOperationsMixin("door"), AccessControlledDevice):
 
             # TODO replace with generic post_to_messengers
             if self.post_to_discord:
-                post_door_swipe_to_discord(profile.get_full_name(), self.name, "rejected")
+                post_door_swipe_to_discord(
+                    profile.get_full_name(), self.name, "rejected"
+                )
             if self.post_to_slack:
                 post_door_swipe_to_slack(profile.get_full_name(), self.name, "rejected")
 

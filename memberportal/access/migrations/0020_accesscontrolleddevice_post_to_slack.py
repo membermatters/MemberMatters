@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('access', '0019_auto_20240603_2150'),
+        ("access", "0019_auto_20240603_2150"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='accesscontrolleddevice',
-            name='post_to_slack',
-            field=models.BooleanField(default=True, verbose_name='Post to slack on swipe'),
+            model_name="accesscontrolleddevice",
+            name="post_to_slack",
+            field=models.BooleanField(
+                default=True, verbose_name="Post to slack on swipe"
+            ),
         ),
     ]
