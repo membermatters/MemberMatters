@@ -2,7 +2,7 @@ name: Upload Docker Image (On PR - after build)
 
 on:
   workflow_run:
-    workflows: ["Receive PR"]
+    workflows: ["Build Docker Image (On PR)"]
     types:
       - completed
 
