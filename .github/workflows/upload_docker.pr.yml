@@ -1,0 +1,86 @@
+name: Upload Docker Image (On PR - after build)
+
+on:
+  workflow_run:
+    workflows: ["Receive PR"]
+    types:
+      - completed
+
+jobs:
+  upload-docker-pr:
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
+    outputs:
+      imagename: ${{ steps.extract_image.outputs.imagename }}
+    steps:
+      - name: Download PR Image
+        uses: actions/github-script@v3.1.0
+        with:
+          script: |
+            var artifacts = await github.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: ${{github.event.workflow_run.id }},
+            });
+            var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "pr"
+            })[0];
+            var download = await github.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            var fs = require('fs');
+            fs.writeFileSync('${{github.workspace}}/pr.zip', Buffer.from(download.data));
+      - run: ls -hal
+      - name: Unzip PR Image
+        run: |
+          unzip pr.zip
+      - run: ls -hal
+      - name: Check PR Metadata
+        run: |
+          cat ./pr/prnumber
+          cat ./pr/branchname
+          cat ./pr/imagename
+      - name: Extract image name
+        shell: bash
+        run: echo "imagename="$(cat test)"" | tr / - >> $GITHUB_OUTPUT
+        id: extract_image
+      - name: Load PR Image
+        run: |
+          docker load --input ./pr/untrusted-pr-image.tar
+          docker image ls -a
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and Push
+        id: docker_build
+        uses: docker/build-push-action@v6
+        with:
+          file: docker/Dockerfile
+          push: true
+          tags: ${{ steps.extract_image.outputs.imagename }}
+
+  comment_docker_image:
+    needs: upload-docker-pr
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment name of docker image
+        id: comment_docker_image
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Created image with name `${{ needs.upload-docker-pr.outputs.imagename }}`.'
+            })
