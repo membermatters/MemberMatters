@@ -35,19 +35,17 @@ jobs:
             });
             var fs = require('fs');
             fs.writeFileSync('${{github.workspace}}/pr.zip', Buffer.from(download.data));
-      - run: ls -hal
       - name: Unzip PR Image
         run: |
           unzip pr.zip
-      - run: ls -hal
       - name: Check PR Metadata
         run: |
-          cat ./pr/prnumber
-          cat ./pr/branchname
-          cat ./pr/imagename
+          cat ./prnumber
+          cat ./branchname
+          cat ./imagename
       - name: Extract image name
         shell: bash
-        run: echo "imagename="$(cat test)"" | tr / - >> $GITHUB_OUTPUT
+        run: echo "imagename="$(cat imagename)"" | tr / - >> $GITHUB_OUTPUT
         id: extract_image
       - name: Load PR Image
         run: |
