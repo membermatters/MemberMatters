@@ -383,9 +383,9 @@ CONSTANCE_CONFIG = {
         "https://api.docuseal.com",
         "URL of the DocuSeal instance in use",
     ),
-    "DOCUSEAL_TEMPLATE_IDS": (
-        "[]",
-        "JSON array of the DocuSeal template IDs to be sent as part of membership initiation",
+    "DOCUSEAL_TEMPLATE_ID": (
+        1,
+        "DocuSeal template ID to send as part of induction",
     ),
 }
 
@@ -580,7 +580,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "ENABLE_DOCUSEAL_INTEGRATION",
                 "DOCUSEAL_URL",
                 "DOCUSEAL_API_KEY",
-                "DOCUSEAL_TEMPLATE_IDS",
+                "DOCUSEAL_TEMPLATE_ID",
             ),
         ),
     ]

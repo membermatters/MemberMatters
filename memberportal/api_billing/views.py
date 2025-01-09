@@ -410,6 +410,8 @@ class CheckInductionStatus(APIView):
                 )
                 or 0
             )
+        elif config.ENABLE_DOCUSEAL_INTEGRATION:
+            score = get_docuseal_signed(request.user.profile)
 
         try:
             if score or config.MIN_INDUCTION_SCORE == 0:

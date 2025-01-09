@@ -17,6 +17,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Kiosk, SiteSession, EmailVerificationToken
 from services.discord import post_kiosk_swipe_to_discord
+from services.docuseal import create_submission_for_subscription
 import base64
 from urllib.parse import parse_qs, urlencode
 import hmac
@@ -667,6 +668,9 @@ class Register(APIView):
         )
 
         profile.save()
+
+        if config.ENABLE_DOCUSEAL_INTEGRATION:
+            create_submission_for_subscription(profile)
 
         verification_token = EmailVerificationToken.objects.create(user=new_user)
 

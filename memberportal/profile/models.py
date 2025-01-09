@@ -17,9 +17,9 @@ import json
 import uuid
 import logging
 from services.emails import send_single_email, send_email_to_admin
+from services.docuseal import get_docuseal_link
 from services import sms
 from django_prometheus.models import ExportModelOperationsMixin
-
 
 logger = logging.getLogger("profile")
 
@@ -386,6 +386,9 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
     subscription_first_created = models.DateTimeField(
         default=None, blank=True, null=True, editable=False
     )
+    memberdoc_id = models.IntegerField(
+        default=None, blank=True, null=True
+    )
 
     def __str__(self):
         return str(self.user)
@@ -512,7 +515,7 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
         Returns a user's profile with a basic amount of info.
         :return: {}
         """
-        return {
+        profile = {
             "id": self.user.id,
             "admin": self.user.is_staff,
             "email": self.user.email,
@@ -554,6 +557,12 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
             },
             "subscriptionStatus": self.subscription_status,
         }
+        if self.last_induction is not None:
+            if config.MOODLE_INDUCTION_ENABLED or config.CANVAS_INDUCTION_ENABLED:
+                profile["inductionLink"] = (config.INDUCTION_ENROL_LINK)
+            elif onfig.ENABLE_DOCUSEAL_INTEGRATION:
+                profile["inductionLink"] = (get_docuseal_link(self.memberdoc_id))
+        return profile
 
     def get_access_permissions(self, ignore_user_state=False):
         """
@@ -640,6 +649,7 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
             if (
                 config.CANVAS_INDUCTION_ENABLED is True
                 or config.MOODLE_INDUCTION_ENABLED is True
+                or config.ENABLE_DOCUSEAL_INTEGRATION is True
             ):
                 required_steps.append("induction")
 
