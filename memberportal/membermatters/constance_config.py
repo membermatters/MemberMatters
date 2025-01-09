@@ -371,6 +371,22 @@ CONSTANCE_CONFIG = {
         365,
         "The maximum number of days to show on the stats page.",
     ),
+    "ENABLE_DOCUSEAL_INTEGRATION": (
+        False,
+        "Use DocuSeal to manage user agreements",
+    ),
+    "DOCUSEAL_API_KEY": (
+        "API_KEY",
+        "Your DocuSeal API key",
+    ),
+    "DOCUSEAL_URL": (
+        "https://api.docuseal.com",
+        "URL of the DocuSeal instance in use",
+    ),
+    "DOCUSEAL_TEMPLATE_IDS": (
+        "[]",
+        "JSON array of the DocuSeal template IDs to be sent as part of membership initiation",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -556,6 +572,15 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "DISCORD_INTERLOCK_WEBHOOK",
                 "DISCORD_MEMBERBUCKS_PURCHASE_WEBHOOK",
                 "DISCORD_REPORT_ISSUE_WEBHOOK",
+            ),
+        ),
+        (
+            "DocuSeal Integration",
+            (
+                "ENABLE_DOCUSEAL_INTEGRATION",
+                "DOCUSEAL_URL",
+                "DOCUSEAL_API_KEY",
+                "DOCUSEAL_TEMPLATE_IDS",
             ),
         ),
     ]
