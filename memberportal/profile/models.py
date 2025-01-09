@@ -557,11 +557,8 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
             },
             "subscriptionStatus": self.subscription_status,
         }
-        if self.last_induction is not None:
-            if config.MOODLE_INDUCTION_ENABLED or config.CANVAS_INDUCTION_ENABLED:
-                profile["inductionLink"] = (config.INDUCTION_ENROL_LINK)
-            elif onfig.ENABLE_DOCUSEAL_INTEGRATION:
-                profile["inductionLink"] = (get_docuseal_link(self.memberdoc_id))
+        if config.ENABLE_DOCUSEAL_INTEGRATION:
+            profile["memberdocsLink"] = (get_docuseal_link(self.memberdoc_id))
         return profile
 
     def get_access_permissions(self, ignore_user_state=False):

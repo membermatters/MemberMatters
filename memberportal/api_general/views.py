@@ -18,6 +18,7 @@ from rest_framework.views import APIView
 from .models import Kiosk, SiteSession, EmailVerificationToken
 from services.discord import post_kiosk_swipe_to_discord
 from services.docuseal import create_submission_for_subscription
+from services.docuseal import get_docuseal_link
 import base64
 from urllib.parse import parse_qs, urlencode
 import hmac
@@ -407,6 +408,12 @@ class ProfileDetail(generics.GenericAPIView):
             },
             "permissions": {"staff": user.is_staff},
         }
+        response["inductionLink"] = []
+        if p.last_induction is None:
+            if config.MOODLE_INDUCTION_ENABLED or config.CANVAS_INDUCTION_ENABLED:
+                response["inductionLink"].append(config.INDUCTION_ENROL_LINK)
+            if config.ENABLE_DOCUSEAL_INTEGRATION:
+                response["inductionLink"].append(get_docuseal_link(p))
 
         return Response(response)
 

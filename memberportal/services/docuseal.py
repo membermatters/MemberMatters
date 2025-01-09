@@ -42,7 +42,7 @@ def create_submission_for_subscription(profile):
 
 def get_docuseal_signed(profile):
     #state = docuseal.get_submission(profile.memberdoc_id)
-    response = requets.get(url=config.DOCUSEAL_URL+"/api/submissions/"+str(profile.memberdoc_id),headers={"X-Auth-Token":config.DOCUSEAL_API_KEY})
+    response = requests.get(url=config.DOCUSEAL_URL+"/api/submissions/"+str(profile.memberdoc_id),headers={"X-Auth-Token":config.DOCUSEAL_API_KEY})
     state = response.json()[0]
     if state.status != "completed":
         return 0
@@ -50,6 +50,9 @@ def get_docuseal_signed(profile):
 
 def get_docuseal_link(profile):
     #sub = docuseal.get_submission(profile.memberdoc_id)
-    response = requets.get(url=config.DOCUSEAL_URL+"/api/submissions/"+str(profile.memberdoc_id),headers={"X-Auth-Token":config.DOCUSEAL_API_KEY})
-    sub = response.json()[0]
-    return sub.embed_src
+    response = requests.get(url=config.DOCUSEAL_URL+"/api/submissions/"+str(profile.memberdoc_id),headers={"X-Auth-Token":config.DOCUSEAL_API_KEY})
+    if response.status_code == 200:
+        sub = response.json()[0]
+        return sub.embed_src
+    else:
+        return ""
