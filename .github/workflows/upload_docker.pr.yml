@@ -16,7 +16,7 @@ jobs:
       imagename: ${{ steps.extract_image.outputs.imagename }}
     steps:
       - name: Download PR Image
-        uses: actions/github-script@v3.1.0
+        uses: actions/github-script@v7
         with:
           script: |
             var artifacts = await github.actions.listWorkflowRunArtifacts({
@@ -75,7 +75,7 @@ jobs:
     steps:
       - name: Comment name of docker image
         id: comment_docker_image
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             github.rest.issues.createComment({
