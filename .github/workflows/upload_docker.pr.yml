@@ -45,7 +45,7 @@ jobs:
           cat ./imagename
       - name: Extract image name
         shell: bash
-        run: echo "imagename="$(cat imagename)"" - >> $GITHUB_OUTPUT
+        run: echo "imagename="$(cat imagename)"" >> $GITHUB_OUTPUT
         id: extract_image_name
       - name: Load PR Image
         run: |
