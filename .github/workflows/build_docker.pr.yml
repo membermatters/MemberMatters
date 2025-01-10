@@ -27,7 +27,7 @@ jobs:
         id: extract_repo_owner
       - name: Generate image name
         shell: bash
-        run: echo "imagename=membermatters/membermatters:untrusted-pr-image-${{steps.extract_repo_owner.outputs.repoowner}}-${{ steps.extract_branch.outputs.branch }}" | tr / - >> $GITHUB_OUTPUT
+        run: echo "imagename=membermatters/membermatters:untrusted-pr-image-${{steps.extract_repo_owner.outputs.repoowner}}-${{ steps.extract_branch.outputs.branch }}" >> $GITHUB_OUTPUT
         id: extract_image_name
       - name: Save PR number and branch/image name
         run: |
