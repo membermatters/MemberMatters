@@ -14,6 +14,7 @@ jobs:
       github.event.workflow_run.conclusion == 'success'
     outputs:
       imagename: ${{ steps.extract_image_name.outputs.imagename }}
+      extract_pr_number: ${{ steps.extract_pr_number.outputs.prnumber }}
     steps:
       - name: Download PR Image
         uses: actions/github-script@v7
@@ -47,6 +48,10 @@ jobs:
         shell: bash
         run: echo "imagename="$(cat imagename)"" >> $GITHUB_OUTPUT
         id: extract_image_name
+      - name: Extract issue/pr number
+        shell: bash
+        run: echo "prnumber="$(cat prnumber)"" >> $GITHUB_OUTPUT
+        id: extract_pr_number
       - name: Load PR Image
         run: |
           docker load --input ./untrusted-pr-image.tar
@@ -70,7 +75,7 @@ jobs:
         with:
           script: |
             github.rest.issues.createComment({
-              issue_number: context.issue.number,
+              issue_number: ${{ needs.upload-docker-pr.outputs.prnumber }},
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: 'Created image with name `${{ needs.upload-docker-pr.outputs.imagename }}`. WARNING: run this at your own risk - it is an untrusted PR.'
