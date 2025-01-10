@@ -14,15 +14,15 @@ def create_submission_for_subscription(profile):
                 ### Customize the following to fit your instance deployment and template
                 "send_email": "False",
                 "completed_redirect_url": config.SITE_URL,
-                "fields": [{
-                    "name": "Name",
-                    "default_value": profile.first_name + " " + profile.last_name
-                }],
                 "submitters": [
                 {
                     "role": "First Party",
                     "name": profile.first_name + " " + profile.last_name,
-                    "email": profile.user.email
+                    "email": profile.user.email,
+                    "fields": [{
+                        "name": "name",
+                        "default_value": profile.first_name + " " + profile.last_name
+                    }]
                 }]
             }
         logger.debug("Submitting to Docuseal with:\n{}".format(data))
