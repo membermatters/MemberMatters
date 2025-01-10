@@ -13,7 +13,7 @@ jobs:
       github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success'
     outputs:
-      imagename: ${{ steps.extract_image.outputs.imagename }}
+      imagename: ${{ steps.extract_image_name.outputs.imagename }}
     steps:
       - name: Download PR Image
         uses: actions/github-script@v7
@@ -46,10 +46,10 @@ jobs:
       - name: Extract image name
         shell: bash
         run: echo "imagename="$(cat imagename)"" | tr / - >> $GITHUB_OUTPUT
-        id: extract_image
+        id: extract_image_name
       - name: Load PR Image
         run: |
-          docker load --input ./pr/untrusted-pr-image.tar
+          docker load --input ./untrusted-pr-image.tar
           docker image ls -a
 
       - name: Set up Docker Buildx
@@ -65,7 +65,7 @@ jobs:
         with:
           file: docker/Dockerfile
           push: true
-          tags: ${{ steps.extract_image.outputs.imagename }}
+          tags: ${{ steps.extract_image_name.outputs.imagename }}
 
   comment_docker_image:
     needs: upload-docker-pr
