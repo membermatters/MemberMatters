@@ -7,14 +7,10 @@ import requests
 
 logger = logging.getLogger("docuseal")
 
-docuseal.key = config.DOCUSEAL_API_KEY
-docuseal.url = config.DOCUSEAL_URL
-template_id = config.DOCUSEAL_TEMPLATE_ID
-
 def create_submission_for_subscription(profile):
     try:
         data = {
-                "template_id": template_id,
+                "template_id": config.DOCUSEAL_TEMPLATE_ID,
                 "send_email": "False",
                 "submitters": [
                 {
@@ -38,21 +34,32 @@ def create_submission_for_subscription(profile):
         "Created submission {} with slug {}".format(res["submission_id"], res["slug"])
     )
     profile.memberdoc_id = res["submission_id"]
+    profile.memberdoc_url = res["embed_src"]
     profile.save()
 
 def get_docuseal_signed(profile):
     #state = docuseal.get_submission(profile.memberdoc_id)
+    if profile.memberdoc_id is None:
+        return 0
+    
+    logger.debug("Requesting {}".format("/api/submissions/"+str(profile.memberdoc_id)))
     response = requests.get(url=config.DOCUSEAL_URL+"/api/submissions/"+str(profile.memberdoc_id),headers={"X-Auth-Token":config.DOCUSEAL_API_KEY})
-    state = response.json()[0]
-    if state.status != "completed":
+    logger.debug("Got response:\n{}".format(response.json()))
+    state = response.json()
+    if state["status"] != "completed":
         return 0
     return 1
 
 def get_docuseal_link(profile):
     #sub = docuseal.get_submission(profile.memberdoc_id)
+    if profile.memberdoc_id is None:
+        return 0
+    
+    logger.debug("Requesting {}".format("/api/submissions/"+str(profile.memberdoc_id)))
     response = requests.get(url=config.DOCUSEAL_URL+"/api/submissions/"+str(profile.memberdoc_id),headers={"X-Auth-Token":config.DOCUSEAL_API_KEY})
+    logger.debug("Got response:\n{}".format(response.json))
     if response.status_code == 200:
-        sub = response.json()[0]
+        sub = response.json()
         return sub.embed_src
     else:
         return ""

@@ -17,7 +17,6 @@ import json
 import uuid
 import logging
 from services.emails import send_single_email, send_email_to_admin
-from services.docuseal import get_docuseal_link
 from services import sms
 from django_prometheus.models import ExportModelOperationsMixin
 
@@ -389,6 +388,9 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
     memberdoc_id = models.IntegerField(
         default=None, blank=True, null=True
     )
+    memberdoc_url = models.CharField(
+        max_length=255, blank=True, null=True, default=""
+    )
 
     def __str__(self):
         return str(self.user)
@@ -558,7 +560,7 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
             "subscriptionStatus": self.subscription_status,
         }
         if config.ENABLE_DOCUSEAL_INTEGRATION:
-            profile["memberdocsLink"] = (get_docuseal_link(self.memberdoc_id))
+            profile["memberdocsLink"] = (config.DOCUSEAL_URL+"/submissions/"+str(self.memberdoc_id))
         return profile
 
     def get_access_permissions(self, ignore_user_state=False):

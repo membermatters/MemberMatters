@@ -18,7 +18,7 @@ from rest_framework.views import APIView
 from .models import Kiosk, SiteSession, EmailVerificationToken
 from services.discord import post_kiosk_swipe_to_discord
 from services.docuseal import create_submission_for_subscription
-from services.docuseal import get_docuseal_link
+from services.docuseal import get_docuseal_signed
 import base64
 from urllib.parse import parse_qs, urlencode
 import hmac
@@ -408,12 +408,21 @@ class ProfileDetail(generics.GenericAPIView):
             },
             "permissions": {"staff": user.is_staff},
         }
+        # append induction link(s) if user has not been inducted
         response["inductionLink"] = []
         if p.last_induction is None:
-            if config.MOODLE_INDUCTION_ENABLED or config.CANVAS_INDUCTION_ENABLED:
-                response["inductionLink"].append(config.INDUCTION_ENROL_LINK)
-            if config.ENABLE_DOCUSEAL_INTEGRATION:
-                response["inductionLink"].append(get_docuseal_link(p))
+            if p.last_induction is None:
+                if config.MOODLE_INDUCTION_ENABLED or config.CANVAS_INDUCTION_ENABLED:
+                    response["inductionLink"].append(config.INDUCTION_ENROL_LINK)
+                if config.ENABLE_DOCUSEAL_INTEGRATION:
+                    # TODO the following removed with a webhook callback from DocuSeal on submission signing
+                    if not get_docuseal_signed(p):
+                        response["inductionLink"].append(p.memberdoc_url)
+                    else:
+                        # in the event our induction process is *just* DocuSeal and the doc is signed, update unduction status
+                        if not (config.MOODLE_INDUCTION_ENABLED or config.CANVAS_INDUCTION_ENABLED):
+                            p.update_last_induction()
+                            response["lastInduction"] = p.last_induction
 
         return Response(response)
 

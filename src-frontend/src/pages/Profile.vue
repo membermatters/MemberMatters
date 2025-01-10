@@ -2,6 +2,21 @@
   <q-page class="column flex justify-start items-center">
     <div class="column flex content-start justify-center">
       <q-banner
+        v-if="profile.inductionLink.length"
+        inline-actions
+        rounded
+        class="bg-red text-white q-ma-md"
+      >
+        <template v-slot:avatar>
+          <q-icon :name="icons.warning" />
+        </template>
+        {{ $t('access.inductionIncomplete') }}
+        <li v-for="(link, index) in profile.inductionLink" :key="index">
+          <a :href="link" :target="none">Task {{ index }}</a>
+        </li>
+      </q-banner>
+
+      <q-banner
         v-if="
           profile.memberStatus !== 'active' &&
           profile.memberStatus !== 'accountonly'
