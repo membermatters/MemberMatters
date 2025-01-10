@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       branch: ${{ steps.extract_branch.outputs.branch }}
+      repoowner: ${{ steps.extract_repo_owner.outputs.repoowner }}
+      imagename: ${{ steps.extract_image_name.outputs.imagename }}
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -19,17 +21,25 @@ jobs:
         shell: bash
         run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" | tr / - >> $GITHUB_OUTPUT
         id: extract_branch
-      - name: Save PR number and branch name
+      - name: Extract repo owner
+        shell: bash
+        run: echo "repoowner=${{ github.repository_owner }}" | tr / - >> $GITHUB_OUTPUT
+        id: extract_repo_owner
+      - name: Generate image name
+        shell: bash
+        run: echo "imagename=membermatters/membermatters:untrusted-pr-image-${{steps.extract_repo_owner.outputs.repoowner}}-${{ steps.extract_branch.outputs.branch }}" | tr / - >> $GITHUB_OUTPUT
+        id: extract_image_name
+      - name: Save PR number and branch/image name
         run: |
           mkdir -p ./pr
           echo ${{ github.event.number }} > ./pr/prnumber
           echo ${{ steps.extract_branch.outputs.branch }} > ./pr/branchname
-          echo membermatters/membermatters:untrusted-pr-${{ steps.extract_branch.outputs.branch }} > ./pr/imagename
+          echo ${{ steps.extract_image_name.outputs.imagename }} > ./pr/imagename
       - name: Build pr image
         id: docker_build
         uses: docker/build-push-action@v6
         with:
-          tags: membermatters/membermatters:untrusted-pr-${{ steps.extract_branch.outputs.branch }}
+          tags: ${{ steps.extract_image_name.outputs.imagename }}
           outputs: type=docker,dest=./pr/untrusted-pr-image.tar
           file: docker/Dockerfile
           platforms: linux/amd64
