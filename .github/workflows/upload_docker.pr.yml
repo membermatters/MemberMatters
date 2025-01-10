@@ -45,28 +45,21 @@ jobs:
           cat ./imagename
       - name: Extract image name
         shell: bash
-        run: echo "imagename="$(cat imagename)"" | tr / - >> $GITHUB_OUTPUT
+        run: echo "imagename="$(cat imagename)"" - >> $GITHUB_OUTPUT
         id: extract_image_name
       - name: Load PR Image
         run: |
           docker load --input ./untrusted-pr-image.tar
           docker image ls -a
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and Push
-        id: docker_build
-        uses: docker/build-push-action@v6
-        with:
-          file: docker/Dockerfile
-          push: true
-          tags: ${{ steps.extract_image_name.outputs.imagename }}
-
+      - name: Push docker image to DockerHub
+        run: |
+          docker push ${{ steps.extract_image_name.outputs.imagename }}
   comment_docker_image:
     needs: upload-docker-pr
     runs-on: ubuntu-latest
@@ -80,5 +73,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Created image with name `${{ needs.upload-docker-pr.outputs.imagename }}`.'
+              body: 'Created image with name `${{ needs.upload-docker-pr.outputs.imagename }}`. WARNING: run this at your own risk - it is an untrusted PR.'
             })
