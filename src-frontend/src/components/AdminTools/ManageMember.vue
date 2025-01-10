@@ -329,6 +329,19 @@
                     </q-item-label>
                   </q-item-section>
                 </q-item>
+
+                <q-item>
+                  <q-item-section>
+                    <q-item-label>
+                      <a :href="selectedMember.memberdocsLink" target="_blank">Link</a>
+                    </q-item-label>
+
+                    <q-item-label caption>
+                      {{ $t(`form.memberDocLink`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+                
               </q-list>
 
               <h5 class="q-mt-md q-mb-sm">

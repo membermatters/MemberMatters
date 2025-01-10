@@ -11,7 +11,13 @@ def create_submission_for_subscription(profile):
     try:
         data = {
                 "template_id": config.DOCUSEAL_TEMPLATE_ID,
+                ### Customize the following to fit your instance deployment and template
                 "send_email": "False",
+                "completed_redirect_url": config.SITE_URL,
+                "fields": [{
+                    "name": "Name",
+                    "default_value": profile.first_name + " " + profile.last_name
+                }],
                 "submitters": [
                 {
                     "role": "First Party",
@@ -37,7 +43,7 @@ def create_submission_for_subscription(profile):
     profile.memberdoc_url = res["embed_src"]
     profile.save()
 
-def get_docuseal_signed(profile):
+def get_docuseal_state(profile):
     #state = docuseal.get_submission(profile.memberdoc_id)
     if profile.memberdoc_id is None:
         return 0
@@ -46,9 +52,7 @@ def get_docuseal_signed(profile):
     response = requests.get(url=config.DOCUSEAL_URL+"/api/submissions/"+str(profile.memberdoc_id),headers={"X-Auth-Token":config.DOCUSEAL_API_KEY})
     logger.debug("Got response:\n{}".format(response.json()))
     state = response.json()
-    if state["status"] != "completed":
-        return 0
-    return 1
+    return state["status"]
 
 def get_docuseal_link(profile):
     #sub = docuseal.get_submission(profile.memberdoc_id)

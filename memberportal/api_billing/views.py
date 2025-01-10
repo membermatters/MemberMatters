@@ -16,6 +16,7 @@ from services.moodle_integration import (
     moodle_get_course_activity_completion_status,
     moodle_get_user_from_email,
 )
+from services.docuseal import get_docuseal_state
 from services.emails import send_email_to_admin
 from constance import config
 from django.db.utils import OperationalError
@@ -411,7 +412,9 @@ class CheckInductionStatus(APIView):
                 or 0
             )
         elif config.ENABLE_DOCUSEAL_INTEGRATION:
-            score = get_docuseal_signed(request.user.profile)
+            state = get_docuseal_state(request.user.profile)
+            if state == "complete":
+                score = score + 1
 
         try:
             if score or config.MIN_INDUCTION_SCORE == 0:

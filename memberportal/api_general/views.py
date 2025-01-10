@@ -18,7 +18,7 @@ from rest_framework.views import APIView
 from .models import Kiosk, SiteSession, EmailVerificationToken
 from services.discord import post_kiosk_swipe_to_discord
 from services.docuseal import create_submission_for_subscription
-from services.docuseal import get_docuseal_signed
+from services.docuseal import get_docuseal_state
 import base64
 from urllib.parse import parse_qs, urlencode
 import hmac
@@ -416,13 +416,15 @@ class ProfileDetail(generics.GenericAPIView):
                     response["inductionLink"].append(config.INDUCTION_ENROL_LINK)
                 if config.ENABLE_DOCUSEAL_INTEGRATION:
                     # TODO the following removed with a webhook callback from DocuSeal on submission signing
-                    if not get_docuseal_signed(p):
-                        response["inductionLink"].append(p.memberdoc_url)
-                    else:
+                    state = get_docuseal_state(p)
+                    if state == "complete":
                         # in the event our induction process is *just* DocuSeal and the doc is signed, update unduction status
                         if not (config.MOODLE_INDUCTION_ENABLED or config.CANVAS_INDUCTION_ENABLED):
                             p.update_last_induction()
                             response["lastInduction"] = p.last_induction
+                    elif state != "declined":
+                        response["inductionLink"].append(p.memberdoc_url)
+                    # remainder state is "declined"
 
         return Response(response)
 
