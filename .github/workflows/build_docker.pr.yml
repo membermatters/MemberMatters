@@ -23,7 +23,7 @@ jobs:
         id: extract_branch
       - name: Extract repo owner
         shell: bash
-        run: echo "repoowner=${{ github.repository_owner }}" | tr / - >> $GITHUB_OUTPUT
+        run: echo "repoowner=${{ github.event.pull_request.head.repo.owner.login }}" | tr / - >> $GITHUB_OUTPUT
         id: extract_repo_owner
       - name: Generate image name
         shell: bash
