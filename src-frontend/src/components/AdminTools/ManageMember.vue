@@ -330,7 +330,7 @@
                   </q-item-section>
                 </q-item>
 
-                <q-item>
+                <q-item v-if="features.enableDocusealMemberDocs">
                   <q-item-section>
                     <q-item-label>
                       <a :href="selectedMember.memberdocsLink" target="_blank">

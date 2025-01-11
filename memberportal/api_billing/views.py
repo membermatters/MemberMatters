@@ -411,14 +411,16 @@ class CheckInductionStatus(APIView):
                 )
                 or 0
             )
-        elif config.ENABLE_DOCUSEAL_INTEGRATION:
-            state = get_docuseal_state(request.user.profile)
-            if state == "complete":
-                score = score + 1
 
         try:
             if score or config.MIN_INDUCTION_SCORE == 0:
                 induction_passed = score >= config.MIN_INDUCTION_SCORE
+
+                # if member doc is on, but the document has not been completed prevent setting the user's induction date
+                if config.ENABLE_DOCUSEAL_INTEGRATION:
+                    state = get_docuseal_state(request.user.profile)
+                    if state is not "complete":
+                        return Response({"success": False, "score": score, "error": "User has passed induction but has NOT completed membership agreement docs"})
 
                 if induction_passed:
                     request.user.profile.update_last_induction()

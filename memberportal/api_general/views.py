@@ -62,6 +62,7 @@ class GetConfig(APIView):
                 "footer": config.SMS_FOOTER,
             },
             "enableStatsPage": config.ENABLE_STATS_PAGE,
+            "enableDocusealMemberDocs": config.ENABLE_DOCUSEAL_INTEGRATION
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}
@@ -414,6 +415,7 @@ class ProfileDetail(generics.GenericAPIView):
             if p.last_induction is None:
                 if config.MOODLE_INDUCTION_ENABLED or config.CANVAS_INDUCTION_ENABLED:
                     response["inductionLink"].append(config.INDUCTION_ENROL_LINK)
+                
                 if config.ENABLE_DOCUSEAL_INTEGRATION:
                     # TODO the following removed with a webhook callback from DocuSeal on submission signing
                     state = get_docuseal_state(p)
