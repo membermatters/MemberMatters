@@ -75,7 +75,7 @@ jobs:
         with:
           script: |
             github.rest.issues.createComment({
-              issue_number: ${{ needs.upload-docker-pr.outputs.prnumber }}
+              issue_number: ${{ needs.upload-docker-pr.outputs.prnumber }},
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: 'Created image with name `${{ needs.upload-docker-pr.outputs.imagename }}`. WARNING: run this at your own risk - it is an untrusted PR.'
