@@ -14,7 +14,7 @@ jobs:
       github.event.workflow_run.conclusion == 'success'
     outputs:
       imagename: ${{ steps.extract_image_name.outputs.imagename }}
-      extract_pr_number: ${{ steps.extract_pr_number.outputs.prnumber }}
+      prnumber: ${{ steps.extract_pr_number.outputs.prnumber }}
     steps:
       - name: Download PR Image
         uses: actions/github-script@v7
@@ -78,5 +78,5 @@ jobs:
               issue_number: ${{ needs.upload-docker-pr.outputs.prnumber }},
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Created image with name `${{ needs.upload-docker-pr.outputs.imagename }}`. WARNING: run this at your own risk - it is an untrusted PR.'
+              body: 'Created image with name `${{ needs.upload-docker-pr.outputs.imagename }}`. WARNING: run this image at your own risk - it was created from a potentially untrusted PR.'
             })
