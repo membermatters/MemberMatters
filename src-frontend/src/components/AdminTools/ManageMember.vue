@@ -333,7 +333,10 @@
                 <q-item>
                   <q-item-section>
                     <q-item-label>
-                      <a :href="selectedMember.memberdocsLink" target="_blank">Link</a>
+                      <a :href="selectedMember.memberdocsLink" target="_blank">
+                        <div v-if="selectedMember.lastInduction">Complete</div>
+                        <div v-else>Incomplete</div>
+                      </a>
                     </q-item-label>
 
                     <q-item-label caption>

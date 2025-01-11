@@ -560,7 +560,7 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
             "subscriptionStatus": self.subscription_status,
         }
         if config.ENABLE_DOCUSEAL_INTEGRATION:
-            profile["memberdocsLink"] = (config.DOCUSEAL_URL+"/submissions/"+str(self.memberdoc_id))
+            profile["memberdocsLink"] = (config.DOCUSEAL_URL+"/submissions/"+str(self.memberdoc_id))        # use internal submission id instead of embed_url
         return profile
 
     def get_access_permissions(self, ignore_user_state=False):
