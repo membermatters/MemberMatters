@@ -409,6 +409,9 @@ class ProfileDetail(generics.GenericAPIView):
             },
             "permissions": {"staff": user.is_staff},
         }
+        if config.ENABLE_DOCUSEAL_INTEGRATION:
+            response["memberdocsLink"] = p.memberdoc_url + '/download'
+        
         # append induction link(s) if user has not been inducted
         response["inductionLink"] = []
         if p.last_induction is None:

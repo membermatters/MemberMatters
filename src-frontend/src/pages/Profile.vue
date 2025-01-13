@@ -13,7 +13,7 @@
           <div v-if="profile.inductionLink.length != 0">
             {{ $t('access.inductionIncompleteTasks') }}
             <li v-for="(link, index) in profile.inductionLink" :key="index">
-              <a :href="link" target="_blank">Task {{ index }}</a>
+              <a :href="link" target="_blank">Task {{ index+1 }}</a>
             </li>
           </div>
           <div v-else>{{ $t('access.inductionIncompleteNoTasks') }}</div>
@@ -64,6 +64,10 @@
       />
     </q-btn-group>
 
+    <a v-if="features.enableDocusealMemberDocs"
+      :href="profile.memberdocsLink"
+      >Download Membership Agreement</a>
+
     <q-dialog v-model="digitalId">
       <digital-id-card />
     </q-dialog>
@@ -93,9 +97,12 @@ export default {
   },
   computed: {
     ...mapGetters('profile', ['loggedIn', 'profile']),
+    ...mapGetters('config', ['features']),
     icons() {
       return icons;
     },
   },
 };
+
+
 </script>
