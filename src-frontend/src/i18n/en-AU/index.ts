@@ -154,6 +154,7 @@ export default {
   },
   loginCard: {
     login: 'Login',
+    loginOIDC: 'Login with OAuth',
     resetPassword: 'Reset Password',
     loginSuccess: 'Login Successful',
     registerHere: 'Register Here',
@@ -650,6 +651,7 @@ export default {
     loginHere: 'Login Here',
     registrationComplete:
       'Registration complete. Please check your email and click the link to verify your email address.',
+    registrationLocked: 'Registration locked',
   },
   verifyEmail: {
     error:

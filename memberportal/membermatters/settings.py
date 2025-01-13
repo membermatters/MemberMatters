@@ -35,6 +35,20 @@ SESSION_COOKIE_SAMESITE = None
 CSRF_COOKIE_SAMESITE = None
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
+### mozilla-django-oidc config
+# get these from your IDP
+OIDC_RP_CLIENT_ID = os.environ.get("MM_OIDC_CLIENT_ID", None)
+OIDC_RP_CLIENT_SECRET = os.environ.get("MM_OIDC_CLIENT_SECRET", None)
+OIDC_OP_AUTHORIZATION_ENDPOINT = ""
+OIDC_OP_TOKEN_ENDPOINT = ""
+OIDC_OP_USER_ENDPOINT = ""
+# Set the following to False if you want your MM admin to create a user & profile (matches on email address) instead of creating from the Idp
+OIDC_CREATE_USER = True
+# Extend token validity window, default is 15 minutes
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 3600
+# Want the user's profile scope to populate the Membermatters profile
+OIDC_RP_SCOPES = "openid email profile"
+
 # this allows the frontend dev server to talk to the dev server
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -73,6 +87,12 @@ INSTALLED_APPS = [
     "rest_framework_api_key",
     "django_celery_results",
     "django_celery_beat",
+    "mozilla_django_oidc",
+]
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "membermatters.oidc_client_settings.CustomOIDCAB",
 ]
 
 MIDDLEWARE = [
@@ -88,6 +108,7 @@ MIDDLEWARE = [
     "membermatters.middleware.Sentry",
     "membermatters.middleware.ForceCsrfCookieMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
+    "mozilla_django_oidc.middleware.SessionRefresh",
 ]
 
 ROOT_URLCONF = "membermatters.urls"
@@ -301,6 +322,11 @@ LOGGING = {
         "oidc_provider": {
             "handlers": ["console", "file"],
             "level": os.environ.get("MM_LOG_LEVEL_OIDC_PROVIDER", "INFO"),
+            "propagate": False,
+        },
+        "mozilla_django_oidc": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_OIDC_CLIENT", "INFO"),
             "propagate": False,
         },
         "daphne": {"handlers": ["console", "file"], "level": "WARNING"},
