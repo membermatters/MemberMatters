@@ -420,7 +420,13 @@ class CheckInductionStatus(APIView):
                 if config.ENABLE_DOCUSEAL_INTEGRATION:
                     state = get_docuseal_state(request.user.profile)
                     if state is not "complete":
-                        return Response({"success": False, "score": score, "error": "User has passed induction but has NOT completed membership agreement docs"})
+                        return Response(
+                            {
+                                "success": False,
+                                "score": score,
+                                "error": "User has passed induction but has NOT completed membership agreement docs",
+                            }
+                        )
 
                 if induction_passed:
                     request.user.profile.update_last_induction()

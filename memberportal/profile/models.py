@@ -385,12 +385,8 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
     subscription_first_created = models.DateTimeField(
         default=None, blank=True, null=True, editable=False
     )
-    memberdoc_id = models.IntegerField(
-        default=None, blank=True, null=True
-    )
-    memberdoc_url = models.CharField(
-        max_length=255, blank=True, null=True, default=""
-    )
+    memberdoc_id = models.IntegerField(default=None, blank=True, null=True)
+    memberdoc_url = models.CharField(max_length=255, blank=True, null=True, default="")
 
     def __str__(self):
         return str(self.user)
@@ -560,7 +556,9 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
             "subscriptionStatus": self.subscription_status,
         }
         if config.ENABLE_DOCUSEAL_INTEGRATION:
-            profile["memberdocsLink"] = (config.DOCUSEAL_URL+"/submissions/"+str(self.memberdoc_id))        # use internal submission id instead of embed_url
+            profile["memberdocsLink"] = (
+                config.DOCUSEAL_URL + "/submissions/" + str(self.memberdoc_id)
+            )  # use internal submission id instead of embed_url
         return profile
 
     def get_access_permissions(self, ignore_user_state=False):

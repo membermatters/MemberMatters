@@ -62,7 +62,7 @@ class GetConfig(APIView):
                 "footer": config.SMS_FOOTER,
             },
             "enableStatsPage": config.ENABLE_STATS_PAGE,
-            "enableDocusealMemberDocs": config.ENABLE_DOCUSEAL_INTEGRATION
+            "enableDocusealMemberDocs": config.ENABLE_DOCUSEAL_INTEGRATION,
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}
@@ -410,21 +410,24 @@ class ProfileDetail(generics.GenericAPIView):
             "permissions": {"staff": user.is_staff},
         }
         if config.ENABLE_DOCUSEAL_INTEGRATION:
-            response["memberdocsLink"] = p.memberdoc_url + '/download'
-        
+            response["memberdocsLink"] = p.memberdoc_url + "/download"
+
         # append induction link(s) if user has not been inducted
         response["inductionLink"] = []
         if p.last_induction is None:
             if p.last_induction is None:
                 if config.MOODLE_INDUCTION_ENABLED or config.CANVAS_INDUCTION_ENABLED:
                     response["inductionLink"].append(config.INDUCTION_ENROL_LINK)
-                
+
                 if config.ENABLE_DOCUSEAL_INTEGRATION:
                     # TODO the following removed with a webhook callback from DocuSeal on submission signing
                     state = get_docuseal_state(p)
                     if state == "complete":
                         # in the event our induction process is *just* DocuSeal and the doc is signed, update unduction status
-                        if not (config.MOODLE_INDUCTION_ENABLED or config.CANVAS_INDUCTION_ENABLED):
+                        if not (
+                            config.MOODLE_INDUCTION_ENABLED
+                            or config.CANVAS_INDUCTION_ENABLED
+                        ):
                             p.update_last_induction()
                             response["lastInduction"] = p.last_induction
                     elif state != "declined":
