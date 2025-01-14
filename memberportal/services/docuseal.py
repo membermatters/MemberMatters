@@ -54,9 +54,9 @@ def create_submission_for_subscription(profile):
     profile.save()
 
 
-def get_docuseal_state(profile):
+def get_docuseal_submission(profile):
     if profile.memberdoc_id is None:
-        return 0
+        return None
 
     logger.debug(
         "Requesting {}".format("/api/submissions/" + str(profile.memberdoc_id))
@@ -73,4 +73,4 @@ def get_docuseal_state(profile):
         logger.error("Finding submission state failed!\n{}".format(ex))
         raise ex
 
-    return state["status"]
+    return state

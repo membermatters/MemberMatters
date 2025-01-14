@@ -16,7 +16,7 @@ from services.moodle_integration import (
     moodle_get_course_activity_completion_status,
     moodle_get_user_from_email,
 )
-from services.docuseal import get_docuseal_state
+from services.docuseal import get_docuseal_submission
 from services.emails import send_email_to_admin
 from constance import config
 from django.db.utils import OperationalError
@@ -418,8 +418,8 @@ class CheckInductionStatus(APIView):
 
                 # if member doc is on, but the document has not been completed prevent setting the user's induction date
                 if config.ENABLE_DOCUSEAL_INTEGRATION:
-                    state = get_docuseal_state(request.user.profile)
-                    if state is not "complete":
+                    submission = get_docuseal_submission(request.user.profile)
+                    if submission["state"] != "complete":
                         return Response(
                             {
                                 "success": False,

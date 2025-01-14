@@ -62,6 +62,18 @@
         label="Change Password"
         @click="changePassword = true"
       />
+      <q-btn
+        v-if="features.enableDocusealMemberDocs && profile.memberdocsLink.length > 0"
+        color="success"
+        label="Membership Agreement"
+        @click="downloadAgreementDocs(profile.memberdocsLink)"
+      />
+      <q-btn
+        v-if="features.enableDocusealMemberDocs && profile.memberdocsLink.length == 0"
+        color="error"
+        label="Membership Agreement"
+      />
+      
     </q-btn-group>
 
     <a v-if="features.enableDocusealMemberDocs"
@@ -101,6 +113,13 @@ export default {
     icons() {
       return icons;
     },
+  },
+  methods: {
+    downloadAgreementDocs(urls) {
+      for(const doc of urls) {
+        window.open(doc);
+      }
+    }
   },
 };
 
