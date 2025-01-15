@@ -628,7 +628,8 @@ class SiteSignOut(APIView):
         )
         for session in sessions:
             session.signout()
-        post_kiosk_swipe_to_discord(request.user.profile.get_full_name(), False)
+        if config.ENABLE_DISCORD_INTEGRATION and config.SLACK_DOOR_WEBHOOK:
+            post_kiosk_swipe_to_discord(request.user.profile.get_full_name(), False)
 
         for door in request.user.profile.doors.all():
             door.sync()
