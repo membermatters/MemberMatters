@@ -14,7 +14,7 @@
           <div v-if="profile.inductionLink.length != 0">
             {{ $t('access.inductionIncompleteTasks') }}
             <li v-for="(link, index) in profile.inductionLink" :key="index">
-              <a :href="link" target="_blank">Task {{ index+1 }}</a>
+              <a :href="link" target="_blank">Task {{ index + 1 }}</a>
             </li>
           </div>
           <div v-else>{{ $t('access.inductionIncompleteNoTasks') }}</div>

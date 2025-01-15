@@ -203,8 +203,10 @@ export default {
     pageDescription:
       'Your access permissions are shown below. Let us know if this needs updating.',
     inactive: 'Membership is currently inactive. This may affect access.',
-    inductionIncompleteTasks: 'You have activities to complete before your account can be activated.',
-    inductionIncompleteNoTasks: 'Please contact and admin to complete your induction and activate your account.',
+    inductionIncompleteTasks:
+      'You have activities to complete before your account can be activated.',
+    inductionIncompleteNoTasks:
+      'Please contact and admin to complete your induction and activate your account.',
     authorised: 'Authorised',
     unauthorised: 'Unauthorised',
     maintenance: 'Maintenance Lockout',

@@ -344,7 +344,6 @@
                     </q-item-label>
                   </q-item-section>
                 </q-item>
-                
               </q-list>
 
               <h5 class="q-mt-md q-mb-sm">
