@@ -34,4 +34,11 @@ export default {
       currencyDisplay: 'symbol',
     },
   },
+  'sv-SE': {
+    currency: {
+      style: 'currency',
+      currency: 'SEK',
+      currencyDisplay: 'symbol',
+    },
+  },
 };
