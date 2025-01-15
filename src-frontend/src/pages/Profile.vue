@@ -2,22 +2,22 @@
   <q-page class="column flex justify-start items-center">
     <div class="column flex content-start justify-center">
       <q-banner
-          v-if="profile.lastInduction === null"
-          inline-actions
-          rounded
-          class="bg-red text-white q-ma-md"
-        >
-          <template v-slot:avatar>
-            <q-icon :name="icons.warning" />
-          </template>
-          <div v-if="profile.inductionLink.length != 0">
-            {{ $t('access.inductionIncompleteTasks') }}
-            <li v-for="(link, index) in profile.inductionLink" :key="index">
-              <a :href="link" target="_blank">Task {{ index+1 }}</a>
-            </li>
-          </div>
-          <div v-else>{{ $t('access.inductionIncompleteNoTasks') }}</div>
-        </q-banner>
+        v-if="profile.lastInduction === null"
+        inline-actions
+        rounded
+        class="bg-red text-white q-ma-md"
+      >
+        <template v-slot:avatar>
+          <q-icon :name="icons.warning" />
+        </template>
+        <div v-if="profile.inductionLink.length != 0">
+          {{ $t('access.inductionIncompleteTasks') }}
+          <li v-for="(link, index) in profile.inductionLink" :key="index">
+            <a :href="link" target="_blank">Task {{ index + 1 }}</a>
+          </li>
+        </div>
+        <div v-else>{{ $t('access.inductionIncompleteNoTasks') }}</div>
+      </q-banner>
 
       <q-banner
         v-if="
@@ -63,22 +63,22 @@
         @click="changePassword = true"
       />
       <q-btn
-        v-if="features.enableDocusealMemberDocs && profile.memberdocsLink.length > 0"
+        v-if="
+          features.enableDocusealMemberDocs && profile.memberdocsLink.length > 0
+        "
         color="success"
         label="Membership Agreement"
         @click="downloadAgreementDocs(profile.memberdocsLink)"
       />
       <q-btn
-        v-if="features.enableDocusealMemberDocs && profile.memberdocsLink.length == 0"
+        v-if="
+          features.enableDocusealMemberDocs &&
+          profile.memberdocsLink.length == 0
+        "
         color="error"
         label="Membership Agreement"
       />
-      
     </q-btn-group>
-
-    <a v-if="features.enableDocusealMemberDocs"
-      :href="profile.memberdocsLink"
-      >Download Membership Agreement</a>
 
     <q-dialog v-model="digitalId">
       <digital-id-card />
@@ -116,12 +116,10 @@ export default {
   },
   methods: {
     downloadAgreementDocs(urls) {
-      for(const doc of urls) {
+      for (const doc of urls) {
         window.open(doc);
       }
-    }
+    },
   },
 };
-
-
 </script>
