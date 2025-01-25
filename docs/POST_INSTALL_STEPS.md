@@ -67,7 +67,7 @@ MemberMatters has out of the box support for different locales (a combination of
 formatting). Currently, only the following locales are supported. If you want to add or improve support for a new locale
 then please file an issue, we'd love to help make it available in your language.
 
-MemberMatters will auto-detect the locale setting the user's browser is set to, and use that translation if available.
+MemberMatters will automatically change the language since it auto-detects the locale setting the user's browser is set to, and use that translation if available.
 However, as noted below, currencies will use a hardcoded value set by a configuration option.
 
 > NOTE: the `SITE_LOCALE_CURRENCY` option is what determines how the currency is displayed. This is "hardcoded" as a 
@@ -84,6 +84,7 @@ However, as noted below, currencies will use a hardcoded value set by a configur
 * `en-US` - no translation available (fall back to `en-AU`), currency format `$12.50`.
 * `en-GB` - no translation available (fall back to `en-AU`), currency format `£12.50`.
 * `en-IE` - no translation available (fall back to `en-AU`), currency format `€12.50`.
+* `sv-SE` - full translation available, currency format `kr 12.50`.
 
 ### General
   * "SITE_NAME" - Name of the website.
