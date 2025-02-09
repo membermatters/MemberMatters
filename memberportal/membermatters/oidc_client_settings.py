@@ -1,6 +1,8 @@
 import logging
 from mozilla_django_oidc.auth import OIDCAuthenticationBackend
 from profile.models import Profile, User
+from datetime import datetime, UTC
+from uuid import uuid4
 
 logger = logging.getLogger("mozilla_django_oidc")
 
@@ -8,7 +10,6 @@ logger = logging.getLogger("mozilla_django_oidc")
 class CustomOIDCAB(OIDCAuthenticationBackend):
     # Given the claims field from the Idp, match to a user by their email address (or None if not found)
     def filter_users_by_claims(self, claims):
-
         email = claims.get("email")
         logger.debug('Got filter on claim for "{}"\nclaims: {}'.format(email, claims))
         if not email:
@@ -34,7 +35,7 @@ class CustomOIDCAB(OIDCAuthenticationBackend):
             admin=is_admin,
             is_superuser=is_admin,
         )
-        # intentionally not setting a password - assuming that admins can bootstrap if they need local login in the event Idp is offline
+        user.set_password(uuid4().hex + datetime.now(UTC).isoformat() + email)
         user.save()
 
         profile = Profile.objects.create(
