@@ -5,21 +5,30 @@ from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
 from django.utils import timezone
 
+
 class UserResource(resources.ModelResource):
     first_name = fields.Field(
-        column_name="first_name", attribute="first_name", widget=ForeignKeyWidget(Profile, "first_name")
+        column_name="first_name",
+        attribute="first_name",
+        widget=ForeignKeyWidget(Profile, "first_name"),
     )
     last_name = fields.Field(
-        column_name="last_name", attribute="last_name", widget=ForeignKeyWidget(Profile, "last_name")
+        column_name="last_name",
+        attribute="last_name",
+        widget=ForeignKeyWidget(Profile, "last_name"),
     )
     screen_name = fields.Field(
-        column_name="screen_name", attribute="screen_name", widget=ForeignKeyWidget(Profile, "screen_name")
+        column_name="screen_name",
+        attribute="screen_name",
+        widget=ForeignKeyWidget(Profile, "screen_name"),
     )
     rfid = fields.Field(
         column_name="rfid", attribute="rfid", widget=ForeignKeyWidget(Profile, "rfid")
     )
     state = fields.Field(
-        column_name="state", attribute="state", widget=ForeignKeyWidget(Profile, "state")
+        column_name="state",
+        attribute="state",
+        widget=ForeignKeyWidget(Profile, "state"),
     )
 
     def dehydrate_first_name(self, user):
@@ -27,21 +36,25 @@ class UserResource(resources.ModelResource):
             return user.profile.first_name
         except Exception:
             return ""
+
     def dehydrate_last_name(self, user):
         try:
             return user.profile.last_name
         except Exception:
             return ""
+
     def dehydrate_screen_name_name(self, user):
         try:
             return user.profile.screen_name
         except Exception:
             return ""
+
     def dehydrate_rfid(self, user):
         try:
             return user.profile.rfid
         except Exception:
             return None
+
     def dehydrate_state(self, user):
         try:
             return user.profile.state
@@ -56,7 +69,7 @@ class UserResource(resources.ModelResource):
                 "email_verified": True,
                 "admin": row["admin"],
                 "staff": row["staff"],
-            }
+            },
         )
 
         # new User needs a Profile
@@ -71,34 +84,55 @@ class UserResource(resources.ModelResource):
             )
 
     def skip_row(self, instance, original, row, import_validation_errors):
-        return (row["email"] == "default@example.com")
+        return row["email"] == "default@example.com"
 
     class Meta:
         model = User
         import_id_fields = ["email"]
-        fields = ('email', 'staff', 'admin', 'first_name', 'last_name', 'screen_name', 'rfid')
+        fields = (
+            "email",
+            "staff",
+            "admin",
+            "first_name",
+            "last_name",
+            "screen_name",
+            "rfid",
+        )
+
 
 class ProfileResource(resources.ModelResource):
     def before_import_row(self, row, **kwargs):
-        row["user"] = (User.objects.get_or_create(
-            email=email,
-            defaults={
-                "email": email,
-                "email_verified": email_verified,
-                "staff": staff,
-                "admin": admin,
-            }
-            ))[0]
+        row["user"] = (
+            User.objects.get_or_create(
+                email=email,
+                defaults={
+                    "email": email,
+                    "email_verified": email_verified,
+                    "staff": staff,
+                    "admin": admin,
+                },
+            )
+        )[0]
         print("Got user {}".format(row["user"]))
         if row["user"].profile is None:
-            print("Creating a profile for user {} result: {}".format(row["user"].email, Profile.objects.create(
-                user=row["user"]
-            )))
+            print(
+                "Creating a profile for user {} result: {}".format(
+                    row["user"].email, Profile.objects.create(user=row["user"])
+                )
+            )
 
     class Meta:
         model = Profile
         import_id_fields = ["user__email"]
-        fields = ('user__email', 'user__staff', 'user__admin', 'screen_name', 'first_name', 'last_name', 'rfid')
+        fields = (
+            "user__email",
+            "user__staff",
+            "user__admin",
+            "screen_name",
+            "first_name",
+            "last_name",
+            "rfid",
+        )
 
 
 @admin.register(User)
