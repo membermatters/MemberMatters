@@ -3,131 +3,112 @@ from .models import *
 from import_export.admin import ImportExportModelAdmin
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
+from django.utils import timezone
 
+class UserResource(resources.ModelResource):
+    first_name = fields.Field(
+        column_name="first_name", attribute="first_name", widget=ForeignKeyWidget(Profile, "first_name")
+    )
+    last_name = fields.Field(
+        column_name="last_name", attribute="last_name", widget=ForeignKeyWidget(Profile, "last_name")
+    )
+    screen_name = fields.Field(
+        column_name="screen_name", attribute="screen_name", widget=ForeignKeyWidget(Profile, "screen_name")
+    )
+    rfid = fields.Field(
+        column_name="rfid", attribute="rfid", widget=ForeignKeyWidget(Profile, "rfid")
+    )
+    state = fields.Field(
+        column_name="state", attribute="state", widget=ForeignKeyWidget(Profile, "state")
+    )
 
-class MemberResource(resources.ModelResource):
-    email = fields.Field(
-        column_name="email", attribute="email", widget=ForeignKeyWidget(User, "email")
-    )
-    email_verified = fields.Field(
-        column_name="email_verified",
-        attribute="email_verified",
-        widget=ForeignKeyWidget(User, "email_verified"),
-    )
-    staff = fields.Field(
-        column_name="staff", attribute="staff", widget=ForeignKeyWidget(User, "staff")
-    )
-    admin = fields.Field(
-        column_name="admin", attribute="admin", widget=ForeignKeyWidget(User, "admin")
-    )
-    user = fields.Field(attribute="id", widget=ForeignKeyWidget(User, "id"))
+    def dehydrate_first_name(self, user):
+        try:
+            return user.profile.first_name
+        except Exception:
+            return ""
+    def dehydrate_last_name(self, user):
+        try:
+            return user.profile.last_name
+        except Exception:
+            return ""
+    def dehydrate_screen_name_name(self, user):
+        try:
+            return user.profile.screen_name
+        except Exception:
+            return ""
+    def dehydrate_rfid(self, user):
+        try:
+            return user.profile.rfid
+        except Exception:
+            return None
+    def dehydrate_state(self, user):
+        try:
+            return user.profile.state
+        except Exception:
+            return "noob"
 
     def before_import_row(self, row, **kwargs):
-        email = row["email"]
-        email_verified = row["email_verified"]
-        staff = row["staff"]
-        admin = row["admin"]
-        row["user"] = User.objects.get_or_create(
+        user, created = User.objects.get_or_create(
+            email=row["email"],
+            defaults={
+                "email": row["email"],
+                "email_verified": True,
+                "admin": row["admin"],
+                "staff": row["staff"],
+            }
+        )
+
+        # new User needs a Profile
+        if created:
+            # mandatory fields with profile
+            Profile.objects.create(
+                user=user,
+                first_name=row["first_name"],
+                last_name=row["last_name"],
+                screen_name=row["screen_name"],
+                rfid=row["rfid"] or None,
+            )
+
+    def skip_row(self, instance, original, row, import_validation_errors):
+        return (row["email"] == "default@example.com")
+
+    class Meta:
+        model = User
+        import_id_fields = ["email"]
+        fields = ('email', 'staff', 'admin', 'first_name', 'last_name', 'screen_name', 'rfid')
+
+class ProfileResource(resources.ModelResource):
+    def before_import_row(self, row, **kwargs):
+        row["user"] = (User.objects.get_or_create(
             email=email,
             defaults={
                 "email": email,
                 "email_verified": email_verified,
                 "staff": staff,
                 "admin": admin,
-            },
-        ).id
-
-    def dehydrate_email(self, profile):
-        try:
-            return profile.user.email
-        except Exception:
-            return "NADA"
-
-    def dehydrate_email_verified(self, profile):
-        try:
-            return profile.user.email_verified
-        except Exception:
-            return "False"
-
-    def dehydrate_staff(self, profile):
-        try:
-            return profile.user.staff
-        except Exception:
-            return "False"
-
-    def dehydrate_admin(self, profile):
-        try:
-            return profile.user.admin
-        except Exception:
-            return "False"
+            }
+            ))[0]
+        print("Got user {}".format(row["user"]))
+        if row["user"].profile is None:
+            print("Creating a profile for user {} result: {}".format(row["user"].email, Profile.objects.create(
+                user=row["user"]
+            )))
 
     class Meta:
         model = Profile
-        import_id_fields = ("user",)
-        fields = (
-            "email",
-            "email_verified",
-            "staff",
-            "admin",
-            "digital_id_token",
-            "digital_id_token_expire",
-            "created",
-            "modified",
-            "screen_name",
-            "first_name",
-            "last_name",
-            "phone_regex",
-            "phone",
-            "state",
-            "vehicle_registration_plate",
-            "membership_plan",
-            "rfid",
-            "doors",
-            "interlocks",
-            "memberbucks_balance",
-            "last_memberbucks_purchase",
-            "must_update_profile",
-            "exclude_from_email_export",
-            "last_seen",
-            "last_induction",
-            "stripe_customer_id",
-            "stripe_card_expiry",
-            "stripe_card_last_digits",
-            "stripe_payment_method_id",
-            "stripe_subscription_id",
-            "subscription_status",
-            "subscription_first_created",
-        )
-
-
-# class UserResource(resources.ModelResource):
-#     class Meta:
-#         model = User
-#         fields = ('id', 'email', 'email_verified', 'staff', 'admin',)
-
-# class ProfileResource(resources.ModelResource):
-#     class Meta:
-#         model = Profile
-#         fields = ('id', 'user', 'digital_id_token', 'digital_id_token_expire', 'created', 'modified',
-#         'screen_name', 'first_name', 'last_name', 'phone_regex', 'phone', 'state', 'vehicle_registration_plate',
-#         'membership_plan', 'rfid', 'doors', 'interlocks', 'memberbucks_balance', 'last_memberbucks_purchase',
-#         'must_update_profile', 'exclude_from_email_export', 'last_seen', 'last_induction', 'stripe_customer_id',
-#         'stripe_card_expiry', 'stripe_card_last_digits', 'stripe_payment_method_id', 'stripe_subscription_id',
-#         'subscription_status', 'subscription_first_created',)
+        import_id_fields = ["user__email"]
+        fields = ('user__email', 'user__staff', 'user__admin', 'screen_name', 'first_name', 'last_name', 'rfid')
 
 
 @admin.register(User)
-class AdminLogAdmin(admin.ModelAdmin):
-    # resource_class = UserResource
-    # resource_class = MemberResource
-    # resource_classes = [UserResource, ProfileResource]
+class AdminLogAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    resource_class = UserResource
     pass
 
 
 @admin.register(Profile)
-class ProfileAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    # resource_class = ProfileResource
-    resource_class = MemberResource
+class ProfileAdmin(admin.ModelAdmin):
     readonly_fields = ("created", "subscription_first_created")
     pass
 
