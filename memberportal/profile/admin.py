@@ -100,41 +100,6 @@ class UserResource(resources.ModelResource):
         )
 
 
-class ProfileResource(resources.ModelResource):
-    def before_import_row(self, row, **kwargs):
-        row["user"] = (
-            User.objects.get_or_create(
-                email=email,
-                defaults={
-                    "email": email,
-                    "email_verified": email_verified,
-                    "staff": staff,
-                    "admin": admin,
-                },
-            )
-        )[0]
-        print("Got user {}".format(row["user"]))
-        if row["user"].profile is None:
-            print(
-                "Creating a profile for user {} result: {}".format(
-                    row["user"].email, Profile.objects.create(user=row["user"])
-                )
-            )
-
-    class Meta:
-        model = Profile
-        import_id_fields = ["user__email"]
-        fields = (
-            "user__email",
-            "user__staff",
-            "user__admin",
-            "screen_name",
-            "first_name",
-            "last_name",
-            "rfid",
-        )
-
-
 @admin.register(User)
 class AdminLogAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = UserResource
