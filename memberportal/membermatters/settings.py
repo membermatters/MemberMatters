@@ -153,6 +153,18 @@ if "MM_USE_POSTGRES" in os.environ:
             "PORT": os.environ.get("POSTGRES_PORT", "5432"),
         }
     }
+
+elif "MM_USE_MYSQL" in os.environ:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django_prometheus.db.backends.mysql",
+            "NAME": os.environ.get("MYSQL_DB", "membermatters"),
+            "USER": os.environ.get("MYSQL_USER", "membermatters"),
+            "PASSWORD": os.environ.get("MYSQL_PASSWORD", "membermatters"),
+            "HOST": os.environ.get("MYSQL_HOST", "mm-mysql"),
+            "PORT": os.environ.get("MYSQL_PORT", "3306"),
+        }
+    }
 else:
     DATABASES = {
         "default": {
