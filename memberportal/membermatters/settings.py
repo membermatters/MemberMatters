@@ -39,13 +39,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 # get these from your IDP
 OIDC_RP_CLIENT_ID = os.environ.get("MM_OIDC_CLIENT_ID", None)
 OIDC_RP_CLIENT_SECRET = os.environ.get("MM_OIDC_CLIENT_SECRET", None)
-OIDC_OP_AUTHORIZATION_ENDPOINT = ""
-OIDC_OP_TOKEN_ENDPOINT = ""
-OIDC_OP_USER_ENDPOINT = ""
+OIDC_OP_AUTHORIZATION_ENDPOINT = os.environ.get(
+    "MM_OIDC_OP_AUTHORIZATION_ENDPOINT", None
+)
+OIDC_OP_TOKEN_ENDPOINT = os.environ.get("MM_OIDC_OP_TOKEN_ENDPOINT", None)
+OIDC_OP_USER_ENDPOINT = os.environ.get("MM_OIDC_OP_USER_ENDPOINT", None)
 # Set the following to False if you want your MM admin to create a user & profile (matches on email address) instead of creating from the Idp
-OIDC_CREATE_USER = True
+OIDC_CREATE_USER = os.environ.get("MM_OIDC_CREATE_USER", True)
 # Extend token validity window, default is 15 minutes
-OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 3600
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = os.environ.get("MM_OIDC_TOKEN_EXPIRY", 3600)
 # Want the user's profile scope to populate the Membermatters profile
 OIDC_RP_SCOPES = "openid email profile"
 

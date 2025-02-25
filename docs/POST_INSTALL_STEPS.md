@@ -257,15 +257,15 @@ An example with 3 cards is below:
 ```
 ### OpenID Connect - Relying Party
 
-MemberMatters can be configured to use your OIDC-enabled Identity provider to manage users the following settings are needed from your IDP:
-- OIDC_RP_CLIENT_ID (pass to MemberMatters via your env file with the variable `MM_OIDC_CLIENT_ID`)
-- OIDC_RP_CLIENT_SECRET (pass to MemberMatters via your env file with the variable `MM_OIDC_CLIENT_SECRET`)
-- OIDC_OP_AUTHORIZATION_ENDPOINT (set in `memberportal/membermatters/settings.py`)
-- OIDC_OP_TOKEN_ENDPOINT (set in `memberportal/membermatters/settings.py`)
-- OIDC_OP_USER_ENDPOINT (set in `memberportal/membermatters/settings.py`)
+MemberMatters can be configured to use your OIDC-enabled Identity provider.  You *must* set the following values from your Idp via their corresponding environment variables:
+- OIDC_RP_CLIENT_ID (`MM_OIDC_CLIENT_ID` environment variable)
+- OIDC_RP_CLIENT_SECRET (`MM_OIDC_CLIENT_SECRET`)
+- OIDC_OP_AUTHORIZATION_ENDPOINT (`MM_OIDC_OP_AUTHORIZATION_ENDPOINT`)
+- OIDC_OP_TOKEN_ENDPOINT (`MM_OIDC_OP_TOKEN_ENDPOINT`)
+- OIDC_OP_USER_ENDPOINT (`MM_OIDC_OP_USER_ENDPOINT`)
 
-Optionally change the following in `memberportal/membermatters/settings.py`:
-- OIDC_CREATE_USER: change to False if you want your MemberMatters admin to create a user & profile (matches on email address) instead of creating from the Idp
-- OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS: to extend or shorten the validity window of the user's authentication token
+Optionally set the following to override default functionality:
+- MM_OIDC_CREATE_USER: Default value is `True`.  Set to `False` if you prefer that your MemberMatters admin create or import new users manually before the account can authenticate using OIDC
+- MM_OIDC_TOKEN_EXPIRY: Default value is 3600.  Override to extend or shorten the validity window of the user's authentication token (time in seconds).
 
 Finally, enable the `ENABLE_OIDC_RP` toggle in the Django constance config panel.  Now, when presented with the login screen a user would click "Login with OAuth" to authenticate via OIDC.
