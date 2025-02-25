@@ -154,6 +154,7 @@ export default {
   },
   loginCard: {
     login: 'Login',
+    loginOIDC: 'Login with OAuth',
     resetPassword: 'Reset Password',
     loginSuccess: 'Login Successful',
     registerHere: 'Register Here',
@@ -650,6 +651,8 @@ export default {
     loginHere: 'Login Here',
     registrationComplete:
       'Registration complete. Please check your email and click the link to verify your email address.',
+    registrationLocked:
+      'Self-service registration has been locked.  Please contact your administrator for an account.',
   },
   verifyEmail: {
     error:

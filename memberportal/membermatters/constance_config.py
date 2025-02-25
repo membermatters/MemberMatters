@@ -391,6 +391,10 @@ CONSTANCE_CONFIG = {
         365,
         "The maximum number of days to show on the stats page.",
     ),
+    "ENABLE_OIDC_RP": (
+        False,
+        "OIDC client?",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -415,6 +419,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS",
                 "ENABLE_MEMBERBUCKS",
                 "ENABLE_DISCOURSE_SSO_PROTOCOL",
+                "ENABLE_OIDC_RP",
                 "ENABLE_DISCORD_INTEGRATION",
                 "ENABLE_SLACK_INTEGRATION",
                 "ENABLE_SPACE_DIRECTORY",

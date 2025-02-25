@@ -31,6 +31,7 @@
               :rules="[
                 (val) => validateEmail(val) || $t('validation.invalidEmail'),
               ]"
+              :disable="features.enableOIDC"
             />
 
             <q-input
@@ -43,6 +44,7 @@
                 (val) =>
                   validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
               ]"
+              :disable="features.enableOIDC"
             />
             <q-input
               v-model="form.lastName"
@@ -54,6 +56,7 @@
                 (val) =>
                   validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
               ]"
+              :disable="features.enableOIDC"
             />
 
             <q-input
@@ -66,6 +69,7 @@
                 (val) =>
                   validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
               ]"
+              :disable="features.enableOIDC"
             />
             <q-input
               v-model="form.mobile"
@@ -78,6 +82,7 @@
                 (val) =>
                   validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
               ]"
+              :disable="features.enableOIDC"
             />
 
             <q-input
@@ -103,6 +108,7 @@
                 (val) =>
                   validateNotEmpty(val) || $t('validation.invalidPassword'),
               ]"
+              :disable="features.enableOIDC"
             >
               <template v-slot:append>
                 <q-icon
@@ -135,6 +141,14 @@
           <div class="row">
             <q-space />
             <q-btn
+              v-if="features.enableOIDC"
+              :label="$t('registrationCard.registrationLocked')"
+              type="submit"
+              color="red"
+              :disable="true"
+            />
+            <q-btn
+              v-else
               :label="$t('button.submit')"
               type="submit"
               color="primary-btn"
