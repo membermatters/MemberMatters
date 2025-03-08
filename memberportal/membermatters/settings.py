@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "rest_framework_api_key",
     "django_celery_results",
     "django_celery_beat",
+    "import_export",
 ]
 
 MIDDLEWARE = [
