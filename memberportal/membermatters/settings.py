@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "rest_framework_api_key",
     "django_celery_results",
     "django_celery_beat",
+    "import_export",
 ]
 
 MIDDLEWARE = [
@@ -151,6 +152,18 @@ if "MM_USE_POSTGRES" in os.environ:
                 "POSTGRES_HOST", "mm-postgres"
             ),  # default for docker-compose - change if needed
             "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        }
+    }
+
+elif "MM_USE_MYSQL" in os.environ:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django_prometheus.db.backends.mysql",
+            "NAME": os.environ.get("MYSQL_DB", "membermatters"),
+            "USER": os.environ.get("MYSQL_USER", "membermatters"),
+            "PASSWORD": os.environ.get("MYSQL_PASSWORD", "membermatters"),
+            "HOST": os.environ.get("MYSQL_HOST", "mm-mysql"),
+            "PORT": os.environ.get("MYSQL_PORT", "3306"),
         }
     }
 else:
@@ -241,6 +254,11 @@ LOGGING = {
         "discord": {
             "handlers": ["console", "file"],
             "level": os.environ.get("MM_LOG_LEVEL_DISCORD", "INFO"),
+            "propagate": False,
+        },
+        "slack": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_SLACK", "INFO"),
             "propagate": False,
         },
         "emails": {

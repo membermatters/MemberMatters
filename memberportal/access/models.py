@@ -1,5 +1,14 @@
 import logging
-from services.discord import post_door_swipe_to_discord, post_interlock_swipe_to_discord
+from services.discord import (
+    post_door_swipe_to_discord,
+    post_interlock_swipe_to_discord,
+    post_door_bump_to_discord,
+)
+from services.slack import (
+    post_door_swipe_to_slack,
+    post_door_bump_to_slack,
+    post_interlock_swipe_to_slack,
+)
 from services import sms
 from profile.models import Profile, log_event
 from memberbucks.models import MemberBucks
@@ -67,6 +76,7 @@ class AccessControlledDevice(
     locked_out = models.BooleanField("Maintenance lockout enabled", default=False)
     play_theme = models.BooleanField("Play theme on successful swipe", default=False)
     post_to_discord = models.BooleanField("Post to discord on swipe", default=True)
+    post_to_slack = models.BooleanField("Post to slack on swipe", default=True)
     exempt_signin = models.BooleanField(
         "Exempt this device from requiring a sign in", default=False
     )
@@ -299,6 +309,12 @@ class Doors(ExportModelOperationsMixin("door"), AccessControlledDevice):
             )
 
             if request:
+                # notify messaging apps of bump
+                profile = request.user.profile
+                if self.post_to_slack:
+                    post_door_bump_to_slack(profile.get_full_name(), self.name)
+                if self.post_to_discord:
+                    post_door_bump_to_discord(profile.get_full_name(), self.name)
                 self.log_access(request.user.id)
                 request.user.log_event(
                     f"Bumped the {self.name} {self._meta.verbose_name}.",
@@ -310,6 +326,10 @@ class Doors(ExportModelOperationsMixin("door"), AccessControlledDevice):
                     f"Unknown user (system) bumped the {self.name} {self._meta.verbose_name}.",
                     "admin",
                 )
+                if self.post_to_slack:
+                    post_door_bump_to_slack("unknown", self.name)
+                if self.post_to_discord:
+                    post_door_bump_to_discord("unknown", self.name)
 
             return True
 
@@ -331,14 +351,27 @@ class Doors(ExportModelOperationsMixin("door"), AccessControlledDevice):
             metrics.device_access_successes_total.labels(
                 **self.get_metrics_labels()
             ).inc()
+
+            # TODO replace with generic post_to_messengers
             if self.post_to_discord:
                 post_door_swipe_to_discord(profile.get_full_name(), self.name, success)
+            if self.post_to_slack:
+                post_door_swipe_to_slack(profile.get_full_name(), self.name, success)
 
         elif success == "locked_out":
             metrics.device_access_failures_total.labels(
                 **self.get_metrics_labels()
             ).inc()
-            post_door_swipe_to_discord(profile.get_full_name(), self.name, "locked_out")
+
+            # TODO replace with generic post_to_messengers
+            if self.post_to_discord:
+                post_door_swipe_to_discord(
+                    profile.get_full_name(), self.name, "locked_out"
+                )
+            if self.post_to_slack:
+                post_door_swipe_to_slack(
+                    profile.get_full_name(), self.name, "locked_out"
+                )
 
             sms_message = sms.SMS()
             sms_message.send_locked_out_swipe_alert(profile.phone)
@@ -347,10 +380,15 @@ class Doors(ExportModelOperationsMixin("door"), AccessControlledDevice):
             metrics.device_access_failures_total.labels(
                 **self.get_metrics_labels()
             ).inc()
+
+            # TODO replace with generic post_to_messengers
             if self.post_to_discord:
                 post_door_swipe_to_discord(
                     profile.get_full_name(), self.name, "rejected"
                 )
+            if self.post_to_slack:
+                post_door_swipe_to_slack(profile.get_full_name(), self.name, "rejected")
+
             sms_message = sms.SMS()
             sms_message.send_inactive_swipe_alert(profile.phone)
 

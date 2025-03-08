@@ -199,6 +199,7 @@ class Doors(APIView):
                 "maintenanceLockout": door.locked_out,
                 "playThemeOnSwipe": door.play_theme,
                 "postDiscordOnSwipe": door.post_to_discord,
+                "postSlackOnSwipe": door.post_to_slack,
                 "exemptFromSignin": door.exempt_signin,
                 "hiddenToMembers": door.hidden,
                 "totalSwipes": logs.count(),
@@ -231,6 +232,7 @@ class Doors(APIView):
         door.locked_out = data.get("maintenanceLockout")
         door.play_theme = data.get("playThemeOnSwipe")
         door.post_to_discord = data.get("postDiscordOnSwipe")
+        door.post_to_slack = data.get("postSlackOnSwipe")
         door.exempt_signin = data.get("exemptFromSignin")
         door.hidden = data.get("hiddenToMembers")
         door.save()

@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v3.8.0] - 2025-03-08
+
+### Added
+
+- Added support for slack access control notifications (thanks @sibios)
+- Added Swedish language translation (thanks @kriffe)
+- Added basic member import/export to django admin page (thanks @sibios)
+- Support for MySQL database (thanks @adricl)
+
+### Updated
+
+- Setup docs to make clear what permissions the Stripe restricted API key needs
+- Local version of black linter to latest
+
+### Fixed
+
+- Fixed bug with tab order in manage member page (thanks @sibios)
+
 ## [v3.7.1] - 2024-08-23
 
 ### Added
