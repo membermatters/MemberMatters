@@ -3,6 +3,24 @@
     <div v-if="loggedIn">
       <div class="column flex content-start justify-center">
         <q-banner
+          v-if="profile.lastInduction === null"
+          inline-actions
+          rounded
+          class="bg-red text-white q-ma-md"
+        >
+          <template v-slot:avatar>
+            <q-icon :name="icons.warning" />
+          </template>
+          <div v-if="profile.inductionLink.length != 0">
+            {{ $t('access.inductionIncompleteTasks') }}
+            <li v-for="(link, index) in profile.inductionLink" :key="index">
+              <a :href="link" target="_blank">Task {{ index + 1 }}</a>
+            </li>
+          </div>
+          <div v-else>{{ $t('access.inductionIncompleteNoTasks') }}</div>
+        </q-banner>
+
+        <q-banner
           v-if="
             profile.memberStatus !== 'active' &&
             profile.memberStatus !== 'accountonly'

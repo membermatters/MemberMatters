@@ -16,6 +16,7 @@ from services.moodle_integration import (
     moodle_get_course_activity_completion_status,
     moodle_get_user_from_email,
 )
+from services.docuseal import get_docuseal_submission
 from services.emails import send_email_to_admin
 from constance import config
 from django.db.utils import OperationalError
@@ -414,6 +415,18 @@ class CheckInductionStatus(APIView):
         try:
             if score or config.MIN_INDUCTION_SCORE == 0:
                 induction_passed = score >= config.MIN_INDUCTION_SCORE
+
+                # if member doc is on, but the document has not been completed prevent setting the user's induction date
+                if config.ENABLE_DOCUSEAL_INTEGRATION:
+                    submission = get_docuseal_submission(request.user.profile)
+                    if submission["state"] != "complete":
+                        return Response(
+                            {
+                                "success": False,
+                                "score": score,
+                                "error": "User has passed induction but has NOT completed membership agreement docs",
+                            }
+                        )
 
                 if induction_passed:
                     request.user.profile.update_last_induction()

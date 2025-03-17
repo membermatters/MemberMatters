@@ -20,7 +20,6 @@ from services.emails import send_single_email, send_email_to_admin
 from services import sms
 from django_prometheus.models import ExportModelOperationsMixin
 
-
 logger = logging.getLogger("profile")
 
 utc = pytz.UTC
@@ -389,6 +388,8 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
     subscription_first_created = models.DateTimeField(
         default=None, blank=True, null=True, editable=False
     )
+    memberdoc_id = models.IntegerField(default=None, blank=True, null=True)
+    memberdoc_url = models.CharField(max_length=255, blank=True, null=True, default="")
 
     def __str__(self):
         return str(self.user)
@@ -515,7 +516,7 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
         Returns a user's profile with a basic amount of info.
         :return: {}
         """
-        return {
+        profile = {
             "id": self.user.id,
             "admin": self.user.is_staff,
             "email": self.user.email,
@@ -557,6 +558,11 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
             },
             "subscriptionStatus": self.subscription_status,
         }
+        if config.ENABLE_DOCUSEAL_INTEGRATION:
+            profile["memberdocsLink"] = (
+                config.DOCUSEAL_URL + "/submissions/" + str(self.memberdoc_id)
+            )  # use internal submission id instead of embed_url
+        return profile
 
     def get_access_permissions(self, ignore_user_state=False):
         """
@@ -643,6 +649,7 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
             if (
                 config.CANVAS_INDUCTION_ENABLED is True
                 or config.MOODLE_INDUCTION_ENABLED is True
+                or config.ENABLE_DOCUSEAL_INTEGRATION is True
             ):
                 required_steps.append("induction")
 

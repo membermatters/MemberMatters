@@ -17,7 +17,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Kiosk, SiteSession, EmailVerificationToken
 from services.discord import post_kiosk_swipe_to_discord
-from services.slack import post_kiosk_swipe_to_slack
+from services.docuseal import (
+    create_submission_for_subscription,
+    get_docuseal_submission,
+)
 import base64
 from urllib.parse import parse_qs, urlencode
 import hmac
@@ -61,6 +64,7 @@ class GetConfig(APIView):
                 "footer": config.SMS_FOOTER,
             },
             "enableStatsPage": config.ENABLE_STATS_PAGE,
+            "enableDocusealMemberDocs": config.ENABLE_DOCUSEAL_INTEGRATION,
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}
@@ -407,6 +411,38 @@ class ProfileDetail(generics.GenericAPIView):
             },
             "permissions": {"staff": user.is_staff},
         }
+        if config.ENABLE_DOCUSEAL_INTEGRATION:
+            response["memberdocsLink"] = []
+            submission = get_docuseal_submission(p)
+            try:
+                # assuming here that the zeroth party will always be the member
+                for docs in submission["submitters"][0]["documents"]:
+                    response["memberdocsLink"].append(docs["url"])
+            except:
+                pass
+
+        # append induction link(s) if user has not been inducted
+        response["inductionLink"] = []
+        if p.last_induction is None:
+            if config.MOODLE_INDUCTION_ENABLED or config.CANVAS_INDUCTION_ENABLED:
+                response["inductionLink"].append(config.INDUCTION_ENROL_LINK)
+
+            if config.ENABLE_DOCUSEAL_INTEGRATION:
+                # TODO the following removed with a webhook callback from DocuSeal on submission signing
+                submission = get_docuseal_submission(p)
+                if submission is not None:
+                    state = submission["status"]
+                    if state == "complete":
+                        # in the event our induction process is *just* DocuSeal and the doc is signed, update unduction status
+                        if not (
+                            config.MOODLE_INDUCTION_ENABLED
+                            or config.CANVAS_INDUCTION_ENABLED
+                        ):
+                            p.update_last_induction()
+                            response["lastInduction"] = p.last_induction
+                    elif state != "declined":
+                        response["inductionLink"].append(p.memberdoc_url)
+                    # remainder state is "declined"
 
         return Response(response)
 
@@ -669,6 +705,9 @@ class Register(APIView):
         )
 
         profile.save()
+
+        if config.ENABLE_DOCUSEAL_INTEGRATION:
+            create_submission_for_subscription(profile)
 
         verification_token = EmailVerificationToken.objects.create(user=new_user)
 

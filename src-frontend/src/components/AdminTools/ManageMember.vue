@@ -329,6 +329,21 @@
                     </q-item-label>
                   </q-item-section>
                 </q-item>
+
+                <q-item v-if="features.enableDocusealMemberDocs">
+                  <q-item-section>
+                    <q-item-label>
+                      <a :href="selectedMember.memberdocsLink" target="_blank">
+                        <div v-if="selectedMember.lastInduction">Complete</div>
+                        <div v-else>Incomplete</div>
+                      </a>
+                    </q-item-label>
+
+                    <q-item-label caption>
+                      {{ $t(`form.memberDocLink`) }}
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
               </q-list>
 
               <h5 class="q-mt-md q-mb-sm">

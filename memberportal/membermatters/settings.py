@@ -316,6 +316,11 @@ LOGGING = {
             "level": os.environ.get("MM_LOG_LEVEL_OIDC_PROVIDER", "INFO"),
             "propagate": False,
         },
+        "docuseal": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_DOCUSEAL", "INFO"),
+            "propagate": False,
+        },
         "daphne": {"handlers": ["console", "file"], "level": "WARNING"},
     },
 }
