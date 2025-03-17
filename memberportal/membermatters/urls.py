@@ -1,5 +1,4 @@
-"""membermatters URL Configuration
-"""
+"""membermatters URL Configuration"""
 
 import os
 import django.db.utils
