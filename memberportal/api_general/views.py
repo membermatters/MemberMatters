@@ -22,6 +22,7 @@ import base64
 from urllib.parse import parse_qs, urlencode
 import hmac
 import hashlib
+from django.shortcuts import redirect
 
 logger = logging.getLogger("general")
 
@@ -61,6 +62,7 @@ class GetConfig(APIView):
                 "footer": config.SMS_FOOTER,
             },
             "enableStatsPage": config.ENABLE_STATS_PAGE,
+            "enableOIDC": config.ENABLE_OIDC_RP,
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}
@@ -133,12 +135,22 @@ class Login(APIView):
 
     permission_classes = (permissions.AllowAny,)
 
+    # def get(self, request):
+    #     if config.ENABLE_OIDC_RP:
+    #         return redirect("oidc_authentication_init")
+    #     else:
+    #         # OIDC is disabled
+    #         return Response(status=status.HTTP_400_BAD_REQUEST)
+
     def post(self, request):
         body = request.data
         discourse_nonce = None
         discourse_redirect = None
         discourse_login = False
         secret = config.DISCOURSE_SSO_PROTOCOL_SECRET_KEY.encode("utf-8")
+
+        if config.ENABLE_OIDC_RP:
+            return redirect("oidc_authentication_init")
 
         if body.get("sso") is not None:
             if config.ENABLE_DISCOURSE_SSO_PROTOCOL:
@@ -297,6 +309,13 @@ class Logout(APIView):
 
     post: Ends the user's session and logs them out.
     """
+
+    def get(self, request):
+        if config.ENABLE_OIDC_RP:
+            return redirect("oidc_logout")
+        else:
+            # OIDC is disabled
+            return redirect(Logout.post)
 
     def post(self, request):
         logout(request)
@@ -638,6 +657,10 @@ class Register(APIView):
 
     def post(self, request):
         body = request.data
+
+        # ignore Registrations if OIDC is enabled
+        if config.ENABLE_OIDC_RP:
+            return Response(status.HTTP_400_BAD_REQUEST)
 
         if User.objects.filter(email=body.get("email").lower()).exists():
             return Response(
