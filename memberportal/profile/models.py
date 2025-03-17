@@ -175,7 +175,10 @@ class User(ExportModelOperationsMixin("user"), AbstractBaseUser, PermissionsMixi
     objects = UserManager()
 
     def __str__(self):
-        return f"{self.get_full_name()} ({self.profile.screen_name}) - {self.email}"
+        try:
+            return f"{self.get_full_name()} ({self.profile.screen_name}) - {self.email}"
+        except:
+            return f"(NO PROFILE) - {self.email}"
 
     def get_short_name(self):
         return self.profile.get_short_name()
