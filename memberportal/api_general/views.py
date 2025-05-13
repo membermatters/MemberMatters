@@ -4,6 +4,7 @@ from django.contrib.auth import (
     login,
     logout,
 )
+from django.db import IntegrityError, transaction
 import logging
 from constance import config
 import json
@@ -17,7 +18,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Kiosk, SiteSession, EmailVerificationToken
 from services.discord import post_kiosk_swipe_to_discord
-from services.slack import post_kiosk_swipe_to_slack
 import base64
 from urllib.parse import parse_qs, urlencode
 import hmac
@@ -423,8 +423,8 @@ class ProfileDetail(generics.GenericAPIView):
         # check if email is already in use
         if User.objects.filter(email=email).exists() and email != request.user.email:
             return Response(
-                {"message": "error.accountAlreadyExists"},
-                status=status.HTTP_409_CONFLICT,
+                {"message": "error.contactUs"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         # check if screen name is already in use
@@ -639,38 +639,46 @@ class Register(APIView):
     def post(self, request):
         body = request.data
 
-        if User.objects.filter(email=body.get("email").lower()).exists():
+        if (
+            User.objects.filter(email=body.get("email").lower()).exists()
+            or Profile.objects.filter(
+                screen_name=body.get("screenName").lower()
+            ).exists()
+        ):
             return Response(
-                {"message": "error.accountAlreadyExists"},
-                status=status.HTTP_409_CONFLICT,
+                {"message": "error.contactUs"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if Profile.objects.filter(screen_name=body.get("screenName").lower()).exists():
+        try:
+            with transaction.atomic():
+                new_user = User.objects.create(
+                    email=body.get("email").lower(),
+                    email_verified=False,
+                )
+
+                new_user.set_password(body.get("password"))
+                new_user.save()
+
+                profile = Profile.objects.create(
+                    user=new_user,
+                    first_name=body.get("firstName"),
+                    last_name=body.get("lastName"),
+                    screen_name=body.get("screenName"),
+                    phone=body.get("mobile"),
+                    vehicle_registration_plate=body.get("vehicleRegistrationPlate"),
+                )
+
+                profile.save()
+
+                verification_token = EmailVerificationToken.objects.create(
+                    user=new_user
+                )
+        except IntegrityError:
             return Response(
-                {"message": "error.screenNameAlreadyExists"},
-                status=status.HTTP_409_CONFLICT,
+                {"message": "error.contactUs"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-        new_user = User.objects.create(
-            email=body.get("email").lower(),
-            email_verified=False,
-        )
-
-        new_user.set_password(body.get("password"))
-        new_user.save()
-
-        profile = Profile.objects.create(
-            user=new_user,
-            first_name=body.get("firstName"),
-            last_name=body.get("lastName"),
-            screen_name=body.get("screenName"),
-            phone=body.get("mobile"),
-            vehicle_registration_plate=body.get("vehicleRegistrationPlate"),
-        )
-
-        profile.save()
-
-        verification_token = EmailVerificationToken.objects.create(user=new_user)
 
         url = f"{config.SITE_URL}/profile/email/{verification_token.verification_token}/verify/"
         verification_token.user.email_link(

@@ -63,7 +63,6 @@ export default {
     error: 'Error',
     contactUs: 'Please contact us for help if you continue to see this error.',
     loginFailed: 'Your username or password was incorrect.',
-    accountAlreadyExists: 'Sorry, that email address has already been used.',
     screenNameAlreadyExists: 'Sorry, that screen name has already been used.',
     downloadFailed: 'Failed to download the file.',
     requestFailed:
