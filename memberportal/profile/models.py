@@ -339,7 +339,7 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
     first_name = models.CharField("First Name", max_length=30)
     last_name = models.CharField("Last Name", max_length=30)
     preferred_pronouns = models.CharField(
-            "Preferred Pronouns", blank=True, null=True, max_length=30
+        "Preferred Pronouns", blank=True, null=True, max_length=30
     )
     phone_regex = RegexValidator(
         regex=r"^\+?1?\d{9,15}$",
