@@ -783,7 +783,12 @@ class StripeWebhook(StripeAPIView):
                         "has setup a membership subscription. You must now decide whether to enable their site access."
                     )
                     send_email_to_admin(
-                        subject, title, message, reply_to=member_profile.user.email
+                        subject,
+                        template_vars={
+                            "title": title,
+                            "message": message,
+                        },
+                        reply_to=member_profile.user.email,
                     )
 
                 member_profile.user.log_event(
