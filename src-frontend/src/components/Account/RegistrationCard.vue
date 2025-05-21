@@ -68,6 +68,12 @@
               ]"
             />
             <q-input
+              v-model="form.preferred_pronouns"
+              class="col-12 col-sm-6"
+              filled
+              :label="$t('form.preferred_pronouns')"
+            />
+            <q-input
               v-model="form.mobile"
               class="col-12 col-sm-6"
               filled

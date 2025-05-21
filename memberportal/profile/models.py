@@ -338,6 +338,7 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
     screen_name = models.CharField("Screen Name", max_length=30)
     first_name = models.CharField("First Name", max_length=30)
     last_name = models.CharField("Last Name", max_length=30)
+    preferred_pronouns = models.CharField("Preferred Pronouns", blank=True, null=True, max_length=30)
     phone_regex = RegexValidator(
         regex=r"^\+?1?\d{9,15}$",
         message="Phone number must be entered in the format: '0417123456'."

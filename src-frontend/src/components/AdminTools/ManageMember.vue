@@ -202,6 +202,21 @@
                 </q-input>
 
                 <q-input
+                  v-model="profileForm.preferred_pronouns"
+                  outlined
+                  :debounce="debounceLength"
+                  :label="$t('form.preferred_pronouns')"
+                  @update:model-value="saveChange('preferred_pronouns')"
+                >
+                  <template #append>
+                    <saved-notification
+                      :success="saved.preferred_pronouns"
+                      :error="saved.error"
+                    />
+                  </template>
+                </q-input>
+
+                <q-input
                   v-model="profileForm.phone"
                   outlined
                   :debounce="debounceLength"

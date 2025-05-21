@@ -38,6 +38,22 @@
       </q-input>
 
       <q-input
+        v-model="form.preferred_pronouns"
+        outlined
+        :debounce="debounceLength"
+        :label="$t('form.preferred_pronouns')"
+        @update:model-value="saveChange('preferred_pronouns')"
+      >
+        <template v-slot:append>
+          <saved-notification
+            :success="saved.preferred_pronouns"
+            show-text
+            :error="saved.error"
+          />
+        </template>
+      </q-input>
+
+      <q-input
         v-model="form.lastName"
         outlined
         :debounce="debounceLength"
