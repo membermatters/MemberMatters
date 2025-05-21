@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('profile', '0017_alter_log_logtype'),
+        ("profile", "0017_alter_log_logtype"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='preferred_pronouns',
-            field=models.CharField(blank=True, max_length=30, null=True, verbose_name='Preferred Pronouns'),
+            model_name="profile",
+            name="preferred_pronouns",
+            field=models.CharField(
+                blank=True, max_length=30, null=True, verbose_name="Preferred Pronouns"
+            ),
         ),
     ]
