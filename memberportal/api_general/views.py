@@ -664,6 +664,7 @@ class Register(APIView):
             first_name=body.get("firstName"),
             last_name=body.get("lastName"),
             screen_name=body.get("screenName"),
+            preferred_pronouns=body.get("preferred_pronouns"),
             phone=body.get("mobile"),
             vehicle_registration_plate=body.get("vehicleRegistrationPlate"),
         )
