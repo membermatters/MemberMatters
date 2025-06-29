@@ -247,6 +247,7 @@ export default {
     rfidCard: 'RFID Card',
     firstName: 'First Name *',
     lastName: 'Last Name *',
+    pronouns: 'Pronouns',
     mobile: 'Mobile Number *',
     screenName: 'Screen / Nickname *',
     date: 'Date',

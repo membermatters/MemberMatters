@@ -20,6 +20,10 @@ CONSTANCE_CONFIG = {
         "",
         "A site wide banner that can display useful information. Leave empty to turn off.",
     ),
+    "ENABLE_PRONOUNS": (
+      True,
+      "Enable optional pronoun fields in profiles.",
+    ),
     # Email config
     "EMAIL_SYSADMIN": (
         "example@example.com",
@@ -401,6 +405,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "SITE_NAME",
                 "SITE_OWNER",
                 "SITE_LOCALE_CURRENCY",
+                "ENABLE_PRONOUNS",
                 "GOOGLE_ANALYTICS_MEASUREMENT_ID",
                 "SITE_BANNER",
                 "METRICS_INTERVAL",
