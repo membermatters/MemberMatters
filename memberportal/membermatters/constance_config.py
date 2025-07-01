@@ -21,8 +21,8 @@ CONSTANCE_CONFIG = {
         "A site wide banner that can display useful information. Leave empty to turn off.",
     ),
     "ENABLE_PRONOUNS": (
-      True,
-      "Enable optional pronoun fields in profiles.",
+        True,
+        "Enable optional pronoun fields in profiles.",
     ),
     # Email config
     "EMAIL_SYSADMIN": (
