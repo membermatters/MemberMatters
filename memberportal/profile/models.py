@@ -339,7 +339,7 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
     first_name = models.CharField("First Name", max_length=30)
     last_name = models.CharField("Last Name", max_length=30)
     preferred_pronouns = models.CharField(
-        "Preferred Pronouns", blank=True, null=True, max_length=30
+        "Pronouns", blank=True, null=True, max_length=30
     )
     phone_regex = RegexValidator(
         regex=r"^\+?1?\d{9,15}$",
@@ -518,7 +518,7 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
         Returns a user's profile with a basic amount of info.
         :return: {}
         """
-        return {
+        data = {
             "id": self.user.id,
             "admin": self.user.is_staff,
             "email": self.user.email,
@@ -560,6 +560,9 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
             },
             "subscriptionStatus": self.subscription_status,
         }
+        if config.ENABLE_PRONOUNS:
+            data["pronouns"] = self.preferred_pronouns
+        return data
 
     def get_access_permissions(self, ignore_user_state=False):
         """
