@@ -1,5 +1,8 @@
 import requests
 from constance import config
+import logging
+
+logger = logging.getLogger("canvas")
 
 
 class Canvas:
@@ -26,18 +29,28 @@ class Canvas:
 
         return response.json()
 
-    def get_course_details(self, course_id):
+    def get_course_details(self, course_id: str, page_after: str = None):
         """
         Build the query and get the course details.
         :param course_id:
+        :param page_after:
         :return:
         """
         query = {
             "query": 'query MyQuery {course(id: "'
             + str(course_id)
-            + '") {enrollmentsConnection {nodes {user {email}grades {finalScore}}}}}',
+            + '") {enrollmentsConnection(first: 50, after: "'
+            + (page_after or "")
+            + '") {nodes {user {email}grades {finalScore}} pageInfo {hasNextPage endCursor}}}}',
         }
-        return self._query_graph(query)
+        logger.debug(f"Getting course details for {course_id} with: {query}")
+        result = self._query_graph(query)
+        try:
+            logger.debug("Got course details:")
+            logger.debug(result)
+        except Exception as e:
+            logger.error(e)
+        return result
 
     def get_course_scores(self, course_id):
         """
@@ -45,23 +58,41 @@ class Canvas:
         :param course_id:
         :return:
         """
-        # get the course details
-        students = self.get_course_details(course_id)
-        students = students.get("data")
-
-        if not students:
-            # if there are no students just return an empty dict
-            return {}
-
-        # get the result of our query
-        students = students["course"]["enrollmentsConnection"]["nodes"]
+        last_page = None
         scores = {}
 
-        # loop through each student, and if they have an email, add them to the scores dict
-        for student in students:
-            student_email = student.get("user").get("email")
-            if student_email:
-                scores[student_email.lower()] = student.get("grades").get("finalScore")
+        while True:
+            students = self.get_course_details(course_id, page_after=last_page)
+            students = students.get("data")
+
+            if not students:
+                logger.debug("No students found")
+                # if there are no students just return an empty dict
+                break
+
+            # get the result of our query
+            enrollments_connection = students["course"]["enrollmentsConnection"]
+            students = enrollments_connection["nodes"]
+            page_info = enrollments_connection["pageInfo"]
+            logger.debug(f"Students: {students}")
+            logger.debug(f"Page info: {page_info}")
+
+            # loop through each student, and if they have an email, add them to the scores dict
+            for student in students:
+                student_email = student.get("user").get("email")
+                student_score = student.get("grades").get("finalScore")
+
+                logger.debug(f"Student email: {student_email}")
+                logger.debug(f"Student score: {student_score}")
+                logger.debug(f"Student grades: {student.get('grades')}")
+
+                if student_email:
+                    scores[student_email.lower()] = student_score
+
+            if page_info["hasNextPage"]:
+                last_page = page_info["endCursor"]
+            else:
+                break
 
         return scores
 
@@ -73,5 +104,6 @@ class Canvas:
         :return: score or None
         """
         scores = self.get_course_scores(course_id)
+        logger.debug(f"Getting score for email: {email}")
 
         return scores.get(email.lower())

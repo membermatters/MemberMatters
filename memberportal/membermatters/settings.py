@@ -271,6 +271,11 @@ LOGGING = {
             "level": os.environ.get("MM_LOG_LEVEL_SMS", "INFO"),
             "propagate": False,
         },
+        "canvas": {
+            "handlers": ["console", "file"],
+            "level": os.environ.get("MM_LOG_LEVEL_CANVAS", "INFO"),
+            "propagate": False,
+        },
         "api_general:tasks": {
             "handlers": ["console", "file"],
             "level": os.environ.get("MM_LOG_LEVEL_GENERAL_TASKS", "INFO"),
