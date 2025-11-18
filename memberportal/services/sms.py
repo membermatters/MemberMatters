@@ -2,7 +2,6 @@ from twilio.rest import Client
 from constance import config
 import json
 import logging
-import os
 
 logger = logging.getLogger("sms")
 
