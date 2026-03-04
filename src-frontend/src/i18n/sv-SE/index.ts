@@ -233,6 +233,7 @@ export default {
     pageDescription: 'Rapportera ett problem',
     success: 'Din anmälan har skickats in.',
     fail: 'Det uppstod ett problem med att rapportera ett problem.',
+    disabled: 'Den här funktionen är för närvarande inaktiverad.',
   },
   form: {
     saved: 'Sparad',

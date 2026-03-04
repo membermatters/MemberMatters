@@ -234,6 +234,7 @@ export default {
     pageDescription: 'Report an issue',
     success: 'Your issue was reported successfully.',
     fail: 'There was a problem reporting your issue.',
+    disabled: 'This feature is currently disabled.',
   },
   form: {
     saved: 'Saved',
