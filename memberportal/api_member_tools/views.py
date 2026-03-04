@@ -110,7 +110,10 @@ class IssueDetail(APIView):
     post: Creates a new issue by creating a task card or emailing the management committee
     """
 
-    permission_classes = (permissions.IsAuthenticated,)
+    def get_permissions(self):
+        if config.ENABLE_REPORT_ISSUE:
+            return [permissions.IsAuthenticated()]
+        return [permissions.IsAuthenticated(), permissions.IsAdminUser()]
 
     def post(self, request):
         body = request.data
