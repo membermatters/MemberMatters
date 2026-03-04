@@ -46,7 +46,7 @@ CONSTANCE_CONFIG = {
     "POST_INDUCTION_URL": (
         "https://eventbrite.com.au",
         "The URL members should visit to book in for a site induction after finishing the online induction."
-        " (displayed during signup if REQUIRE_ACCESS_CARD == False)",
+        " (displayed during signup if REQUIRE_ACCESS_CARD == True and MEMBER_CAN_ENTER_ACCESS_CARD == False)",
     ),
     # Logo and favicon
     "SITE_LOGO": (
@@ -121,6 +121,10 @@ CONSTANCE_CONFIG = {
         "Enable integration with stripe for membership payments.",
     ),
     # ==== Report Issue Services ====
+    "ENABLE_REPORT_ISSUE": (
+        True,
+        "Enable the report issue feature in the portal.",
+    ),
     # Email config
     "REPORT_ISSUE_ENABLE_EMAIL": (
         True,
@@ -310,6 +314,10 @@ CONSTANCE_CONFIG = {
         True,
         "If an access card is required to be added to a members profile before signup.",
     ),
+    "MEMBER_CAN_ENTER_ACCESS_CARD": (
+        True,
+        "If true, members can enter their own RFID card during signup. If false, they will be prompted to contact an admin (displayed during signup if REQUIRE_ACCESS_CARD == True).",
+    ),
     "COLLECT_VEHICLE_REGISTRATION_PLATE": (
         False,
         "Display a field that collects the member's vehicle registration plate on signup & in the profile page.",
@@ -391,6 +399,10 @@ CONSTANCE_CONFIG = {
         365,
         "The maximum number of days to show on the stats page.",
     ),
+    "ENABLE_LAST_SEEN_PAGE": (
+        True,
+        "Enable the Last Seen page that shows member last seen data.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -411,6 +423,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
             (
                 "ENABLE_WEBCAMS",
                 "ENABLE_PROXY_VOTING",
+                "ENABLE_REPORT_ISSUE",
                 "ENABLE_STRIPE",
                 "ENABLE_STRIPE_MEMBERSHIP_PAYMENTS",
                 "ENABLE_MEMBERBUCKS",
@@ -422,6 +435,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "ENABLE_PORTAL_SITE_SIGN_IN",
                 "ENABLE_PORTAL_MEMBERS_ON_SITE",
                 "ENABLE_DOOR_BUMP_API",
+                "ENABLE_LAST_SEEN_PAGE",
             ),
         ),
         ("Stats Settings", ("ENABLE_STATS_PAGE", "STATS_MAX_DAYS")),
@@ -439,6 +453,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "MAX_INDUCTION_DAYS",
                 "MIN_INDUCTION_SCORE",
                 "REQUIRE_ACCESS_CARD",
+                "MEMBER_CAN_ENTER_ACCESS_CARD",
                 "COLLECT_VEHICLE_REGISTRATION_PLATE",
             ),
         ),

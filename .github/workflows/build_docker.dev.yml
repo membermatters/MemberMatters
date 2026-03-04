@@ -26,4 +26,4 @@ jobs:
           file: docker/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: membermatters/membermatters:dev,membermatters/membermatters:${{github.sha}}
+          tags: ${{ secrets.DOCKERHUB_PROJECT_NAME }}:dev,${{ secrets.DOCKERHUB_PROJECT_NAME }}:${{github.sha}}

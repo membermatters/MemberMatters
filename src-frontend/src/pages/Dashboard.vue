@@ -18,12 +18,14 @@
         </q-banner>
       </div>
 
-      <h5 class="q-ma-md">
-        {{ $t('dashboard.quickCards') }}
-      </h5>
-      <div class="row">
-        <quick-cards />
-      </div>
+      <template v-if="hasVisibleCards">
+        <h5 class="q-ma-md">
+          {{ $t('dashboard.quickCards') }}
+        </h5>
+        <div class="row">
+          <quick-cards />
+        </div>
+      </template>
 
       <h5 class="q-ma-md">
         {{ $t('dashboard.usefulResources') }}
@@ -64,6 +66,12 @@ export default {
     ...mapGetters('profile', ['loggedIn', 'profile']),
     icons() {
       return icons;
+    },
+    hasVisibleCards() {
+      return (
+        this.features.enableSiteSignIn ||
+        this.features.enableReportIssue
+      );
     },
   },
   methods: {

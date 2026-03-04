@@ -97,7 +97,11 @@ However, as noted below, currencies will use a hardcoded value set by a configur
   * "MAX_INDUCTION_DAYS" -  Maximum number of days since they were inducted before they require another induction. Set 
     to `0` to disable induction requirement.
   * "MIN_INDUCTION_SCORE" - The minimum score considered a "pass" for the induction course.
-  * "REQUIRE_ACCESS_CARD" - Require the member to submit their RFID access card number during signup.
+  * "REQUIRE_ACCESS_CARD" - Require the member to have an RFID access card assigned before completing signup. Set to
+    `False` to skip the access card step entirely.
+  * "MEMBER_CAN_ENTER_ACCESS_CARD" - Allow members to enter their own RFID card number during signup. Set to `False`
+    to require an admin to assign the card (members will see a "Contact Us" button instead). Only applies if
+    "REQUIRE_ACCESS_CARD" is `True`.
   * "COLLECT_VEHICLE_REGISTRATION_PLATE" - Allow the portal to collect vehicle registration plate number(s).
 
 ### Canvas Integration
@@ -193,6 +197,9 @@ The following permissions are needed for all Member Matters payment features to 
 ### Theme Swipe Integration
   * "THEME_SWIPE_URL" - a URL to hit on each door/interlock swipe that can trigger a theme song played over your intercom system, or something else.
   * "ENABLE_THEME_SWIPE" - enable the theme song swipe webhook.
+
+### Members Settings
+  * "ENABLE_LAST_SEEN_PAGE" - shows the last seen listing on members pages when enabled
 
 ### Door Bump API
   * "ENABLE_DOOR_BUMP_API" - Enable an API endpoint that 'bumps' (temporarily unlocks) a door for third party integration.

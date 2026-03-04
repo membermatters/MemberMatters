@@ -39,7 +39,7 @@
       <members-onsite-card />
     </div>
 
-    <div class="q-pa-md col-12 col-sm-4">
+    <div v-if="enableReportIssue" class="q-pa-md col-12 col-sm-4">
       <report-issue-card />
     </div>
   </div>
@@ -120,6 +120,9 @@ export default {
       return (
         this.features.enableMembersOnSite && this.features.enableSiteSignIn
       );
+    },
+    enableReportIssue() {
+      return this.features.enableReportIssue;
     },
     icons() {
       return icons;

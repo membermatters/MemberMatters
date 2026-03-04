@@ -48,6 +48,7 @@ class GetConfig(APIView):
             "signup": {
                 "inductionLink": config.INDUCTION_ENROL_LINK,
                 "requireAccessCard": config.REQUIRE_ACCESS_CARD,
+                "memberCanEnterAccessCard": config.MEMBER_CAN_ENTER_ACCESS_CARD,
                 "postInductionUrl": config.POST_INDUCTION_URL,
                 "collectVehicleRegistrationPlate": config.COLLECT_VEHICLE_REGISTRATION_PLATE,
             },
@@ -61,6 +62,8 @@ class GetConfig(APIView):
                 "footer": config.SMS_FOOTER,
             },
             "enableStatsPage": config.ENABLE_STATS_PAGE,
+            "enableLastSeenPage": config.ENABLE_LAST_SEEN_PAGE or request.user.is_admin,
+            "enableReportIssue": config.ENABLE_REPORT_ISSUE,
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}

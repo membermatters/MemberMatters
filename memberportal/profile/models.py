@@ -20,7 +20,6 @@ from services.emails import send_single_email, send_email_to_admin
 from services import sms
 from django_prometheus.models import ExportModelOperationsMixin
 
-
 logger = logging.getLogger("profile")
 
 utc = pytz.UTC
@@ -646,8 +645,8 @@ class Profile(ExportModelOperationsMixin("profile"), models.Model):
             ):
                 required_steps.append("induction")
 
-        # check if they have an RFID card assigned
-        if not self.rfid:
+        # check if they have an RFID card assigned (only if required by config)
+        if config.REQUIRE_ACCESS_CARD and not self.rfid:
             required_steps.append("accessCard")
 
         if len(required_steps):

@@ -5,6 +5,18 @@
         {{ $t('reportIssue.pageDescription') }}
       </h6>
 
+      <q-banner
+        v-if="!features.enableReportIssue"
+        inline-actions
+        rounded
+        class="bg-orange text-white q-ma-md"
+      >
+        <template v-slot:avatar>
+          <q-icon :name="icons.warning" />
+        </template>
+        {{ $t('reportIssue.disabled') }}
+      </q-banner>
+
       <q-card-section>
         <q-form ref="form" class="q-gutter-md" @submit="onSubmit">
           <q-input
@@ -12,6 +24,7 @@
             filled
             type="text"
             label="Issue Title"
+            :disable="!features.enableReportIssue"
             lazy-rules
             :rules="[
               (val) => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
@@ -28,6 +41,7 @@
             type="textarea"
             label="Issue Description"
             autogrow
+            :disable="!features.enableReportIssue"
             lazy-rules
             :rules="[
               (val) => validateNotEmpty(val) || $t('validation.cannotBeEmpty'),
@@ -56,6 +70,7 @@
               type="submit"
               color="primary-btn"
               :loading="buttonLoading"
+              :disable="!features.enableReportIssue"
             />
           </div>
         </q-form>
@@ -65,6 +80,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import formMixin from '../mixins/formMixin';
 import icons from '../icons';
 
@@ -82,6 +98,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('config', ['features']),
     icons() {
       return icons;
     },
