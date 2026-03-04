@@ -156,6 +156,7 @@ const PageAndRouteConfig: PageAndRouteConfigType[] = [
         name: 'reportIssue',
         loggedIn: true,
         kiosk: true,
+        featureEnabledFlag: 'enableReportIssue',
         component: () => import('pages/ReportIssue.vue'),
       },
       {

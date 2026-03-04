@@ -63,6 +63,7 @@ class GetConfig(APIView):
             },
             "enableStatsPage": config.ENABLE_STATS_PAGE,
             "enableLastSeenPage": config.ENABLE_LAST_SEEN_PAGE or request.user.is_admin,
+            "enableReportIssue": config.ENABLE_REPORT_ISSUE,
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}
