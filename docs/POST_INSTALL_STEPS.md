@@ -97,7 +97,11 @@ However, as noted below, currencies will use a hardcoded value set by a configur
   * "MAX_INDUCTION_DAYS" -  Maximum number of days since they were inducted before they require another induction. Set 
     to `0` to disable induction requirement.
   * "MIN_INDUCTION_SCORE" - The minimum score considered a "pass" for the induction course.
-  * "REQUIRE_ACCESS_CARD" - Require the member to submit their RFID access card number during signup.
+  * "REQUIRE_ACCESS_CARD" - Require the member to have an RFID access card assigned before completing signup. Set to
+    `False` to skip the access card step entirely.
+  * "MEMBER_CAN_ENTER_ACCESS_CARD" - Allow members to enter their own RFID card number during signup. Set to `False`
+    to require an admin to assign the card (members will see a "Contact Us" button instead). Only applies if
+    "REQUIRE_ACCESS_CARD" is `True`.
   * "COLLECT_VEHICLE_REGISTRATION_PLATE" - Allow the portal to collect vehicle registration plate number(s).
 
 ### Canvas Integration

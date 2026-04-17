@@ -95,7 +95,7 @@
           {{ $tc('signup.assignAccessCard') }}
         </div>
 
-        <template v-if="features.signup.requireAccessCard">
+        <template v-if="features.signup.memberCanEnterAccessCard">
           <div class="row items-stretch">
             <div style="width: 100%">
               <p>
@@ -274,7 +274,9 @@ export default defineComponent({
     },
     inductionCompleted() {
       this.step++;
-      if (this.accessCardComplete) this.step++;
+      if (this.accessCardComplete) {
+        this.completeSignup();
+      }
       clearInterval(this.interval);
     },
     async completeSignup() {

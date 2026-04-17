@@ -46,7 +46,7 @@ CONSTANCE_CONFIG = {
     "POST_INDUCTION_URL": (
         "https://eventbrite.com.au",
         "The URL members should visit to book in for a site induction after finishing the online induction."
-        " (displayed during signup if REQUIRE_ACCESS_CARD == False)",
+        " (displayed during signup if REQUIRE_ACCESS_CARD == True and MEMBER_CAN_ENTER_ACCESS_CARD == False)",
     ),
     # Logo and favicon
     "SITE_LOGO": (
@@ -310,6 +310,10 @@ CONSTANCE_CONFIG = {
         True,
         "If an access card is required to be added to a members profile before signup.",
     ),
+    "MEMBER_CAN_ENTER_ACCESS_CARD": (
+        True,
+        "If true, members can enter their own RFID card during signup. If false, they will be prompted to contact an admin (displayed during signup if REQUIRE_ACCESS_CARD == True).",
+    ),
     "COLLECT_VEHICLE_REGISTRATION_PLATE": (
         False,
         "Display a field that collects the member's vehicle registration plate on signup & in the profile page.",
@@ -439,6 +443,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "MAX_INDUCTION_DAYS",
                 "MIN_INDUCTION_SCORE",
                 "REQUIRE_ACCESS_CARD",
+                "MEMBER_CAN_ENTER_ACCESS_CARD",
                 "COLLECT_VEHICLE_REGISTRATION_PLATE",
             ),
         ),
