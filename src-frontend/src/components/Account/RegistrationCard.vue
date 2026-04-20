@@ -68,6 +68,13 @@
               ]"
             />
             <q-input
+              v-if="features?.enablePronouns"
+              v-model="form.pronouns"
+              class="col-12 col-sm-6"
+              filled
+              :label="$t('form.pronouns')"
+            />
+            <q-input
               v-model="form.mobile"
               class="col-12 col-sm-6"
               filled

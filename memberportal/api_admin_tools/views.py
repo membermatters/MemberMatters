@@ -580,6 +580,8 @@ class MemberProfile(APIView):
         member.profile.screen_name = body.get("screenName")
         member.profile.vehicle_registration_plate = body.get("vehicleRegistrationPlate")
         member.profile.exclude_from_email_export = body.get("excludeFromEmailExport")
+        if config.ENABLE_PRONOUNS:
+            member.profile.preferred_pronouns = body.get("pronouns")
 
         member.save()
         member.profile.save()

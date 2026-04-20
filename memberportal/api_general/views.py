@@ -61,6 +61,7 @@ class GetConfig(APIView):
                 "footer": config.SMS_FOOTER,
             },
             "enableStatsPage": config.ENABLE_STATS_PAGE,
+            "enablePronouns": config.ENABLE_PRONOUNS,
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}
@@ -408,6 +409,9 @@ class ProfileDetail(generics.GenericAPIView):
             "permissions": {"staff": user.is_staff},
         }
 
+        if config.ENABLE_PRONOUNS:
+            response["pronouns"] = p.preferred_pronouns
+
         return Response(response)
 
     def put(self, request):
@@ -443,6 +447,8 @@ class ProfileDetail(generics.GenericAPIView):
         p.phone = body.get("phone")
         p.screen_name = body.get("screenName")
         p.vehicle_registration_plate = body.get("vehicleRegistrationPlate")
+        if config.ENABLE_PRONOUNS:
+            p.preferred_pronouns = body.get("pronouns")
 
         request.user.save()
         p.save()
@@ -664,6 +670,7 @@ class Register(APIView):
             first_name=body.get("firstName"),
             last_name=body.get("lastName"),
             screen_name=body.get("screenName"),
+            preferred_pronouns=body.get("pronouns"),
             phone=body.get("mobile"),
             vehicle_registration_plate=body.get("vehicleRegistrationPlate"),
         )

@@ -202,6 +202,27 @@
                 </q-input>
 
                 <q-input
+                  v-if="
+                    features?.enablePronouns
+                  "
+                  v-model="profileForm.pronouns"
+                  outlined
+                  :debounce="debounceLength"
+                  :label="$t('form.pronouns')"
+                  :rules="[
+                    (val) => validateMax30(val) || $t('validation.max30'),
+                  ]"
+                  @update:model-value="saveChange('pronouns')"
+                >
+                  <template #append>
+                    <saved-notification
+                      :success="saved.pronouns"
+                      :error="saved.error"
+                    />
+                  </template>
+                </q-input>
+
+                <q-input
                   v-model="profileForm.phone"
                   outlined
                   :debounce="debounceLength"
@@ -1403,6 +1424,7 @@ export default defineComponent({
         rfidCard: '',
         firstName: '',
         lastName: '',
+        pronouns: '',
         phone: '',
         screenName: '',
         vehicleRegistrationPlate: '',
@@ -1415,6 +1437,7 @@ export default defineComponent({
         rfidCard: false,
         firstName: false,
         lastName: false,
+        pronouns: false,
         phone: false,
         screenName: false,
         vehicleRegistrationPlate: false,
@@ -1451,6 +1474,7 @@ export default defineComponent({
       this.profileForm.rfidCard = this.selectedMember.rfid;
       this.profileForm.firstName = this.selectedMember.name.first;
       this.profileForm.lastName = this.selectedMember.name.last;
+      this.profileForm.pronouns = this.selectedMember.pronouns;
       this.profileForm.phone = this.selectedMember.phone;
       this.profileForm.screenName = this.selectedMember.screenName;
       this.profileForm.vehicleRegistrationPlate =

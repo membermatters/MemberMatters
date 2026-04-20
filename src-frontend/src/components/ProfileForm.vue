@@ -57,6 +57,24 @@
       </q-input>
 
       <q-input
+        v-if="features?.enablePronouns"
+        v-model="form.pronouns"
+        outlined
+        :debounce="debounceLength"
+        :label="$t('form.pronouns')"
+        :rules="[(val) => validateMax30(val) || $t('validation.max30')]"
+        @update:model-value="saveChange('pronouns')"
+      >
+        <template v-slot:append>
+          <saved-notification
+            :success="saved.pronouns"
+            show-text
+            :error="saved.error"
+          />
+        </template>
+      </q-input>
+
+      <q-input
         v-model="form.phone"
         outlined
         :debounce="debounceLength"
@@ -133,6 +151,7 @@ export default {
         email: '',
         firstName: '',
         lastName: '',
+        pronouns: '',
         phone: '',
         screenName: '',
         vehicleRegistrationPlate: '',
@@ -144,6 +163,7 @@ export default {
         email: false,
         firstName: false,
         lastName: false,
+        pronouns: false,
         phone: false,
         screenName: false,
         vehicleRegistrationPlate: false,
@@ -156,6 +176,7 @@ export default {
       this.form.email = this.profile.email;
       this.form.firstName = this.profile.firstName;
       this.form.lastName = this.profile.lastName;
+      this.form.pronouns = this.profile.pronouns;
       this.form.phone = this.profile.phone;
       this.form.screenName = this.profile.screenName;
       this.form.vehicleRegistrationPlate =
