@@ -194,6 +194,9 @@ The following permissions are needed for all Member Matters payment features to 
   * "THEME_SWIPE_URL" - a URL to hit on each door/interlock swipe that can trigger a theme song played over your intercom system, or something else.
   * "ENABLE_THEME_SWIPE" - enable the theme song swipe webhook.
 
+### Members Settings
+  * "ENABLE_LAST_SEEN_PAGE" - shows the last seen listing on members pages when enabled
+
 ### Door Bump API
   * "ENABLE_DOOR_BUMP_API" - Enable an API endpoint that 'bumps' (temporarily unlocks) a door for third party integration.
   * "DOOR_BUMP_API_KEY" - The API key used to authenticate requests to the door bump API endpoint. MUST be set or the endpoint is automatically disabled.

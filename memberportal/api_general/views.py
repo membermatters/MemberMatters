@@ -61,6 +61,7 @@ class GetConfig(APIView):
                 "footer": config.SMS_FOOTER,
             },
             "enableStatsPage": config.ENABLE_STATS_PAGE,
+            "enableLastSeenPage": config.ENABLE_LAST_SEEN_PAGE or request.user.is_admin,
         }
 
         keys = {"stripePublishableKey": config.STRIPE_PUBLISHABLE_KEY}

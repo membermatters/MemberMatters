@@ -391,6 +391,10 @@ CONSTANCE_CONFIG = {
         365,
         "The maximum number of days to show on the stats page.",
     ),
+    "ENABLE_LAST_SEEN_PAGE": (
+        True,
+        "Enable the Last Seen page that shows member last seen data.",
+    ),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
@@ -422,6 +426,7 @@ CONSTANCE_CONFIG_FIELDSETS = OrderedDict(
                 "ENABLE_PORTAL_SITE_SIGN_IN",
                 "ENABLE_PORTAL_MEMBERS_ON_SITE",
                 "ENABLE_DOOR_BUMP_API",
+                "ENABLE_LAST_SEEN_PAGE",
             ),
         ),
         ("Stats Settings", ("ENABLE_STATS_PAGE", "STATS_MAX_DAYS")),

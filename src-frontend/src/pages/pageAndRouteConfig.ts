@@ -184,6 +184,7 @@ const PageAndRouteConfig: PageAndRouteConfigType[] = [
         loggedIn: true,
         kiosk: true,
         memberOnly: true,
+        featureEnabledFlag: 'enableLastSeenPage',
         component: () => import('pages/LastSeen.vue'),
       },
       {

@@ -74,7 +74,7 @@ class Lastseen(APIView):
     get: This method returns when each user was last seen (ie when they last swiped).
     """
 
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated and (config.ENABLE_LAST_SEEN_PAGE or permissions.IsAdminUser),)
     queryset = Profile.objects.filter(state="active").order_by("-last_seen")
 
     def get(self, request):
