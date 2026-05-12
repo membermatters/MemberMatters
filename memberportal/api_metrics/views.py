@@ -107,7 +107,7 @@ class UpdatePromMetrics(APIView):
                 Metric.MetricName.MEMBERBUCKS_BALANCE_TOTAL,
                 Metric.MetricName.MEMBERBUCKS_TRANSACTIONS_TOTAL,
             ]:
-                prom_metric = getattr(api_metrics.metrics, metric.name)
+                prom_metric = getattr(api_metrics.Metric, metric.name)
 
                 if not prom_metric:
                     logger.error(f"Prometheus metric {metric.name} not found.")
