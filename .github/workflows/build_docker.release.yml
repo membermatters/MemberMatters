@@ -9,6 +9,9 @@ on:
 jobs:
   build-docker-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -17,8 +20,9 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v3
@@ -26,4 +30,4 @@ jobs:
           file: docker/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: membermatters/membermatters:latest,membermatters/membermatters:${{github.ref_name}}
+          tags: kalmarmakerspace/membermatters:latest,kalmarmakerspace/membermatters:${{github.ref_name}}
