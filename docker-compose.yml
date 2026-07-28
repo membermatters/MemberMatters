@@ -1,4 +1,3 @@
-version: "3"
 services:
   mm-postgres:
     image: postgres:15.3-alpine
@@ -27,6 +26,10 @@ services:
   # MemberMatters
   mm-webapp:
     image: membermatters/membermatters
+    pull_policy: build
+    build:
+      context: ./
+      dockerfile: ./docker/Dockerfile
     restart: always
     environment:
       MM_ENV: "Production"
@@ -47,6 +50,10 @@ services:
   # MemberMatters Celery Worker
   mm-celery-worker:
     image: membermatters/membermatters
+    pull_policy: build
+    build:
+      context: ./
+      dockerfile: ./docker/Dockerfile
     restart: always
     environment:
       MM_ENV: "Production"
@@ -60,6 +67,10 @@ services:
   # MemberMatters Celery Beat
   mm-celery-beat:
     image: membermatters/membermatters
+    pull_policy: build
+    build:
+      context: ./
+      dockerfile: ./docker/Dockerfile
     restart: always
     environment:
       MM_ENV: "Production"
