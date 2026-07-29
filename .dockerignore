@@ -1,7 +1,7 @@
 .git
 venv
-frontend/node_modules
-frontend/dist
-frontend/src-*
+src-frontend/node_modules
+src-frontend/dist
+src-frontend/src-*
 **/*.sqlite3
 **/*.log
