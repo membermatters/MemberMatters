@@ -7,11 +7,9 @@ then
 elif [ "$MM_RUN_MODE" = "celery_beat" ]
 then
   echo CONTAINER MODE: celery beat
-  sleep 10 # wait a few seconds for other services to start
   exec celery -A membermatters.celeryapp beat -l INFO
 else
   echo CONTAINER MODE: django webapp
-  sleep 5 # wait a few seconds for postgres to start
   # Start nginx
   nginx
 

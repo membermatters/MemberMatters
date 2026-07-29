@@ -11,17 +11,18 @@ services:
     volumes:
       - mm-postgres-volume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U membermatters"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      test: ["CMD", "pg_isready", "-U", "membermatters", "-d", "membermatters"]
+      start_period: 1m
+      start_interval: 1s
 
   # MemberMatters Redis
   mm-redis:
     image: redis
     restart: always
-    depends_on:
-      - mm-postgres
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      start_period: 1m
+      start_interval: 1s
 
   # MemberMatters
   mm-webapp:
@@ -39,13 +40,15 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - mm-postgres
-      - mm-redis
+      mm-postgres:
+        condition: service_healthy
+      mm-redis:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000"]
-      interval: 5s
-      timeout: 5s
-      retries: 15
+      test: ["CMD", "curl", "-f", "http://localhost:800[0-1]/api/config/"]
+      start_period: 1m
+      start_interval: 1s
+      retries: 5
 
   # MemberMatters Celery Worker
   mm-celery-worker:
@@ -61,8 +64,12 @@ services:
       MM_RUN_MODE: "celery_worker"
       MM_REDIS_HOST: "redis://mm-redis:6379/0"
     depends_on:
-      - mm-webapp
-      - mm-redis
+      mm-webapp:
+        condition: service_healthy
+        restart: true
+      mm-redis:
+        condition: service_healthy
+        restart: true
 
   # MemberMatters Celery Beat
   mm-celery-beat:
@@ -78,9 +85,12 @@ services:
       MM_RUN_MODE: "celery_beat"
       MM_REDIS_HOST: "redis://mm-redis:6379/0"
     depends_on:
-      - mm-webapp
-      - mm-celery-worker
-      - mm-redis
+      mm-webapp:
+        condition: service_healthy
+        restart: true
+      mm-redis:
+        condition: service_healthy
+        restart: true
 
   mm-celery-prom-exporter:
     image: danihodovic/celery-exporter
@@ -88,8 +98,12 @@ services:
     environment:
       CE_BROKER_URL: "redis://mm-redis:6379/0"
     depends_on:
-      - mm-celery-worker
-      - mm-redis
+      mm-celery-worker:
+        condition: service_started
+        restart: true
+      mm-redis:
+        condition: service_healthy
+        restart: true
 
 volumes:
   mm-postgres-volume:
