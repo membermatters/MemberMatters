@@ -6,9 +6,12 @@ LABEL description="Base Dockerfile for the MemberMatters software."
 VOLUME /usr/src/data/
 VOLUME /usr/src/logs/
 
-RUN mkdir -p /usr/src/app/frontend && mkdir /usr/src/logs && mkdir /usr/src/data
+RUN mkdir -p /usr/src/app/frontend /usr/src/logs /usr/src/data
 
-RUN apt-get update -y && apt-get install -y nginx curl daphne
+RUN apt-get update -y && apt-get install -y nginx curl
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:0.11.8 /uv /uvx /bin/
 
 # Install Node
 ENV NODE_VERSION=22.2.0
@@ -29,10 +32,8 @@ ADD package.json /usr/src/app/package.json
 
 # Install python deps
 WORKDIR /usr/src/app/memberportal/
-RUN python -m pip install --upgrade pip
-ADD memberportal/requirements.txt /usr/src/app/memberportal/requirements.txt
-RUN pip3 install --no-cache-dir pillow
-RUN pip3 install --no-cache-dir -r requirements.txt
+COPY memberportal .
+RUN uv sync --locked
 
 # Build our frontend
 WORKDIR /usr/src/app/frontend/
@@ -42,9 +43,8 @@ RUN npm run build
 RUN rm -rf .npmrc
 
 # collect static files from Django and add the backend source code
-ADD memberportal /usr/src/app/memberportal
 WORKDIR /usr/src/app/memberportal/
-RUN python3 manage.py collectstatic --noinput
+RUN uv run manage collectstatic --noinput
 
 # Copy over the nginx config and requirement files
 ADD docker/nginx.conf /etc/nginx/nginx.conf

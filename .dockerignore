@@ -1,5 +1,5 @@
 .git
-venv
+memberportal/.venv
 src-frontend/node_modules
 src-frontend/dist
 src-frontend/src-*

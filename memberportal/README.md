@@ -1,69 +1,9 @@
 # Getting started (Django backend)
 
-First step is to grab a copy of this repository. You will need to make sure you have python installed,
-3.7 or newer, as that's the only version it has been tested on. Make sure you also install pip so that you can install
-all the dependencies.
+First, install uv from [here](https://docs.astral.sh/uv/getting-started/installation/). uv will install and manage
+both Python itself and the Python packages we depend on.
 
-To install python 3/pip and the requirements, run the commands below _from within this folder_.
-
-## Linux (Ubuntu)
-
-Make sure you have all the common programming dependencies installed:
-
-```bash
-sudo apt install build-essential libssl-dev libffi-dev python3-dev python3 python3-pip python3-venv
-```
-
-Then create a virtual environment and install our python dependencies:
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip3 install -r requirements.txt
-```
-
-You should see `(venv) $` at your command prompt, letting you know that you’re running the proper virtualenv install. To deactivate, you can just run the following to deactivate the environment.
-
-```bash
-deactivate
-```
-
-## macOS
-
-You should install and use python3 with virtualenv on macOS. You may also need to install `mysql` via brew if you don't have it already.
-
-```bash
-brew install python3 mysql
-pip3 install virtualenv
-virtualenv venv
-source venv/bin/activate
-pip3 install -r requirements.txt
-```
-
-You should see `(venv) $` at your command prompt, letting you know that you’re running the proper virtualenv install. To deactivate, you can just run the following to deactivate the environment.
-
-```bash
-deactivate
-```
-
-#### Notes
-
-If you're running macOS Big Sur (and/or an Apple Silicon Mac), you may need to run this command to install the dependencies:
-
-```
-CFLAGS='-I/usr/local/opt/zlib/include -L/usr/local/opt/zlib/lib' pip3 install -r requirements.txt
-```
-
-## Windows
-
-Please follow the instructions below to setup dev environment in Windows (tested in Windows 7 & 10).
-
-- Download & install Python 3.7+ from [here](https://www.python.org/downloads/)
-- CD into the cloned repository.
-- Assuming `pip` and `virtualenv` is already installed as part of the package, execute: `py -3 -m venv venv`
-- Activate the venv by running: `venv\Scripts\activate`
-- Install dependencies by running: `pip install -r requirements-win.txt`
-- You're all set up. Follow the instructions below to start the dev server.
+Then, grab a copy of this repository and run the commands below _from within this folder_.
 
 ## Running the dev server
 
@@ -76,7 +16,7 @@ environment variables like below to create them locally when developing:
 To run the Django database migrations:
 
 ```bash
-MM_LOG_LOCATION=errors.log MM_DB_LOCATION=db.sqlite3 python3 manage.py migrate
+MM_LOG_LOCATION=errors.log MM_DB_LOCATION=db.sqlite3 uv run manage migrate
 ```
 
 After running that you should see something like this:
@@ -93,13 +33,13 @@ Running migrations:
 Now load some initial data into the database:
 
 ```bash
-MM_LOG_LOCATION=errors.log MM_DB_LOCATION=db.sqlite3 python3 manage.py loaddata fixtures/initial.json
+MM_LOG_LOCATION=errors.log MM_DB_LOCATION=db.sqlite3 uv run manage loaddata fixtures/initial.json
 ```
 
 If that completes with no errors (warnings are ok) run the command below to start the development server.
 
 ```bash
-MM_LOG_LOCATION=errors.log MM_DB_LOCATION=db.sqlite3 python3 manage.py runserver
+MM_LOG_LOCATION=errors.log MM_DB_LOCATION=db.sqlite3 uv run manage runserver
 ```
 
 You should see something like this:
@@ -114,7 +54,7 @@ Now that the backend API is running, you can head over to the [frontend](/fronte
 ## Stripe Webhooks
 If you want to test Stripe webhooks you can use the stripe CLI to forward webhooks to your local dev server.
 To do so, you will need to install the stripe CLI and login to your stripe account.
-Click [here](https://dashboard.stripe.com/test/webhooks/create?endpoint_location=local) for detailed instructions from 
+Click [here](https://dashboard.stripe.com/test/webhooks/create?endpoint_location=local) for detailed instructions from
 Stripe.
 
 Once you're set up, run the following command to forward webhooks to your local dev server:
@@ -123,7 +63,7 @@ Once you're set up, run the following command to forward webhooks to your local 
 stripe listen --skip-verify --events invoice.paid,invoice.payment_failed,customer.subscription.deleted --forward-to localhost:8080/api/billing/stripe-webhook/
 ```
 
-Finally, check that you're running the frontend proxy on port 8080 and configure the signing secret in the Constance 
+Finally, check that you're running the frontend proxy on port 8080 and configure the signing secret in the Constance
 settings.
 You can find the local signing secret in the command line output after running `stripe listen` above.
 It will start like this `whsec_...`
@@ -172,4 +112,4 @@ unless you have a good reason.
 
 You will need to re-run the database migration every time the db models change. You may see random database related errors such as column does not exist if you forget to do this. You can do that by running:
 
-`MM_LOG_LOCATION=errors.log MM_DB_LOCATION=db.sqlite3 python3 manage.py migrate`
+`MM_LOG_LOCATION=errors.log MM_DB_LOCATION=db.sqlite3 uv run manage migrate`
