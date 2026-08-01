@@ -44,7 +44,7 @@ docker exec -it membermatters bash
 and run the following:
 
 ```bash
-python3 manage.py loaddata initial
+uv run manage loaddata initial
 ```
 
 Once you've loaded the initial fixtures, you will be able to login with the default admin account details:

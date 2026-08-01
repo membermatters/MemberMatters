@@ -1,0 +1,69 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "*/",
+    "*.py",
+]
+exclude = [
+    "dist",
+]
+
+[project]
+name = "membermatters"
+version = "3.8.0"
+description = "An open source membership, access and payments portal for makerspaces and community groups"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    { name = "Jaimyn Mayer", email = "github@jaimyn.dev" },
+]
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "django~=3.2.13",
+    "requests~=2.32.3",
+    "stripe~=9.8.0",
+    "humanize~=4.9.0",
+    "django-constance~=2.9.0",
+    "django-picklefield~=3.2",
+    "django-cors-headers~=4.3.1",
+    "black==25.1.0",
+    "pre-commit==3.7.1",
+    "djangorestframework==3.15.1",
+    "djangorestframework-simplejwt==5.3.1",
+    "django-csp~=3.8",
+    "sentry-sdk==2.3.1",
+    "mysqlclient~=2.2.4",
+    "mailchimp-marketing~=3.0.80",
+    "channels~=3.0.4",
+    "zeroconf~=0.132.2",
+    "postmarker~=1.0",
+    "channels_redis~=3.4.0",
+    "ics~=0.7.2",
+    "python_http_client~=3.3.7",
+    "pwned-passwords-django~=2.1",
+    "celery~=5.4.0",
+    "django-celery-results~=2.5.1",
+    "django-celery-beat~=2.6.0",
+    "redis~=4.3.1",
+    "twilio~=9.1.0",
+    "django-prometheus==2.3.1",
+    "psycopg2-binary~=2.9.9",
+    "django-oidc-provider~=0.8.2",
+    "djangorestframework-api-key~=3.0.0",
+    "prometheus-client~=0.20.0",
+    "python-dateutil~=2.9.0",
+    "django-import-export~=3.3.9",
+    "pillow>=12.2.0",
+]
+
+[project.urls]
+homepage = "https://membermatters.org/"
+documentation = "https://membermatters.org/en/latest/"
+
+[project.scripts]
+manage = "manage:main"
