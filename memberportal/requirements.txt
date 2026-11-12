@@ -12,8 +12,9 @@ djangorestframework-simplejwt==5.3.1
 django-csp~=3.8
 sentry-sdk==2.3.1
 mysqlclient~=2.2.4
-git+https://github.com/mailchimp/mailchimp-marketing-python.git
+mailchimp-marketing~=3.0.80
 channels~=3.0.4
+daphne>=3.0,<4
 zeroconf~=0.132.2
 postmarker~=1.0
 channels_redis~=3.4.0

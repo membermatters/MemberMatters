@@ -1,5 +1,5 @@
 # Specify our base image
-FROM python:3.12-bullseye
+FROM python:3.12-trixie
 LABEL maintainer="Jaimyn Mayer (github@jaimyn.dev)"
 LABEL description="Base Dockerfile for the MemberMatters software."
 
@@ -8,7 +8,7 @@ VOLUME /usr/src/logs/
 
 RUN mkdir -p /usr/src/app/frontend && mkdir /usr/src/logs && mkdir /usr/src/data
 
-RUN apt-get update -y && apt-get install -y nginx curl daphne
+RUN apt-get update -y && apt-get install -y nginx curl
 
 # Install Node
 ENV NODE_VERSION=22.2.0
